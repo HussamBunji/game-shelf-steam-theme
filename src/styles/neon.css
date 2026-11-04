@@ -1,0 +1,79 @@
+/* ═══ Theme 2 — نيون كوفر فلو (Neon Coverflow) ═══
+   Home: 3D coverflow carousel with reflections.  Chrome: sharp, glowing edges, synthwave grid. */
+:root {
+  /* layout base: SpaceTheme (MIT, src/vendor/space) — its sidebar, search, centred store/library;
+     this style supplies the colours below, its own font, home design, icons and flair.css touches */
+  --rf-vendor: space;
+  --rf-vendor-skip: options/fonts/;
+  --rf-style-id: neon;
+
+  /* icons: glowing neon tubes, cyan to magenta */
+  --rf-ic-1: #3ef0ff;
+  --rf-ic-2: #ff3ea5;
+  --rf-ic-fill: rgba(62, 240, 255, .1);
+  --rf-ic-sw: 1.7;
+  --rf-ic-glow: drop-shadow(0 0 2.5px rgba(62, 240, 255, .7));
+  --rf-ict-bg: linear-gradient(160deg, rgba(20, 12, 44, .95), rgba(8, 6, 20, .95));
+  --rf-ict-border: 1px solid rgba(62, 240, 255, .6);
+  --rf-ict-radius: 3px;
+  --rf-ict-shadow: 0 0 8px rgba(62, 240, 255, .35), inset 0 0 6px rgba(255, 62, 165, .25);
+  --rf-ict-shadow-hi: 0 0 14px rgba(62, 240, 255, .7), 0 0 4px rgba(255, 62, 165, .6), inset 0 0 8px rgba(255, 62, 165, .35);
+  --rf-ict-1: #6ff6ff;
+  --rf-ict-2: #ff5cb8;
+  --rf-ict-fill: rgba(255, 62, 165, .14);
+  --rf-ict-glow: drop-shadow(0 0 3px rgba(62, 240, 255, .85));
+
+  --rf-layout: coverflow;
+  --rf-bg: #06050d;
+  --rf-bg-img:
+    linear-gradient(rgba(255, 62, 165, .05) 1px, transparent 1px) 0 0 / 100% 42px,
+    linear-gradient(90deg, rgba(62, 240, 255, .04) 1px, transparent 1px) 0 0 / 42px 100%,
+    radial-gradient(ellipse 70% 50% at 50% 0%, rgba(155, 62, 255, .18), transparent 70%);
+  --rf-panel: #0b0918;
+  --rf-panel-2: #141129;
+  --rf-panel-3: #1f1a40;
+  --rf-border: rgba(62, 240, 255, .18);
+  --rf-text: #ecf6ff;
+  --rf-text-dim: #93a0c4;
+  --rf-accent: #3ef0ff;
+  --rf-accent-2: #ff3ea5;
+  --rf-accent-rgb: 62, 240, 255;
+  --rf-accent-ink: #001a1f;
+  --rf-play-1: #3ef0ff;
+  --rf-play-2: #1b7bff;
+  --rf-play-ink: #00131c;
+  --rf-glow: 255, 62, 165;
+
+  --rf-radius: 2px;
+  --rf-radius-lg: 4px;
+  --rf-topbar: linear-gradient(90deg, #0d0a1f, #160b26 50%, #0a1220);
+  --rf-topbar-line: linear-gradient(90deg, #ff3ea5, #3ef0ff);
+  --rf-sidebar: linear-gradient(180deg, #0a0816, #07060f);
+  --rf-card: rgba(20, 16, 45, .7);
+  --rf-card-border: 1px solid rgba(62, 240, 255, .22);
+  --rf-card-hover-shadow: 0 0 0 1px #3ef0ff, 0 0 18px rgba(62, 240, 255, .45), 0 0 40px rgba(255, 62, 165, .25);
+  --rf-heading-font: 'Segoe UI', 'Motiva Sans', sans-serif;
+  --rf-heading-case: uppercase;
+  --rf-heading-spacing: .12em;
+  --rf-blur: 0px;
+
+  --rf-led-rgb: 62, 240, 255;
+  --rf-plate-1: #ff7cc6;
+  --rf-plate-2: #9b3eff;
+  --rf-plate-ink: #ffffff;
+}
+
+/* SpaceTheme's colour slots, filled with this style's palette (ink violet, cyan accent).
+   :root:root outranks SpaceTheme's own root.css, which loads after this file. */
+:root:root {
+  --st-accent-1: 62, 240, 255;
+  --st-accent-2: 140, 248, 255;
+  --st-background: 6, 5, 13;
+  --st-color-1: 12, 10, 26;
+  --st-color-2: 24, 19, 48;
+  --st-color-3: 15, 12, 32;
+  --st-color-4: 19, 15, 40;
+  --st-color-5: 44, 33, 86;
+  --st-color-6: 37, 28, 72;
+  --st-border-radius: 2px;
+}

@@ -1,0 +1,78 @@
+/* ═══ Theme 3 — المعرض الزجاجي (Glass Gallery) ═══
+   Home: "continue playing" hero + frosted tilt cards + genre filters.  Chrome: Steam-like navy, big radii, frosted glass. */
+:root {
+  /* layout base: SpaceTheme (MIT, src/vendor/space) — its sidebar, search, centred store/library;
+     this style supplies the colours below, its own font, home design, icons and flair.css touches */
+  --rf-vendor: space;
+  --rf-vendor-skip: options/fonts/;
+  --rf-style-id: glass;
+
+  /* icons: frosted glass tiles, sky blue to violet */
+  --rf-ic-1: #8fd6ff;
+  --rf-ic-2: #b29dff;
+  --rf-ic-fill: rgba(130, 200, 255, .16);
+  --rf-ic-sw: 1.8;
+  --rf-ic-glow: none;
+  --rf-ict-bg: linear-gradient(150deg, rgba(255, 255, 255, .2), rgba(255, 255, 255, .05) 60%, rgba(162, 140, 255, .1));
+  --rf-ict-border: 1px solid rgba(255, 255, 255, .18);
+  --rf-ict-radius: 9px;
+  --rf-ict-shadow: inset 0 1px 0 rgba(255, 255, 255, .25), 0 4px 12px rgba(0, 0, 0, .28);
+  --rf-ict-shadow-hi: inset 0 1px 0 rgba(255, 255, 255, .3), 0 0 0 1px rgba(102, 192, 244, .55), 0 6px 16px rgba(0, 0, 0, .35);
+  --rf-ict-1: #a6e0ff;
+  --rf-ict-2: #c3b3ff;
+  --rf-ict-fill: rgba(170, 215, 255, .2);
+  --rf-ict-glow: none;
+
+  --rf-layout: gallery;
+  --rf-bg: #0c1420;
+  --rf-bg-img:
+    radial-gradient(ellipse 60% 45% at 15% 0%, rgba(102, 192, 244, .16), transparent 70%),
+    radial-gradient(ellipse 50% 40% at 90% 10%, rgba(140, 110, 255, .12), transparent 70%);
+  --rf-panel: rgba(21, 33, 51, .72);
+  --rf-panel-2: rgba(32, 48, 72, .7);
+  --rf-panel-3: rgba(45, 66, 96, .72);
+  --rf-border: rgba(160, 210, 255, .14);
+  --rf-text: #eef5fc;
+  --rf-text-dim: #9fb2c8;
+  --rf-accent: #66c0f4;
+  --rf-accent-2: #a28cff;
+  --rf-accent-rgb: 102, 192, 244;
+  --rf-accent-ink: #04192a;
+  --rf-play-1: #75d97d;
+  --rf-play-2: #3c9c4a;
+  --rf-play-ink: #062a10;
+  --rf-glow: 102, 192, 244;
+
+  --rf-radius: 12px;
+  --rf-radius-lg: 18px;
+  --rf-topbar: linear-gradient(rgba(15, 25, 40, .85), rgba(15, 25, 40, .65));
+  --rf-topbar-line: rgba(160, 210, 255, .18);
+  --rf-sidebar: rgba(14, 22, 34, .78);
+  --rf-card: rgba(255, 255, 255, .055);
+  --rf-card-border: 1px solid rgba(255, 255, 255, .09);
+  --rf-card-hover-shadow: 0 16px 40px rgba(0, 0, 0, .45), 0 0 0 1px rgba(102, 192, 244, .45);
+  --rf-heading-font: 'Segoe UI Variable Display', 'Segoe UI', 'Motiva Sans', sans-serif;
+  --rf-heading-case: none;
+  --rf-heading-spacing: 0;
+  --rf-blur: 14px;
+
+  --rf-led-rgb: 190, 228, 255;
+  --rf-plate-1: #e8f3fb;
+  --rf-plate-2: #9fb8cc;
+  --rf-plate-ink: #13253a;
+}
+
+/* SpaceTheme's colour slots, filled with this style's palette (Steam navy, sky-blue accent).
+   :root:root outranks SpaceTheme's own root.css, which loads after this file. */
+:root:root {
+  --st-accent-1: 102, 192, 244;
+  --st-accent-2: 150, 212, 250;
+  --st-background: 12, 20, 32;
+  --st-color-1: 19, 30, 46;
+  --st-color-2: 30, 45, 66;
+  --st-color-3: 16, 26, 40;
+  --st-color-4: 23, 36, 54;
+  --st-color-5: 44, 64, 92;
+  --st-color-6: 38, 56, 82;
+  --st-border-radius: 14px;
+}

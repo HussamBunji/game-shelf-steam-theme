@@ -1,0 +1,136 @@
+{
+  "name": "Game Shelf — رف الألعاب",
+  "author": "Yousef (yousf612-alwazzan)",
+  "description": "Six looks for Steam: Classic 3D wooden shelf, Glass gallery, Neon coverflow, Steam Original, plus SpaceTheme and Material You (bundled community themes, MIT). Store side panels with live players and regional prices, Ctrl+K quick search, Arabic or English interface.",
+  "version": "2.2.0",
+  "header_image": "https://raw.githubusercontent.com/SteamClientHomebrew/Millennium/main/assets/header.png",
+  "splash_image": "https://raw.githubusercontent.com/SteamClientHomebrew/Millennium/main/assets/header.png",
+  "tags": [
+    "Library",
+    "3D",
+    "Arabic",
+    "Customizable"
+  ],
+  "github": {
+    "owner": "yousf612-alwazzan",
+    "repo_name": "game-shelf-steam-theme"
+  },
+  "Steam-WebKit": "src/css/webkit.css",
+  "Conditions": {
+    "Style": {
+      "description": "Theme design / تصميم الثيم",
+      "default": "Classic Shelf",
+      "tab": "General",
+      "values": {
+        "Classic Shelf": {
+          "TargetCss": {
+            "affects": [
+              ".*",
+              "https://.*\\.steampowered\\.com(/.*)?",
+              "https://steamcommunity\\.com(/.*)?"
+            ],
+            "src": "src/styles/classic.css"
+          }
+        },
+        "Glass Gallery": {
+          "TargetCss": {
+            "affects": [
+              ".*",
+              "https://.*\\.steampowered\\.com(/.*)?",
+              "https://steamcommunity\\.com(/.*)?"
+            ],
+            "src": "src/styles/glass.css"
+          }
+        },
+        "Neon Coverflow": {
+          "TargetCss": {
+            "affects": [
+              ".*",
+              "https://.*\\.steampowered\\.com(/.*)?",
+              "https://steamcommunity\\.com(/.*)?"
+            ],
+            "src": "src/styles/neon.css"
+          }
+        },
+        "Steam Original": {
+          "TargetCss": {
+            "affects": [
+              ".*",
+              "https://.*\\.steampowered\\.com(/.*)?",
+              "https://steamcommunity\\.com(/.*)?"
+            ],
+            "src": "src/styles/original.css"
+          }
+        },
+        "SpaceTheme": {
+          "TargetCss": {
+            "affects": [
+              ".*",
+              "https://.*\\.steampowered\\.com(/.*)?",
+              "https://steamcommunity\\.com(/.*)?"
+            ],
+            "src": "src/styles/space.css"
+          }
+        },
+        "Material You": {
+          "TargetCss": {
+            "affects": [
+              ".*",
+              "https://.*\\.steampowered\\.com(/.*)?",
+              "https://steamcommunity\\.com(/.*)?"
+            ],
+            "src": "src/styles/material.css"
+          }
+        }
+      }
+    },
+    "Language": {
+      "description": "Theme language / لغة الثيم",
+      "default": "English",
+      "tab": "General",
+      "values": {
+        "English": {
+          "TargetCss": {
+            "affects": [
+              ".*"
+            ],
+            "src": "src/lang/en.css"
+          }
+        },
+        "Arabic": {
+          "TargetCss": {
+            "affects": [
+              ".*"
+            ],
+            "src": "src/lang/ar.css"
+          }
+        }
+      }
+    }
+  },
+  "Patches": [
+    {
+      "MatchRegexString": ".*",
+      "TargetJs": "src/js/skin.js"
+    },
+    {
+      "MatchRegexString": "^Steam$",
+      "TargetCss": "src/css/shelf.css",
+      "TargetJs": "src/js/shelf.js"
+    },
+    {
+      "MatchRegexString": "^Steam$",
+      "TargetCss": "src/css/layouts.css"
+    },
+    {
+      "MatchRegexString": "https://.*\\.steampowered\\.com(/.*)?",
+      "TargetCss": "src/css/webkit.css",
+      "TargetJs": "src/js/webkit.js"
+    },
+    {
+      "MatchRegexString": "https://steamcommunity\\.com(/.*)?",
+      "TargetCss": "src/css/webkit.css",
+      "TargetJs": "src/js/webkit.js"
+    }
+  ]
+}

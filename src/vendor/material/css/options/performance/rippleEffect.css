@@ -1,0 +1,30 @@
+.md3-ripple-container {
+    position: fixed;
+    overflow: hidden;
+    pointer-events: none;
+    user-select: none;
+    z-index: 1;
+}
+
+.md3-ripple {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    user-select: none;
+    background: currentColor;
+    opacity: 0.12;
+    transform: scale(0);
+    will-change: transform, opacity;
+}
+
+.md3-ripple.ripple-enter {
+    transform: scale(1);
+}
+
+.md3-ripple.ripple-fade {
+    opacity: 0;
+}
+
+._1-vlriAtKYDViAEunue4VO ._2PPbMrzl8PKBwpkjYs9b0i {
+    pointer-events: none !important;
+}

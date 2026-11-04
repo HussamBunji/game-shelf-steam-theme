@@ -1,0 +1,74 @@
+/* Chips */
+/* https://m3.material.io/components/chips/overview */
+
+._3S6c8sJBYgCcCWf9JGDkOu ._3C1UCvuAZ2oINYSTpUPD04, /* Console */
+.DY4_wSF8h9T5o46hO5I9V ._1b6LYWVijW-9E4YV0keDWZ, /* Root Game Actions (Library) */
+._1bIMOmWaxKrMdVMWU21ku, /* Root Game Actions More Btn (Library) */
+._1HS4twEHtDJ_8MWgJT4VBd._3-M9bcTzYOSRoajtIRDbka /* Hidden Game */{
+    border-radius: var(--corner-radius-small);
+    border-width: 1px;
+    border-style: solid;
+}
+body ._1HS4twEHtDJ_8MWgJT4VBd._3-M9bcTzYOSRoajtIRDbka {
+    border-style: none;
+}
+.DY4_wSF8h9T5o46hO5I9V ._1b6LYWVijW-9E4YV0keDWZ /* Default */ {
+    padding: 4px 8px;
+}
+._1bIMOmWaxKrMdVMWU21ku /* More Btn */ {
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+.MillenniumPlugins_Metrics span {
+    border-radius: var(--corner-radius-extra-small);
+    border-width: 1px;
+    border-style: solid;
+    box-sizing: border-box;
+    background: transparent;
+}
+
+/* body.v6 .deep_dive_tag,
+.tab_preview .tags > a,
+.app_tag {
+    border-radius: var(--corner-radius-extra-small) !important;
+    border-width: 1px !important;
+    border-style: solid !important;
+    padding: 4px 8px !important;
+} */
+
+/* Store / Community */
+/* Common */
+body .bRnh6PiLM-I- .O4UgSDFcO8M- {
+    box-sizing: border-box;
+    border-radius: var(--corner-radius-small);
+}
+/* Assist Chips */
+/* body .bRnh6PiLM-I- .O4UgSDFcO8M-,
+body ._608lprRkZlg- .krQEbDRNCFg-:not(:has(.xOimy4P39Gg-))  {
+    border-width: 1px;
+    border-style: solid;
+} */
+/* Filter Chips */
+/* Community */
+body .zib7qOmJRh0- .jEleAlNckAE- .krQEbDRNCFg-:where(.eAUu1dfYhY4-),
+body .De7wHKDUPG4- .MIBNAtgQ-dU- .krQEbDRNCFg-:where(._0DdgBbU2bPk-),
+body .w--FxC-EhbA-.WlnQdqsCe5s-.HDXo8DVlUxI-._9fpFHkyl3os- .Thio3V0imwc-._0DdgBbU2bPk-._2RWLTCLE-0s-.krQEbDRNCFg- {
+    box-sizing: border-box;
+    border-radius: var(--corner-radius-small);
+}
+/* Store */
+body ._1UkrDgMhl-oqKXXt9KXc4N ._2ovPL35Q1O7gq-DbxmP4cs ._2oz62CVNbwTn7KrUUwRdRw,
+body ._0BeVbyJgjX8- .GRmUHltqGK4- .HIS-lBmeobo-,
+body .glance_tags_ctn .app_tag,
+body .jLuOSBgXneI- .O-5tWVDApEQ- .pFyqFohCcGg-,
+/* Community */
+body ._172OFJhtx4Jt2ydY6-9IUm ._3gzh_NvTKey56JeHY7Q1WW {
+    border-radius: var(--corner-radius-extra-small);
+}
+body .w--FxC-EhbA-.WlnQdqsCe5s-.HDXo8DVlUxI-._9fpFHkyl3os- .Thio3V0imwc-._0DdgBbU2bPk-._2RWLTCLE-0s-.krQEbDRNCFg- {
+    padding-inline: 8px;
+    min-height: 24px;
+    height: 24px;
+    margin: auto;
+}

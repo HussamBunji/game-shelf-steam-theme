@@ -1,0 +1,114 @@
+/* Dialogs */
+/* https://m3.material.io/components/dialogs/overview */
+
+.zhaKeChn9HPNSMtk0ami_ ._3m0MnUo45wjLOfNLpZ-3KH, .zhaKeChn9HPNSMtk0ami_ ._1e6tjguQEHdYIehM9aRmO5, ._3v2Gg_GCpLHpHQDLFQ7cvI.hYVp3sXyS0uYfJnzVoK-m ._3f3VJUtyLXUf_JDFE-BaQ6 {
+    border: unset;
+    border-radius: var(--corner-radius-extra-small);
+}
+
+.ModalDialogPopup .DialogContent, .DialogContent:not([role="tabpanel"]), .DialogContentTransition:not(.OX7USkJ5dDP_icD00Gal6) {
+    border-radius: var(--corner-radius-extra-large);
+}
+.DeckVerifiedModalDialogClient .DialogContent, .DeckVerifiedModalDialog .DialogContent {
+    border: unset;
+}
+
+.DialogContent.CFTLX2wIKOK3hNV-fS7_V {
+    margin-top: 32px;
+    /* margin-right: 16px; */
+    padding: 12px 0px 0px 18px;
+    border-top-left-radius: var(--corner-radius-large);
+    border-top-right-radius: var(--corner-radius-large);
+    border-bottom-left-radius: var(--corner-radius-none);
+    border-bottom-right-radius: var(--corner-radius-none);
+}
+._3Vl2zkYPoCpw1q_1n28D3z {
+    border-radius: var(--corner-radius-medium);
+}
+
+/* Header */
+.DesktopUI .CFTLX2wIKOK3hNV-fS7_V .DialogHeader {
+    margin-top: 2px;
+    margin-bottom: 8px;
+}
+
+/* Remove Dialog Line */
+div.ModalPosition_TopBar {
+    display: none;
+    background: unset;
+}
+
+/* Remove Dialog Shadow */
+.DesktopUI .aFxOaYcllWYkCfVYQJFs0 {
+    mask-image: unset;
+    -webkit-mask-image: unset;
+    padding-top: unset;
+}
+
+/* Included */
+._3v2Gg_GCpLHpHQDLFQ7cvI ._3f3VJUtyLXUf_JDFE-BaQ6 {
+    margin-top: unset;
+}
+._3v2Gg_GCpLHpHQDLFQ7cvI.hYVp3sXyS0uYfJnzVoK-m ._3f3VJUtyLXUf_JDFE-BaQ6,
+._3sa1NXudhvcc1U7HrlLdNQ._2ngG3CCc-g0zyXymxnDnM0,
+._1FyBL6obxHQ2Z2CsaV2Gbz .DialogBody ._3lj3-GDYOlcoIFB3fFo1ko,
+.LclHwcOfHFpwObYMD1HLa ._2aHnQT0gTQ5KIsi5omK93w ._134yW7SKfZYwmvwlUElGx-,
+._2SwH92Kuhm2Kw8_VHMFHcy,
+._1dbgUdk0xgEX7E4Db_r5mb, .DesktopUI ._2YXHRFCzmxgvxVGtA3TWVf ._7lXDajp5HNY9Kpnbeykv,
+._1Ve4VFO2EEkeNZdel_Asky,
+._2TAQYpbxatDYN3Ex76KX5u .DialogBody .DialogBodyText ._7jaC6UFFrvcKq2UlJr1Pb .Cw--cBWy7v1Ey1JF0VkBN.DesktopUI, .DesktopUI ._2TAQYpbxatDYN3Ex76KX5u .DialogBody .DialogBodyText ._7jaC6UFFrvcKq2UlJr1Pb .Cw--cBWy7v1Ey1JF0VkBN {
+    border: unset;
+    border-radius: var(--corner-radius-small);
+    box-shadow: unset;
+}
+._2ilpH-HpvuSm6s5MWX5bA- .JYQgsMzgbFLgarphirEoQ ._3M92hj6aELzceURcKR7WFu {
+    border-radius: var(--corner-radius-small);
+}
+._2ilpH-HpvuSm6s5MWX5bA- .JYQgsMzgbFLgarphirEoQ ._3M92hj6aELzceURcKR7WFu:hover, ._2ilpH-HpvuSm6s5MWX5bA- .JYQgsMzgbFLgarphirEoQ ._3M92hj6aELzceURcKR7WFu.Efo_8muMPNLjjSbObMuDq, ._2ilpH-HpvuSm6s5MWX5bA- .JYQgsMzgbFLgarphirEoQ ._3M92hj6aELzceURcKR7WFu.gpfocus {
+    box-shadow: var(--elevated-shadow);
+}
+/* QR Code */
+._2nfA6g3AeXaUBZ2fDMSBPA .UTetJckMNtrxwllPEi_zN ._5S5WqZhvbmRD1cHQT8P-l {
+    border-radius: var(--corner-radius-medium);
+}
+/* Image */
+.Krg05lMwvNmhhVXhqdleu ._3MJEANCb5PkduXTSJ6o3bq ._3mitVrK37Z0VhEoNSmfjT8 img {
+    border-radius: var(--corner-radius-small);
+}
+/* Launch Option Buttons */
+.LclHwcOfHFpwObYMD1HLa ._2aHnQT0gTQ5KIsi5omK93w ._134yW7SKfZYwmvwlUElGx- ._3DEhfTvEKwgLd4smd6QdaU:first-child:last-child {
+    border-radius: var(--corner-radius-medium);
+}
+.LclHwcOfHFpwObYMD1HLa ._2aHnQT0gTQ5KIsi5omK93w ._134yW7SKfZYwmvwlUElGx- ._3DEhfTvEKwgLd4smd6QdaU:first-child:not(:last-child) {
+    border-top-left-radius: var(--corner-radius-medium);
+    border-top-right-radius: var(--corner-radius-medium);
+    border-bottom-left-radius: var(--corner-radius-extra-small);
+    border-bottom-right-radius: var(--corner-radius-extra-small);
+}
+.LclHwcOfHFpwObYMD1HLa ._2aHnQT0gTQ5KIsi5omK93w ._134yW7SKfZYwmvwlUElGx- ._3DEhfTvEKwgLd4smd6QdaU:not(:first-child):not(:last-child) {
+    border-top-left-radius: var(--corner-radius-extra-small);
+    border-top-right-radius: var(--corner-radius-extra-small);
+    border-bottom-left-radius: var(--corner-radius-extra-small);
+    border-bottom-right-radius: var(--corner-radius-extra-small);
+}
+.LclHwcOfHFpwObYMD1HLa ._2aHnQT0gTQ5KIsi5omK93w ._134yW7SKfZYwmvwlUElGx- ._3DEhfTvEKwgLd4smd6QdaU:last-child:not(:first-child)  {
+    border-top-left-radius: var(--corner-radius-extra-small);
+    border-top-right-radius: var(--corner-radius-extra-small);
+    border-bottom-left-radius: var(--corner-radius-medium);
+    border-bottom-right-radius: var(--corner-radius-medium);
+}
+/* Notes Toggle Buttons */
+button.DialogButton._1dEi5qzSDdPOzoOQXYbNLN._1Iw5xoXQXfmRjgjWTKbm_G {
+    outline: unset;
+    border-radius: var(--corner-radius-small);
+}
+
+/* Margin Fix? */
+.DialogBody {
+    margin-bottom: 0px !important;
+}
+
+/* Modal */
+.ModalPosition_Content {
+    box-shadow: unset;
+}

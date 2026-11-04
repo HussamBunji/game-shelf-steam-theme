@@ -1,0 +1,57 @@
+<div align="center">
+<h3><img height="76px" src="https://raw.githubusercontent.com/SpaceTheme/Steam/main/.github/assets/logo.webp"></h3>
+
+[Community](https://discord.spacetheme.net) | [Support the Project](https://kofi.spacetheme.net) | [Website](https://spacetheme.net)
+
+![GitHub Org's stars](https://img.shields.io/github/stars/SpaceTheme?style=for-the-badge&logo=github&labelColor=%23111111&color=%231e1e1e)
+<hr>
+</div>
+
+![Preview](https://raw.githubusercontent.com/SpaceTheme/Steam/main/.github/assets/preview/preview.webp)
+<details>
+    <summary>More images (1. Nov. 2026)</summary>
+
+|  Library home  |  Library gamepage  |
+|  :---:  |  :---:  |
+|  ![Preview](https://raw.githubusercontent.com/SpaceTheme/Steam/main/.github/assets/preview/libHome.webp)  |  ![Preview](https://raw.githubusercontent.com/SpaceTheme/Steam/main/.github/assets/preview/libGamepage.webp)  |
+|  **Library Game News**  |  **Library Soundtrack**  |
+|  ![Preview](https://raw.githubusercontent.com/SpaceTheme/Steam/main/.github/assets/preview/libGameNews.webp)  |  ![Preview](https://raw.githubusercontent.com/SpaceTheme/Steam/main/.github/assets/preview/libSoundtrack.webp)  |
+|  **Store**  |  **Store Gamepage**  |
+|  ![Preview](https://raw.githubusercontent.com/SpaceTheme/Steam/main/.github/assets/preview/storeHome.webp)  |  ![Preview](https://raw.githubusercontent.com/SpaceTheme/Steam/main/.github/assets/preview/storeGamepage.webp)  |
+|  **Store Search**  |  **Store Cart**  |
+|  ![Preview](https://raw.githubusercontent.com/SpaceTheme/Steam/main/.github/assets/preview/storeSearchPage.webp)  |  ![Preview](https://raw.githubusercontent.com/SpaceTheme/Steam/main/.github/assets/preview/storeCart.webp)  |
+|  **Licenses & Key Activations**  |  **Downloads**  |
+|  ![Preview](https://raw.githubusercontent.com/SpaceTheme/Steam/main/.github/assets/preview/licenseAndKeyActivations.webp)  |  ![Preview](https://raw.githubusercontent.com/SpaceTheme/Steam/main/.github/assets/preview/download.webp)  |
+|  **Community Awards**  |  **Community Badges**  |
+|  ![Preview](https://raw.githubusercontent.com/SpaceTheme/Steam/main/.github/assets/preview/communityAwards.webp)  |  ![Preview](https://raw.githubusercontent.com/SpaceTheme/Steam/main/.github/assets/preview/communityBadges.webp)  |
+|  **Community Friends Who Played**  |  **Friend list & Chat**  |
+|  ![Preview](https://raw.githubusercontent.com/SpaceTheme/Steam/main/.github/assets/preview/communityFriendsWhoPlayed.webp)  |  ![Preview](https://raw.githubusercontent.com/SpaceTheme/Steam/main/.github/assets/preview/firendsAndChat.webp)  |
+|  **Friends Chat**  |  **Game Overlay**  |
+|  ![Preview](https://raw.githubusercontent.com/SpaceTheme/Steam/main/.github/assets/preview/friendsChat.webp)  |  ![Preview](https://raw.githubusercontent.com/SpaceTheme/Steam/main/.github/assets/preview/overlayHome.webp)  |
+|  **Millennium Settings**  |    |
+|  ![Preview](https://raw.githubusercontent.com/SpaceTheme/Steam/main/.github/assets/preview/millenniumSettings.webp)  |    |
+</details>
+<details>
+    <summary>More images (Concepts)</summary>
+
+|  Library home  |  Library gamepage  |
+|  :---:  |  :---:  |
+|  ![Preview](https://raw.githubusercontent.com/SpaceTheme/Steam/main/.github/assets/concepts/conceptLibHome.webp)  |  ![Preview](https://raw.githubusercontent.com/SpaceTheme/Steam/main/.github/assets/concepts/conceptLibGamepage.webp)  |
+|  **Store**  |  **Store gamepage**  |
+|  ![Preview](https://raw.githubusercontent.com/SpaceTheme/Steam/main/.github/assets/concepts/conceptStorePage.webp)  |  ![Preview](https://raw.githubusercontent.com/SpaceTheme/Steam/main/.github/assets/concepts/conceptStoreGamepage.webp)  |
+</details>
+
+## Installation
+1. Download [Millennium](https://docs.steambrew.app/users/getting-started/installation) and follow the provided instructions to install the patcher.
+1. Open the [Theme Page](https://steambrew.app/theme?id=zQndv1rI0FXLh3QTRgOL) and click the Copy Theme ID button.
+1. Navigate to the Theme tab in the Millennium settings and select "Install Theme" and paste the Theme ID.
+
+**Voilà! Enjoy the new look of your Steam!**
+
+## Info
+- Some things only work properly when steam is maximized on a 1920x1080p (or higher) monitor.
+  - Smaller monitors may be properly supported later
+
+## Fully supported plugins
+- [HLTB for Steam](https://steambrew.app/plugin?id=f685622bace6)
+- [Size on Disk](https://steambrew.app/plugin?id=e73371b61eef)

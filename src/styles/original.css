@@ -1,0 +1,60 @@
+/* ═══ Theme 4 — ستيم الأصلي (Steam Original) ═══
+   Steam exactly as Valve ships it: no home redesign and no recolouring (skin.js, shelf.js and webkit.css
+   step aside when --rf-layout is "original"). Only the small Themes button, the language switch and the
+   store data panel stay, drawn in Steam's own colours. */
+:root {
+  /* icons: Steam's own blue, flat square tiles */
+  --rf-ic-1: #8fd0f7;
+  --rf-ic-2: #1a9fff;
+  --rf-ic-fill: rgba(102, 192, 244, .12);
+  --rf-ic-sw: 1.8;
+  --rf-ic-glow: none;
+  --rf-ict-bg: rgba(103, 193, 245, .1);
+  --rf-ict-border: 1px solid transparent;
+  --rf-ict-radius: 2px;
+  --rf-ict-shadow: none;
+  --rf-ict-shadow-hi: inset 0 0 0 1px rgba(103, 193, 245, .45);
+  --rf-ict-1: #8fd0f7;
+  --rf-ict-2: #4aa8f0;
+  --rf-ict-fill: rgba(102, 192, 244, .15);
+  --rf-ict-glow: none;
+
+  --rf-vendor: none;
+  --rf-vendor-skip: none;
+  --rf-layout: original;
+  --rf-style-id: original;
+  --rf-bg: #1b2838;
+  --rf-bg-img: none;
+  --rf-panel: #16202d;
+  --rf-panel-2: #1f2c3b;
+  --rf-panel-3: #2a3f5a;
+  --rf-border: rgba(103, 193, 245, .15);
+  --rf-text: #dcdedf;
+  --rf-text-dim: #8f98a0;
+  --rf-accent: #66c0f4;
+  --rf-accent-2: #1a9fff;
+  --rf-accent-rgb: 102, 192, 244;
+  --rf-accent-ink: #0e1c2b;
+  --rf-play-1: #75b022;
+  --rf-play-2: #588a1b;
+  --rf-play-ink: #e8f6d3;
+  --rf-glow: 102, 192, 244;
+
+  --rf-radius: 3px;
+  --rf-radius-lg: 4px;
+  --rf-topbar: #171d25;
+  --rf-topbar-line: rgba(255, 255, 255, .06);
+  --rf-sidebar: #1e2329;
+  --rf-card: rgba(0, 0, 0, .2);
+  --rf-card-border: 1px solid rgba(103, 193, 245, .1);
+  --rf-card-hover-shadow: none;
+  --rf-heading-font: 'Motiva Sans', 'Segoe UI', sans-serif;
+  --rf-heading-case: none;
+  --rf-heading-spacing: 0;
+  --rf-blur: 0px;
+
+  --rf-led-rgb: 190, 228, 255;
+  --rf-plate-1: #e8f3fb;
+  --rf-plate-2: #9fb8cc;
+  --rf-plate-ink: #13253a;
+}

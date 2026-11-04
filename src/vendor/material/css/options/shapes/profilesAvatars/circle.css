@@ -1,0 +1,71 @@
+/* Loading? */
+._1TR3CCCdSmI-0MXucYBuP2 ._6Z2AOU-R-8aK7KZevey0W ._3YzgVE15q0lUY1uAwRQm1U img,
+.l_0WJ2pzm_5Zp7gfT_UZz ._3nhzM2H8Opkomzs5OG5oux>img, .l_0WJ2pzm_5Zp7gfT_UZz ._3nhzM2H8Opkomzs5OG5oux>svg,
+.l_0WJ2pzm_5Zp7gfT_UZz ._3nhzM2H8Opkomzs5OG5oux {
+	border-radius: 999px !important;
+}
+/* Library */
+._3h-QRJGxnVOIExtHD1R0f2:has(+ ._2nPONxDUmK4rQXzK4Y3vG2),
+.nibodjvvrm86uCfnnAn4g,
+._1xTATKELHR-lRS_s3A4yzd ._36eQg-jp1ebbdaE6PBniHu, ._3h-QRJGxnVOIExtHD1R0f2,
+._3yD46y5pd3zOGR7CzKs0mC,
+._1cpxSyGwDz13Qlo95Kbo5H ._1rFuHnL8fa-9b2nm_ZMF4L .hPf0QcicQJpY6-6E43gi6.szwarX82VO26tR6sfO_XV ._1q5iGs9FEBhJcXc2mY3HPG,
+._1cpxSyGwDz13Qlo95Kbo5H ._1rFuHnL8fa-9b2nm_ZMF4L .hPf0QcicQJpY6-6E43gi6.szwarX82VO26tR6sfO_XV ._1q5iGs9FEBhJcXc2mY3HPG>img,
+/* Store */
+.store_nav .tab img.foryou_avatar,
+.friends_container .avatars a img,
+#review_create .avatar,
+#review_create .avatar > img,
+._1_sHcxv9rQdANehiviVZR4,
+._1_sHcxv9rQdANehiviVZR4 ._3pbKzT087jaL2EeQO1qsaR,
+._1_sHcxv9rQdANehiviVZR4 ._3qaudpkfSKoxlwfA-deQLX,
+/* Community/Powered */
+.player_avatar img,
+.avatarMedium img,
+.playerAvatar picture > img, .playerAvatar > img:not(.Frame):not(._2nPONxDUmK4rQXzK4Y3vG2), .friend_block_holder .friend_block_avatar img, .friend_activity .friend_block_avatar img,
+.friendBlock .playerAvatar, .commentthread_comment_avatar,
+.grouppage_friendsingroup .friendavatar,
+.avatarIcon img,
+.playerAvatar img, .friend_block_holder .friend_block_avatar img, .friend_activity .friend_block_avatar img,
+/* Mini-Profile */
+.miniprofile_playersection .playersection_avatar img,
+/* Online Fix */
+.playerAvatar, .friend_block_holder .friend_block_avatar, .friend_activity .friend_block_avatar,
+/* Notifications */
+._32niVn3s7EKoKY0-pASwDJ,
+/* Chat */
+.friend.emptyFriend .avatarHolder img.avatar,
+/* Workshop */
+.t1-DQ4KhiQ0-._4-VIszWOyjU-, .YbrTGQJwy1w-,
+/* Big Picture Mode */
+._1RyQjjzvhNOsPWZlCWFgFR {
+	border-radius: var(--corner-radius-full) !important;
+}
+.playerAvatar.profile_header_size,
+.playerAvatar.profile_header_size img,
+/* Edit Profile */
+body ._29CGQrIvjYllKwVQKe8d8R,
+body ._29CGQrIvjYllKwVQKe8d8R img {
+	border-radius: 999px !important;
+}
+
+/* Disable Round Avatars with Cosmetic Border */
+.avatarHolder:has(._2nPONxDUmK4rQXzK4Y3vG2) .avatar,
+.avatarHolder:has(.avatarFrame) .avatar,
+.playerAvatar:has(.profile_avatar_frame) img,
+.playerAvatar:has(.Frame) > img,
+.playerAvatar:has(.Frame) > img.avatar,
+.playerAvatar:has(.Frame) > img.Frame,
+.miniprofile_playersection:has(.playersection_avatar_frame) .playersection_avatar img,
+.t1-DQ4KhiQ0-._4-VIszWOyjU-:has(img.CdtBH5cDo-Q-) img.YbrTGQJwy1w- {
+	border-radius: var(--corner-radius-small) !important;
+	outline-width: 1px !important;
+}
+.playerAvatar .profile_avatar_frame > img {
+    outline: unset !important;
+}
+
+/* Fix */
+.playerAvatar .profile_avatar_frame > img {
+	border-radius: 0px !important;
+}

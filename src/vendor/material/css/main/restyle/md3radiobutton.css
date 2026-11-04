@@ -1,0 +1,24 @@
+/* Radio Button */
+/* https://m3.material.io/components/radio-button/overview */
+
+._7EGqd8bdiXJBd2fj5Hh8r ._2sQtvR60AbFF5UzDwY9hit {
+    width: 18px;
+    height: 18px;
+    border-width: 0cap;
+    border-style: solid;
+    border-color: transparent !important;
+    outline-offset: 6px;
+    outline-width: 3px;
+    outline-style: solid;
+    scale: 0.65;
+    border-color: transparent;
+    background-color: transparent;
+}
+
+body .DialogRoundCheckboxField_OuterCircle,
+body .DialogRoundCheckboxField_Control.Active .DialogRoundCheckboxField_InnerCircle {
+    box-shadow: unset;
+}
+body .DialogRoundCheckboxField_Container.Disabled {
+    opacity: unset;
+}

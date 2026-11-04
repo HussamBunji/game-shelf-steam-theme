@@ -1,0 +1,98 @@
+:root {
+    --st-color-1: 17, 17, 17, var(--st-mica-transparency, 50%) !important;
+    --st-color-2: 30, 30, 30, var(--st-mica-transparency, 50%) !important;
+    --st-color-3: 20, 20, 20, var(--st-mica-transparency, 50%) !important;
+    --st-color-4: 24, 24, 24, var(--st-mica-transparency, 50%) !important;
+    --st-color-5: 38, 41, 44, var(--st-mica-transparency, 50%) !important;
+    --st-color-6: 38, 38, 41, var(--st-mica-transparency, 50%) !important;
+    --st-background: 10, 10, 10, var(--st-mica-transparency, 50%) !important;
+}
+
+
+
+
+/*
+& Last played first game card
+*/
+._3VOR2AeYATx3qSE0I-Pm-5 ._2d1hSvdpY5L2-GN1EnUb9Z {
+    background-color: rgba(var(--st-color-1)) !important;
+    backdrop-filter: blur(4px) !important;
+}
+
+
+/*
+& Gamecard download and copies pill
+*/
+.WYgDg9NyCcMIVuMyZ_NBC ._2GRcKrPZsMSF6glMPRMZei ._8YrRmy_c6O0FCxFT8gjqo,
+.WYgDg9NyCcMIVuMyZ_NBC ._2GRcKrPZsMSF6glMPRMZei ._3zxPLsbnU5LuorR0_EPCEC {
+    background-color: rgba(var(--st-color-1)) !important;
+    backdrop-filter: blur(4px) !important;
+}
+
+
+
+
+/*
+& Collection cards
+*/
+._3IWn-2rn7x98o5fDd0rAxb ._1J1LQ0vGtpM3n0xw7XwQM6 {
+    backdrop-filter: blur(4px) !important;
+}
+
+
+
+/*
+& Game card
+*/
+._1LJqx_qFOC8199RBQO5kU8 {
+    background-color: rgba(var(--st-color-1)) !important;
+}
+
+
+
+/*
+& Loading spinner background
+*/
+#st-loading-div {
+    background-color: rgba(10,10,10) !important;
+}
+
+
+/*
+& Library Dropdown
+*/
+body.DesktopUI .PP7LM0Ow1K5qkR8WElLpt {
+    backdrop-filter: blur(4px) !important;
+}
+
+
+/*
+& Library shelf Dropdown
+*/
+.DesktopUI .DialogMenuPosition.visible:has(> ._DialogInputContainer) {
+    backdrop-filter: blur(4px) !important;
+}
+html .DesktopUI .DialogMenuPosition.visible ._DialogInputContainer ._2oAiZidGyUxL-hfupFDQ2m {
+    color: #fff !important;
+}
+
+
+
+/*
+& Library home game card hover game info
+*/
+._2_lmTz0tA4NOSle5WaO1PZ ._2sGn0cBsD44TjnUIh-lx9d {
+    backdrop-filter: blur(4px) !important;
+}
+._2_lmTz0tA4NOSle5WaO1PZ ._2sGn0cBsD44TjnUIh-lx9d ._1VGPO4xU5sgRK6DFt4t74O {
+    color: #fff !important;
+}
+
+
+
+/*
+& Millennium popup
+*/
+body .MillenniumDesktopSidebar {
+    backdrop-filter: blur(4px) !important;
+}

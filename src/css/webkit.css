@@ -1,0 +1,338 @@
+/* all four style variable sets (Millennium only injects the default one into web pages;
+   webkit.js sets html[data-rfs-style] to the user's choice) */
+@import url("webkit-styles.css");
+/* LEGACY store recolour (before the SpaceTheme base): kept for reference, switched off — every style now builds on
+   stock Steam or a community theme base, plus flair.css and the side panels */
+html[data-rfs-legacy-store] {
+/* ===================================================================
+   رف الألعاب — Store / Community pages inside the Steam client
+   Uses the same --rf-* style variables, so the store follows the chosen theme.
+   Only colours, surfaces and buttons are touched (layout stays Steam's).
+   =================================================================== */
+body.v6, body.v7, .responsive_page_frame, .responsive_page_content, .page_content_ctn,
+.home_page_body_ctn, .game_page_background, .apphub_background, .profile_page,
+.responsive_page_template_content {
+  background-color: var(--rf-bg) !important;
+}
+body.v6, body.v7 { background-image: var(--rf-bg-img) !important; background-attachment: fixed !important; }
+.home_page_body_ctn, .home_page_body_ctn.has_takeover { background-image: none !important; }
+
+/* store navigation bar */
+.store_nav_area .store_nav_bg, #store_nav_area .store_nav_bg {
+  background: var(--rf-panel-2) !important; border: var(--rf-card-border) !important;
+  border-radius: var(--rf-radius) !important; box-shadow: 0 8px 24px rgba(0,0,0,.35) !important;
+}
+.store_nav .tab > span, .store_nav .tab .pulldown > span { color: var(--rf-text) !important; }
+.store_nav .tab:hover, .store_nav .tab.focus { background: rgba(var(--rf-accent-rgb), .16) !important; }
+.store_nav .tab:hover > span, .store_nav .tab.focus > span { color: var(--rf-accent) !important; }
+.store_nav .search_area .searchbox, #store_search .searchbox {
+  background-color: rgba(0,0,0,.3) !important; border: 1px solid var(--rf-border) !important; border-radius: var(--rf-radius) !important;
+}
+#store_nav_search_term, .store_nav .searchbox input { color: var(--rf-text) !important; }
+
+/* section headings */
+.home_page_content h2, .home_section_title, .page_content h2, .game_area_description h2, .block_header h2 {
+  color: var(--rf-text) !important; font-family: var(--rf-heading-font) !important;
+  letter-spacing: var(--rf-heading-spacing) !important; text-transform: var(--rf-heading-case) !important;
+}
+.home_page_content h2::after, .home_section_title::after { background: var(--rf-accent) !important; }
+
+/* capsules / cards */
+.store_capsule, .tab_item, .home_area_spotlight, .special_tiny_cap, .search_result_row, .recommendation, .wishlist_row {
+  border-radius: var(--rf-radius) !important; transition: transform .2s, box-shadow .2s !important;
+}
+.store_capsule:hover, .home_area_spotlight:hover, .special_tiny_cap:hover {
+  transform: translateY(-3px); box-shadow: var(--rf-card-hover-shadow) !important;
+}
+.tab_item { background: var(--rf-card) !important; border: var(--rf-card-border) !important; }
+.tab_item:hover, .tab_item.focus { background: rgba(var(--rf-accent-rgb), .14) !important; }
+.tab_item_name, .search_name .title { color: var(--rf-text) !important; }
+.home_tabs_row .tab_content, .home_tab.active .tab_content { background: var(--rf-panel-2) !important; color: var(--rf-text) !important; }
+.home_tab.active .tab_content { box-shadow: inset 0 -2px 0 var(--rf-accent) !important; }
+.tab_preview_container, .home_rightcol .tab_preview { background: var(--rf-panel-2) !important; }
+.search_result_row:hover { background: rgba(var(--rf-accent-rgb), .12) !important; }
+
+/* game page */
+.game_page_background.game { background-color: var(--rf-bg) !important; }
+.apphub_AppName { font-family: var(--rf-heading-font) !important; color: var(--rf-text) !important; letter-spacing: var(--rf-heading-spacing) !important; }
+.glance_ctn, .block.responsive_apppage_details_left, .game_area_purchase_game, .game_area_purchase_game_wrapper .game_area_purchase_game,
+.rightcol .block, .game_meta_data .block, .review_box {
+  background: var(--rf-card) !important; border: var(--rf-card-border) !important; border-radius: var(--rf-radius-lg) !important;
+}
+/* review summary rows stay clean (no boxed outline around "Recent / English reviews") */
+.user_reviews .user_reviews_summary_row, .user_reviews .user_reviews_summary_row * {
+  background: transparent !important; border: 0 !important; box-shadow: none !important; outline: 0 !important;
+}
+.user_reviews .user_reviews_summary_row:hover { background: rgba(var(--rf-accent-rgb), .08) !important; border-radius: var(--rf-radius) !important; }
+.game_area_purchase_game { background: linear-gradient(135deg, var(--rf-panel-2), var(--rf-panel)) !important; }
+.game_purchase_action_bg { background: rgba(0,0,0,.35) !important; border-radius: var(--rf-radius) !important; }
+.app_tag { background: rgba(var(--rf-accent-rgb), .14) !important; color: var(--rf-accent) !important; border-radius: 99px !important; }
+.app_tag:hover { background: var(--rf-accent) !important; color: var(--rf-accent-ink) !important; }
+
+/* prices + buttons */
+.discount_pct, .discount_block .discount_pct { background: var(--rf-accent) !important; color: var(--rf-accent-ink) !important; }
+.discount_final_price { color: var(--rf-accent-2) !important; }
+.btn_green_steamui, .btn_addtocart > a, .btn_green_steamui > span {
+  background: linear-gradient(135deg, var(--rf-play-1), var(--rf-play-2)) !important; color: var(--rf-play-ink) !important;
+  border-radius: var(--rf-radius) !important; text-shadow: none !important;
+}
+.btn_blue_steamui, .btn_blue_steamui > span, .btnv6_blue_hoverfade, .btnv6_blue_hoverfade > span {
+  background: rgba(var(--rf-accent-rgb), .16) !important; color: var(--rf-accent) !important; border-radius: var(--rf-radius) !important;
+}
+.btn_blue_steamui:hover > span, .btnv6_blue_hoverfade:hover > span { background: var(--rf-accent) !important; color: var(--rf-accent-ink) !important; }
+.btnv6_white_transparent > span, .btn_grey_steamui > span { border-radius: var(--rf-radius) !important; }
+
+/* links + selection + scrollbars */
+a:hover { color: var(--rf-accent); }
+::selection { background: rgba(var(--rf-accent-rgb), .35); }
+&::-webkit-scrollbar, ::-webkit-scrollbar { width: 11px; height: 11px; }
+&::-webkit-scrollbar-track, ::-webkit-scrollbar-track { background: var(--rf-bg); }
+&::-webkit-scrollbar-thumb, ::-webkit-scrollbar-thumb { background: rgba(var(--rf-accent-rgb), .25); border-radius: 10px; border: 2px solid var(--rf-bg); }
+&::-webkit-scrollbar-thumb:hover, ::-webkit-scrollbar-thumb:hover { background: rgba(var(--rf-accent-rgb), .5); }
+
+/* elements tagged by webkit.js (classified by colour, not by class names) */
+[data-rfs="bg0"] { background-color: var(--rf-bg) !important; background-image: var(--rf-bg-img) !important; }
+[data-rfs="bg1"] { background-color: var(--rf-panel) !important; }
+[data-rfs="bg2"] { background-color: var(--rf-panel-2) !important; }
+[data-rfs="bg3"] { background-color: var(--rf-panel-3) !important; }
+[data-rfs="card"] { background: linear-gradient(150deg, var(--rf-panel-3), var(--rf-panel-2) 45%, var(--rf-panel)) !important; }
+[data-rfs="cardT"] { background: linear-gradient(to top, color-mix(in srgb, var(--rf-panel) 80%, transparent), color-mix(in srgb, var(--rf-panel-2) 55%, transparent)) !important; }
+[data-rfs="tint"] { background-color: rgba(var(--rf-accent-rgb), .12) !important; }
+[data-rfs="acc"] { background: var(--rf-accent) !important; color: var(--rf-accent-ink) !important; }
+[data-rfs="acc"] * { color: var(--rf-accent-ink) !important; }
+[data-rfs="go"] { background: linear-gradient(135deg, var(--rf-play-1), var(--rf-play-2)) !important; color: var(--rf-play-ink) !important; text-shadow: none !important; }
+[data-rfs="go"] * { color: var(--rf-play-ink) !important; }
+[data-rfs-c="acc"] { color: var(--rf-accent) !important; }
+[data-rfs-b] { border-color: rgba(var(--rf-accent-rgb), .28) !important; }
+[data-rfs-r] { border-radius: var(--rf-radius) !important; }
+[data-rfs="bg2"][data-rfs-r], [data-rfs="bg3"][data-rfs-r], [data-rfs="card"][data-rfs-r] { box-shadow: var(--rf-card-border-shadow, 0 0 0 1px rgba(var(--rf-accent-rgb), .08)) !important; }
+a[data-rfs]:hover, button[data-rfs]:hover, [role="button"][data-rfs]:hover, [data-rfs="go"]:hover, [data-rfs="acc"]:hover { filter: brightness(1.15) saturate(1.05); }
+a[data-rfs="bg2"]:hover, a[data-rfs="bg3"]:hover, [data-rfs="tint"]:hover { background-color: rgba(var(--rf-accent-rgb), .22) !important; }
+
+/* community */
+.apphub_HeaderTop, .profile_header_bg_texture, .profile_content { background-color: var(--rf-panel) !important; }
+.apphub_Card { background: var(--rf-card) !important; border: var(--rf-card-border) !important; border-radius: var(--rf-radius) !important; }
+
+/* ═════════════ usability: keep navigation reachable ═════════════ */
+/* NOTE: never scale/zoom the store — it's a PC client; normal sizes keep the carousel arrows and
+   everything else reachable (zoom was tried and made navigation worse). */
+[data-rfs-sticky] {
+  position: sticky !important; top: 0 !important; z-index: 900 !important;
+  background: color-mix(in srgb, var(--rf-panel) 88%, transparent) !important;
+  backdrop-filter: blur(12px) !important;
+  box-shadow: 0 8px 26px rgba(0,0,0,.45), 0 1px 0 rgba(var(--rf-accent-rgb), .25) !important;
+}
+/* clearer section headings + roomier lists */
+.home_page_content h2, [data-rfs="bg0"] h2 { border-inline-start: 3px solid var(--rf-accent); padding-inline-start: 10px !important; }
+.wishlist_row, [data-rfs="bg2"][data-rfs-r] { transition: transform .15s, box-shadow .2s !important; }
+[data-rfs="bg2"][data-rfs-r]:hover { box-shadow: var(--rf-card-hover-shadow) !important; }
+
+} /* end html:not(original) */
+
+html[data-rfs-style="original"] #rfs-rail { display: none !important; }
+
+/* ═════════════ side panels (webkit.js) — sit in the empty space beside the store column ═════════════
+   left  = #rfs-rail : quick links + this game's card and jump links
+   right = #rfs-data : live players, price in every region (in KWD), price-history trackers
+   Normal PC sizes; only shown when the free space really fits them. */
+#rfs-rail, #rfs-data {
+  position: fixed; z-index: 800; display: none; width: 236px; box-sizing: border-box;
+  max-height: calc(100vh - 100px); overflow-y: auto; overflow-x: hidden;
+  scrollbar-width: thin; scrollbar-color: rgba(var(--rf-accent-rgb), .35) transparent;
+  direction: rtl; font: 13px 'Segoe UI', 'Motiva Sans', Tahoma, sans-serif; color: var(--rf-text, #e6edf3);
+}
+#rfs-rail { left: 22px; }
+#rfs-data { right: 22px; width: 340px; }
+#rfs-rail.on, #rfs-data.on { display: block; }
+:is(#rfs-rail, #rfs-data, #rfs-qmenu) * { box-sizing: border-box; }
+:is(#rfs-rail, #rfs-data, #rfs-qmenu) section {
+  margin-bottom: 12px; padding: 10px; border-radius: var(--rf-radius-lg, 12px);
+  background: color-mix(in srgb, var(--rf-panel, #1b2838) 92%, transparent); border: var(--rf-card-border, 1px solid rgba(255,255,255,.08));
+  box-shadow: 0 8px 22px rgba(0,0,0,.3); backdrop-filter: blur(var(--rf-blur, 0px));
+}
+:is(#rfs-rail, #rfs-data, #rfs-qmenu) h4 {
+  display: flex; align-items: center; gap: 7px; margin: 2px 4px 8px; font: 700 11.5px var(--rf-heading-font, 'Segoe UI'), 'Segoe UI', sans-serif;
+  color: var(--rf-accent); letter-spacing: .03em;
+}
+:is(#rfs-rail, #rfs-data, #rfs-qmenu) h4 small { margin-inline-start: auto; font-weight: 500; color: var(--rf-text-dim, #9fb2c8); letter-spacing: 0; }
+
+/* left rail */
+#rfs-rail .rr-link {
+  display: flex; align-items: center; gap: 10px; width: 100%; padding: 5px 6px; border: 0; cursor: pointer; text-align: start;
+  border-radius: var(--rf-radius, 8px); background: transparent; color: var(--rf-text, #e6edf3) !important; text-decoration: none; font: inherit;
+}
+#rfs-rail .rr-link + .rr-link { margin-top: 2px; }
+#rfs-rail .rr-link:hover { background: rgba(var(--rf-accent-rgb), .12); }
+#rfs-rail .rr-link.cur { background: rgba(var(--rf-accent-rgb), .2); color: var(--rf-accent) !important; }
+#rfs-rail .rr-app { display: flex; flex-direction: column; gap: 8px; }
+#rfs-rail .rr-app img { width: 100%; border-radius: calc(var(--rf-radius, 8px) * .8); display: block; }
+#rfs-rail .rr-app b { font-size: 14px; line-height: 1.3; }
+#rfs-rail .rr-own { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--rf-play-1); }
+#rfs-rail .rr-price { display: flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 700; }
+#rfs-rail .rr-price i { font-style: normal; font-size: 12px; padding: 1px 6px; border-radius: 4px; background: var(--rf-accent); color: var(--rf-accent-ink); }
+#rfs-rail .rr-acts { display: flex; flex-direction: column; gap: 6px; }
+#rfs-rail .rr-btn {
+  display: flex; align-items: center; justify-content: center; gap: 7px; padding: 7px 10px; border-radius: var(--rf-radius, 8px);
+  cursor: pointer; text-decoration: none; font: 600 12.5px 'Segoe UI', sans-serif; color: var(--rf-text, #fff) !important;
+  background: rgba(var(--rf-accent-rgb), .1); border: 1px solid rgba(var(--rf-accent-rgb), .28);
+}
+#rfs-rail .rr-btn:hover { background: rgba(var(--rf-accent-rgb), .22); }
+#rfs-rail .rr-btn.go { border: 0; color: var(--rf-play-ink) !important; background: linear-gradient(135deg, var(--rf-play-1), var(--rf-play-2)); }
+#rfs-rail .rr-btn.on { color: var(--rf-accent) !important; border-color: var(--rf-accent); }
+
+/* right data panel */
+#rfs-data .rd-live { display: flex; align-items: center; gap: 12px; padding: 12px; }
+#rfs-data .rd-live b { display: block; font: 700 22px 'Segoe UI', sans-serif; line-height: 1.1; color: var(--rf-text); direction: ltr; text-align: right; }
+#rfs-data .rd-live small { color: var(--rf-text-dim); font-size: 12px; }
+#rfs-data .rd-dot { margin-inline-start: auto; width: 9px; height: 9px; border-radius: 50%; background: var(--rf-play-1); animation: rfs-live 2s ease-out infinite; }
+@keyframes rfs-live {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--rf-play-1) 65%, transparent); }
+  70%, 100% { box-shadow: 0 0 0 9px transparent; }
+}
+#rfs-data .rd-row { display: grid; grid-template-columns: 30px 1fr auto; column-gap: 9px; align-items: center; padding: 5px 7px; border-radius: var(--rf-radius, 8px); }
+#rfs-data .rd-row + .rd-row { margin-top: 2px; }
+#rfs-data .rd-cc {
+  grid-row: span 2; display: grid; place-items: center; height: 22px; border-radius: min(var(--rf-radius, 8px), 6px); direction: ltr;
+  font: 700 10px 'Segoe UI', sans-serif; letter-spacing: .05em; color: var(--rf-text-dim); background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.09);
+}
+#rfs-data .rd-name { font-size: 12.5px; font-weight: 600; white-space: nowrap; }
+#rfs-data .rd-kwd { font: 700 13px 'Segoe UI', sans-serif; direction: ltr; text-align: left; white-space: nowrap; }
+#rfs-data .rd-loc { font-size: 11px; color: var(--rf-text-dim); direction: ltr; text-align: right; white-space: nowrap; }
+#rfs-data .rd-diff { font: 600 10.5px 'Segoe UI', sans-serif; direction: ltr; text-align: left; color: var(--rf-text-dim); white-space: nowrap; }
+#rfs-data .rd-diff.lo { color: var(--rf-play-1); }
+#rfs-data .rd-diff.hi { color: #ff8f86; }
+#rfs-data .rd-tag { font-style: normal; font-size: 10px; font-weight: 600; padding: 0 5px; border-radius: 4px; margin-inline-start: 6px; background: rgba(var(--rf-accent-rgb), .18); color: var(--rf-accent); }
+#rfs-data .rd-row.home { background: rgba(var(--rf-accent-rgb), .09); box-shadow: inset 0 0 0 1px rgba(var(--rf-accent-rgb), .35); }
+#rfs-data .rd-row.home .rd-cc { color: var(--rf-accent-ink); background: var(--rf-accent); border-color: transparent; }
+#rfs-data .rd-row.best { background: color-mix(in srgb, var(--rf-play-1) 11%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--rf-play-1) 45%, transparent); }
+#rfs-data .rd-row.best .rd-cc { color: var(--rf-play-ink); background: var(--rf-play-1); border-color: transparent; }
+#rfs-data .rd-row.best .rd-tag { background: color-mix(in srgb, var(--rf-play-1) 22%, transparent); color: var(--rf-play-1); }
+#rfs-data .rd-row.na { opacity: .45; }
+#rfs-data .rd-note { margin: 8px 4px 0; font-size: 11px; color: var(--rf-text-dim); line-height: 1.5; }
+#rfs-data .rd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+#rfs-data .rd-fact, #rfs-data .rd-link {
+  display: flex; align-items: center; gap: 8px; min-width: 0; padding: 6px; border-radius: var(--rf-radius, 8px);
+  background: rgba(255,255,255,.035); border: 1px solid transparent; color: var(--rf-text, #e6edf3) !important; text-decoration: none;
+}
+#rfs-data .rd-fact > span, #rfs-data .rd-link > span { min-width: 0; }
+#rfs-data .rd-fact b, #rfs-data .rd-link b { display: block; font-size: 12.5px; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#rfs-data .rd-fact small, #rfs-data .rd-link small { display: block; font-size: 10.5px; color: var(--rf-text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#rfs-data .rd-link { cursor: pointer; }
+#rfs-data .rd-link:hover { background: rgba(var(--rf-accent-rgb), .12); border-color: rgba(var(--rf-accent-rgb), .3); }
+#rfs-data .rd-skel { height: 12px; margin: 9px 4px; border-radius: 6px; background: linear-gradient(90deg, rgba(255,255,255,.05), rgba(255,255,255,.13), rgba(255,255,255,.05)); background-size: 200% 100%; animation: rfs-skel 1.2s linear infinite; }
+@keyframes rfs-skel { to { background-position: -200% 0; } }
+
+/* English interface: panels read left-to-right */
+html[data-rfs-lang="en"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) { direction: ltr; }
+html[data-rfs-lang="en"] #rfs-data :is(.rd-kwd, .rd-diff) { text-align: right; }
+html[data-rfs-lang="en"] #rfs-data .rd-loc,
+html[data-rfs-lang="en"] #rfs-data .rd-live b,
+html[data-rfs-lang="en"] #rfs-data :is(.rd-fact, .rd-link) b { text-align: left; }
+
+/* community themes force their own font on "*" (no Arabic glyphs) — our panels keep a readable one */
+html:is([data-rfs-style="space"], [data-rfs-style="material"]) :is(#rfs-rail, #rfs-data, #rfs-qmenu),
+html:is([data-rfs-style="space"], [data-rfs-style="material"]) :is(#rfs-rail, #rfs-data, #rfs-qmenu) * { font-family: 'Segoe UI', 'Motiva Sans', Tahoma, Arial, sans-serif !important; }
+
+/* ═════════════ the side panels wear each style's own clothes ═════════════
+   (the panels sit right beside the store column — webkit.js docks them) */
+/* SpaceTheme family (SpaceTheme + Classic / Glass / Neon built on it): flat cards, small caps labels */
+html:is([data-rfs-style="space"], [data-rfs-style="classic"], [data-rfs-style="glass"], [data-rfs-style="neon"]) :is(#rfs-rail, #rfs-data, #rfs-qmenu) section {
+  background: rgb(var(--st-color-3, 20, 20, 20)); border: 1px solid rgb(var(--st-color-6, 38, 38, 41));
+  border-radius: calc(var(--st-border-radius, 8px) + 4px); box-shadow: none; backdrop-filter: none;
+}
+html:is([data-rfs-style="space"], [data-rfs-style="classic"], [data-rfs-style="glass"], [data-rfs-style="neon"]) :is(#rfs-rail, #rfs-data, #rfs-qmenu) h4 {
+  font-size: 11px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: rgb(var(--st-accent-2, 135, 140, 255));
+}
+html:is([data-rfs-style="space"], [data-rfs-style="classic"], [data-rfs-style="glass"], [data-rfs-style="neon"]) #rfs-data :is(.rd-fact, .rd-link),
+html:is([data-rfs-style="space"], [data-rfs-style="classic"], [data-rfs-style="glass"], [data-rfs-style="neon"]) #rfs-rail .rr-btn:not(.go) {
+  background: rgb(var(--st-color-2, 30, 30, 30)); border: 1px solid transparent; border-radius: var(--st-border-radius, 8px);
+}
+html:is([data-rfs-style="space"], [data-rfs-style="classic"], [data-rfs-style="glass"], [data-rfs-style="neon"]) #rfs-data .rd-live { flex-direction: row-reverse; justify-content: center; text-align: center; }
+html:is([data-rfs-style="space"], [data-rfs-style="classic"], [data-rfs-style="glass"], [data-rfs-style="neon"]) #rfs-data .rd-live b { font-size: 26px; text-align: center; }
+html:is([data-rfs-style="space"], [data-rfs-style="classic"], [data-rfs-style="glass"], [data-rfs-style="neon"]) #rfs-data .rd-live small { display: block; text-align: center; text-transform: uppercase; letter-spacing: .06em; font-size: 10.5px; }
+
+/* Classic: walnut cards with a brass rule and an engraved brass label */
+html[data-rfs-style="classic"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) section {
+  background: linear-gradient(180deg, rgba(255, 196, 140, .05), transparent 40%), rgb(var(--st-color-3));
+  border-color: rgba(255, 170, 95, .18); box-shadow: inset 0 1px 0 rgba(255, 210, 160, .08), 0 6px 18px rgba(0, 0, 0, .45);
+}
+html[data-rfs-style="classic"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) h4 {
+  display: inline-flex; padding: 3px 10px; border-radius: 3px; color: #3a2410; letter-spacing: .05em;
+  background: linear-gradient(180deg, #f2d59e, #c69c58); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .5), 0 1px 2px rgba(0, 0, 0, .5);
+}
+html[data-rfs-style="classic"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) h4 svg.rf-ic { stroke: #3a2410; filter: none; }
+
+/* Glass: frosted panes with a light rim */
+html[data-rfs-style="glass"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) section {
+  background: linear-gradient(150deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .025)); border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 18px; backdrop-filter: blur(16px) saturate(1.2); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .12), 0 10px 30px rgba(0, 0, 0, .35);
+}
+html[data-rfs-style="glass"] #rfs-data :is(.rd-fact, .rd-link), html[data-rfs-style="glass"] #rfs-rail .rr-btn:not(.go) { background: rgba(255, 255, 255, .06); border-radius: 12px; }
+
+/* Neon: hairline cyan frames, glowing labels, monospace digits */
+html[data-rfs-style="neon"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) section {
+  background: rgba(8, 6, 20, .92); border: 1px solid rgba(62, 240, 255, .35); border-radius: 3px;
+  box-shadow: 0 0 14px rgba(62, 240, 255, .12), inset 0 0 18px rgba(255, 62, 165, .05);
+}
+html[data-rfs-style="neon"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) h4 { color: #3ef0ff; letter-spacing: .14em; text-shadow: 0 0 8px rgba(62, 240, 255, .7); }
+html[data-rfs-style="neon"] #rfs-data :is(.rd-live b, .rd-kwd, .rd-diff, .rd-fact b) { font-family: 'Cascadia Mono', Consolas, monospace !important; }
+html[data-rfs-style="neon"] #rfs-data .rd-live b { color: #3ef0ff; text-shadow: 0 0 10px rgba(62, 240, 255, .6); }
+html[data-rfs-style="neon"] #rfs-data :is(.rd-fact, .rd-link), html[data-rfs-style="neon"] #rfs-rail .rr-btn:not(.go) { background: transparent; border: 1px solid rgba(62, 240, 255, .18); border-radius: 2px; }
+
+/* Material You: tonal surfaces, big round corners, pill links */
+html[data-rfs-style="material"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) section {
+  background: rgb(29, 32, 38); border: 0; border-radius: 24px; box-shadow: none; backdrop-filter: none; padding: 14px;
+}
+html[data-rfs-style="material"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) h4 { font-size: 13px; font-weight: 600; letter-spacing: 0; color: rgb(170, 199, 255); }
+html[data-rfs-style="material"] #rfs-data :is(.rd-fact, .rd-link) { background: rgb(40, 43, 50); border-radius: 16px; }
+html[data-rfs-style="material"] #rfs-rail .rr-btn { border-radius: 99px; border: 0; background: rgb(40, 71, 119); color: rgb(214, 227, 255) !important; }
+html[data-rfs-style="material"] #rfs-rail .rr-btn.go { background: rgb(170, 199, 255); color: rgb(10, 48, 95) !important; }
+html[data-rfs-style="material"] :is(#rfs-rail .rr-link, #rfs-data .rd-row) { border-radius: 99px; }
+
+/* Steam Original: Valve's own right-column blocks */
+html[data-rfs-style="original"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) section {
+  background: rgba(0, 0, 0, .22); border: 0; border-radius: 2px; box-shadow: none; backdrop-filter: none;
+}
+html[data-rfs-style="original"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) h4 { font-size: 12px; font-weight: 400; letter-spacing: .03em; text-transform: uppercase; color: #fff; }
+html[data-rfs-style="original"] #rfs-data :is(.rd-fact, .rd-link) { background: rgba(103, 193, 245, .08); border-radius: 2px; }
+
+html[data-rfs-style="classic"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) h4 small { color: #6b4a22; opacity: 1; margin-inline-start: 8px; text-transform: none; letter-spacing: 0; }
+
+/* ═════════════ Quick links (header button + menu; webkit.js placeQuick) ═════════════ */
+#rfs-qbtn {
+  position: fixed; z-index: 960; display: none; align-items: center; gap: 6px; height: 30px; padding: 0 12px; cursor: pointer;
+  font: 600 12.5px 'Segoe UI', 'Motiva Sans', Tahoma, sans-serif !important; color: var(--rf-text, #e6edf3);
+  background: rgba(var(--rf-accent-rgb), .12); border: 1px solid rgba(var(--rf-accent-rgb), .3); border-radius: var(--rf-radius, 8px);
+}
+#rfs-qbtn.on { display: inline-flex; }
+#rfs-qbtn:hover { background: rgba(var(--rf-accent-rgb), .22); }
+#rfs-qbtn svg.rf-ic { margin: 0; }
+#rfs-qmenu {
+  position: fixed; z-index: 961; display: none; width: 460px; grid-template-columns: 1fr 1fr; gap: 10px;
+  font: 13px 'Segoe UI', 'Motiva Sans', Tahoma, sans-serif; color: var(--rf-text, #e6edf3);
+  filter: drop-shadow(0 18px 40px rgba(0, 0, 0, .55));
+}
+#rfs-qmenu.on { display: grid; }
+#rfs-qmenu section { margin: 0; }
+#rfs-qmenu .ql {
+  display: flex; align-items: center; gap: 10px; padding: 5px 6px; border-radius: var(--rf-radius, 8px);
+  color: var(--rf-text, #e6edf3) !important; text-decoration: none;
+}
+#rfs-qmenu .ql + .ql { margin-top: 2px; }
+#rfs-qmenu .ql:hover { background: rgba(var(--rf-accent-rgb), .12); }
+#rfs-qmenu .ql.cur { background: rgba(var(--rf-accent-rgb), .2); color: var(--rf-accent) !important; }
+/* the button follows each style */
+html:is([data-rfs-style="space"], [data-rfs-style="glass"], [data-rfs-style="neon"]) #rfs-qbtn { background: rgb(var(--st-color-2)); border-color: rgb(var(--st-color-6)); border-radius: var(--st-border-radius, 8px); }
+html[data-rfs-style="classic"] #rfs-qbtn { color: #3a2410; border: 0; border-radius: 4px; background: linear-gradient(180deg, #f2d59e, #c69c58); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .5), 0 1px 3px rgba(0, 0, 0, .5); }
+html[data-rfs-style="classic"] #rfs-qbtn svg.rf-ic { stroke: #3a2410; }
+html[data-rfs-style="neon"] #rfs-qbtn { background: transparent; border-color: rgba(62, 240, 255, .5); box-shadow: 0 0 10px rgba(62, 240, 255, .25); }
+html[data-rfs-style="glass"] #rfs-qbtn { background: rgba(255, 255, 255, .08); border-color: rgba(255, 255, 255, .16); backdrop-filter: blur(10px); border-radius: 12px; }
+html[data-rfs-style="material"] #rfs-qbtn { border: 0; border-radius: 99px; background: rgb(40, 71, 119); color: rgb(214, 227, 255); }
+html[data-rfs-style="original"] #rfs-qbtn { border-radius: 2px; background: rgba(103, 193, 245, .12); border-color: transparent; }
+
+/* the Quick links menu must sit above the store's own carousels and be fully opaque */
+#rfs-qbtn { z-index: 2147483000 !important; }
+#rfs-qmenu { z-index: 2147483001 !important; }
+#rfs-qmenu section { background: var(--rf-panel, #16202d) !important; backdrop-filter: none !important; }
+html:is([data-rfs-style="space"], [data-rfs-style="classic"], [data-rfs-style="glass"], [data-rfs-style="neon"]) #rfs-qmenu section { background: rgb(var(--st-color-3)) !important; }
+html[data-rfs-style="material"] #rfs-qmenu section { background: rgb(29, 32, 38) !important; }

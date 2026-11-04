@@ -1,0 +1,32 @@
+/* ===================================================================
+   رف الألعاب — per-style touches on top of the SpaceTheme layout base
+   (Classic / Glass / Neon load SpaceTheme's layout with their own palette; see src/styles/*.css).
+   html[data-rfs-style] is set by skin.js in Steam windows and by webkit.js on store/community pages.
+   =================================================================== */
+
+/* title bar (SpaceTheme family: SpaceTheme + Classic / Glass / Neon) */
+/* the word mark just says "Steam" */
+html:is([data-rfs-style="space"], [data-rfs-style="classic"], [data-rfs-style="glass"], [data-rfs-style="neon"]) .bSKGlAJG2UVWTsntEJY2v::after {
+  content: "Steam" !important; color: rgb(var(--st-accent-2)) !important; font-weight: 700 !important;
+}
+html:is([data-rfs-style="space"], [data-rfs-style="classic"], [data-rfs-style="glass"], [data-rfs-style="neon"]) ._2UyOBeiSdBayaFdRa39N2O:nth-of-type(1)::after {
+  content: "" !important;
+}
+/* View · Friends · Games · Help always visible (SpaceTheme only shows them on hover) */
+html:is([data-rfs-style="space"], [data-rfs-style="classic"], [data-rfs-style="glass"], [data-rfs-style="neon"]) ._1Ky59qmywxOUtNcI1cgmkX ._2Lu3d-5qLmW4i19ysTt2jT {
+  color: #8b929a !important;
+}
+html:is([data-rfs-style="space"], [data-rfs-style="classic"], [data-rfs-style="glass"], [data-rfs-style="neon"]) ._1Ky59qmywxOUtNcI1cgmkX ._2Lu3d-5qLmW4i19ysTt2jT:hover {
+  color: #fff !important;
+}
+
+/* ── Classic: warm walnut, brass highlights ── */
+html[data-rfs-style="classic"] ::selection { background: rgba(255, 170, 95, .35); }
+html[data-rfs-style="classic"] .bSKGlAJG2UVWTsntEJY2v::after { text-shadow: 0 1px 0 rgba(0, 0, 0, .6); }
+
+/* ── Neon: glowing accents, crisp corners ── */
+html[data-rfs-style="neon"] ::selection { background: rgba(255, 62, 165, .4); }
+html[data-rfs-style="neon"] :is(.bSKGlAJG2UVWTsntEJY2v, ._2UyOBeiSdBayaFdRa39N2O)::after { text-shadow: 0 0 8px rgba(62, 240, 255, .8); }
+
+/* ── Glass: soft sky-blue glow ── */
+html[data-rfs-style="glass"] ::selection { background: rgba(102, 192, 244, .35); }

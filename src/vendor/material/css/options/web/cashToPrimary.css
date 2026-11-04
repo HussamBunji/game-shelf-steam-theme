@@ -1,0 +1,44 @@
+html body .discount_pct,
+html body .discount_block .discount_pct,
+html body .cnkoFkzVCby40gJ0jGGS4,
+html body .XMxkarW3W_NNebjelsgAY,
+html body ._2lQxRlo1DQ1PN08TYTil2L,
+html body .bWcsWKN3D84-,
+html body .zQsf8--y3pA-,
+html body.r0DFA3TwTH8- .PE-3oq-yIvg- ._6QzykeEsckc- .rsMD9WnTopA-,
+html body .rsMD9WnTopA-,
+html body ._1gsW0WuP7ZclL1_ScZlsvo ._2wlqkq-0fkggDE-Kll8Rwd,
+html body ._1kSDZm0Cg9anUkTfWFtwdN {
+    color: var(--md-sys-color-on-primary-container);
+    background: var(--md-sys-color-primary-container);
+}
+html body .game_purchase_action_bg .discount_block.no_discount .bundle_base_discount {
+    color: var(--md-sys-color-on-primary-container);
+    background: var(--md-sys-color-primary-container);
+    border-right: none;
+}
+html body .game_purchase_action_bg .discount_block.game_purchase_discount:not(.no_discount) .bundle_base_discount {
+    color: var(--md-sys-color-on-primary-container);
+}
+html body .game_purchase_action_bg .discount_block.game_purchase_discount:not(.no_discount) .bundle_base_discount::before {
+    box-shadow: none;
+}
+html body .game_purchase_action_bg .discount_block.game_purchase_discount .discount_prices .discount_final_price {
+    color: var(--md-sys-color-primary);
+}
+html body .discount_final_price,
+html body ._1g0B-RjwkUV0_MDURgy3Bi ._3j4dI1yA7cRfCvK8h406OB,
+html body .steamdb_prices_top b,
+html body #package_savings_bar,
+html body .package_totals_row.highlight,
+html body .package_totals_row.highlight .price,
+html body .vP7JKd3U1Tk- ._90cZ1dqsBUk-,
+html body .payment_method_review_method_label {
+    color: var(--md-sys-color-primary);
+}
+html body .payment_method_review_row .edit_method {
+    opacity: 0.7;
+}
+html body .payment_method_review_row .edit_method:has(a:hover) {
+    opacity: 1;
+}

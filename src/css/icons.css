@@ -1,0 +1,46 @@
+/* ===================================================================
+   رف الألعاب — theme icons (library window + store/community pages)
+   One SVG set (shelf.js / webkit.js), dressed differently by every theme through the
+   --rf-ic-* / --rf-ict-* variables in src/styles/*.css:
+     classic = brass medallions · neon = glowing tubes · glass = frosted tiles · original = flat Steam-blue squares
+   No emoji anywhere.
+   =================================================================== */
+#rfs-ic-grad .a { stop-color: var(--rf-ic-1, var(--rf-accent, #66c0f4)); }
+#rfs-ic-grad .b { stop-color: var(--rf-ic-2, var(--rf-accent-2, #a28cff)); }
+#rfs-ict-grad .a { stop-color: var(--rf-ict-1, var(--rf-ic-1, #66c0f4)); }
+#rfs-ict-grad .b { stop-color: var(--rf-ict-2, var(--rf-ic-2, #a28cff)); }
+
+/* inline icon: gradient stroke + soft duotone fill */
+svg.rf-ic {
+  width: 1.2em; height: 1.2em; flex: none; display: inline-block; vertical-align: -.24em; overflow: visible;
+  fill: none; stroke: url(#rfs-ic-grad) var(--rf-accent, #66c0f4); stroke-width: var(--rf-ic-sw, 1.8);
+  filter: var(--rf-ic-glow, none); pointer-events: none;
+}
+svg.rf-ic :is(path, circle, rect, ellipse) { fill: none; }
+/* breathing room between an icon and the text after it (flex rows with their own gap reset this) */
+svg.rf-ic { margin-inline-end: .42em; }
+svg.rf-ic.dd { margin-inline-end: 0; margin-inline-start: .3em; }
+:is(.tb-news, .tb-snd, .gl-quick, .cf-nav, .close, .tb-ico, .rf-ict) > svg.rf-ic,
+:is(#rfs-rail, #rfs-data) svg.rf-ic { margin: 0; }
+svg.rf-ic :is(.f, rect, ellipse, circle:not(.s)) { fill: var(--rf-ic-fill, rgba(var(--rf-accent-rgb, 102, 192, 244), .16)); }
+svg.rf-ic .s { fill: url(#rfs-ic-grad) var(--rf-accent, #66c0f4); stroke: none; }
+
+/* on solid buttons (play / buy / theme button) the icon takes the button's ink colour */
+:is(.tb-theme, .go, .play, .gl-quick, .tp-cur, .rf-mono) > svg.rf-ic,
+:is(.tb-theme, .go, .play, .gl-quick, .tp-cur, .rf-mono) > svg.rf-ic * { stroke: currentColor; filter: none; }
+:is(.tb-theme, .go, .play, .gl-quick, .tp-cur, .rf-mono) > svg.rf-ic :is(.f, rect, ellipse, circle:not(.s)) { fill: currentColor; fill-opacity: .2; }
+:is(.tb-theme, .go, .play, .gl-quick, .tp-cur, .rf-mono) > svg.rf-ic .s { fill: currentColor; stroke: none; }
+
+/* icon tile: list rows, menus, data cards */
+.rf-ict {
+  display: inline-grid; place-items: center; flex: none; box-sizing: border-box; width: 26px; height: 26px;
+  border-radius: var(--rf-ict-radius, 8px); background: var(--rf-ict-bg, rgba(255, 255, 255, .08));
+  border: var(--rf-ict-border, 1px solid rgba(255, 255, 255, .12)); box-shadow: var(--rf-ict-shadow, none);
+  transition: box-shadow .16s ease, background .16s ease;
+}
+.rf-ict > svg.rf-ic { width: 16px; height: 16px; vertical-align: 0; stroke: url(#rfs-ict-grad) var(--rf-accent, #66c0f4); filter: var(--rf-ict-glow, none); }
+.rf-ict > svg.rf-ic :is(.f, rect, ellipse, circle:not(.s)) { fill: var(--rf-ict-fill, var(--rf-ic-fill, rgba(255, 255, 255, .12))); }
+.rf-ict > svg.rf-ic .s { fill: url(#rfs-ict-grad) var(--rf-accent, #66c0f4); }
+:is(:hover, .sel, .cur, .on) > .rf-ict { box-shadow: var(--rf-ict-shadow-hi, var(--rf-ict-shadow, none)); }
+.rf-ict.lg { width: 38px; height: 38px; }
+.rf-ict.lg > svg.rf-ic { width: 21px; height: 21px; }

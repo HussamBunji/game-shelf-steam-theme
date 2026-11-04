@@ -1,0 +1,59 @@
+/* ═══ Theme 6 — Material You (Material Theme for Steam) ═══
+   Steam itself is styled by Material Theme's own files (by kuska1, MIT — src/vendor/material, loaded by
+   skin.js / webkit.js exactly as its skin.json maps them; defaults: Dark + Blue). This file only sets the
+   variables our extras use so they match Material 3: tonal surfaces, pill buttons, big radii. */
+:root {
+  --rf-vendor: material;
+  --rf-vendor-skip: none;
+  --rf-layout: original;
+  --rf-style-id: material;
+
+  /* icons */
+  --rf-ic-1: rgb(214, 227, 255);
+  --rf-ic-2: rgb(170, 199, 255);
+  --rf-ic-fill: rgba(170, 199, 255, .16);
+  --rf-ic-sw: 1.8;
+  --rf-ic-glow: none;
+  --rf-ict-bg: rgb(40, 71, 119);
+  --rf-ict-border: 1px solid transparent;
+  --rf-ict-radius: 12px;
+  --rf-ict-shadow: none;
+  --rf-ict-shadow-hi: 0 0 0 2px rgba(170, 199, 255, .45);
+  --rf-ict-1: rgb(214, 227, 255);
+  --rf-ict-2: rgb(214, 227, 255);
+  --rf-ict-fill: rgba(170, 199, 255, .16);
+  --rf-ict-glow: none;
+
+  --rf-bg: rgb(17, 19, 24);
+  --rf-bg-img: none;
+  --rf-panel: rgb(29, 32, 38);
+  --rf-panel-2: rgb(40, 43, 50);
+  --rf-panel-3: rgb(51, 53, 60);
+  --rf-border: rgb(68, 71, 78);
+  --rf-text: rgb(226, 226, 233);
+  --rf-text-dim: rgb(196, 198, 208);
+  --rf-accent: rgb(170, 199, 255);
+  --rf-accent-2: rgb(214, 227, 255);
+  --rf-accent-rgb: 170, 199, 255;
+  --rf-accent-ink: rgb(10, 48, 95);
+  --rf-play-1: rgb(170, 199, 255);
+  --rf-play-2: rgb(170, 199, 255);
+  --rf-play-ink: rgb(10, 48, 95);
+  --rf-glow: 170, 199, 255;
+  --rf-radius: 12px;
+  --rf-radius-lg: 20px;
+  --rf-topbar: rgb(29, 32, 38);
+  --rf-topbar-line: rgb(68, 71, 78);
+  --rf-sidebar: rgb(29, 32, 38);
+  --rf-card: rgb(29, 32, 38);
+  --rf-card-border: 1px solid rgb(68, 71, 78);
+  --rf-card-hover-shadow: none;
+  --rf-heading-font: 'Open Sans', 'Segoe UI', sans-serif;
+  --rf-heading-case: none;
+  --rf-heading-spacing: 0;
+  --rf-blur: 0px;
+  --rf-led-rgb: 170, 199, 255;
+  --rf-plate-1: rgb(170, 199, 255);
+  --rf-plate-2: rgb(214, 227, 255);
+  --rf-plate-ink: rgb(10, 48, 95);
+}

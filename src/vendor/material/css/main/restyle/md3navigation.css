@@ -1,0 +1,36 @@
+/* Navigation */
+/* https://m3.material.io/components/navigation-bar/overview */
+/* https://m3.material.io/components/navigation-drawer/overview */
+/* https://m3.material.io/components/navigation-rail/overview */
+
+/* Drawer */
+._18QCu-7MTzd51UpVbYysDy {
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+/* Buttons */
+._1-vlriAtKYDViAEunue4VO {
+    border-radius: var(--corner-radius-full);
+    padding: 10px 8px 10px 16px;
+}
+/* ._1-vlriAtKYDViAEunue4VO:hover {
+    color: unset;
+} */
+
+
+/* Rail Expanded */
+.MillenniumDesktopSidebar {
+    border-top-left-radius: var(--corner-radius-large);
+    border-bottom-left-radius: var(--corner-radius-large);
+}
+._34nl5vUoFCDYYnmHNL7axB {
+    box-shadow: unset;
+    background: transparent;
+}
+
+/* Community */
+body ._2kqKZFxhF8XvzaoAekjV7m ._33Kl16vpskBOQpwINGA8ah ._3rtIpqfC_9VWz4DRSTPach {
+    border-radius: var(--corner-radius-full);
+    padding: 4px 20px 4px 12px;
+}

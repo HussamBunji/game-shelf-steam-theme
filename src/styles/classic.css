@@ -1,0 +1,84 @@
+/* ═══ Theme 1 — الرف الكلاسيكي (Classic Shelf) ═══
+   Home: 3D wooden bookcase.  Chrome: warm walnut, soft rounded, amber light. */
+:root {
+  /* layout base: SpaceTheme (MIT, src/vendor/space) — its sidebar, search, centred store/library;
+     this style supplies the colours below, its own font, home design, icons and flair.css touches */
+  --rf-vendor: space;
+  --rf-vendor-skip: options/fonts/;
+  --rf-style-id: classic;
+
+  /* icons: brass medallions, warm amber strokes */
+  --rf-ic-1: #ffd59a;
+  --rf-ic-2: #ff8a4c;
+  --rf-ic-fill: rgba(255, 179, 107, .16);
+  --rf-ic-sw: 1.8;
+  --rf-ic-glow: none;
+  --rf-ict-bg: radial-gradient(circle at 34% 28%, #fdeac2 0%, #e2b874 42%, #a9783a 100%);
+  --rf-ict-border: 1px solid rgba(70, 40, 12, .75);
+  --rf-ict-radius: 50%;
+  --rf-ict-shadow: inset 0 1px 0 rgba(255, 255, 255, .6), inset 0 -2px 3px rgba(90, 52, 14, .5), 0 2px 5px rgba(0, 0, 0, .55);
+  --rf-ict-shadow-hi: inset 0 1px 0 rgba(255, 255, 255, .7), inset 0 -2px 3px rgba(90, 52, 14, .5), 0 0 0 2px rgba(255, 179, 107, .4), 0 2px 8px rgba(0, 0, 0, .6);
+  --rf-ict-1: #4b2a0b;
+  --rf-ict-2: #2a1300;
+  --rf-ict-fill: rgba(60, 30, 5, .2);
+  --rf-ict-glow: none;
+
+  --rf-layout: shelf;
+  --rf-bg: #110c08;
+  --rf-bg-img: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(255, 170, 90, .10), transparent 70%);
+  --rf-panel: #1b130c;
+  --rf-panel-2: #261a11;
+  --rf-panel-3: #342417;
+  --rf-border: rgba(255, 196, 140, .12);
+  --rf-text: #f4ece3;
+  --rf-text-dim: #bfae9c;
+  --rf-accent: #ffb36b;
+  --rf-accent-2: #ff8a4c;
+  --rf-accent-rgb: 255, 179, 107;
+  --rf-accent-ink: #2a1300;
+  --rf-play-1: #7ee08f;
+  --rf-play-2: #3aa85a;
+  --rf-play-ink: #072a12;
+  --rf-glow: 255, 170, 90;
+
+  /* chrome shape */
+  --rf-radius: 8px;
+  --rf-radius-lg: 12px;
+  --rf-topbar: linear-gradient(#2a1c12, #1a110b);
+  --rf-topbar-line: rgba(255, 179, 107, .35);
+  --rf-sidebar: linear-gradient(90deg, #160f0a, #1b130c);
+  --rf-card: rgba(255, 230, 200, .045);
+  --rf-card-border: 1px solid rgba(255, 196, 140, .10);
+  --rf-card-hover-shadow: 0 10px 28px rgba(0, 0, 0, .45), 0 0 0 1px rgba(255, 179, 107, .35);
+  --rf-heading-font: 'Segoe UI', 'Motiva Sans', sans-serif;
+  --rf-heading-case: none;
+  --rf-heading-spacing: .01em;
+  --rf-blur: 0px;
+
+  /* shelf materials */
+  --rf-wood: #5a3920;
+  --rf-wood-top: #4a2f1b;
+  --rf-wood-back: #2b1a0f;
+  --rf-wood-side: #3c2615;
+  --rf-wood-under: #3a2414;
+  --rf-wood-plinth: #3b2513;
+  --rf-led-rgb: 255, 196, 130;
+  --rf-plate-1: #f2d59e;
+  --rf-plate-2: #c69c58;
+  --rf-plate-ink: #3a2410;
+}
+
+/* SpaceTheme's colour slots, filled with this style's palette (walnut browns, amber accent).
+   :root:root outranks SpaceTheme's own root.css, which loads after this file. */
+:root:root {
+  --st-accent-1: 255, 170, 95;
+  --st-accent-2: 255, 196, 140;
+  --st-background: 17, 12, 8;
+  --st-color-1: 27, 19, 12;
+  --st-color-2: 43, 30, 19;
+  --st-color-3: 31, 22, 14;
+  --st-color-4: 36, 26, 17;
+  --st-color-5: 64, 45, 28;
+  --st-color-6: 56, 40, 25;
+  --st-border-radius: 6px;
+}

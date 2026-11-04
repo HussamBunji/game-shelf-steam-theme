@@ -1,0 +1,177 @@
+@import url("restyle/recolor.css");
+@import url("restyle/md3bars.css");
+@import url("restyle/md3buttons.css");
+@import url("restyle/md3cards.css");
+@import url("restyle/md3checkbox.css");
+@import url("restyle/md3chips.css");
+@import url("restyle/md3dialogs.css");
+/* @import url("restyle/md3menu.css"); */
+@import url("restyle/md3navigation.css");
+@import url("restyle/md3progressbar.css");
+@import url("restyle/md3radiobutton.css");
+@import url("restyle/md3search.css");
+@import url("restyle/md3slider.css");
+@import url("restyle/md3switch.css");
+@import url("restyle/md3textfields.css");
+@import url("restyle/md3tooltips.css");
+@import url("restyle/md3typography.css");
+
+:root {
+
+    --ON: initial;
+    --OFF: ;
+
+    /* --- LAYERS --- */
+
+    --layer-action-hover: 10%;
+    --layer-action-active: 20%;
+    --layer-action-disabled: 15%;
+
+    /* --- CORNERS --- */
+
+    --corner-radius-full: 50px;
+    --corner-radius-extra-large: 28px;
+    --corner-radius-large: 16px;
+    --corner-radius-medium: 12px;
+    --corner-radius-small: 8px;
+    --corner-radius-extra-small: 4px;
+    --corner-radius-none: 0px;
+
+    /* --- ANIMATIONS --- */
+
+    --animation-basic-slow: all .2s ease-in-out;
+    --animation-basic-medium: all .15s ease-in-out;
+    --animation-basic-fast: all .1s ease-in-out;
+
+    --animation-expressive-fast-spatial: cubic-bezier(0.42, 1.67, 0.21, 0.90); /* 350ms */
+    --animation-expressive-default-spatial: cubic-bezier(0.38, 1.21, 0.22, 1.00); /* 500ms */
+    --animation-expressive-slow-spatial: cubic-bezier(0.39, 1.29, 0.35, 0.98); /* 650ms */
+
+    --animation-expressive-fast-effects: cubic-bezier(0.31, 0.94, 0.34, 1.00); /* 150ms */
+    --animation-expressive-default-effects: cubic-bezier(0.34, 0.80, 0.34, 1.00); /* 200ms */
+    --animation-expressive-slow-effects: cubic-bezier(0.34, 0.88, 0.34, 1.00); /* 300ms */
+
+    --animation-standart-fast-spatial: cubic-bezier(0.27, 1.06, 0.18, 1.00); /* 350ms */
+    --animation-standart-default-spatial: cubic-bezier(0.27, 1.06, 0.18, 1.00); /* 500ms */
+    --animation-standart-slow-spatial: cubic-bezier(0.27, 1.06, 0.18, 1.00); /* 750ms */
+
+    --animation-standart-fast-effects: cubic-bezier(0.31, 0.94, 0.34, 1.00); /* 150ms */
+    --animation-standart-default-effects: cubic-bezier(0.34, 0.80, 0.34, 1.00); /* 200ms */
+    --animation-standart-slow-effects: cubic-bezier(0.34, 0.88, 0.34, 1.00); /* 300ms */
+
+    --animation-easing-emphasized: var(--animation-easing-standart);
+    --animation-easing-emphasized-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1.0);
+    --animation-easing-emphasized-accelerate: cubic-bezier(0.3, 0.0, 0.8, 0.15);
+
+    --animation-easing-standart: cubic-bezier(0.2, 0.0, 0, 1.0);
+    --animation-easing-standart-decelerate: cubic-bezier(0, 0, 0, 1);
+    --animation-easing-standart-accelerate: cubic-bezier(0.3, 0, 1, 1);
+
+    --animation-easing-linear: linear;
+
+    --animation-duration-short1: 50ms;
+    --animation-duration-short2: 100ms;
+    --animation-duration-short3: 150ms;
+    --animation-duration-short4: 200ms;
+
+    --animation-duration-medium1: 250ms;
+    --animation-duration-medium2: 300ms;
+    --animation-duration-medium3: 350ms;
+    --animation-duration-medium4: 400ms;
+
+    --animation-duration-long1: 450ms;
+    --animation-duration-long2: 500ms;
+    --animation-duration-long3: 550ms;
+    --animation-duration-long4: 600ms;
+
+    --animation-duration-extra-long1: 700ms;
+    --animation-duration-extra-long2: 800ms;
+    --animation-duration-extra-long3: 900ms;
+    --animation-duration-extra-long4: 1000ms;
+
+    /* --- FONTS --- */
+
+    --font-display-large-size: 57px;
+    --font-display-large-weight: 400;
+
+    --font-display-medium-size: 52px;
+    --font-display-medium-weight: 400;
+
+    --font-display-small-size: 44px;
+    --font-display-small-weight: 400;
+
+
+    --font-headline-large-size: 32px;
+    --font-headline-large-weight: 400;
+
+    --font-headline-medium-size: 28px;
+    --font-headline-medium-weight: 400;
+
+    --font-headline-small-size: 24px;
+    --font-headline-small-weight: 400;
+
+
+    --font-title-large-size: 22px;
+    --font-title-large-weight: 400;
+
+    --font-title-medium-size: 16px;
+    --font-title-medium-weight: 500;
+
+    --font-title-small-size: 14px;
+    --font-title-small-weight: 500;
+
+
+    --font-body-large-size: 16px;
+    --font-body-large-weight: 400;
+
+    --font-body-medium-size: 14px;
+    --font-body-medium-weight: 400;
+
+    --font-body-small-size: 12px;
+    --font-body-small-weight: 400;
+
+
+    --font-label-large-size: 14px;
+    --font-label-large-weight: 500;
+
+    --font-label-medium-size: 12px;
+    --font-label-medium-weight: 500;
+
+    --font-label-small-size: 11px;
+    --font-label-small-weight: 400;
+
+    /* --- ELEVATED --- */
+
+    --elevated-shadow:  0px 2px 5px 1px rgba(0,0,0,0.25);
+    --elevated-shadow-hover:  0px 5px 5px 3px rgba(0,0,0,0.50);
+
+    /* --- MISC --- */
+
+    --indicator-offline: #898989;
+    --indicator-online: #57cbde; /* #76B4FF */
+    --indicator-away: #4C91AC;
+    --indicator-ingame: #8CD61D;
+    --indicator-ingame-away: #62953B;
+}
+
+/* .git Pre-Commit Hook Data */
+:root {
+  --hook-last-commit-hash: "4ac3db4+";
+  --hook-current-commit-date: "31.10.2026 16:05";
+}
+
+/* Scrollbar */
+*::-webkit-scrollbar {
+    width: 14px !important;
+}
+*::-webkit-scrollbar-track {
+    border-radius: 8px !important;
+}
+*::-webkit-scrollbar-thumb {
+    border-radius: 8px !important;
+    border: 4px solid transparent !important;
+    background-clip: content-box !important;
+}
+*::-webkit-scrollbar-thumb:hover {
+    border: 3px solid transparent !important;
+}

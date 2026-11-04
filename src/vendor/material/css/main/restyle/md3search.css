@@ -1,0 +1,26 @@
+/* Search */
+/* https://m3.material.io/components/search/overview */
+
+._20QAC4WMXm8qFE8waUT5oo ._12vo5L1hsNGdao6_ssuirS .DialogTextInputBase {
+    border-radius: var(--corner-radius-full);
+}
+
+
+.filter_ctn.inventory_filters #filter_control,
+._2wXQTbH2iavMx1sFDH_Xpn ._29VTx5sjP43UH8k1twOUgE,
+.searchbox {
+    border: unset !important;
+    outline: unset !important;
+    box-shadow: unset !important;
+    border-radius: var(--corner-radius-full) !important;
+}
+.filter_ctn.inventory_filters #filter_control,
+._2wXQTbH2iavMx1sFDH_Xpn ._29VTx5sjP43UH8k1twOUgE {
+    padding: 4px 8px !important;
+}
+
+/* Big Picture Mode */
+._17M8gvakqjyaw_cLo6ntdl,
+._3F4YRi5x8CjExTV0rOdSL- {
+    border-radius: var(--corner-radius-full);
+}

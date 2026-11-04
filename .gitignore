@@ -1,0 +1,9 @@
+# upstream clones used by tools/vendor.mjs (their files are copied into src/vendor/)
+third_party/
+node_modules/
+__pycache__/
+*.pyc
+*.log
+*.png.tmp
+.DS_Store
+Thumbs.db
