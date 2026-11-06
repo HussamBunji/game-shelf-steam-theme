@@ -3,6 +3,10 @@
    step aside when --rf-layout is "original"). Only the small Themes button, the language switch and the
    store data panel stay, drawn in Steam's own colours. */
 :root {
+  /* fonts: Steam's own Latin font + a matching Arabic (Latin first, Arabic second — each script picks its own); loaded by skin.js / webkit.js */
+  --rf-font-ui: 'Motiva Sans', 'Noto Sans Arabic', Arial, sans-serif;
+  --rf-font-gf: "family=Noto+Sans+Arabic:wght@400;500;600;700";
+
   /* icons: Steam's own blue, flat square tiles */
   --rf-ic-1: #8fd0f7;
   --rf-ic-2: #1a9fff;
@@ -48,7 +52,7 @@
   --rf-card: rgba(0, 0, 0, .2);
   --rf-card-border: 1px solid rgba(103, 193, 245, .1);
   --rf-card-hover-shadow: none;
-  --rf-heading-font: 'Motiva Sans', 'Segoe UI', sans-serif;
+  --rf-heading-font: 'Motiva Sans', 'Segoe UI', 'Motiva Sans', 'Noto Sans Arabic', Arial, sans-serif;
   --rf-heading-case: none;
   --rf-heading-spacing: 0;
   --rf-blur: 0px;

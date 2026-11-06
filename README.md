@@ -22,6 +22,34 @@ English by default, with a full Arabic interface one click away.
   - one-click links to SteamDB, SteamCharts, IsThereAnyDeal, GG.deals, HowLongToBeat and PCGamingWiki
 - A **Quick links** menu in the store header: Specials, Top Sellers, Wishlist, Cart, and more.
 - Icons are hand-made SVGs that each style dresses differently. There are no emoji.
+- **Arabic for the whole of Steam.** Steam itself ships no Arabic interface, so when you pick العربية:
+  - the theme swaps in its own Arabic translation of about 3,200 of Steam's interface strings, covering the library, game pages, downloads, menus, friends, notifications and properties;
+  - the store and community switch to Valve's official Arabic version;
+  - strings that aren't translated yet stay in English.
+- **Each style has its own font pair (Latin + Arabic)**, loaded from Google Fonts:
+
+| Style | Latin font | Arabic font |
+|---|---|---|
+| Classic Shelf | Lora | Noto Naskh Arabic |
+| Glass Gallery | Plus Jakarta Sans | IBM Plex Sans Arabic |
+| Neon Coverflow | Exo 2 | Reem Kufi |
+| Steam Original | Motiva Sans | Noto Sans Arabic |
+| SpaceTheme | Be Vietnam Pro | Readex Pro |
+| Material You | Roboto | Rubik |
+
+- **Light and smooth.** Scrolling the library home was measured with `tools/perf.mjs`:
+
+| Style | Before | After |
+|---|---|---|
+| Classic Shelf | ~10 FPS | ~95 FPS |
+| Glass Gallery | ~24 FPS | ~135 FPS |
+
+  Background CPU use while idle dropped about 3×. The changes behind this:
+  - the shelves are drawn flat with painted depth instead of ~900 3D layers;
+  - spines use small images;
+  - there is no blur on every card;
+  - the community theme's styling for Steam's *own* home page is switched off while our home design covers it;
+  - nothing touches the page while it's idle.
 
 ## Install
 
@@ -58,6 +86,9 @@ To uninstall, run `python install_theme.py --remove`, or pick another theme in M
   - معلومات سريعة
   - روابط SteamDB وغيره
 - قائمة **Quick links** في هيدر المتجر.
+- **ستيم كامل بالعربي** لما تختار العربية: الثيم يعرّب أكثر من 3,200 نص من واجهة ستيم، والمتجر ينتقل للنسخة العربية الرسمية.
+- **لكل ثيم خط إنجليزي وخط عربي** يناسبونه (مثل Lora مع Noto Naskh للرف الكلاسيكي).
+- **أخف وأنعم بكثير:** التمرير في الرف الخشبي صار تقريبًا 95 إطار بالثانية بدل 10.
 
 ### التركيب
 1. ثبّت Millennium من https://steambrew.app.
@@ -75,6 +106,7 @@ To uninstall, run `python install_theme.py --remove`, or pick another theme in M
 skin.json            theme manifest: Style + Language conditions, patches
 src/styles/*.css     one variable set per style (--rf-*, plus SpaceTheme's --st-* slots for the styles built on it)
 src/lang/*.css       interface language (--rf-lang)
+src/lang/steam-ar.json  Arabic for Steam's own interface (token → text; edit this) → steam-ar.js via tools/build.mjs
 src/js/skin.js       every Steam window: our chrome restyle when a style needs it, plus the community-theme loader
 src/js/shelf.js      main window: home designs, CD-case viewer, filter strip, Ctrl+K, THEMES picker
 src/js/webkit.js     store/community: style sync, side panels, Quick links
@@ -103,3 +135,4 @@ tools/               dev tools (Steam must run with -dev for the CDP ones)
 - MIT — see [LICENSE](LICENSE).
 - Bundled: **SpaceTheme for Steam** (SpaceTheme, MIT) and **Material Theme** (kuska1, MIT). See [THIRD_PARTY.md](THIRD_PARTY.md).
 - Built on [Millennium](https://steambrew.app).
+- `src/lang/steam-ar.json` is an unofficial Arabic translation of Steam's interface text, made for this theme. Steam is a trademark of Valve; this project is not affiliated with Valve.

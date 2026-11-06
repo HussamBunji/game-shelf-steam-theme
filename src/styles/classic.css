@@ -1,6 +1,10 @@
 /* ═══ Theme 1 — الرف الكلاسيكي (Classic Shelf) ═══
    Home: 3D wooden bookcase.  Chrome: warm walnut, soft rounded, amber light. */
 :root {
+  /* fonts: bookish serif pair for the wooden library (Latin first, Arabic second — each script picks its own); loaded by skin.js / webkit.js */
+  --rf-font-ui: 'Lora', 'Noto Naskh Arabic', Georgia, serif;
+  --rf-font-gf: "family=Lora:wght@400;500;600;700&family=Noto+Naskh+Arabic:wght@400;500;600;700";
+
   /* layout base: SpaceTheme (MIT, src/vendor/space) — its sidebar, search, centred store/library;
      this style supplies the colours below, its own font, home design, icons and flair.css touches */
   --rf-vendor: space;
@@ -50,7 +54,7 @@
   --rf-card: rgba(255, 230, 200, .045);
   --rf-card-border: 1px solid rgba(255, 196, 140, .10);
   --rf-card-hover-shadow: 0 10px 28px rgba(0, 0, 0, .45), 0 0 0 1px rgba(255, 179, 107, .35);
-  --rf-heading-font: 'Segoe UI', 'Motiva Sans', sans-serif;
+  --rf-heading-font: var(--rf-font-ui);
   --rf-heading-case: none;
   --rf-heading-spacing: .01em;
   --rf-blur: 0px;

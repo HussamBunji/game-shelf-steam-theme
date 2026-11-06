@@ -3,6 +3,10 @@
 /* ═══ Theme 1 — الرف الكلاسيكي (Classic Shelf) ═══
    Home: 3D wooden bookcase.  Chrome: warm walnut, soft rounded, amber light. */
 html[data-rfs-style="classic"] {
+  /* fonts: bookish serif pair for the wooden library (Latin first, Arabic second — each script picks its own); loaded by skin.js / webkit.js */
+  --rf-font-ui: 'Lora', 'Noto Naskh Arabic', Georgia, serif;
+  --rf-font-gf: "family=Lora:wght@400;500;600;700&family=Noto+Naskh+Arabic:wght@400;500;600;700";
+
   /* layout base: SpaceTheme (MIT, src/vendor/space) — its sidebar, search, centred store/library;
      this style supplies the colours below, its own font, home design, icons and flair.css touches */
   --rf-vendor: space;
@@ -52,7 +56,7 @@ html[data-rfs-style="classic"] {
   --rf-card: rgba(255, 230, 200, .045);
   --rf-card-border: 1px solid rgba(255, 196, 140, .10);
   --rf-card-hover-shadow: 0 10px 28px rgba(0, 0, 0, .45), 0 0 0 1px rgba(255, 179, 107, .35);
-  --rf-heading-font: 'Segoe UI', 'Motiva Sans', sans-serif;
+  --rf-heading-font: var(--rf-font-ui);
   --rf-heading-case: none;
   --rf-heading-spacing: .01em;
   --rf-blur: 0px;
@@ -89,6 +93,10 @@ html[data-rfs-style="classic"][data-rfs-style] {
 /* ═══ Theme 2 — نيون كوفر فلو (Neon Coverflow) ═══
    Home: 3D coverflow carousel with reflections.  Chrome: sharp, glowing edges, synthwave grid. */
 html[data-rfs-style="neon"] {
+  /* fonts: futuristic geometric pair (Latin first, Arabic second — each script picks its own); loaded by skin.js / webkit.js */
+  --rf-font-ui: 'Exo 2', 'Reem Kufi', 'Segoe UI', sans-serif;
+  --rf-font-gf: "family=Exo+2:wght@400;500;600;700;800&family=Reem+Kufi:wght@400;500;600;700";
+
   /* layout base: SpaceTheme (MIT, src/vendor/space) — its sidebar, search, centred store/library;
      this style supplies the colours below, its own font, home design, icons and flair.css touches */
   --rf-vendor: space;
@@ -140,7 +148,7 @@ html[data-rfs-style="neon"] {
   --rf-card: rgba(20, 16, 45, .7);
   --rf-card-border: 1px solid rgba(62, 240, 255, .22);
   --rf-card-hover-shadow: 0 0 0 1px #3ef0ff, 0 0 18px rgba(62, 240, 255, .45), 0 0 40px rgba(255, 62, 165, .25);
-  --rf-heading-font: 'Segoe UI', 'Motiva Sans', sans-serif;
+  --rf-heading-font: var(--rf-font-ui);
   --rf-heading-case: uppercase;
   --rf-heading-spacing: .12em;
   --rf-blur: 0px;
@@ -170,6 +178,10 @@ html[data-rfs-style="neon"][data-rfs-style] {
 /* ═══ Theme 3 — المعرض الزجاجي (Glass Gallery) ═══
    Home: "continue playing" hero + frosted tilt cards + genre filters.  Chrome: Steam-like navy, big radii, frosted glass. */
 html[data-rfs-style="glass"] {
+  /* fonts: clean modern pair (Latin first, Arabic second — each script picks its own); loaded by skin.js / webkit.js */
+  --rf-font-ui: 'Plus Jakarta Sans', 'IBM Plex Sans Arabic', 'Segoe UI', sans-serif;
+  --rf-font-gf: "family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700";
+
   /* layout base: SpaceTheme (MIT, src/vendor/space) — its sidebar, search, centred store/library;
      this style supplies the colours below, its own font, home design, icons and flair.css touches */
   --rf-vendor: space;
@@ -220,7 +232,7 @@ html[data-rfs-style="glass"] {
   --rf-card: rgba(255, 255, 255, .055);
   --rf-card-border: 1px solid rgba(255, 255, 255, .09);
   --rf-card-hover-shadow: 0 16px 40px rgba(0, 0, 0, .45), 0 0 0 1px rgba(102, 192, 244, .45);
-  --rf-heading-font: 'Segoe UI Variable Display', 'Segoe UI', 'Motiva Sans', sans-serif;
+  --rf-heading-font: var(--rf-font-ui);
   --rf-heading-case: none;
   --rf-heading-spacing: 0;
   --rf-blur: 14px;
@@ -252,6 +264,10 @@ html[data-rfs-style="glass"][data-rfs-style] {
    step aside when --rf-layout is "original"). Only the small Themes button, the language switch and the
    store data panel stay, drawn in Steam's own colours. */
 html[data-rfs-style="original"] {
+  /* fonts: Steam's own Latin font + a matching Arabic (Latin first, Arabic second — each script picks its own); loaded by skin.js / webkit.js */
+  --rf-font-ui: 'Motiva Sans', 'Noto Sans Arabic', Arial, sans-serif;
+  --rf-font-gf: "family=Noto+Sans+Arabic:wght@400;500;600;700";
+
   /* icons: Steam's own blue, flat square tiles */
   --rf-ic-1: #8fd0f7;
   --rf-ic-2: #1a9fff;
@@ -297,7 +313,7 @@ html[data-rfs-style="original"] {
   --rf-card: rgba(0, 0, 0, .2);
   --rf-card-border: 1px solid rgba(103, 193, 245, .1);
   --rf-card-hover-shadow: none;
-  --rf-heading-font: 'Motiva Sans', 'Segoe UI', sans-serif;
+  --rf-heading-font: 'Motiva Sans', 'Segoe UI', 'Motiva Sans', 'Noto Sans Arabic', Arial, sans-serif;
   --rf-heading-case: none;
   --rf-heading-spacing: 0;
   --rf-blur: 0px;
@@ -314,8 +330,12 @@ html[data-rfs-style="original"] {
    skin.js / webkit.js exactly as its skin.json maps them). This file only sets the variables our extras use
    (Themes button, store side panels, icons) so they match SpaceTheme: near-black, violet accent, rounded. */
 html[data-rfs-style="space"] {
+  /* fonts: SpaceTheme's own Latin font + a matching Arabic (Latin first, Arabic second — each script picks its own); loaded by skin.js / webkit.js */
+  --rf-font-ui: 'Be Vietnam Pro', 'Readex Pro', 'Segoe UI', sans-serif;
+  --rf-font-gf: "family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Readex+Pro:wght@400;500;600;700";
+
   --rf-vendor: space;
-  --rf-vendor-skip: none;
+  --rf-vendor-skip: options/fonts/;
   --rf-layout: original;
   --rf-style-id: space;
 
@@ -359,7 +379,7 @@ html[data-rfs-style="space"] {
   --rf-card: rgb(20, 20, 20);
   --rf-card-border: 1px solid rgb(38, 38, 41);
   --rf-card-hover-shadow: none;
-  --rf-heading-font: 'Be Vietnam Pro', 'Segoe UI', sans-serif;
+  --rf-heading-font: var(--rf-font-ui);
   --rf-heading-case: none;
   --rf-heading-spacing: 0;
   --rf-blur: 0px;
@@ -375,8 +395,12 @@ html[data-rfs-style="space"] {
    skin.js / webkit.js exactly as its skin.json maps them; defaults: Dark + Blue). This file only sets the
    variables our extras use so they match Material 3: tonal surfaces, pill buttons, big radii. */
 html[data-rfs-style="material"] {
+  /* fonts: Material Roboto + rounded Arabic (Latin first, Arabic second — each script picks its own); loaded by skin.js / webkit.js */
+  --rf-font-ui: 'Roboto', 'Rubik', 'Segoe UI', sans-serif;
+  --rf-font-gf: "family=Roboto:wght@400;500;700&family=Rubik:wght@400;500;600;700";
+
   --rf-vendor: material;
-  --rf-vendor-skip: none;
+  --rf-vendor-skip: css/options/style/fonts/;
   --rf-layout: original;
   --rf-style-id: material;
 
@@ -420,7 +444,7 @@ html[data-rfs-style="material"] {
   --rf-card: rgb(29, 32, 38);
   --rf-card-border: 1px solid rgb(68, 71, 78);
   --rf-card-hover-shadow: none;
-  --rf-heading-font: 'Open Sans', 'Segoe UI', sans-serif;
+  --rf-heading-font: var(--rf-font-ui);
   --rf-heading-case: none;
   --rf-heading-spacing: 0;
   --rf-blur: 0px;

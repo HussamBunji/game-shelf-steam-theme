@@ -41,14 +41,21 @@
    "m": [
     "^Steam$"
    ],
-   "css": "src/css/libraryroot.custom.css",
+   "css": "src/css/libraryroot.custom.rfs-lite.css",
    "js": "src/js/libraryroot.custom.js"
+  },
+  {
+   "m": [
+    "^Steam$"
+   ],
+   "css": "src/css/steam/libHome.css",
+   "part": "home"
   },
   {
    "m": [
     ".ModalDialogPopup"
    ],
-   "css": "src/css/libraryroot.custom.css"
+   "css": "src/css/libraryroot.custom.rfs-lite.css"
   },
   {
    "m": [

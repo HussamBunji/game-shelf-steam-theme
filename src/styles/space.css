@@ -3,8 +3,12 @@
    skin.js / webkit.js exactly as its skin.json maps them). This file only sets the variables our extras use
    (Themes button, store side panels, icons) so they match SpaceTheme: near-black, violet accent, rounded. */
 :root {
+  /* fonts: SpaceTheme's own Latin font + a matching Arabic (Latin first, Arabic second — each script picks its own); loaded by skin.js / webkit.js */
+  --rf-font-ui: 'Be Vietnam Pro', 'Readex Pro', 'Segoe UI', sans-serif;
+  --rf-font-gf: "family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Readex+Pro:wght@400;500;600;700";
+
   --rf-vendor: space;
-  --rf-vendor-skip: none;
+  --rf-vendor-skip: options/fonts/;
   --rf-layout: original;
   --rf-style-id: space;
 
@@ -48,7 +52,7 @@
   --rf-card: rgb(20, 20, 20);
   --rf-card-border: 1px solid rgb(38, 38, 41);
   --rf-card-hover-shadow: none;
-  --rf-heading-font: 'Be Vietnam Pro', 'Segoe UI', sans-serif;
+  --rf-heading-font: var(--rf-font-ui);
   --rf-heading-case: none;
   --rf-heading-spacing: 0;
   --rf-blur: 0px;

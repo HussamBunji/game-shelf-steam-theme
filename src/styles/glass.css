@@ -1,6 +1,10 @@
 /* ═══ Theme 3 — المعرض الزجاجي (Glass Gallery) ═══
    Home: "continue playing" hero + frosted tilt cards + genre filters.  Chrome: Steam-like navy, big radii, frosted glass. */
 :root {
+  /* fonts: clean modern pair (Latin first, Arabic second — each script picks its own); loaded by skin.js / webkit.js */
+  --rf-font-ui: 'Plus Jakarta Sans', 'IBM Plex Sans Arabic', 'Segoe UI', sans-serif;
+  --rf-font-gf: "family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700";
+
   /* layout base: SpaceTheme (MIT, src/vendor/space) — its sidebar, search, centred store/library;
      this style supplies the colours below, its own font, home design, icons and flair.css touches */
   --rf-vendor: space;
@@ -51,7 +55,7 @@
   --rf-card: rgba(255, 255, 255, .055);
   --rf-card-border: 1px solid rgba(255, 255, 255, .09);
   --rf-card-hover-shadow: 0 16px 40px rgba(0, 0, 0, .45), 0 0 0 1px rgba(102, 192, 244, .45);
-  --rf-heading-font: 'Segoe UI Variable Display', 'Segoe UI', 'Motiva Sans', sans-serif;
+  --rf-heading-font: var(--rf-font-ui);
   --rf-heading-case: none;
   --rf-heading-spacing: 0;
   --rf-blur: 14px;

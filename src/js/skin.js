@@ -185,10 +185,31 @@
       const id = cs.getPropertyValue('--rf-style-id').trim(); // lets flair.css / panels target the style in every window
       if (id && document.documentElement.dataset.rfsStyle !== id) document.documentElement.dataset.rfsStyle = id;
     };
+    // a style / language change reloads every Steam window (RestartJSContext), so there is nothing to poll for:
+    // just re-check a few times while the window's own CSS is still arriving, then stop (~25 hidden windows run this)
     sync();
-    setInterval(sync, 1500);
+    [300, 1000, 2500, 6000].forEach(ms => setTimeout(sync, ms));
+  }
+
+  /* ---- the style's font pair (Latin + Arabic) for every Steam window: --rf-font-ui / --rf-font-gf come from the
+     style file. Steam's own fonts have no Arabic letters, so this is what makes an Arabic Steam look right. */
+  function applyFonts(getVar) {
+    const gf = getVar('--rf-font-gf').replace(/^["']|["']$/g, '').trim();
+    if (!gf || !document.head) return;
+    let link = document.getElementById('rfs-fonts');
+    const href = 'https://fonts.googleapis.com/css2?' + gf + '&display=swap';
+    if (!link) { link = document.createElement('link'); link.id = 'rfs-fonts'; link.rel = 'stylesheet'; document.head.appendChild(link); }
+    if (link.href !== href) link.href = href;
+    if (!document.getElementById('rfs-font-rule')) {
+      const st = document.createElement('style');
+      st.id = 'rfs-font-rule';
+      // :where() keeps this at zero specificity, so icon-font rules (more specific + !important) still win
+      st.textContent = ':where(body, body *:not(svg, svg *)) { font-family: var(--rf-font-ui) !important; }';
+      document.head.appendChild(st);
+    }
   }
   inject();
+  { const v = n => getComputedStyle(document.documentElement).getPropertyValue(n); [0, 300, 1500, 5000].forEach(ms => setTimeout(() => applyFonts(v), ms)); }
   window.__rfsSkin = { rules: rules.length, missing: [...new Set(missing)] };
 
   /* ---- bundled community themes (src/vendor: SpaceTheme, Material — both MIT, see their LICENSE files) ----
@@ -213,6 +234,7 @@
         if (e.css) {
           const l = document.createElement('link');
           l.rel = 'stylesheet'; l.href = url(man.id, e.css); l.dataset.rfsVendor = man.id;
+          if (e.part) l.dataset.rfsPart = e.part; // e.g. "home": only needed while Steam's own home is on screen
           document.head.appendChild(l);
         }
         if (e.js) {
@@ -244,6 +266,7 @@
       }
     }
     check();
-    setInterval(check, 1500); // dialogs / friends windows get their matching class a moment later
+    // dialogs / friends windows get their matching class a moment after they open — re-check a few times, then stop
+    [300, 1000, 2500, 6000, 15000].forEach(ms => setTimeout(check, ms));
   })();
 })();

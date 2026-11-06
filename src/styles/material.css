@@ -3,8 +3,12 @@
    skin.js / webkit.js exactly as its skin.json maps them; defaults: Dark + Blue). This file only sets the
    variables our extras use so they match Material 3: tonal surfaces, pill buttons, big radii. */
 :root {
+  /* fonts: Material Roboto + rounded Arabic (Latin first, Arabic second — each script picks its own); loaded by skin.js / webkit.js */
+  --rf-font-ui: 'Roboto', 'Rubik', 'Segoe UI', sans-serif;
+  --rf-font-gf: "family=Roboto:wght@400;500;700&family=Rubik:wght@400;500;600;700";
+
   --rf-vendor: material;
-  --rf-vendor-skip: none;
+  --rf-vendor-skip: css/options/style/fonts/;
   --rf-layout: original;
   --rf-style-id: material;
 
@@ -48,7 +52,7 @@
   --rf-card: rgb(29, 32, 38);
   --rf-card-border: 1px solid rgb(68, 71, 78);
   --rf-card-hover-shadow: none;
-  --rf-heading-font: 'Open Sans', 'Segoe UI', sans-serif;
+  --rf-heading-font: var(--rf-font-ui);
   --rf-heading-case: none;
   --rf-heading-spacing: 0;
   --rf-blur: 0px;

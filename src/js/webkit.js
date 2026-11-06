@@ -75,6 +75,35 @@
     if (window.__rfsVendors && window.__rfsVendors[id]) go();
     else { const sc = document.createElement('script'); sc.src = BASE + 'src/vendor/' + id + '/rfs-manifest.js'; sc.onload = go; document.head.appendChild(sc); }
   }
+
+  /* ---- the style's font pair (Latin + Arabic) for every Steam window: --rf-font-ui / --rf-font-gf come from the
+     style file. Steam's own fonts have no Arabic letters, so this is what makes an Arabic Steam look right. */
+  function applyFonts(getVar) {
+    const gf = getVar('--rf-font-gf').replace(/^["']|["']$/g, '').trim();
+    if (!gf || !document.head) return;
+    let link = document.getElementById('rfs-fonts');
+    const href = 'https://fonts.googleapis.com/css2?' + gf + '&display=swap';
+    if (!link) { link = document.createElement('link'); link.id = 'rfs-fonts'; link.rel = 'stylesheet'; document.head.appendChild(link); }
+    if (link.href !== href) link.href = href;
+    if (!document.getElementById('rfs-font-rule')) {
+      const st = document.createElement('style');
+      st.id = 'rfs-font-rule';
+      // :where() keeps this at zero specificity, so icon-font rules (more specific + !important) still win
+      st.textContent = ':where(body, body *:not(svg, svg *)) { font-family: var(--rf-font-ui) !important; }';
+      document.head.appendChild(st);
+    }
+  }
+  /* the store and community have an official Arabic version — follow the theme language (once per page, never loops) */
+  function storeLanguage() {
+    const cur = (/(?:^|; )Steam_Language=([^;]+)/.exec(document.cookie) || [])[1] || '';
+    const want = LANG === 'ar' ? 'arabic' : (cur === 'arabic' ? 'english' : '');
+    if (!want || cur === want) return;
+    const flag = 'rfs.storeLang.' + want + '.' + location.pathname;
+    try { if (sessionStorage.getItem(flag)) return; sessionStorage.setItem(flag, '1'); } catch (e) { return; }
+    // set the store's own language cookie and reload *this* page (Steam's ChangeLanguage() jumps to the account page)
+    document.cookie = `Steam_Language=${want}; path=/; max-age=31536000; secure; samesite=None`;
+    location.reload();
+  }
   let onLangChange = () => {};
   async function syncStyle() {
     const api = window.MILLENNIUM_API;
@@ -86,6 +115,8 @@
       const was = html.getAttribute('data-rfs-style');
       if (was !== id) { html.setAttribute('data-rfs-style', id); if (NATIVE.has(was)) retag(); }
       vendorWeb();
+      applyFonts(n => getComputedStyle(html).getPropertyValue(n));
+      storeLanguage();
       if (lang !== LANG) { LANG = lang; html.setAttribute('data-rfs-lang', lang); onLangChange(); }
       try { localStorage.setItem('rfs.style', id); localStorage.setItem('rfs.lang', lang); } catch (e) { /* ignore */ }
       return true;
@@ -94,7 +125,7 @@
   // Millennium's bridge isn't always ready when the page starts — retry quickly until it answers
   (async () => { for (let i = 0; i < 40; i++) { if (await syncStyle()) break; await new Promise(r => setTimeout(r, 500)); } })();
   // pages that stay open (store, wishlist…) follow a theme / language switch without a reload
-  setInterval(syncStyle, 2000);
+  setInterval(syncStyle, 10000); // fallback only — becoming visible / focused re-checks at once
   document.addEventListener('visibilitychange', syncStyle);
   window.addEventListener('focus', syncStyle);
 
@@ -278,6 +309,8 @@
   ];
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const qs = s => document.querySelector(s);
+  /** write a style only when it changes (each write is a DOM change that re-runs page-wide :has() rules) */
+  const setStyles = (el, props) => { for (const k in props) if (el.style[k] !== props[k]) el.style[k] = props[k]; };
   let rail = null, column = null;
   function findColumn() {
     const W = innerWidth;
@@ -366,9 +399,9 @@
       document.body.appendChild(rail);
       renderRail();
     }
-    rail.style.top = top + 'px';
+    setStyles(rail, { top: top + 'px' });
     // docked right next to the store column (not at the window edge), so the eye doesn't travel
-    rail.style.left = Math.max(12, Math.round(free - 236 - 18)) + 'px';
+    setStyles(rail, { left: Math.max(12, Math.round(free - 236 - 18)) + 'px' });
     rail.classList.toggle('on', fits && !!rail.firstElementChild);
     placeData(top);
     placeQuick();
@@ -403,13 +436,11 @@
     const search = qs('input[placeholder*="Search the store" i], #store_nav_search_term');
     const box = search && (search.parentElement || search);
     const r = box && box.getBoundingClientRect();
-    if (!r || !r.width || r.bottom < 0 || r.top > innerHeight) { qbtn.classList.remove('on'); qmenu.classList.remove('on'); return; }
-    qbtn.style.top = Math.round(r.top + (r.height - 30) / 2) + 'px';
-    qbtn.style.left = Math.round(r.left - qbtn.offsetWidth - 10) + 'px';
-    qbtn.classList.add('on');
+    if (!r || !r.width || r.bottom < 0 || r.top > innerHeight) { qbtn.classList.toggle('on', false); qmenu.classList.toggle('on', false); return; }
+    setStyles(qbtn, { top: Math.round(r.top + (r.height - 30) / 2) + 'px', left: Math.round(r.left - qbtn.offsetWidth - 10) + 'px' });
+    qbtn.classList.toggle('on', true);
     const b = qbtn.getBoundingClientRect();
-    qmenu.style.top = Math.round(b.bottom + 8) + 'px';
-    qmenu.style.left = Math.round(Math.max(12, b.right - qmenu.offsetWidth)) + 'px';
+    setStyles(qmenu, { top: Math.round(b.bottom + 8) + 'px', left: Math.round(Math.max(12, b.right - qmenu.offsetWidth)) + 'px' });
   }
 
   /* ---- right data panel (store game pages): the SteamDB-style numbers people scroll for, beside the page.
@@ -477,8 +508,8 @@
       });
       document.body.appendChild(dataEl);
     }
-    dataEl.style.top = top + 'px';
-    if (column) { dataEl.style.left = Math.round(column.getBoundingClientRect().right + 18) + 'px'; dataEl.style.right = 'auto'; }
+    setStyles(dataEl, { top: top + 'px' });
+    if (column) setStyles(dataEl, { left: Math.round(column.getBoundingClientRect().right + 18) + 'px', right: 'auto' });
     dataEl.classList.toggle('on', freeR >= 380);
     if (dataFor !== m[1]) { dataFor = m[1]; renderData(m[1]); }
   }
@@ -553,18 +584,12 @@
   function start() {
     iconDefs();
     onLangChange = () => { if (rail) renderRail(); if (dataEl && dataFor) renderData(dataFor); if (qbtn) placeQuick(); };
-    stickyNav();
-    setInterval(stickyNav, 2500);
     placeRail();
     setInterval(placeRail, 1500);
     addEventListener('resize', () => { column = null; placeRail(); });
     setTimeout(() => rail && renderRail(), 2500); // purchase / wishlist blocks may load late
-    tag(document.documentElement);
-    queue.push(document.body); schedule();
-    new MutationObserver(muts => {
-      for (const m of muts) for (const n of m.addedNodes) if (n.nodeType === 1) queue.push(n);
-      schedule();
-    }).observe(document.body, { childList: true, subtree: true });
+    // the old colour-classifying recolour is off for every style (they all build on stock Steam or a community
+    // theme), so its page-wide MutationObserver — which walked every node the store added — no longer runs
   }
   if (document.body) start(); else document.addEventListener('DOMContentLoaded', start);
 })();

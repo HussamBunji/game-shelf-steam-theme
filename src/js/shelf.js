@@ -612,6 +612,8 @@
     paintCase(c, g) {
       c.style.setProperty('--cap', cssUrl(first(g.images.capsule)));
       c.style.setProperty('--hero', cssUrl(first(g.images.hero) || first(g.images.header) || first(g.images.capsule)));
+      // spines are ~40 px wide: paint them from Steam's small header image (460×215) instead of the 1920 px hero
+      c.style.setProperty('--spine', cssUrl(first(g.images.header) || first(g.images.capsule) || first(g.images.hero)));
       const sp = c.querySelector('.sp'); if (sp) this.paintSpine(sp, g);
     },
     slot(g, type, running) {
@@ -1407,7 +1409,7 @@
   let fitKey = '';
   function fitBar(maxW) {
     // inside the home design the strip simply wraps onto a second line when space runs out
-    if (bar.classList.contains('inhome')) { bar.classList.remove('compact', 'tight'); fitKey = ''; return; }
+    if (bar.classList.contains('inhome')) { bar.classList.toggle('compact', false); bar.classList.toggle('tight', false); fitKey = ''; return; }
     const key = [maxW, bar.className.replace(/ ?(compact|tight)/g, ''), state.layout, state.games.length, state.genre, state.sort].join('|');
     if (key === fitKey) return;
     fitKey = key;
@@ -1448,8 +1450,16 @@
     navTheme.classList.toggle('rfs-open', Themes.isOpen());
     return true;
   }
+  /** only write a style when it really changes — every write is a DOM change, and the community theme's page-wide
+      :has() rules re-check the whole page on each one (this alone cost ~1.5 s of style work per 4 s of scrolling) */
+  function setStyles(el, props) { for (const k in props) if (el.style[k] !== props[k]) el.style[k] = props[k]; }
+  let navCheckAt = 0, navOk = false;
   function placeBar(onHome, panel) {
-    bar.classList.toggle('has-nav', placeNavTheme());
+    // the nav row rarely changes: re-place THEMES once a second (or at once if Steam re-rendered the row)
+    const nowT = Date.now();
+    if (!navWrap.isConnected || nowT - navCheckAt > 1000) { navCheckAt = nowT; navOk = placeNavTheme(); }
+    else navTheme.classList.toggle('rfs-open', Themes.isOpen());
+    bar.classList.toggle('has-nav', navOk);
     bar.classList.toggle('home', !!onHome);
     bar.classList.toggle('shelf-off', !!panel && !state.enabled);
     bar.classList.toggle('original', !!state.original);
@@ -1465,19 +1475,19 @@
     if (inHome) {
       if (!bar.classList.contains('inhome') || !root.contains(bar)) { if (root.classList.contains('on')) dockBar(); }
       if (root.contains(bar)) {
-        Object.assign(bar.style, { top: '', right: '', left: '', maxWidth: '' });
-        bar.classList.add('on');
+        setStyles(bar, { top: '', right: '', left: '', maxWidth: '' });
+        bar.classList.toggle('on', true);
         fitBar(Math.round((bar.parentElement || root).clientWidth) - 8);
         return;
       }
     }
     if (root.contains(bar)) { document.body.appendChild(bar); }
-    bar.classList.remove('inhome');
-    if (bar.classList.contains('float')) { Object.assign(bar.style, { top: '', right: '', left: '', maxWidth: '' }); return; }
+    bar.classList.toggle('inhome', false);
+    if (bar.classList.contains('float')) { setStyles(bar, { top: '', right: '', left: '', maxWidth: '' }); return; }
     // home page with the design switched off: only "restore shelf" — in the nav row, clear of the window buttons
-    if (!(onHome && panel && !state.enabled && !state.original)) { bar.classList.remove('on'); return; }
+    if (!(onHome && panel && !state.enabled && !state.original)) { bar.classList.toggle('on', false); return; }
     const nav = SteamAPI.el('SuperNavBar') || SteamAPI.el('SuperNav');
-    if (!nav) { bar.classList.remove('on'); return; }
+    if (!nav) { bar.classList.toggle('on', false); return; }
     const nr = nav.getBoundingClientRect();
     const top = Math.round(nr.top + (nr.height - 30) / 2);
     let right = 14;
@@ -1486,8 +1496,8 @@
       const r = tc.getBoundingClientRect();
       if (r.width && r.bottom > top + 4 && r.top < top + 26) right = Math.max(right, Math.round(innerWidth - r.left + 12));
     }
-    Object.assign(bar.style, { top: top + 'px', right: right + 'px', left: '', maxWidth: '' });
-    bar.classList.add('on');
+    setStyles(bar, { top: top + 'px', right: right + 'px', left: '', maxWidth: '' });
+    bar.classList.toggle('on', true);
   }
   async function tick(force) {
     if (!SteamAPI.ready() || !document.body) return;
@@ -1507,6 +1517,9 @@
     const panel = SteamAPI.isLibraryHome() ? SteamAPI.rightPanel() : null;
     const show = !!panel && state.enabled && !state.original;
     document.documentElement.classList.toggle('rfs-home-on', show);
+    // the community theme's styling for Steam's own home is costly (page-wide :has() checks on every change) and
+    // pointless while our design covers that page — switch it off then, back on for Steam's own home
+    for (const l of document.querySelectorAll('link[data-rfs-part="home"]')) { const m = show ? 'not all' : ''; if (l.media !== m) l.media = m; }
     document.documentElement.classList.toggle('rfs-show-news', state.news);
     placeBar(SteamAPI.isLibraryHome(), panel);
     if (panel && show) {
@@ -1532,7 +1545,33 @@
       if (Data.sig() !== state.sig) { Data.load(); render(); }
     }
   }
-  const tickTimer = setInterval(() => { tick(false); }, 200);
+  /* ---- Arabic for the whole Steam client. Steam ships no Arabic interface, so when the theme language is Arabic we
+     replace Steam's own interface strings (LocalizationManager tokens, in SharedJSContext) with our translation in
+     src/lang/steam-ar.js. Steam re-renders with them; strings we haven't translated simply stay English. */
+  (function steamArabic() {
+    if (LANG !== 'ar') return;
+    const me = document.querySelector('script[src*="/src/js/shelf.js"]');
+    const base = me ? me.src.replace(/src\/js\/shelf\.js.*$/, '') : 'https://millennium.host/v1/themes/rf-shelf/';
+    const apply = () => {
+      let lm = null;
+      try { lm = SteamAPI.ctx() && SteamAPI.ctx().LocalizationManager; } catch (e) { /* not ready */ }
+      const tokens = window.__rfsSteamAr;
+      if (!lm || !tokens || !lm.m_mapTokens || lm.m_mapTokens.size < 1000) return false;
+      // dates, numbers and lists ("Games and Software" → "ألعاب وبرامج") follow Arabic, keeping Western digits
+      try { lm.SetPreferredLocales(['ar-u-nu-latn', 'en']); } catch (e) { /* older Steam */ }
+      lm.AddTokens(tokens);
+      // re-render the page on screen so it picks the Arabic strings up at once
+      try { const p = SteamAPI.route(); if (/^\/library/.test(p)) SteamAPI.navigate(p); } catch (e) { /* ignore */ }
+      LOG('Steam interface in Arabic:', Object.keys(tokens).length, 'strings');
+      return true;
+    };
+    const s = document.createElement('script');
+    s.src = base + 'src/lang/steam-ar.js';
+    s.onload = () => { let n = 0; const t = setInterval(() => { if (apply() || ++n > 60) clearInterval(t); }, 250); };
+    document.head.appendChild(s);
+  })();
+
+  const tickTimer = setInterval(() => { if (!document.hidden) tick(false); }, 300); // nothing to do while Steam is hidden
 
   /* ---- dev helpers */
   window.__rfsShelf = {

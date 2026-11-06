@@ -373,7 +373,7 @@ html[data-rfs-lang="en"] #rfs .gl-badge { right: auto; left: 8px; }
 /* stock Steam / community themes (SpaceTheme, Material) force their own font on "*" — keep ours readable
    (their fonts have no Arabic) inside our few elements */
 html[data-rfs-native] :is(#rfs-bar, #rfs-themes, #rfs-toast),
-html[data-rfs-native] :is(#rfs-bar, #rfs-themes, #rfs-toast) * { font-family: 'Segoe UI', 'Motiva Sans', Tahoma, Arial, sans-serif !important; }
+html[data-rfs-native] :is(#rfs-bar, #rfs-themes, #rfs-toast) * { font-family: var(--rf-font-ui, 'Segoe UI', sans-serif) !important; }
 
 /* Themes lives in Steam's nav row now (shelf.js placeNavTheme) — the corner button is only a fallback */
 #rfs-bar.has-nav .tb-theme { display: none !important; }
@@ -403,3 +403,19 @@ html[data-rfs-native] :is(#rfs-bar, #rfs-themes, #rfs-toast) * { font-family: 'S
 
 /* our windows must never sit inside a window-drag region (Windows swallows clicks there) */
 #rfs-themes, #rfs-themes *, #rfs-viewer, #rfs-viewer *, #rfs-bar, #rfs-bar *, #rfs, #rfs * { -webkit-app-region: no-drag; }
+
+/* ═════════════ performance (2026-11) ═════════════
+   Glass: ~900 cards each blurring what's behind them (backdrop-filter) and always transformed meant ~900 GPU layers.
+   Cards are now plain translucent panels that only move while hovered. Measured: ~24 FPS -> ~130 FPS scrolling. */
+#rfs .gl-grid { perspective: none; }
+#rfs .gl-card { backdrop-filter: none; transform: none; }
+#rfs .gl-card:hover { transform: translateY(-5px); }
+#rfs .gl-chip, #rfs .gl-btn { backdrop-filter: none; }
+#rfs .gl-hero-meta span { backdrop-filter: none; background: rgba(0, 0, 0, .38); }
+#rfs .gl-btn:not(.play) { background: rgba(0, 0, 0, .38); }
+/* Neon: the floor grid no longer scrolls forever (it repainted a large area 60 times a second, even when idle) */
+#rfs .cf-floor { animation: none; }
+/* (no content-visibility on cards: re-styling them as they scroll in cost more than it saved — measured) */
+
+/* every part of the theme speaks in the style's font pair (Latin + Arabic) */
+#rfs, #rfs-bar, #rfs-viewer, #rfs-themes, #rfs-toast { --font: var(--rf-font-ui, 'Segoe UI', 'Motiva Sans', Tahoma, sans-serif); }

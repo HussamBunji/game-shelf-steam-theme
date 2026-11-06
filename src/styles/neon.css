@@ -1,6 +1,10 @@
 /* ═══ Theme 2 — نيون كوفر فلو (Neon Coverflow) ═══
    Home: 3D coverflow carousel with reflections.  Chrome: sharp, glowing edges, synthwave grid. */
 :root {
+  /* fonts: futuristic geometric pair (Latin first, Arabic second — each script picks its own); loaded by skin.js / webkit.js */
+  --rf-font-ui: 'Exo 2', 'Reem Kufi', 'Segoe UI', sans-serif;
+  --rf-font-gf: "family=Exo+2:wght@400;500;600;700;800&family=Reem+Kufi:wght@400;500;600;700";
+
   /* layout base: SpaceTheme (MIT, src/vendor/space) — its sidebar, search, centred store/library;
      this style supplies the colours below, its own font, home design, icons and flair.css touches */
   --rf-vendor: space;
@@ -52,7 +56,7 @@
   --rf-card: rgba(20, 16, 45, .7);
   --rf-card-border: 1px solid rgba(62, 240, 255, .22);
   --rf-card-hover-shadow: 0 0 0 1px #3ef0ff, 0 0 18px rgba(62, 240, 255, .45), 0 0 40px rgba(255, 62, 165, .25);
-  --rf-heading-font: 'Segoe UI', 'Motiva Sans', sans-serif;
+  --rf-heading-font: var(--rf-font-ui);
   --rf-heading-case: uppercase;
   --rf-heading-spacing: .12em;
   --rf-blur: 0px;
