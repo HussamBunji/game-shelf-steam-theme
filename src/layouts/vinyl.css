@@ -136,9 +136,9 @@ html[data-rfs-lang="en"] #rfs[data-layout="vinyl"] { --vy-dir: 1; --vy-ang: 90de
 }
 #rfs[data-layout="vinyl"] .vy-sleeve:hover { transform: translateY(-3px) rotate(-1.2deg); }
 /* while its record is out on the turntable (vinyl.js open), the sleeve's spot stays empty */
-html:has(#rfs-sheet.on) #rfs[data-layout="vinyl"] .vy-deck .taken { opacity: 0; }
+html.rfs-sheet-on #rfs[data-layout="vinyl"] .vy-deck .taken { opacity: 0; }
 /* the deck's record rests while a game is open (one turning label at a time) */
-html:has(#rfs-sheet.on) #rfs[data-layout="vinyl"] .vy-disc { animation-play-state: paused; }
+html.rfs-sheet-on #rfs[data-layout="vinyl"] .vy-disc { animation-play-state: paused; }
 
 /* ---- track info ---- */
 #rfs[data-layout="vinyl"] .vy-info { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 11px; }
@@ -323,7 +323,7 @@ html[data-rfs-lang="en"] #rfs[data-layout="vinyl"] .vy-div b::before { text-tran
 }
 #rfs[data-layout="vinyl"] .vy-it.running .art::after { box-shadow: 0 0 0 2px #3a9a90, 0 6px 14px rgba(0, 0, 0, .45); }
 #rfs[data-layout="vinyl"] .vy-it.kf .art::after { box-shadow: 0 0 0 2px #1a120c, 0 0 0 4px var(--vy-gold), 0 14px 26px rgba(0, 0, 0, .6); }
-html:has(#rfs-sheet.on) #rfs[data-layout="vinyl"] .vy-it.taken .art { opacity: 0; }
+html.rfs-sheet-on #rfs[data-layout="vinyl"] .vy-it.taken .art { opacity: 0; }
 /* album title + hours */
 #rfs[data-layout="vinyl"] .vy-it .t {
   margin-top: 10px; font-size: 13px; font-weight: 700; line-height: 1.3; color: var(--ink);

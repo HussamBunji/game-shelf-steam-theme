@@ -1,4 +1,4 @@
-import { waitForElement, createContainerTracker, getFiber, CssClassNames } from './utils.js';
+import { waitForElement, createContainerTracker, getFiber, CssClassNames, steamOnly } from './utils.js';
 
 // Create Loading Screen
 const createLoadingDiv = () => {
@@ -123,7 +123,7 @@ async function syncWidthIfTargetHidden() {
         onSetup: setupElements,
     });
 
-    const rootObserver = new MutationObserver(async () => await sourceTracker.rebind());
+    const rootObserver = new MutationObserver(steamOnly(async () => await sourceTracker.rebind()));
     rootObserver.observe(document.body, {
         subtree: true,
         childList: true,
@@ -389,7 +389,7 @@ async function setupGamesHovers() {
         onUpdate: scheduleHoverUpdate,
     });
 
-    const rootObserver = new MutationObserver(async () => await containerTracker.rebind());
+    const rootObserver = new MutationObserver(steamOnly(async () => await containerTracker.rebind()));
     rootObserver.observe(document.body, {
         subtree: true,
         childList: true,
@@ -413,17 +413,25 @@ function syncUserPanelWidth() {
     let sourceObserver = null;
     let sourceResizeObserver = null;
 
-    const setWidth = () => {
-        if (!sourceEl) return;
+    // Game Shelf patch: the width is read once per frame (it was read synchronously after every DOM change anywhere,
+    // a forced full-page style recalc each time) and only written when it changed (a style write re-checks the
+    // page's [style] :has() rules)
+    let widthFrame = 0;
+    const applyWidth = () => {
+        widthFrame = 0;
+        if (!sourceEl || !sourceEl.isConnected) return;
         const computedWidth = window.getComputedStyle(sourceEl).width;
         if (computedWidth && computedWidth !== 'auto') {
-            if (userPanelEl) {
+            if (userPanelEl && userPanelEl.style.width !== computedWidth) {
                 userPanelEl.style.width = computedWidth;
             }
-            if (downloadBarEl) {
+            if (downloadBarEl && downloadBarEl.style.width !== computedWidth) {
                 downloadBarEl.style.width = computedWidth;
             }
         }
+    };
+    const setWidth = () => {
+        if (!widthFrame) widthFrame = requestAnimationFrame(applyWidth);
     };
 
     const bindObservers = () => {
@@ -453,9 +461,14 @@ function syncUserPanelWidth() {
     };
 
     const setupElements = () => {
-        sourceEl = document.querySelector(sourceClass);
-        userPanelEl = document.querySelector(userPanelSelector);
-        downloadBarEl = document.querySelector(downloadBarSelector);
+        const nextSource = document.querySelector(sourceClass);
+        const nextUserPanel = document.querySelector(userPanelSelector);
+        const nextDownloadBar = document.querySelector(downloadBarSelector);
+        // Game Shelf patch: nothing moved, the observers are already on the right elements
+        if (nextSource === sourceEl && nextUserPanel === userPanelEl && nextDownloadBar === downloadBarEl) return;
+        sourceEl = nextSource;
+        userPanelEl = nextUserPanel;
+        downloadBarEl = nextDownloadBar;
 
         if (sourceEl && (userPanelEl || downloadBarEl)) {
             bindObservers();
@@ -466,7 +479,7 @@ function syncUserPanelWidth() {
     new ResizeObserver(setWidth).observe(document.documentElement);
     window.visualViewport?.addEventListener('resize', setWidth);
 
-    const rootObserver = new MutationObserver(() => setupElements());
+    const rootObserver = new MutationObserver(steamOnly(() => setupElements()));
 
     rootObserver.observe(document.body, {
         subtree: true,
@@ -717,13 +730,13 @@ const saveSidebarWidth = (body, width) => {
     };
 
     let rafId = 0;
-    const rootObserver = new MutationObserver(() => {
+    const rootObserver = new MutationObserver(steamOnly(() => {
         if (rafId) return;
         rafId = requestAnimationFrame(() => {
             rafId = 0;
             tryPatch();
         });
-    });
+    }));
     rootObserver.observe(document.body, {
         subtree: true,
         childList: true,
@@ -824,7 +837,7 @@ const saveSidebarWidth = (body, width) => {
         onCleanup: handleCleanup
     });
 
-    const rootObserver = new MutationObserver(async () => await containerTracker.rebind());
+    const rootObserver = new MutationObserver(steamOnly(async () => await containerTracker.rebind()));
     rootObserver.observe(document.body, {
         subtree: true,
         childList: true,

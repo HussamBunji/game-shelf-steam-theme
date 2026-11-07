@@ -33,7 +33,10 @@
     },
     ready() {
       const c = this.ctx();
-      return !!(c && c.appStore && c.collectionStore && c.appDetailsStore && c.SteamClient && c.SteamUIStore);
+      // collectionStore exists before Steam has read the collections from cloud storage: touching one of its computed
+      // lists then (userCollections …) made MobX keep the error, and Steam's own library page crashed with it
+      // ("Cannot read properties of undefined (reading 'values')") until Steam was restarted — wait for the data
+      return !!(c && c.appStore && c.collectionStore && c.collectionStore.collectionsFromStorage && c.appDetailsStore && c.SteamClient && c.SteamUIStore);
     },
     /** every hashed class Steam uses for a readable name (the same name can live in several CSS modules) */
     clsAll(key, ...hints) {
@@ -434,6 +437,19 @@
             }
             g.description = SteamAPI.description(g.appid);
             g.ach = SteamAPI.achievements(g.appid);
+            // the details often carry 0/0 for achievements; Steam's achievement-progress cache has the real numbers but
+            // only for games it has fetched — ask it for this game and wait briefly (≤ 1.6 s) for the answer
+            if (!g.ach) {
+              try {
+                const pc = SteamAPI.ctx().appAchievementProgressCache;
+                if (pc && pc.BGameHasAchievements && pc.BGameHasAchievements(g.appid)) {
+                  pc.QueueCacheUpdate(g.appid);
+                  const req = pc.RequestCacheUpdate();
+                  for (let k = 0; !g.ach && k < 8; k++) { await Promise.race([req, new Promise(r => setTimeout(r, 200))]); g.ach = SteamAPI.achievements(g.appid); }
+                }
+              } catch (e) { /* no cache API */ }
+            }
+            try { const pc = SteamAPI.ctx().appAchievementProgressCache; g.achKnown = !!g.ach || !!(pc && pc.BGameHasAchievements && !pc.BGameHasAchievements(g.appid)); } catch (e) { g.achKnown = !!g.ach; }
           } catch (e) { /* keep lite data */ }
           g.detailed = true;
           this.active--;
@@ -851,219 +867,436 @@
     },
   };
 
-  /* ---------- 3b. neon coverflow (virtualised — only ~20 covers exist in the DOM) ---------- */
+  /* ---------- 3b. neon coverflow — two views of the same list, one cursor:
+       FLOW: a 3D coverflow (virtualised: only the ~15 covers around the focused one exist) with the focused game's deck
+             (state · play time · last played · size / download · achievements · PLAY / Details / Game page / Store) under it
+       GRID: the whole library as a dense neon grid, cut into the same sections
+     A section rail (letters when sorted by name, time / hours / size bands otherwise) jumps anywhere in one click,
+     PageUp / PageDown (LB / RB) or ↑ / ↓. The focused game is kept when switching views (G, the toggle, LT in Big Picture).
+     Big Picture: D-pad ←/→ browses, ↓ goes into the deck's buttons (host "edge escape"), ↑ goes on to Steam's top bar,
+     A opens, X plays, LB/RB sections, LT switches view, B leaves the grid. ---------- */
   const CoverflowLayout = {
-    fixedHeight: false,
-    cur: 0,
-    render(games, w, hFull) {
+    cur: 0, curId: 0, gi: -1,
+    view: store.get('neonView', 'flow') === 'grid' ? 'grid' : 'flow',
+    get fixedHeight() { return this.view === 'flow'; }, // the coverflow fills the panel exactly; the grid scrolls
+    dockInside: true, // the filter strip goes into [data-rfs-dock], in the same top panel as the view toggle + section rail
+    get padAuxLabel() { return this.view === 'grid' ? T('العرض الدوّار', 'Coverflow') : T('شبكة الألعاب', 'Grid view'); },
+    /** sections of the sorted list: contiguous runs with the same key (letter / time band / hours band / size band) */
+    sectionsOf(games) {
+      const now = Date.now() / 1000, D = 86400, GB = 1024 ** 3;
+      const band = (v, list) => list.find(b => v >= b[0]) || list[list.length - 1];
+      const KEY = {
+        name: g => {
+          const c = String(g.sortAs || g.name || '').trim().normalize('NFD').charAt(0).toUpperCase();
+          return /[A-Z]/.test(c) ? [c, c] : /[0-9]/.test(c) || !c ? ['#', '#'] : ['~', T('أخرى', 'Other')];
+        },
+        recent: g => {
+          if (!g.lastPlayed) return ['n', T('ما انلعبت', 'Never played')];
+          const b = band(now - g.lastPlayed <= D ? 5 : now - g.lastPlayed <= 7 * D ? 4 : now - g.lastPlayed <= 31 * D ? 3 : now - g.lastPlayed <= 365 * D ? 2 : 1,
+            [[5, T('اليوم', 'Today')], [4, T('هالأسبوع', 'This week')], [3, T('هالشهر', 'This month')], [2, T('هالسنة', 'This year')], [1, T('أقدم', 'Earlier')]]);
+          return ['r' + b[0], b[1]];
+        },
+        playtime: g => {
+          const h = (g.playtimeMin || 0) / 60;
+          const b = band(h, [[100, T('+١٠٠ ساعة', '100 h+')], [20, T('٢٠–١٠٠ ساعة', '20–100 h')], [5, T('٥–٢٠ ساعة', '5–20 h')], [1, T('١–٥ ساعات', '1–5 h')], [0.0001, T('أقل من ساعة', '< 1 h')], [0, T('ما انلعبت', 'Not played')]]);
+          return ['p' + b[0], b[1]];
+        },
+        size: g => {
+          const s = gameBytes(g) / GB;
+          const b = band(s, [[100, '100 GB+'], [50, '50–100 GB'], [20, '20–50 GB'], [5, '5–20 GB'], [0.0001, T('أقل من ٥ GB', '< 5 GB')], [0, T('حجم غير معروف', 'Unknown size')]]);
+          return ['s' + b[0], b[1]];
+        },
+      };
+      const keyOf = KEY[state.sort] || KEY.recent;
+      const out = [];
+      let last = null;
+      games.forEach((g, i) => {
+        const [id, label] = keyOf(g);
+        if (!last || last.id !== id) { last = { id, label, start: i, count: 0 }; out.push(last); }
+        last.count++;
+      });
+      return out;
+    },
+    secAt(i) { const S = this.secs || []; let k = 0; for (let j = 0; j < S.length; j++) if (S[j].start <= i) k = j; else break; return k; },
+    render(games, w, h) {
       this.games = games;
       if (this.cur >= games.length) this.cur = 0;
-      // the carousel takes ~3/4 of the screen; the full library grid peeks underneath (scroll down to browse)
-      const h = Math.round(Math.max(460, hFull * 0.74));
-      const cardH = Math.round(Math.min(h * 0.56, 500)), cardW = Math.round(cardH * 2 / 3);
-      this.cardW = cardW;
-      const wrap = div('cf-wrap');
-      const el = div('cf');
-      el.style.height = h + 'px';
-      el.style.setProperty('--cw', cardW + 'px');
-      el.style.setProperty('--ch', cardH + 'px');
-      el.innerHTML = `
-        <div class="cf-bg"><div class="cf-bg-img"></div><div class="cf-bg-img b"></div></div>
-        <div class="cf-floor"></div>
-        <div class="cf-track"></div>
-        <button class="cf-nav prev" title="${T('السابق', 'Previous')}">${ic(LTR ? 'chevL' : 'chevR')}</button><button class="cf-nav next" title="${T('التالي', 'Next')}">${ic(LTR ? 'chevR' : 'chevL')}</button>
-        <input class="cf-range" type="range" min="0" max="${Math.max(0, games.length - 1)}" value="${this.cur}" title="${T('اسحب للتنقل السريع', 'Drag to browse quickly')}">
-        <div class="cf-info">
-          <h2 class="cf-name" dir="auto"></h2>
-          <div class="cf-ach"></div>
-          <div class="cf-meta"></div>
-          <div class="cf-actions">
-            <button class="cf-btn play" data-act="play">${ic('play')}${T('تشغيل', 'Play')}</button>
-            <button class="cf-btn" data-act="open">${ic('info')}${T('التفاصيل', 'Details')}</button>
-            <button class="cf-btn" data-act="details">${T('صفحة اللعبة', 'Game page')}</button>
+      // the same game stays focused when the list re-renders (a game was played, Steam updated the library …)
+      if (this.cur > 0 && this.curId && games[this.cur] && games[this.cur].appid !== this.curId) {
+        const j = games.findIndex(g => g.appid === this.curId);
+        if (j >= 0) this.cur = j;
+      }
+      this.curId = games[this.cur] ? games[this.cur].appid : 0;
+      this.secs = this.sectionsOf(games);
+      this.nodes = new Map(); this.bgFlip = false; this.bgG = null; this.gi = -1; this.scrollSec = -1;
+      this.track = null; this.grid = null; this.cards = []; this.drag = null; clearTimeout(this.bgT);
+      if (this.io) { this.io.disconnect(); this.io = null; }
+      const grid = this.view === 'grid';
+      const byName = state.sort === 'name';
+      const pad = b => (BPM ? `<i class="cf-pad">${b}</i>` : ''); // Big Picture: the button that works this control
+      const wrap = div('cf-wrap ' + (grid ? 'is-grid' : 'is-flow'));
+      if (!grid) wrap.style.height = h + 'px'; // the coverflow fills the panel exactly (fixedHeight)
+      wrap.innerHTML = `${grid ? '' : '<div class="cf-bg"><div class="cf-bg-img"></div><div class="cf-bg-img"></div><div class="cf-floor"></div></div>'}
+        <div class="cf-top">
+          <div class="rf-dock cf-dock" data-rfs-dock></div>
+          <div class="cf-rail">${pad('LT')}
+            <div class="cf-views" role="tablist" aria-label="${T('طريقة العرض', 'View')}">
+              <button class="cf-view${grid ? '' : ' on'}" data-view="flow" data-nopad role="tab" aria-selected="${!grid}" title="${T('العرض الدوّار', 'Coverflow')} (G)">${ic('layers')}<span>${T('دوّار', 'Coverflow')}</span></button>
+              <button class="cf-view${grid ? ' on' : ''}" data-view="grid" data-nopad role="tab" aria-selected="${grid}" title="${T('شبكة كل الألعاب', 'All games as a grid')} (G)">${ic('grid')}<span>${T('شبكة', 'Grid')}</span></button>
+            </div>${pad('LB')}
+            <div class="cf-secs${byName ? ' abc' : ''}" aria-label="${T('انتقل إلى قسم', 'Jump to a section')}">${this.secs.map((s, k) =>
+              `<button class="cf-sec" data-s="${k}" data-nopad title="${esc(s.label)} — ${esc(fmtGames(s.count))}"><span dir="auto">${esc(s.label)}</span>${byName ? '' : `<b>${NUM.format(s.count)}</b>`}</button>`).join('')}</div>${pad('RB')}
+            <div class="cf-count" dir="ltr"></div>
           </div>
         </div>
-        <div class="cf-count"></div>
-        <button class="cf-browse">${ic('grid')}${T('تصفّح كل الألعاب', 'Browse all games')}</button>`;
-      this.el = el; this.track = $('.cf-track', el); this.nodes = new Map(); this.bgFlip = false;
-      if (!games.length) this.track.innerHTML = `<div class="rf-empty">${T('ما لقيت شي يطابق بحثك', 'Nothing matches your search')}</div>`;
-      // full library grid (same browsing comfort as the Glass Gallery)
-      const gridHead = div('cf-grid-head', `<b>${T('كل الألعاب', 'All games')}</b><span>${fmtGames(games.length)} — ${T('اضغط أي لعبة تنفتح على طول', 'click any game to open it')}</span>`);
-      const grid = div('cf-grid');
-      const frag = document.createDocumentFragment();
-      games.forEach((g, i) => {
-        const c = div('nf-card' + (g.installed ? '' : ' ni'));
-        c.dataset.appid = g.appid; c.dataset.i = i;
-        c.innerHTML = `<div class="nf-art"></div><div class="nf-name" dir="auto">${esc(g.name)}</div>`;
-        frag.append(c);
-        lazy(c, gg => c.style.setProperty('--cap', cssUrl(first(gg.images.capsule))));
-      });
-      grid.append(frag);
-      wrap.append(el, gridHead, grid);
+        ${grid ? '<div class="cf-grid"></div>' : `
+        <div class="cf-stage">
+          <div class="cf-track"></div>
+          <button class="cf-nav prev" tabindex="-1" title="${T('السابق', 'Previous')}">${ic(LTR ? 'chevL' : 'chevR')}</button>
+          <button class="cf-nav next" tabindex="-1" title="${T('التالي', 'Next')}">${ic(LTR ? 'chevR' : 'chevL')}</button>
+        </div>
+        <div class="cf-deck">
+          <div class="cf-state"></div>
+          <h2 class="cf-name" dir="auto"></h2>
+          <div class="cf-meta"></div>
+          <div class="cf-actions">
+            <button class="cf-btn play" data-act="play"></button>
+            <button class="cf-btn" data-act="open">${ic('info')}<span>${T('التفاصيل', 'Details')}</span></button>
+            <button class="cf-btn" data-act="details">${ic('library')}<span>${T('صفحة اللعبة', 'Game page')}</span></button>
+            <button class="cf-btn store" data-act="store">${ic('cart')}<span>${T('المتجر', 'Store')}</span></button>
+          </div>
+        </div>
+        <div class="cf-keys">${[[['←', '→'], T('تصفّح', 'Browse')], [['↑', '↓'], T('الأقسام', 'Sections')], [['Enter'], T('التفاصيل', 'Details')], [['Ctrl', 'Enter'], T('تشغيل', 'Play')], [['G'], T('الشبكة', 'Grid')]]
+          .map(([k, t]) => `<span>${k.map(x => `<kbd>${x}</kbd>`).join('')}${t}</span>`).join('')}</div>`}`;
+      this.el = wrap;
+      this.rail = $('.cf-secs', wrap);
+      $('.cf-views', wrap).addEventListener('click', e => { const b = e.target.closest('[data-view]'); if (b) this.setView(b.dataset.view); });
+      this.rail.addEventListener('click', e => { const b = e.target.closest('.cf-sec'); if (b) this.jumpTo(+b.dataset.s); });
+      if (grid) this.buildGrid(wrap, games); else this.buildFlow(wrap, games);
       stage.replaceChildren(wrap);
-      this.grid = grid;
-      // Big Picture: the controller's place in the grid survives a re-render
-      if (!(this.gi < games.length)) this.gi = -1;
-      if (BPM && this.gi >= 0) grid.children[this.gi].classList.add('kf');
-      // one click opens the game right here (no trip up to the carousel first); the carousel follows quietly
-      grid.addEventListener('click', e => {
-        const c = e.target.closest('.nf-card'); if (!c) return;
-        const i = +c.dataset.i;
-        this.go(i, true);
-        openGame(this.games[i], { el: $('.nf-art', c), slot: c, isSpine: false });
-      });
-      $('.cf-browse', el).addEventListener('click', () => {
-        if (BPM && games.length) { this.gridGo(this.cur); return; } // Big Picture: the controller's cursor goes down with it
-        gridHead.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      });
-      this.update(true);
+      if (grid) this.afterGrid();
+      this.paintRail();
+    },
+    /* ---- FLOW ---- */
+    buildFlow(wrap, games) {
+      const st = $('.cf-stage', wrap);
+      this.track = $('.cf-track', st); this.stageEl = st;
+      if (!games.length) {
+        this.track.innerHTML = `<div class="rf-empty">${T('ما لقيت شي يطابق بحثك', 'Nothing matches your search')}</div>`;
+        wrap.classList.add('is-empty'); // no deck, no arrows: just the message
+        return;
+      }
+      // later games sit on the reading-forward side: «next» is on the right in English, on the left in Arabic
+      $('.prev', st).addEventListener('click', () => this.go(this.cur - 1));
+      $('.next', st).addEventListener('click', () => this.go(this.cur + 1));
       this.track.addEventListener('click', e => {
+        if (this.dragged) { this.dragged = false; return; }
         const it = e.target.closest('.cf-item'); if (!it) return;
         const i = +it.dataset.i;
         if (i === this.cur) openGame(this.games[i], this.source(this.games[i].appid));
         else this.go(i);
       });
-      // Arabic keeps its original wiring; in English (left-to-right) «prev» steps back, «next» steps forward
-      $('.prev', el).addEventListener('click', () => this.go(this.cur + (LTR ? -1 : 1)));
-      $('.next', el).addEventListener('click', () => this.go(this.cur + (LTR ? 1 : -1)));
-      $('.cf-range', el).addEventListener('input', e => this.go(+e.target.value, true));
-      // vertical wheel scrolls the page normally (to reach the grid); sideways wheel / Shift+wheel flips covers
-      this.track.parentElement.addEventListener('wheel', e => {
-        const sideways = Math.abs(e.deltaX) > Math.abs(e.deltaY) || e.shiftKey;
-        if (!sideways) return;
+      // wheel: one notch = one cover (a trackpad adds up its small steps); sideways swipes follow the reading direction
+      const onWheel = e => {
+        if (e.ctrlKey) return;
         e.preventDefault();
-        const now = performance.now();
-        if (now - (this.lastWheel || 0) < 90) return;
-        this.lastWheel = now;
-        const d = e.shiftKey ? e.deltaY : e.deltaX;
-        this.go(this.cur + (d > 0 ? 1 : -1));
-      }, { passive: false });
-      $('.cf-actions', el).addEventListener('click', e => {
+        const side = Math.abs(e.deltaX) > Math.abs(e.deltaY);
+        let d = side ? e.deltaX * (LTR ? 1 : -1) : e.deltaY;
+        if (e.deltaMode === 1) d *= 40;
+        if (Math.abs(d) >= 50) { this.wheelAcc = 0; this.go(this.cur + Math.sign(d) * Math.min(5, Math.max(1, Math.round(Math.abs(d) / 100)))); return; }
+        this.wheelAcc = (this.wheelAcc || 0) + d;
+        if (Math.abs(this.wheelAcc) >= 60) { this.go(this.cur + Math.sign(this.wheelAcc)); this.wheelAcc = 0; }
+      };
+      st.addEventListener('wheel', onWheel, { passive: false });
+      $('.cf-deck', wrap).addEventListener('wheel', onWheel, { passive: false });
+      // drag the covers like a strip (pointer capture once it really moves, so a plain click still clicks)
+      st.addEventListener('pointerdown', e => {
+        if (e.button !== 0 || e.target.closest('button')) return;
+        const c = this.track.querySelector('.cf-item.center');
+        this.drag = { x: e.clientX, base: this.cur, id: e.pointerId, moved: false, step: Math.max(40, (c ? c.offsetWidth : 200) * 0.3) };
+        this.dragged = false;
+      });
+      st.addEventListener('pointermove', e => {
+        const d = this.drag; if (!d || e.pointerId !== d.id) return;
+        const dx = e.clientX - d.x;
+        if (!d.moved) {
+          if (Math.abs(dx) < 6) return;
+          d.moved = true; st.classList.add('dragging');
+          try { st.setPointerCapture(d.id); } catch (err) { /* fine */ }
+        }
+        this.go(d.base + Math.round((-dx / d.step) * (LTR ? 1 : -1)), true);
+      });
+      const end = () => { if (this.drag && this.drag.moved) { this.dragged = true; st.classList.remove('dragging'); } this.drag = null; };
+      st.addEventListener('pointerup', end); st.addEventListener('pointercancel', end);
+      $('.cf-actions', wrap).addEventListener('click', e => {
         const b = e.target.closest('[data-act]'); const g = this.games[this.cur];
         if (!b || !g) return;
-        if (b.dataset.act === 'play') launch(g);
-        else if (b.dataset.act === 'open') openGame(g, this.source(g.appid));
-        else SteamAPI.openDetails(g.appid);
+        const a = b.dataset.act;
+        if (a === 'play') launch(g);
+        else if (a === 'open') openGame(g, this.source(g.appid));
+        else if (a === 'details') { sfx('tick'); SteamAPI.openDetails(g.appid); }
+        else { sfx('tick'); try { SteamAPI.steamUrl('steam://store/' + g.appid); } catch (err) { toast(T('ما قدرت أفتح المتجر', 'Couldn\'t open the Store')); } }
       });
+      this.update(true);
     },
     go(i, quiet) {
-      if (!this.games.length) return;
+      if (!this.games || !this.games.length) return;
       const n = Math.max(0, Math.min(this.games.length - 1, i));
       if (n === this.cur) return;
-      this.cur = n; if (!quiet) sfx('swish'); this.update();
-    },
-    key(e) {
-      // Big Picture: the "All games" grid under the carousel (entered with Down past its buttons, see padEdge);
-      // Up from its first row comes back to the carousel
-      if (BPM && this.gi >= 0) return this.gridKey(e);
-      // the strip runs in reading direction: Arabic → leftwards, English → rightwards
-      if (e.key === (LTR ? 'ArrowRight' : 'ArrowLeft')) { this.go(this.cur + 1); return true; }
-      if (e.key === (LTR ? 'ArrowLeft' : 'ArrowRight')) { this.go(this.cur - 1); return true; }
-      if (e.key === 'Enter' && this.games[this.cur]) { openGame(this.games[this.cur], this.source(this.games[this.cur].appid)); return true; }
-      return false;
-    },
-    /** Big Picture: the game X plays (the one in the middle, or the grid's card under the cursor) */
-    padGame() { return (this.games && this.games[this.gi >= 0 ? this.gi : this.cur]) || null; },
-    padEl() {
-      if (this.gi >= 0 && this.grid) return this.grid.children[this.gi] || null;
-      return (this.track && this.track.querySelector('.cf-item.center')) || null;
-    },
-    gi: -1,
-    /** Big Picture: Down past the buttons under the carousel (PLAY … Browse all games) enters the grid */
-    padEdge(dx, dy) {
-      if (!BPM || dy <= 0 || this.gi >= 0 || !this.grid || !this.games.length) return false;
-      this.gridGo(this.cur);
-      return true;
-    },
-    /** Big Picture: the grid cursor on card i (-1 = back up on the carousel) */
-    gridGo(i) {
-      const prev = this.gi >= 0 && this.grid.children[this.gi];
-      if (prev) prev.classList.remove('kf');
-      this.gi = i;
-      if (i < 0) {
-        // back on the carousel: it follows the card that was picked down there, and the page scrolls back up
-        for (let p = this.el && this.el.parentElement; p; p = p.parentElement) if (p.scrollTop) p.scrollTop = 0;
-        return;
-      }
-      const c = this.grid.children[i];
-      if (c) c.classList.add('kf');
-      this.go(i, true);
-    },
-    gridKey(e) {
-      const n = this.games.length, k = e.key;
-      const cols = Math.max(1, getComputedStyle(this.grid).gridTemplateColumns.split(' ').filter(Boolean).length);
-      const fwd = LTR ? 'ArrowRight' : 'ArrowLeft', back = LTR ? 'ArrowLeft' : 'ArrowRight';
-      let i = this.gi;
-      if (k === 'Enter') {
-        const c = this.grid.children[i];
-        if (c && !e.repeat) openGame(this.games[i], { el: $('.nf-art', c), slot: c, isSpine: false });
-        return true;
-      }
-      if (k === fwd) i = Math.min(n - 1, i + 1);
-      else if (k === back) i = Math.max(0, i - 1);
-      else if (k === 'ArrowDown') i = Math.min(n - 1, i + cols);
-      else if (k === 'ArrowUp') { if (i - cols < 0) { this.gridGo(-1); sfx('swish'); return true; } i -= cols; }
-      else if (k === 'PageDown') i = Math.min(n - 1, i + cols * 3);
-      else if (k === 'PageUp') i = Math.max(0, i - cols * 3);
-      else if (k === 'Escape') { this.gridGo(-1); return true; }
-      else return false;
-      if (i !== this.gi) { this.gridGo(i); sfx('tick'); }
-      return true;
+            this.cur = n; this.curId = this.games[n].appid;
+      if (!quiet) sfx('swish');
+      if (this.view === 'grid') this.gridGo(n, true); else this.update();
+      this.paintRail();
     },
     node(i) {
       let it = this.nodes.get(i);
       if (it) return it;
       const g = this.games[i];
-      it = div('cf-item', '<div class="cf-cover"></div>');
+      it = div('cf-item' + (g.installed ? '' : ' ni'), '<div class="cf-cover"></div>');
       it.dataset.i = i; it.dataset.appid = g.appid;
       it.style.transition = 'none';
+      it.firstChild.style.setProperty('--cap', cssUrl(first(g.images.capsule)));
       this.track.append(it);
       this.nodes.set(i, it);
-      const paint = gg => it.style.setProperty('--cap', cssUrl(first(gg.images.capsule)));
-      paint(g);
       return it;
     },
+    /** place the ~15 covers around the focused one (transform + opacity only) and fill the deck */
     update(instant) {
-      if (!this.games.length) return;
-      const lo = Math.max(0, this.cur - 9), hi = Math.min(this.games.length - 1, this.cur + 9);
+      if (!this.games.length || !this.track) return;
+      const R = 7, lo = Math.max(0, this.cur - R), hi = Math.min(this.games.length - 1, this.cur + R);
       for (const [i, it] of this.nodes) if (i < lo || i > hi) { it.remove(); this.nodes.delete(i); }
-      const cw = this.cardW;
+      const fresh = [];
       for (let i = lo; i <= hi; i++) {
+        const isNew = !this.nodes.has(i);
         const it = this.node(i);
-        const k = i - this.cur, a = Math.abs(k), s = LTR ? Math.sign(k) : -Math.sign(k); // later games sit on the reading-forward side
-        it.style.transform = k === 0 ? 'translateX(-50%) translateZ(140px)'
-          : `translateX(calc(-50% + ${s * (cw * 0.64 + (a - 1) * cw * 0.32)}px)) translateZ(${-a * 70}px) rotateY(${-s * 58}deg)`;
-        it.style.zIndex = String(100 - a);
-        it.style.opacity = a > 7 ? '0' : '1';
+        if (isNew && !instant) fresh.push(it);
+        const k = i - this.cur, a = Math.abs(k), s = (LTR ? 1 : -1) * Math.sign(k);
+        const tf = k === 0 ? 'translate3d(-50%, 0, calc(var(--cw) * .42))'
+          : `translate3d(calc(-50% + ${(s * (0.66 + (a - 1) * 0.27)).toFixed(3)} * var(--cw)), 0, calc(var(--cw) * ${(-0.16 - a * 0.1).toFixed(2)})) rotateY(${-s * 52}deg)`;
+        if (it._tf !== tf) { it._tf = tf; it.style.transform = tf; }
+        const z = String(100 - a);
+        if (it.style.zIndex !== z) it.style.zIndex = z;
+        const op = a >= R ? '0' : '1';
+        if (it.style.opacity !== op && !(isNew && !instant)) it.style.opacity = op;
+        if (isNew && !instant) it.style.opacity = '0';
         it.classList.toggle('center', k === 0);
       }
-      requestAnimationFrame(() => { for (const it of this.nodes.values()) it.style.transition = ''; });
-      const g = this.games[this.cur];
-      $('.cf-range', this.el).value = this.cur;
-      if (this.grid) {
-        const prev = this.grid.querySelector('.nf-card.cur'); if (prev) prev.classList.remove('cur');
-        const c = this.grid.querySelector(`.nf-card[data-i="${this.cur}"]`); if (c) c.classList.add('cur');
-      }
-      const fill = () => {
-        const run = SteamAPI.runningIds().has(g.appid);
-        $('.cf-name', this.el).textContent = g.name;
-        const ach = $('.cf-ach', this.el), ah = achHTML(g);
-        if (ach.innerHTML !== ah) ach.innerHTML = ah;
-        ach.hidden = !ah;
-        $('.cf-meta', this.el).innerHTML = `<span>${ic('clock')}${esc(fmtPlaytime(g.playtimeMin))}</span><span>${ic('calendar')}${esc(fmtAgo(g.lastPlayed))}</span>${g.sizeOnDisk ? `<span>${ic('drive')}${esc(fmtSize(g.sizeOnDisk))}</span>` : ''}${g.installed ? '' : `<span>${ic('download')}${esc(sizeText(g, true))}</span>`}${g.genres[0] ? `<span>${ic('tag')}${esc(g.genres[0])}</span>` : ''}`;
-        $('.cf-btn.play', this.el).innerHTML = run ? ic('pulse') + T('شغّالة', 'Running') : g.installed ? ic('play') + T('تشغيل', 'Play') : ic('download') + T('تثبيت', 'Install');
-        $('.cf-count', this.el).textContent = `${NUM.format(this.cur + 1)} / ${NUM.format(this.games.length)}`;
-        const bgs = this.el.querySelectorAll('.cf-bg-img');
-        this.bgFlip = !this.bgFlip;
-        const on = bgs[this.bgFlip ? 1 : 0], off = bgs[this.bgFlip ? 0 : 1];
-        // the backdrop is blurred 30 px anyway: the small header image looks the same and shows at once (no 1920 px hero)
-        on.style.backgroundImage = cssUrl(first(g.images.header) || first(g.images.capsule) || first(g.images.hero));
-        on.style.opacity = '1'; off.style.opacity = '0';
-      };
-      fill();
-      if (!g.detailed) Data.ensureDetails(g).then(() => { if (this.games[this.cur] === g) fill(); });
+      requestAnimationFrame(() => {
+        for (const it of this.nodes.values()) if (it.style.transition) it.style.transition = '';
+        for (const it of fresh) if (it.isConnected) it.style.opacity = Math.abs(+it.dataset.i - this.cur) >= R ? '0' : '1';
+      });
+      this.fill();
     },
+    /** the deck under the focused cover */
+    fill() {
+      const g = this.games[this.cur], el = this.el;
+      if (!g || !el || !this.track) return;
+      const run = SteamAPI.runningIds().has(g.appid);
+      const st = run ? ['run', T('شغّالة الحين', 'Running now')] : g.installed ? ['in', T('مثبتة', 'Installed')] : ['out', T('غير مثبتة', 'Not installed')];
+      const size = g.installed ? (g.sizeOnDisk ? `${fmtSize(g.sizeOnDisk)}${g.drive ? ' · ' + g.drive : ''}` : '')
+        : g.needBytes ? T(`${fmtSize(g.needBytes)} للتحميل`, `${fmtSize(g.needBytes)} download`) : '';
+      const html = (id, h) => { const n = $(id, el); if (n && n.innerHTML !== h) n.innerHTML = h; };
+      html('.cf-state', `<i class="${st[0]}"></i><span>${st[1]}</span>${size ? `<span class="sz">${ic(g.installed ? 'drive' : 'download')}${esc(size)}</span>` : ''}${g.genres[0] ? `<span class="gn" dir="auto">${esc(g.genres.slice(0, 2).join(' · '))}</span>` : ''}`);
+      const nm = $('.cf-name', el); if (nm.textContent !== g.name) { nm.textContent = g.name; nm.title = g.name; }
+      html('.cf-meta', `<span title="${T('وقت اللعب', 'Play time')}">${ic('hourglass')}${esc(fmtPlaytime(g.playtimeMin))}</span>`
+        + `<span title="${T('آخر مرة لعبت', 'Last played')}">${ic('clock')}${esc(g.lastPlayed ? fmtAgo(g.lastPlayed) : T('ما لعبتها بعد', 'Never played'))}</span>`
+        + (achHTML(g) || (g.achKnown ? `<span class="dim">${ic('trophy')}${T('بدون إنجازات', 'No achievements')}</span>` : '')));
+      html('.cf-btn.play', run ? ic('pulse') + `<span>${T('شغّالة', 'Running')}</span>`
+        : g.installed ? ic('play') + `<span>${T('تشغيل', 'Play')}</span>`
+          : ic('download') + `<span>${T('تثبيت', 'Install')}</span>${g.needBytes ? `<small>${esc(fmtSize(g.needBytes))}</small>` : ''}`);
+      $('.cf-btn.play', el).classList.toggle('is-running', run);
+      // the backdrop follows once you stop on a game (a blurred layer is too costly to swap 30 times a second)
+      clearTimeout(this.bgT);
+      this.bgT = setTimeout(() => this.paintBg(g), this.bgG ? 140 : 0);
+      if (!g.detailed) {
+        // the neighbours first, the focused game last = first in line (the details queue is newest-first)
+        for (const j of [this.cur + 2, this.cur - 1, this.cur + 1]) if (this.games[j] && !this.games[j].detailed) Data.ensureDetails(this.games[j]);
+        Data.ensureDetails(g).then(() => { if (this.games[this.cur] === g && this.view === 'flow') this.fill(); });
+      }
+    },
+    paintBg(g) {
+      if (this.view !== 'flow' || this.games[this.cur] !== g || this.bgG === g) return;
+      const bgs = this.el && this.el.querySelectorAll('.cf-bg-img');
+      if (!bgs || bgs.length < 2) return;
+      this.bgG = g; this.bgFlip = !this.bgFlip;
+      const on = bgs[this.bgFlip ? 1 : 0], off = bgs[this.bgFlip ? 0 : 1];
+      on.style.backgroundImage = cssUrl(first(g.images.header) || first(g.images.capsule));
+      on.style.opacity = '1'; off.style.opacity = '0';
+    },
+    /* ---- GRID ---- */
+    buildGrid(wrap, games) {
+      const grid = $('.cf-grid', wrap);
+      this.grid = grid; this.cards = [];
+      if (!games.length) { grid.innerHTML = `<div class="rf-empty">${T('ما لقيت شي يطابق بحثك', 'Nothing matches your search')}</div>`; return; }
+      const running = SteamAPI.runningIds();
+      const sub = g => state.sort === 'recent' ? (g.lastPlayed ? fmtAgo(g.lastPlayed) : T('ما انلعبت', 'Never played'))
+        : state.sort === 'size' ? sizeText(g)
+          : state.sort === 'playtime' || g.installed ? fmtPlaytime(g.playtimeMin) : sizeText(g);
+      const frag = document.createDocumentFragment();
+      this.secs.forEach((s, k) => {
+        const h = div('cf-gh', `<b dir="auto">${esc(s.label)}</b><span>${esc(fmtGames(s.count))}</span>`);
+        h.dataset.s = k;
+        frag.append(h);
+        for (let i = s.start; i < s.start + s.count; i++) {
+          const g = games[i];
+          const c = div('nf-card' + (g.installed ? '' : ' ni') + (running.has(g.appid) ? ' run' : ''));
+          c.dataset.appid = g.appid; c.dataset.i = i;
+          c.innerHTML = `<div class="nf-art"><button class="nf-play" tabindex="-1" title="${g.installed ? T('تشغيل', 'Play') : T('تثبيت', 'Install')}">${ic(g.installed ? 'play' : 'download')}</button></div><div class="nf-name" dir="auto">${esc(g.name)}</div><div class="nf-sub"></div>`;
+          const sb = c.lastChild;
+          lazy(c, gg => { c.style.setProperty('--cap', cssUrl(first(gg.images.capsule))); const t = sub(gg); if (sb.textContent !== t) sb.textContent = t; });
+          this.cards[i] = c;
+          frag.append(c);
+        }
+      });
+      grid.append(frag);
+      grid.addEventListener('click', e => {
+        const c = e.target.closest('.nf-card'); if (!c) return;
+        const i = +c.dataset.i, g = this.games[i];
+        this.go(i, true);
+        if (e.target.closest('.nf-play')) { launch(g); return; }
+        openGame(g, this.source(g.appid));
+      });
+    },
+    afterGrid() {
+      if (!this.grid || !this.games.length) return;
+      this.gridGo(this.cur, false);
+      // keep the cursor's card in view (centred) when the grid opens
+      const c = this.cards[this.cur];
+      if (c && this.cur > 0) requestAnimationFrame(() => this.reveal(c, true));
+      // the rail lights the section you are scrolling through
+      const heads = [...this.grid.querySelectorAll('.cf-gh')];
+      this.io = new IntersectionObserver(() => {
+        const lim = (this.el.querySelector('.cf-top').getBoundingClientRect().bottom || 0) + 40;
+        let k = 0;
+        for (const h of heads) { if (h.getBoundingClientRect().top <= lim) k = +h.dataset.s; else break; }
+        if (k !== this.scrollSec) { this.scrollSec = k; this.paintRail(k); }
+      }, { rootMargin: '0px 0px -60% 0px', threshold: [0, 1] });
+      heads.forEach(h => this.io.observe(h));
+    },
+    /** the grid cursor (the same game the coverflow shows) */
+    gridGo(i, show) {
+      const old = this.gi >= 0 && this.cards[this.gi];
+      if (old) old.classList.remove('kf');
+      this.gi = i;
+      const c = this.cards && this.cards[i];
+      if (!c) return;
+      c.classList.add('kf');
+      if (show) this.reveal(c, false);
+    },
+    /** scroll the card into view below the sticky top panel (works inside Big Picture's zoomed box too);
+        centre: true = centred, 'top' = right under the panel */
+    reveal(el, centre) {
+      let p = this.el && this.el.parentElement;
+      for (; p; p = p.parentElement) { const cs = getComputedStyle(p); if (/(auto|scroll)/.test(cs.overflowY) && p.scrollHeight > p.clientHeight + 1) break; }
+      if (!p) return;
+      const er = el.getBoundingClientRect(), pr = p.getBoundingClientRect();
+      const top = Math.max(pr.top, $('.cf-top', this.el).getBoundingClientRect().bottom) + 12, bot = pr.bottom - 14;
+      if (centre === 'top') { p.scrollTop += er.top - top; return; }
+      if (centre) { p.scrollTop += er.top - (top + bot - er.height) / 2; return; }
+      if (er.top < top) p.scrollTop -= top - er.top;
+      else if (er.bottom > bot) p.scrollTop += er.bottom - bot;
+    },
+    cols() {
+      if (!this.grid) return 1;
+      if (this.colsW !== this.grid.clientWidth) { this.colsW = this.grid.clientWidth; this.colsN = Math.max(1, getComputedStyle(this.grid).gridTemplateColumns.split(' ').filter(Boolean).length); }
+      return this.colsN;
+    },
+    /** ↑ / ↓ in the grid: the same column one row up / down; rows never cross a section header sideways */
+    gridRow(i, dir) {
+      const C = this.cols(), S = this.secs, k = this.secAt(i), s = S[k];
+      const col = (i - s.start) % C, row = Math.floor((i - s.start) / C), rows = Math.ceil(s.count / C);
+      if (dir > 0) {
+        if (row + 1 < rows) return Math.min(s.start + s.count - 1, i + C);
+        const n = S[k + 1]; return n ? n.start + Math.min(col, n.count - 1) : i;
+      }
+      if (row > 0) return i - C;
+      const p = S[k - 1]; if (!p) return -1;
+      const lastRow = Math.floor((p.count - 1) / C);
+      return p.start + Math.min(p.count - 1, lastRow * C + col);
+    },
+    /* ---- shared navigation ---- */
+    setView(v) {
+      if (v !== 'grid') v = 'flow';
+      if (v === this.view) return;
+      this.view = v; store.set('neonView', v);
+      sfx('swish');
+      render();
+    },
+    /** go to section k (rail click, LB / RB) */
+    jumpTo(k) {
+      const s = this.secs && this.secs[k]; if (!s) return;
+      if (this.view === 'grid') {
+        this.go(s.start, true); sfx('swish');
+        const h = this.grid.querySelector(`.cf-gh[data-s="${k}"]`);
+        if (h) this.reveal(h, 'top'); // the section's title right under the top panel
+        this.scrollSec = k; this.paintRail(k);
+        return;
+      }
+      this.go(s.start);
+    },
+    /** PageDown / RB: the next section; PageUp / LB: the start of this section, or the one before */
+    jump(dir) {
+      const k = this.secAt(this.cur), s = this.secs[k];
+      if (dir > 0) { if (k + 1 < this.secs.length) this.jumpTo(k + 1); else if (this.cur !== this.games.length - 1) this.go(this.games.length - 1); return; }
+      this.jumpTo(this.cur > s.start ? k : Math.max(0, k - 1));
+    },
+    paintRail(k = this.secAt(this.cur)) {
+      if (!this.rail) return;
+      for (const b of this.rail.children) b.classList.toggle('on', +b.dataset.s === k);
+      const cnt = this.el && $('.cf-count', this.el);
+      if (cnt) { const t = this.games.length ? `${NUM.format(this.cur + 1)} / ${NUM.format(this.games.length)}` : fmtGames(0); if (cnt.textContent !== t) cnt.textContent = t; }
+      // a long rail keeps its lit chip in view
+      const on = this.rail.children[k];
+      if (on && this.rail.scrollWidth > this.rail.clientWidth + 2) {
+        const r = on.getBoundingClientRect(), R = this.rail.getBoundingClientRect();
+        if (r.left < R.left + 8) this.rail.scrollLeft -= R.left + 8 - r.left;
+        else if (r.right > R.right - 8) this.rail.scrollLeft += r.right - R.right + 8;
+      }
+    },
+    key(e) {
+      const n = this.games ? this.games.length : 0, k = e.key;
+      if (!n || !this.el || !this.el.isConnected) return false;
+      const fwd = LTR ? 'ArrowRight' : 'ArrowLeft', back = LTR ? 'ArrowLeft' : 'ArrowRight';
+      if ((k === 'g' || k === 'G') && !e.ctrlKey && !e.altKey && !e.metaKey) { this.setView(this.view === 'grid' ? 'flow' : 'grid'); return true; }
+      if (k === 'PageDown' || k === 'PageUp') { this.jump(k === 'PageDown' ? 1 : -1); return true; }
+      if (k === 'Home' || k === 'End') { this.go(k === 'Home' ? 0 : n - 1); return true; }
+      if (k === 'Enter') {
+        const g = this.games[this.cur];
+        if (g && !e.repeat) { if (e.ctrlKey || e.shiftKey) launch(g); else openGame(g, this.source(g.appid)); }
+        return true;
+      }
+      if (this.view === 'grid') {
+        let i = this.cur;
+        if (k === fwd) i = Math.min(n - 1, i + 1);
+        else if (k === back) i = Math.max(0, i - 1);
+        else if (k === 'ArrowDown') i = this.gridRow(i, 1);
+        else if (k === 'ArrowUp') { i = this.gridRow(i, -1); if (i < 0) return true; } // top row: Big Picture goes on to Steam's top bar
+        else if (k === 'Escape' && BPM) { this.setView('flow'); return true; } // B: back to the coverflow
+        else return false;
+        if (i !== this.cur) { this.go(i, true); sfx('tick'); }
+        return true;
+      }
+      if (k === fwd) { this.go(this.cur + 1, e.repeat); return true; }
+      if (k === back) { this.go(this.cur - 1, e.repeat); return true; }
+      // Big Picture: ↓ goes down into PLAY / Details / Game page / Store, ↑ on to Steam's top bar (the host does both)
+      if (k === 'ArrowDown' || k === 'ArrowUp') { if (BPM) return false; this.jump(k === 'ArrowDown' ? 1 : -1); return true; }
+      return false;
+    },
+    /** Big Picture: X plays this one */
+    padGame() { return (this.games && this.games[this.cur]) || null; },
+    /** Big Picture: the element the controller's cursor is on */
+    padEl() {
+      if (this.view === 'grid') return (this.cards && this.cards[this.cur]) || null;
+      return (this.track && this.track.querySelector('.cf-item.center')) || null;
+    },
+    /** Big Picture LT: switch Coverflow ⇄ Grid (the legend shows padAuxLabel) */
+    padAux() { this.setView(this.view === 'grid' ? 'flow' : 'grid'); },
+    padEdge() { return false; }, // past the deck's buttons: back to the covers
     source(appid) {
+      if (this.view === 'grid') {
+        const c = this.grid && this.grid.querySelector(`.nf-card[data-appid="${appid}"] .nf-art`);
+        return c ? { el: c, slot: c.parentElement, isSpine: false } : null;
+      }
       const it = this.track && this.track.querySelector(`.cf-item[data-appid="${appid}"] .cf-cover`);
       return it ? { el: it, slot: it.parentElement, isSpine: false } : null;
     },
@@ -1401,6 +1634,7 @@
     if (lay.dockInside && !BPM) dockBar(); // Big Picture: no filter strip (a controller can't type into it)
     keep();
     updateBar();
+    renderedFor = renderKey();
   }
   /** the filter strip (search · source · sort · view …) lives inside the home design, right above the games */
   function dockBar() {
@@ -1657,6 +1891,7 @@
     sheet.replaceChildren();
     placeSheet();
     sheet.classList.add('on');
+    document.documentElement.classList.add('rfs-sheet-on'); // for the designs' CSS (an html:has(#rfs-sheet.on) rule re-checked the page on every change)
     try { await lay.open(g, sheet, src || null); } catch (err) { LOG('layout open failed', err); }
     busy = false;
   }
@@ -1665,6 +1900,7 @@
     const lay = L();
     try { if (!fast && typeof lay.close === 'function') await Promise.race([lay.close(sheet, current.g), wait(1500)]); } catch (err) { LOG('layout close failed', err); }
     sheet.classList.remove('on');
+    document.documentElement.classList.remove('rfs-sheet-on');
     sheet.replaceChildren();
     current = null; busy = false;
   }
@@ -1946,21 +2182,31 @@
       const mine = document.querySelector('link[href*="/src/styles/"]');
       if (!mine) return false;
       const href = mine.href.replace(/\/src\/styles\/[^/?#]+\.css/, `/src/styles/${st.sid}.css`);
+      // the new design's own module (JS + CSS) starts loading now, alongside the style sheet — it used to wait until
+      // the sheet was in and the next tick read --rf-layout (≈ 0.7 s more before the new home design appeared)
+      if (st.layout && !['original', 'space', 'material'].includes(st.layout) && !LAYOUTS[st.layout] && (!BPM || BPM_LAYOUTS.has(st.layout))) loadLayout(st.layout);
       const r = await set(await SteamAPI.themeNative(), st.value, 'Style'); // remembered for the next start
       if (r && r.success === false) return false;
       try { localStorage.setItem('rfs.style', st.sid); } catch (e) { /* the store reads it */ }
-      const swaps = docs.map(d => new Promise(done => {
+      const swap = d => new Promise(done => {
         const old = d.querySelector('link[href*="/src/styles/"]');
         if (!old) { done(); return; }
         const nl = d.createElement('link');
         nl.rel = 'stylesheet'; nl.href = href; nl.id = old.id;
         // the old sheet goes only once the new one is in: no unstyled frame in between
-        const fin = () => { for (const l of d.querySelectorAll('link[href*="/src/styles/"]')) if (l !== nl) l.remove(); try { const w = d.defaultView; if (w && w.__rfsSkin && w.__rfsSkin.restyle) w.__rfsSkin.restyle(); } catch (e) { /* ignore */ } done(); };
+        // only the sheets that were there before go: removing "every other one" raced with skin.js followStyle (its own
+        // swap in the same window) — each removed the other's new sheet and the window was left with no style at all
+        const olds = [...d.querySelectorAll('link[href*="/src/styles/"]')];
+        let finished = false;
+        const fin = () => { if (finished) return; finished = true; for (const l of olds) l.remove(); try { const w = d.defaultView; if (w && w.__rfsSkin && w.__rfsSkin.restyle) w.__rfsSkin.restyle(); } catch (e) { /* ignore */ } done(); };
         nl.onload = fin; nl.onerror = fin;
         old.after(nl);
         setTimeout(fin, 4000);
-      }));
-      await Promise.race([swaps[0], new Promise(r => setTimeout(r, 4000))]);
+      });
+      // the main window first; the ~25 popup windows (menus, mostly hidden) share its main thread, so they follow one
+      // at a time once it is done instead of all restyling in the same moment as the main window
+      await Promise.race([swap(document), new Promise(r => setTimeout(r, 4000))]);
+      (async () => { for (const d of docs.slice(1)) { await new Promise(r => setTimeout(r, 16)); try { await swap(d); } catch (e) { /* closed meanwhile */ } } })();
       lastLayoutCheck = 0; placement.key = ''; tick(true);
       picker.classList.remove('busy'); clearTimeout(busyT);
       this.close();
@@ -2017,6 +2263,24 @@
     },
   };
 
+  /* pointing at (or arrowing to) a style in the picker fetches its style sheet and its design module ahead of the
+     click, so the switch itself only has to apply them: a first switch to a style waited ~0.5-1 s for its files */
+  const prefetched = new Set();
+  function prefetchStyle(value) {
+    const st = STYLES.find(s => s.value === value);
+    const mine = document.querySelector('link[href*="/src/styles/"]');
+    if (!st || !mine || prefetched.has(st.sid)) return;
+    prefetched.add(st.sid);
+    const pre = (href, as) => { const l = document.createElement('link'); l.rel = 'preload'; l.as = as; l.href = href; l.dataset.rfsPre = st.sid; document.head.appendChild(l); };
+    pre(mine.href.replace(/\/src\/styles\/[^/?#]+\.css/, `/src/styles/${st.sid}.css`), 'style');
+    if (st.layout && !['original', 'space', 'material'].includes(st.layout) && !LAYOUTS[st.layout] && !EXT[st.layout] && (!BPM || BPM_LAYOUTS.has(st.layout))) {
+      pre(themeBase + 'src/layouts/' + st.layout + '.css', 'style');
+      pre(themeBase + 'src/layouts/' + st.layout + '.js', 'script');
+    }
+  }
+  const onCardIntent = e => { const c = e.target.closest && e.target.closest('.tp-card'); if (c && !c.classList.contains('tp-locked')) prefetchStyle(c.dataset.value); };
+  picker.addEventListener('pointerover', onCardIntent);
+  picker.addEventListener('focusin', onCardIntent);
   picker.addEventListener('click', e => {
     const sb = e.target.closest('.tp-snd button');
     if (sb) { setSound(sb.dataset.snd === 'on'); return; }
@@ -2058,19 +2322,25 @@
      placement: fills the whole library home panel
      ================================================================= */
   const placement = { mode: '', height: 0, key: '' };
+  /* what the design on the stage was last built for: coming back to the library home with the same size, design and
+     games, the built design is put back as it was instead of rebuilding 900+ games (docs/PERFORMANCE.md) */
+  let renderedFor = '', routeChangedAt = 0, lastTickAt = 0;
+  const renderKey = () => [placement.key, state.layout, state.sig, state.source, state.sort, state.genre, state.query, state.view, LANG].join('|');
   let loaded = false, lastSigCheck = 0, lastLayoutCheck = 0;
   function place(panel) {
     const upd = SteamAPI.updatesBlock();
     const pr = panel.getBoundingClientRect();
     if (upd && upd.parentElement && upd.parentElement.parentElement) {
       const wrapper = upd.parentElement, inner = wrapper.parentElement;
-      upd.setAttribute('data-rfs-upd', '');
-      inner.setAttribute('data-rfs-home', '');
+      // the What's New block is hidden while the design shows (unless the user turned it on): it takes no height then
+      const wrapH = state.news ? wrapper.offsetHeight : 0; // read before any write (one layout instead of two)
+      if (!upd.hasAttribute('data-rfs-upd')) upd.setAttribute('data-rfs-upd', '');
+      if (!inner.hasAttribute('data-rfs-home')) inner.setAttribute('data-rfs-home', '');
       if (root.parentElement !== inner || root.previousElementSibling !== wrapper) wrapper.after(root);
       root.classList.remove('overlay');
       Object.assign(root.style, { left: '', top: '', width: '' });
       placement.mode = 'embed';
-      placement.height = Math.max(520, Math.round(pr.height - wrapper.offsetHeight));
+      placement.height = Math.max(520, Math.round(pr.height - wrapH));
       root.style.minHeight = placement.height + 'px';
     } else {
       if (root.parentElement !== document.body) document.body.appendChild(root);
@@ -2218,7 +2488,8 @@
   function placeBar(onHome, panel) {
     // the nav row rarely changes: re-place THEMES once a second (or at once if Steam re-rendered the row)
     const nowT = Date.now();
-    if (!navWrap.isConnected || nowT - navCheckAt > 1000) { navCheckAt = nowT; navOk = placeNavTheme(); }
+    // (not in the first half second after a page change: its size reads would force an extra full restyle then)
+    if (!navWrap.isConnected || (nowT - navCheckAt > 1000 && nowT - routeChangedAt > 500)) { navCheckAt = nowT; navOk = placeNavTheme(); }
     else navTheme.classList.toggle('rfs-open', Themes.isOpen());
     bar.classList.toggle('has-nav', navOk);
     bar.classList.toggle('home', !!onHome);
@@ -2256,6 +2527,7 @@
     if (!SteamAPI.ready() || !document.body) return;
     mount();
     const now = Date.now();
+    lastTickAt = now;
     if (force || now - lastLayoutCheck > 800) {
       lastLayoutCheck = now;
       const lay = themeVar('--rf-layout', 'shelf');
@@ -2267,6 +2539,9 @@
         if (LAYOUTS[lay] || EXT[lay]) { state.layout = lay; placement.key = ''; }
         else if (!BPM || BPM_LAYOUTS.has(lay)) loadLayout(lay); // a plug-in theme: its module registers itself, then the next tick switches to it
       }
+      // only the chosen design's stylesheet stays on: every loaded one was matched against the whole page on each
+      // style recalc (5 designs loaded after a few switches = ~20 % more style work on every change)
+      for (const l of document.querySelectorAll('link[data-rfs-layout]')) { const m = l.dataset.rfsLayout === lay ? '' : 'not all'; if (l.media !== m) l.media = m; }
       // language changed behind our back (Millennium settings) → reload the UI once in the new language
       const lang = normLang(themeVar('--rf-lang', ''));
       if (!BPM && lang && lang !== LANG) Lang.follow(lang);
@@ -2290,13 +2565,24 @@
         const changed = key !== placement.key;
         placement.key = key;
         if (BPM) Bpm.place(panel); else place(panel);
-        if (loaded && (changed || force)) render();
+        // never rebuild for the size the design already has; and coming back to the home page, the design built
+        // last time is re-attached first (just below) — Steam's home settles its size over a few frames
+        const back = !BPM && !root.classList.contains('on') && !!stage.firstElementChild;
+        if (loaded && (force || (changed && !back && renderedFor !== renderKey()))) render();
       }
     }
     if (show && !root.classList.contains('on')) {
       root.classList.add('on');
       if (!loaded) { try { Data.load(); loaded = true; } catch (err) { LOG('load failed', err); } }
-      render();
+      // back from a game page / the store with nothing changed: the design built last time is already in #rfs
+      // (place() re-attached it) — keep it instead of rebuilding it (Big Picture always rebuilds: its pad focus lives there)
+      const rk = renderKey(), sameButSize = renderedFor.split('|').slice(1).join('|') === rk.split('|').slice(1).join('|');
+      if (BPM || !stage.firstElementChild || (renderedFor !== rk && !sameButSize)) render();
+      else {
+        dockBar(); updateBar(); // the filter strip went to <body> while away: back into its slot
+        // only the size differs (often a frame of Steam's own transition): look again shortly and rebuild only if it stays
+        if (renderedFor !== rk) { placement.key = '?'; setTimeout(() => tick(false), 120); }
+      }
     } else if (!show && root.classList.contains('on')) {
       root.classList.remove('on'); hideTip();
       if (BPM) Bpm.off();
@@ -2744,14 +3030,33 @@
     };
   })();
 
-  const tickTimer = setInterval(() => { if (!document.hidden) tick(false); }, 300); // nothing to do while Steam is hidden
+  const tickTimer = setInterval(() => { if (!document.hidden && Date.now() - lastTickAt > 150) tick(false); }, 300); // nothing to do while Steam is hidden (or just ticked for a page change)
+  /* a page change is acted on in the next frame instead of at the next 300 ms tick (on average 150 ms sooner home
+     design / Steam page). The route is one string read — no DOM work — so checking it often costs nothing. Coming
+     back to the library home, the tick waits for Steam's own home to be in the DOM (our design sits right under it). */
+  let lastRoute = '', routeRaf = 0, routeTries = 0; // routeChangedAt: declared with the tick state
+  const routeKick = () => {
+    routeRaf = 0;
+    if (document.hidden) return;
+    if (!BPM && SteamAPI.isLibraryHome() && !SteamAPI.updatesBlock() && ++routeTries < 30) { routeRaf = requestAnimationFrame(routeKick); return; }
+    // the 300 ms tick already handled this page (each tick forces a restyle, so never two in a row for nothing)
+    if (lastTickAt >= routeChangedAt && (!SteamAPI.isLibraryHome() || root.classList.contains('on') || BPM)) return;
+    tick(false);
+  };
+  const routeTimer = setInterval(() => {
+    if (document.hidden) return;
+    const r = SteamAPI.route();
+    if (r === lastRoute) return;
+    lastRoute = r; routeTries = 0; routeChangedAt = Date.now();
+    if (!routeRaf) routeRaf = requestAnimationFrame(routeKick);
+  }, 40);
 
   /* ---- dev helpers */
   window.__rfsShelf = {
     version: VERSION, SteamAPI, Data, state, Palette, Themes, Lang, lang: LANG,
-    reload: () => { Data.load(); render(); },
+    reload: () => { Data.load(); render(); }, get renderCache() { return { renderedFor, now: renderKey() }; }, // dev: why the home design was (not) rebuilt
     destroy() {
-      clearInterval(tickTimer);
+      clearInterval(tickTimer); clearInterval(routeTimer); cancelAnimationFrame(routeRaf);
       Sfx.stopAmb();
       Bpm.destroy();
       window.removeEventListener('keydown', onKey, true);

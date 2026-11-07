@@ -1,4 +1,4 @@
-import { waitForElement, createContainerTracker } from './utils.js';
+import { waitForElement, createContainerTracker, steamOnly } from './utils.js';
 
 // Move setting option input element into the title element for better styling
 async function moveSettingsOptions() {
@@ -23,7 +23,7 @@ async function moveSettingsOptions() {
     };
     moveElements();
     
-    const rootObserver = new MutationObserver(moveElements);
+    const rootObserver = new MutationObserver(steamOnly(moveElements));
     rootObserver.observe(document.body, {
         subtree: true,
         childList: true
@@ -65,7 +65,7 @@ function wrapMillenniumCards() {
     };
     wrapCards();
 
-    const rootObserver = new MutationObserver(wrapCards);
+    const rootObserver = new MutationObserver(steamOnly(wrapCards));
     rootObserver.observe(document.body, {
         subtree: true,
         childList: true

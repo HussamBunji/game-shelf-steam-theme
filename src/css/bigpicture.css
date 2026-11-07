@@ -241,12 +241,22 @@ html.rfs-bpm :is(#rfs, #rfs-sheet) .rfs-padf {
 #rfs-bpm-legend kbd.key { min-width: 34px; width: auto; height: 24px; padding: 0 7px; border-radius: 5px; font-size: 12px !important; }
 #rfs-bpm-legend kbd.bump { min-width: 38px; height: 22px; border-radius: 8px 8px 4px 4px; background: var(--bpm-text); color: var(--bpm-bg); font-size: 11px !important; }
 
-/* Neon Coverflow: the controller's card in the "All games" grid under the carousel */
-html.rfs-bpm #rfs .cf-grid .nf-card.kf {
-  position: relative; z-index: 2; transform: translateY(-3px) scale(1.06);
-  outline: 4px solid var(--bpm-acc); outline-offset: 4px;
+/* Neon Coverflow (shelf.js CoverflowLayout): D-pad / LB RB / LT do what the arrows, key hints and toggle do on the desktop,
+   so those are hidden; the rail shows the bumper glyphs instead. The deck's buttons get the host's .rfs-padf ring. */
+html.rfs-bpm #rfs[data-layout="coverflow"] :is(.cf-keys, .cf-nav, .nf-play) { display: none !important; }
+html.rfs-bpm #rfs[data-layout="coverflow"] .cf-stage { cursor: default; }
+html.rfs-bpm #rfs[data-layout="coverflow"] .cf-deck { margin-top: -20px; padding-bottom: 18px; }
+html.rfs-bpm #rfs[data-layout="coverflow"] .cf-pad {
+  flex: none; display: inline-grid; place-items: center; min-width: 32px; height: 20px; padding: 0 5px; margin-inline-end: -4px;
+  border-radius: 7px 7px 3px 3px; font: normal 800 10.5px/1 'Segoe UI', sans-serif !important; color: var(--bpm-bg); background: var(--bpm-text);
+}
+/* the controller's card in the grid: a thick lit frame round the cover, readable across the room */
+html.rfs-bpm #rfs[data-layout="coverflow"] .nf-card.kf { z-index: 2; }
+html.rfs-bpm #rfs[data-layout="coverflow"] .nf-card.kf .nf-art {
+  transform: translateY(-3px) scale(1.05); outline: 4px solid var(--bpm-acc); outline-offset: 4px;
   box-shadow: 0 0 0 2px var(--bpm-text), 0 0 30px rgba(var(--bpm-glow), .75);
 }
+html.rfs-bpm #rfs[data-layout="coverflow"] .nf-card.kf .nf-name { color: #fff; }
 
 /* the designs' own game cursors, thicker for a TV across the room (the desktop keeps its finer rings) */
 html.rfs-bpm #rfs[data-layout="vault"] .vt-slot.kf { outline: 4px solid var(--bpm-acc) !important; outline-offset: 4px !important; box-shadow: 0 0 28px rgba(var(--bpm-glow), .75); }

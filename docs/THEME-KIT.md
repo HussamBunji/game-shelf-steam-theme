@@ -152,6 +152,12 @@ The picker card is 150 px tall. It contains `<div class="tp-prev tp-<id>">` hold
 7. **Write to the DOM only in `render()` / on user input.** Never in timers. `classList.add` on a class that is already there still counts as a DOM change, so use `classList.toggle(x, bool)`.
 8. **No filters (`filter: blur/drop-shadow/saturate`) on repeated elements.**
 9. **Don't load fonts or libraries yourself.** The style file's `--rf-font-gf` does it.
+10. **Anything you redraw every frame goes in a shadow root.** The community base has page-wide `:has()` rules (one even
+    matches an SVG path's `d`), so a DOM change in the page re-checks them up to `<html>` and restyles every icon:
+    the Crossbar waves cost ~9 ms a frame in the page and ~0.2 ms in a shadow root (see `xmb.js` `waveHost`).
+11. **No `html:has(…)` / `body:has(…)` rules of your own.** Put a class on `<html>` from JS instead.
+12. **Your `render()` is skipped when nothing changed.** Coming back to the library home re-attaches the design you
+    built last time. Don't count on `render()` running on each visit (timers check `api.root.classList.contains('on')`).
 
 ## UX rules (the owner's)
 

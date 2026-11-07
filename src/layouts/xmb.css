@@ -36,16 +36,8 @@ html[data-rfs-lang="ar"] #rfs[data-layout="xmb"] { --xb-to-end: left; --xb-to-st
   transition: opacity .5s ease-out;
 }
 #rfs[data-layout="xmb"] .xb-art.on { opacity: .34; }
-#rfs[data-layout="xmb"] .xb-wave { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-/* the paths' shapes are redrawn by xmb.js (≤ 30 fps); CSS only paints them */
-#rfs[data-layout="xmb"] .xb-wave .band { fill: url(#xbw-fill); }
-#rfs[data-layout="xmb"] .xb-wave .band.b1 { opacity: .6; }
-#rfs[data-layout="xmb"] .xb-wave :is(.glow, .line, .strand) { fill: none; vector-effect: non-scaling-stroke; stroke-linecap: round; }
-#rfs[data-layout="xmb"] .xb-wave .glow { stroke: rgba(var(--xb-g), .2); stroke-width: 10; }
-#rfs[data-layout="xmb"] .xb-wave .line.l0 { stroke: rgba(255, 255, 255, .7); stroke-width: 1.4; }
-#rfs[data-layout="xmb"] .xb-wave .line.l1 { stroke: rgba(255, 255, 255, .34); stroke-width: 1.1; }
-#rfs[data-layout="xmb"] .xb-wave .strand { stroke: rgba(255, 255, 255, .3); stroke-width: 1; }
-#rfs[data-layout="xmb"] .xb-wave .strand.dim { stroke: rgba(255, 255, 255, .17); }
+/* the waves: an SVG in a shadow root of .xb-wave-host (its CSS is in xmb.js WAVE_CSS — page rules can't reach it) */
+#rfs[data-layout="xmb"] .xb-wave-host { position: absolute; inset: 0; pointer-events: none; }
 
 /* ═════════════ the top: only the clock and the date at the top end, like the console ═════════════ */
 #rfs[data-layout="xmb"] .xb-top {

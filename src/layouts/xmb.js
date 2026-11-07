@@ -123,9 +123,30 @@
       + `<path class="band b0" data-w="b0" d="${f.b0}"/><use class="glow" href="#xbw-l0"/><path id="xbw-l0" class="line l0" data-w="l0" d="${f.l0}"/>`
       + `<path class="strand" data-w="s1" d="${f.s1}"/><path class="strand dim" data-w="s2" d="${f.s2}"/></svg>`;
   }
+  /* the wave lives in its own shadow root: redrawing its paths 30 times a second used to restyle the whole Steam
+     window — the community base has page-wide :has() rules (one matches on a path's "d" attribute), so every
+     path change re-checked them from the path up to <html> and restyled every icon (≈ 9 ms a frame, ~30 % of the
+     main thread at rest). Changes inside a shadow root never reach the page's :has() rules. Same drawing as before. */
+  const WAVE_CSS = `:host { position: absolute; inset: 0; display: block; pointer-events: none; }
+    .xb-wave { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+    .band { fill: url(#xbw-fill); }
+    .band.b1 { opacity: .6; }
+    :is(.glow, .line, .strand) { fill: none; vector-effect: non-scaling-stroke; stroke-linecap: round; }
+    .glow { stroke: rgba(var(--xb-g), .2); stroke-width: 10; }
+    .line.l0 { stroke: rgba(255, 255, 255, .7); stroke-width: 1.4; }
+    .line.l1 { stroke: rgba(255, 255, 255, .34); stroke-width: 1.1; }
+    .strand { stroke: rgba(255, 255, 255, .3); stroke-width: 1; }
+    .strand.dim { stroke: rgba(255, 255, 255, .17); }`;
+  function waveHost(host) {
+    if (!host) return null;
+    const sr = host.shadowRoot || host.attachShadow({ mode: 'open' });
+    sr.innerHTML = `<style>${WAVE_CSS}</style>${waveSVG()}`;
+    return sr.querySelector('.xb-wave');
+  }
   const Wave = {
     svg: null, paths: null, raf: 0, idle: 0, last: 0,
     attach(svg) {
+      if (!svg) return;
       this.svg = svg; this.paths = {};
       for (const p of svg.querySelectorAll('[data-w]')) this.paths[p.dataset.w] = p;
       this.kick();
@@ -384,7 +405,7 @@
         + `<button type="button" class="xb-k wide" data-k=" " tabindex="-1">${esc(T('مسافة', 'Space'))}</button>`
         + `<button type="button" class="xb-k wide" data-k="back" tabindex="-1" aria-label="${esc(T('حذف', 'Delete'))}">${ic(LTR ? 'chevL' : 'chevR')}${esc(T('حذف', 'Delete'))}</button>`;
       const kbd = k => `<kbd>${esc(k)}</kbd>`;
-      el.innerHTML = `<div class="xb-bg" aria-hidden="true"><div class="xb-art"></div>${waveSVG()}</div>
+      el.innerHTML = `<div class="xb-bg" aria-hidden="true"><div class="xb-art"></div><div class="xb-wave-host"></div></div>
         <div class="xb-drag" aria-hidden="true"></div>
         <div class="xb-win" role="group" aria-label="${esc(T('النافذة', 'Window'))}">
           <button type="button" data-win="min" title="${esc(T('تصغير', 'Minimize'))}" aria-label="${esc(T('تصغير', 'Minimize'))}"><i class="w-min"></i></button>
@@ -426,7 +447,7 @@
       el.addEventListener('mousedown', e => { if (e.target.closest('.xb-k, .xb-omi')) e.preventDefault(); });
 
       api.stage.replaceChildren(el);
-      Wave.attach($('.xb-wave', el));
+      Wave.attach(waveHost($('.xb-wave-host', el)));
       Chrome.init(); Chrome.sync();
       // the Downloads entry follows the core's live download button (an event, no polling)
       if (this.dlObs) this.dlObs.disconnect();

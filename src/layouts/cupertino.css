@@ -37,7 +37,7 @@ html[data-rfs-lang="en"] #rfs[data-layout="cupertino"] { --cu-to: right; --cu-tr
   animation: cu-kb 24s ease-in-out infinite alternate;
 }
 @keyframes cu-kb { from { transform: scale(1); } to { transform: scale(1.06); } }
-html:has(#rfs-sheet.on) #rfs[data-layout="cupertino"] .cu-hero-art { animation-play-state: paused; }
+html.rfs-sheet-on #rfs[data-layout="cupertino"] .cu-hero-art { animation-play-state: paused; }
 /* vignette, a shade at the start side for the text, and a fade into the page at the bottom */
 #rfs[data-layout="cupertino"] .cu-hero::after {
   content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
@@ -171,7 +171,7 @@ html:has(#rfs-sheet.on) #rfs[data-layout="cupertino"] .cu-hero-art { animation-p
 /* keyboard focus: the system-blue ring with a gap */
 #rfs[data-layout="cupertino"] .cu-t.running .art { outline: 2px solid #30d158; outline-offset: 2px; }
 #rfs[data-layout="cupertino"] .cu-t.kf .art { outline: 3px solid var(--cu-blue); outline-offset: 3px; }
-html:has(#rfs-sheet.on) #rfs[data-layout="cupertino"] .cu-t.taken .art { opacity: .4; }
+html.rfs-sheet-on #rfs[data-layout="cupertino"] .cu-t.taken .art { opacity: .4; }
 #rfs[data-layout="cupertino"] .cu-t .t {
   margin-top: 12px; padding-inline: 2px; font-size: 14px; font-weight: 600; line-height: 1.3; color: #fff;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; unicode-bidi: plaintext;

@@ -420,8 +420,9 @@
     let busy = false;
     async function check() {
       if (busy || document.hidden) return;
-      const link = document.querySelector('link[href*="/src/styles/"]');
-      if (!link) return;
+      const links = document.querySelectorAll('link[href*="/src/styles/"]');
+      const link = links[0];
+      if (!link || links.length > 1) return; // a swap is already under way here (shelf.js Themes.live): leave it alone
       busy = true;
       try {
         let cfg = await api.ffi('core', 'Core_GetBackendConfig')();
@@ -429,10 +430,10 @@
         const th = cfg && cfg.themes;
         const c = th && th.conditions && th.conditions[th.activeTheme || 'rf-shelf'];
         const sid = c && STYLE_IDS[c.Style];
-        if (sid && !link.href.includes(`/src/styles/${sid}.css`)) {
+        if (sid && !link.href.includes(`/src/styles/${sid}.css`) && link.isConnected && document.querySelectorAll('link[href*="/src/styles/"]').length === 1) {
           const nl = document.createElement('link');
           nl.rel = 'stylesheet'; nl.id = link.id; nl.href = link.href.replace(/\/src\/styles\/[^/?#]+\.css/, `/src/styles/${sid}.css`);
-          nl.onload = () => { document.querySelectorAll('link[href*="/src/styles/"]').forEach(l => { if (l !== nl) l.remove(); }); restyleHooks.forEach(f => { try { f(); } catch (e) { /* keep going */ } }); };
+          nl.onload = () => { link.remove(); restyleHooks.forEach(f => { try { f(); } catch (e) { /* keep going */ } }); };
           link.after(nl);
         }
       } catch (e) { /* Millennium not ready */ }

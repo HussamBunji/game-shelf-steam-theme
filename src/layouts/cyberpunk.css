@@ -274,7 +274,7 @@ html[data-rfs-lang="en"] #rfs[data-layout="cyberpunk"] .cp-t .t { text-align: le
 /* keyboard focus: a 2 px brass frame */
 #rfs[data-layout="cyberpunk"] .cp-t.kf { --edge: #d9b45a; --lw: 2px; }
 #rfs[data-layout="cyberpunk"] .cp-t.running { --edge: rgba(95, 196, 200, .6); }
-html:has(#rfs-sheet.on) #rfs[data-layout="cyberpunk"] .cp-t.taken .art { opacity: .4; }
+html.rfs-sheet-on #rfs[data-layout="cyberpunk"] .cp-t.taken .art { opacity: .4; }
 /* the one shared play button: a small brass slab in the art's bottom-end corner */
 #rfs[data-layout="cyberpunk"] .cp-t .pl {
   position: absolute; z-index: 4; inset-block-end: 8px; inset-inline-end: 8px; width: 32px; height: 30px; padding: 0; border: 0; border-radius: 0;

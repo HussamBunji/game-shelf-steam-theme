@@ -20,6 +20,21 @@
     });
 });
 
+/* Game Shelf (rf-shelf) performance patch: the theme's own home designs, game panels and picker (#rfs, #rfs-sheet …)
+   change the DOM a lot — rendering a library home is hundreds of insertions. None of that concerns the trackers below,
+   yet every body-wide MutationObserver here re-ran its lookups (and one forced a full style recalc) on each batch.
+   steamOnly(cb) skips a batch whose changes all happened inside our own elements. */
+const RFS_OWN = '#rfs, #rfs-sheet, #rfs-viewer, #rfs-bar, #rfs-themes, #rfs-toast, #rfs-tip, #rfs-navwrap, #rfs-dl, #rfs-family';
+export const steamOnly = cb => (records, observer) => {
+    let last = null;
+    for (const r of records) {
+        const t = r.target && r.target.nodeType === 1 ? r.target : r.target && r.target.parentElement;
+        if (t === last) continue;
+        last = t;
+        if (!t || !t.closest || !t.closest(RFS_OWN)) return cb(records, observer);
+    }
+};
+
 export const tryPromise = cb => {
     if (typeof cb !== 'function') return Promise.resolve();
     if ('try' in Promise) {
