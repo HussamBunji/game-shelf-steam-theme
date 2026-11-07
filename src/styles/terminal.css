@@ -14,6 +14,7 @@
   --rf-vendor-skip: options/fonts/, options/general/alwaysShowSidebar;
   --rf-style-id: terminal;
   --rf-layout: terminal;
+  --rf-sfx: terminal;  /* the theme's own interface sounds (src/js/sfx-packs.js) */
 
   /* icons: monochrome phosphor strokes running green to amber, on square double-ruled tiles */
   --rf-ic-1: #39ff88;

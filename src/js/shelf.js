@@ -263,6 +263,7 @@
     drive: '<rect x="3" y="7" width="18" height="10" rx="2"/><path d="M6.5 12h6"/><circle class="s" cx="17" cy="12" r="1"/>',
     fire: '<path class="f" d="M12 21c-3.9 0-7-2.8-7-6.6 0-3.1 2.2-5 3.4-7.4.4 1.6 1.4 2.6 2.4 3C11.2 6.8 13 4.4 15.2 3c-.3 2.3.5 4 1.8 5.7 1.3 1.6 2 3.3 2 5.7 0 3.8-3.1 6.6-7 6.6Z"/><path d="M12 18c-1.4 0-2.5-1-2.5-2.4 0-1.2.9-2 1.6-3 .6 1 2.1 1.6 2.9 3 .6 1.2-.4 2.4-2 2.4Z"/>',
     pulse: '<path d="M3 12h4l3-7 4 14 3-7h4"/>',
+    waves: '<path d="M3 9c2-2 4-2 6 0s4 2 6 0 4-2 6 0M3 15c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/>',
     check: '<path d="m5 12.5 4.5 4.5L19 7"/>',
     owned: '<circle cx="12" cy="12" r="9"/><path d="m7.8 12.3 2.9 2.9 5.5-6"/>',
     x: '<path d="M6 6l12 12M18 6 6 18"/>',
@@ -325,7 +326,8 @@
     enabled: true,
     sort: store.get('sort', 'recent'),
     view: store.get('view', 'spines'),
-    sound: store.get('sound', '1') === '1',
+    sound: store.get('sound', '0') === '1', // off until the user turns it on (a saved choice is kept)
+    amb: store.get('amb', '0') === '1', //      the theme's background ambience: off by default too
     news: store.get('news', '0') === '1',
     source: store.get('source', 'all'),
     genre: '',
@@ -338,7 +340,7 @@
     recent: (a, b) => (b.lastPlayed || 0) - (a.lastPlayed || 0) || String(a.sortAs).localeCompare(String(b.sortAs)),
     name: (a, b) => String(a.sortAs).localeCompare(String(b.sortAs), 'en', { sensitivity: 'base' }),
     playtime: (a, b) => (b.playtimeMin || 0) - (a.playtimeMin || 0),
-    size: (a, b) => (b.sizeOnDisk || 0) - (a.sizeOnDisk || 0),
+    size: (a, b) => (b.installed ? b.sizeOnDisk || 0 : b.needBytes || 0) - (a.installed ? a.sizeOnDisk || 0 : a.needBytes || 0),
   };
   if (!SORTS[state.sort]) state.sort = 'recent';
   const FEATURE = { recent: T('آخر ما لعبت', 'Recently played'), playtime: T('الأكثر لعبًا', 'Most played'), size: T('الأكبر حجمًا', 'Largest') };
@@ -428,6 +430,7 @@
               const f = d.strInstallFolder || '';
               g.drive = /^[A-Za-z]:/.test(f) ? f.slice(0, 2).toUpperCase() : '';
               if (!g.sizeOnDisk && d.lDiskUsageBytes) g.sizeOnDisk = Number(d.lDiskUsageBytes);
+              g.needBytes = Number(d.lDiskSpaceRequiredBytes || 0); // what an install needs (Steam's install dialog shows the same)
             }
             g.description = SteamAPI.description(g.appid);
             g.ach = SteamAPI.achievements(g.appid);
@@ -480,21 +483,91 @@
   /* =================================================================
      sound (synthesised)
      ================================================================= */
-  let ac = null, noiseBuf = null, gestured = false, lastTick = 0;
+  let ac = null, noiseBuf = null, gestured = false, lastTick = 0, voices = [];
   const onFirstGesture = () => { gestured = true; };
   window.addEventListener('pointerdown', onFirstGesture, { once: true, capture: true });
+  function audio() {
+    if (!ac) {
+      ac = new (window.AudioContext || window.webkitAudioContext)();
+      const len = ac.sampleRate * 0.6;
+      noiseBuf = ac.createBuffer(1, len, ac.sampleRate);
+      const d = noiseBuf.getChannelData(0);
+      for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+    }
+    if (ac.state === 'suspended') ac.resume();
+    return ac;
+  }
+  /* each style can bring its own sound pack (--rf-sfx in its style file → src/js/sfx-packs.js) and, if the pack has
+     one, a soft background ambience (its own strip button, off by default). Styles without a pack keep the sounds
+     below. Desktop only: Big Picture keeps Steam's own interface sounds. */
+  const SFX_KIND = { tick: 'tick', swish: 'swish', slide: 'open', open: 'open', snap: 'snap', case: 'open', close: 'close', spin: 'play', play: 'play', error: 'error' };
+  const Sfx = {
+    id: '', out: null, amb: null, home: false, asked: false,
+    load() {
+      if (BPM || this.asked || window.__rfsSfxPacks) return;
+      this.asked = true;
+      const s = document.createElement('script');
+      s.src = themeBase + 'src/js/sfx-packs.js';
+      s.onload = () => { try { updateBar(); } catch (e) { /* strip not built yet */ } };
+      s.onerror = () => LOG('sound packs missing');
+      document.head.appendChild(s);
+    },
+    pack() { const P = window.__rfsSfxPacks; return (P && this.id && P[this.id]) || null; },
+    hasAmbience() { const p = this.pack(); return !!(p && p.ambience); },
+    style(id) { // read once per style change
+      if (id === this.id) return;
+      this.id = id; this.load(); this.stopAmb();
+      try { updateBar(); } catch (e) { /* strip not built yet */ }
+    },
+    output(a) { // a gentle top cut: nothing harsh gets through
+      if (!this.out) { const lp = a.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 9000; lp.Q.value = 0.5; const g = a.createGain(); g.gain.value = 0.9; lp.connect(g).connect(a.destination); this.out = lp; }
+      return this.out;
+    },
+    play(kind, a) {
+      const p = this.pack(), k = SFX_KIND[kind] || kind;
+      const fn = p && (p[k] || (k === 'snap' ? p.tick : null));
+      if (typeof fn !== 'function' || !window.__rfsSfxHelpers) return false;
+      fn(a, this.output(a), window.__rfsSfxHelpers(a));
+      return true;
+    },
+    /* the ambience plays only while it is switched on, the library home is on screen, Steam's window is visible and
+       no game is running; it fades in and out over 1.5 s */
+    sync(show) {
+      if (show !== undefined) this.home = !!show;
+      let want = false;
+      try { want = state.amb && this.home && !BPM && gestured && !document.hidden && this.hasAmbience() && SteamAPI.runningIds().size === 0; } catch (e) { want = false; }
+      if (want && !this.amb) {
+        try {
+          const a = audio(), bus = a.createGain();
+          bus.gain.value = 0.0001; bus.connect(this.output(a));
+          const src = this.pack().ambience(a, bus, window.__rfsSfxHelpers(a));
+          const t = a.currentTime; bus.gain.setValueAtTime(0.0001, t); bus.gain.exponentialRampToValueAtTime(1, t + 1.5);
+          this.amb = { bus, src };
+        } catch (e) { LOG('ambience failed', e); }
+      } else if (!want && this.amb) this.stopAmb();
+    },
+    stopAmb() {
+      const m = this.amb; if (!m) return;
+      this.amb = null;
+      try {
+        const t = ac.currentTime, g = m.bus.gain;
+        g.cancelScheduledValues(t); g.setValueAtTime(Math.max(0.0001, g.value), t); g.exponentialRampToValueAtTime(0.0001, t + 1.5);
+        if (m.src && m.src.stop) m.src.stop(t + 1.6);
+      } catch (e) { /* ignore */ }
+      setTimeout(() => { try { m.bus.disconnect(); } catch (e) { /* ignore */ } }, 1800);
+    },
+  };
+  document.addEventListener('visibilitychange', () => Sfx.sync());
   function sfx(kind) {
     if (!state.sound || !gestured || BPM) return; // Big Picture keeps its own interface sounds
     try {
-      if (!ac) {
-        ac = new (window.AudioContext || window.webkitAudioContext)();
-        const len = ac.sampleRate * 0.6;
-        noiseBuf = ac.createBuffer(1, len, ac.sampleRate);
-        const d = noiseBuf.getChannelData(0);
-        for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
-      }
-      if (ac.state === 'suspended') ac.resume();
-      const a = ac, t = a.currentTime;
+      const a = audio(), t = a.currentTime, n = performance.now();
+      if (kind === 'tick') { if (n - lastTick < (Sfx.pack() ? 35 : 55)) return; lastTick = n; }
+      voices = voices.filter(v => n - v < 150);
+      if (voices.length >= 4) return; // never more than a few sounds on top of each other
+      voices.push(n);
+      if (Sfx.play(kind, a)) return;
+      kind = { open: 'slide', case: 'slide', play: 'spin', error: 'close' }[kind] || kind; // the newer names, built-in
       const noise = (dur, type, f0, f1, gain, q = 1) => {
         const s = a.createBufferSource(); s.buffer = noiseBuf;
         const f = a.createBiquadFilter(); f.type = type; f.Q.value = q;
@@ -510,7 +583,7 @@
         g.gain.exponentialRampToValueAtTime(gain, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
         o.connect(g).connect(a.destination); o.start(t); o.stop(t + dur + 0.03);
       };
-      if (kind === 'tick') { const n = performance.now(); if (n - lastTick < 55) return; lastTick = n; noise(0.022, 'bandpass', 3400, 2800, 0.035, 2.2); }
+      if (kind === 'tick') noise(0.022, 'bandpass', 3400, 2800, 0.035, 2.2);
       else if (kind === 'swish') noise(0.12, 'bandpass', 900, 2600, 0.05, 0.8);
       else if (kind === 'slide') noise(0.34, 'bandpass', 600, 2300, 0.07, 0.7);
       else if (kind === 'snap') { noise(0.05, 'bandpass', 2600, 1700, 0.32, 1.3); tone(0.08, 170, 70, 0.16); }
@@ -549,6 +622,7 @@
       <div class="tb-seg tb-view"><button data-v="spines" title="${T('ظهور العلب', 'Case spines')}">${ic('spines')}<span class="tb-lbl">${T('ظهور', 'Spines')}</span></button><button data-v="covers" title="${T('أغلفة', 'Covers')}">${ic('grid')}<span class="tb-lbl">${T('أغلفة', 'Covers')}</span></button></div>
       <button class="tb-btn tb-news" title="${T('أظهر / أخفِ آخر تحديثات ألعابك (What\'s New)', 'Show / hide the latest updates for your games (What\'s New)')}">${ic('news')}</button>
       <button class="tb-btn tb-snd" title="${T('الصوت', 'Sound')}"></button>
+      <button class="tb-btn tb-amb" title="${T('صوت الخلفية', 'Background ambience')}">${ic('waves')}</button>
     </div>
     <button class="tb-btn tb-theme" title="${T('غيّر تصميم الثيم', 'Change the theme design')}">${ic('palette')}<span class="tb-lbl">${T('الثيمات', 'Themes')}</span></button>`;
 
@@ -827,6 +901,9 @@
       wrap.append(el, gridHead, grid);
       stage.replaceChildren(wrap);
       this.grid = grid;
+      // Big Picture: the controller's place in the grid survives a re-render
+      if (!(this.gi < games.length)) this.gi = -1;
+      if (BPM && this.gi >= 0) grid.children[this.gi].classList.add('kf');
       // one click opens the game right here (no trip up to the carousel first); the carousel follows quietly
       grid.addEventListener('click', e => {
         const c = e.target.closest('.nf-card'); if (!c) return;
@@ -834,7 +911,10 @@
         this.go(i, true);
         openGame(this.games[i], { el: $('.nf-art', c), slot: c, isSpine: false });
       });
-      $('.cf-browse', el).addEventListener('click', () => gridHead.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+      $('.cf-browse', el).addEventListener('click', () => {
+        if (BPM && games.length) { this.gridGo(this.cur); return; } // Big Picture: the controller's cursor goes down with it
+        gridHead.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
       this.update(true);
       this.track.addEventListener('click', e => {
         const it = e.target.closest('.cf-item'); if (!it) return;
@@ -872,15 +952,63 @@
       this.cur = n; if (!quiet) sfx('swish'); this.update();
     },
     key(e) {
+      // Big Picture: the "All games" grid under the carousel (entered with Down past its buttons, see padEdge);
+      // Up from its first row comes back to the carousel
+      if (BPM && this.gi >= 0) return this.gridKey(e);
       // the strip runs in reading direction: Arabic → leftwards, English → rightwards
       if (e.key === (LTR ? 'ArrowRight' : 'ArrowLeft')) { this.go(this.cur + 1); return true; }
       if (e.key === (LTR ? 'ArrowLeft' : 'ArrowRight')) { this.go(this.cur - 1); return true; }
       if (e.key === 'Enter' && this.games[this.cur]) { openGame(this.games[this.cur], this.source(this.games[this.cur].appid)); return true; }
       return false;
     },
-    /** Big Picture: the game X plays (the one in the middle) */
-    padGame() { return (this.games && this.games[this.cur]) || null; },
-    padEl() { return (this.track && this.track.querySelector('.cf-item.center')) || null; },
+    /** Big Picture: the game X plays (the one in the middle, or the grid's card under the cursor) */
+    padGame() { return (this.games && this.games[this.gi >= 0 ? this.gi : this.cur]) || null; },
+    padEl() {
+      if (this.gi >= 0 && this.grid) return this.grid.children[this.gi] || null;
+      return (this.track && this.track.querySelector('.cf-item.center')) || null;
+    },
+    gi: -1,
+    /** Big Picture: Down past the buttons under the carousel (PLAY … Browse all games) enters the grid */
+    padEdge(dx, dy) {
+      if (!BPM || dy <= 0 || this.gi >= 0 || !this.grid || !this.games.length) return false;
+      this.gridGo(this.cur);
+      return true;
+    },
+    /** Big Picture: the grid cursor on card i (-1 = back up on the carousel) */
+    gridGo(i) {
+      const prev = this.gi >= 0 && this.grid.children[this.gi];
+      if (prev) prev.classList.remove('kf');
+      this.gi = i;
+      if (i < 0) {
+        // back on the carousel: it follows the card that was picked down there, and the page scrolls back up
+        for (let p = this.el && this.el.parentElement; p; p = p.parentElement) if (p.scrollTop) p.scrollTop = 0;
+        return;
+      }
+      const c = this.grid.children[i];
+      if (c) c.classList.add('kf');
+      this.go(i, true);
+    },
+    gridKey(e) {
+      const n = this.games.length, k = e.key;
+      const cols = Math.max(1, getComputedStyle(this.grid).gridTemplateColumns.split(' ').filter(Boolean).length);
+      const fwd = LTR ? 'ArrowRight' : 'ArrowLeft', back = LTR ? 'ArrowLeft' : 'ArrowRight';
+      let i = this.gi;
+      if (k === 'Enter') {
+        const c = this.grid.children[i];
+        if (c && !e.repeat) openGame(this.games[i], { el: $('.nf-art', c), slot: c, isSpine: false });
+        return true;
+      }
+      if (k === fwd) i = Math.min(n - 1, i + 1);
+      else if (k === back) i = Math.max(0, i - 1);
+      else if (k === 'ArrowDown') i = Math.min(n - 1, i + cols);
+      else if (k === 'ArrowUp') { if (i - cols < 0) { this.gridGo(-1); sfx('swish'); return true; } i -= cols; }
+      else if (k === 'PageDown') i = Math.min(n - 1, i + cols * 3);
+      else if (k === 'PageUp') i = Math.max(0, i - cols * 3);
+      else if (k === 'Escape') { this.gridGo(-1); return true; }
+      else return false;
+      if (i !== this.gi) { this.gridGo(i); sfx('tick'); }
+      return true;
+    },
     node(i) {
       let it = this.nodes.get(i);
       if (it) return it;
@@ -921,7 +1049,7 @@
         const ach = $('.cf-ach', this.el), ah = achHTML(g);
         if (ach.innerHTML !== ah) ach.innerHTML = ah;
         ach.hidden = !ah;
-        $('.cf-meta', this.el).innerHTML = `<span>${ic('clock')}${esc(fmtPlaytime(g.playtimeMin))}</span><span>${ic('calendar')}${esc(fmtAgo(g.lastPlayed))}</span>${g.sizeOnDisk ? `<span>${ic('drive')}${esc(fmtSize(g.sizeOnDisk))}</span>` : ''}${g.installed ? '' : `<span>${ic('download')}${T('غير مثبتة', 'Not installed')}</span>`}${g.genres[0] ? `<span>${ic('tag')}${esc(g.genres[0])}</span>` : ''}`;
+        $('.cf-meta', this.el).innerHTML = `<span>${ic('clock')}${esc(fmtPlaytime(g.playtimeMin))}</span><span>${ic('calendar')}${esc(fmtAgo(g.lastPlayed))}</span>${g.sizeOnDisk ? `<span>${ic('drive')}${esc(fmtSize(g.sizeOnDisk))}</span>` : ''}${g.installed ? '' : `<span>${ic('download')}${esc(sizeText(g, true))}</span>`}${g.genres[0] ? `<span>${ic('tag')}${esc(g.genres[0])}</span>` : ''}`;
         $('.cf-btn.play', this.el).innerHTML = run ? ic('pulse') + T('شغّالة', 'Running') : g.installed ? ic('play') + T('تشغيل', 'Play') : ic('download') + T('تثبيت', 'Install');
         $('.cf-count', this.el).textContent = `${NUM.format(this.cur + 1)} / ${NUM.format(this.games.length)}`;
         const bgs = this.el.querySelectorAll('.cf-bg-img');
@@ -1301,6 +1429,8 @@
     $('.tb-genre-name', bar).textContent = state.genre || T('كل الأنواع', 'All genres');
     $('.tb-genre .rf-dd-btn', bar).classList.toggle('on', !!state.genre);
     $('.tb-snd', bar).innerHTML = state.sound ? ic('volume') : ic('mute');
+    $('.tb-amb', bar).classList.toggle('on', state.amb);
+    $('.tb-amb', bar).style.display = Sfx.hasAmbience() ? '' : 'none';
     $('.tb-news', bar).classList.toggle('on', state.news);
     // the strip only shows what the current design uses (no "spines / covers" outside the shelf, no genre menu
     // where the design already has genre chips) — layouts.css
@@ -1312,7 +1442,8 @@
     const b = e.target.closest('button'); if (!b) return;
     state.view = b.dataset.v; store.set('view', state.view); sfx('tick'); render();
   });
-  $('.tb-snd', bar).addEventListener('click', () => { state.sound = !state.sound; store.set('sound', state.sound ? '1' : '0'); updateBar(); });
+  $('.tb-snd', bar).addEventListener('click', () => { state.sound = !state.sound; store.set('sound', state.sound ? '1' : '0'); Sfx.load(); updateBar(); sfx('tick'); });
+  $('.tb-amb', bar).addEventListener('click', () => { state.amb = !state.amb; store.set('amb', state.amb ? '1' : '0'); Sfx.load(); updateBar(); Sfx.sync(); });
   $('.tb-theme', bar).addEventListener('click', () => Themes.open());
   $('.tb-news', bar).addEventListener('click', () => { state.news = !state.news; store.set('news', state.news ? '1' : '0'); sfx('tick'); placement.key = ''; tick(true); });
   const dds = [...bar.querySelectorAll('.rf-dd')];
@@ -1378,10 +1509,48 @@
     if (g.playtime2wksMin) stats.push([T('آخر أسبوعين', 'Past 2 weeks'), fmtPlaytime(g.playtime2wksMin)]);
     const a = gameAch(g);
     if (a) stats.push([T('الإنجازات', 'Achievements'), T(`${NUM.format(a.got)} من ${NUM.format(a.total)} (${a.pct}%)`, `${NUM.format(a.got)} / ${NUM.format(a.total)} (${a.pct}%)`)]);
-    stats.push([T('الحجم', 'Size'), g.installed ? `${fmtSize(g.sizeOnDisk)}${g.drive ? ` · ${g.drive}` : ''}` : T('غير مثبتة', 'Not installed')], [T('المطوّر', 'Developer'), (g.developers || []).join(T('، ', ', ')) || '—'], [T('الإصدار', 'Released'), g.releaseDate || '—']);
+    stats.push([T('الحجم', 'Size'), sizeText(g, true)], [T('المطوّر', 'Developer'), (g.developers || []).join(T('، ', ', ')) || '—'], [T('الإصدار', 'Released'), g.releaseDate || '—']);
     return stats;
   }
   const gameDesc = g => g.description || SteamAPI.description(g.appid) || '';
+  /** a game's size for every design: on disk when installed, else the download / install size Steam reports
+      (lDiskSpaceRequiredBytes, the number its install dialog shows) — so players see it before they press Install.
+      Not-installed sizes arrive with the game's details (api.Data.ensureDetails). */
+  /** the player's real Steam level (and XP progress to the next level) from their community profile — cached 6 h.
+      steamLevelNow() returns the cached value at once (or null); steamLevel() fetches when needed. */
+  let lvlP = null;
+  function steamLevelNow() { try { const c = JSON.parse(store.get('steamLevel', 'null')); return c && c.v ? c.v : null; } catch (e) { return null; } }
+  function steamLevel() {
+    try { const c = JSON.parse(store.get('steamLevel', 'null')); if (c && c.v && Date.now() - c.t < 6 * 3600e3) return Promise.resolve(c.v); } catch (e) { /* refetch */ }
+    if (lvlP) return lvlP;
+    lvlP = (async () => {
+      try {
+        const id = SteamAPI.ctx().App.m_CurrentUser.strSteamID;
+        const acc = (BigInt(id) - 76561197960265728n).toString();
+        const mp = await (await fetch(`https://steamcommunity.com/miniprofile/${acc}/json`)).json();
+        const v = { level: Number(mp.level) || 0, xp: 0, pct: 0 };
+        try { // XP progress inside the current level (Steam: each block of 10 levels costs 100 XP more per level)
+          const html = await (await fetch(`https://steamcommunity.com/profiles/${id}/badges/`)).text();
+          const xp = Number(((/profile_xp_block_xp">\s*XP\s*([\d,.]+)/.exec(html) || [])[1] || '0').replace(/[^\d]/g, ''));
+          if (xp) {
+            let start = 0; for (let n = 0; n < v.level; n++) start += 100 * (Math.floor(n / 10) + 1);
+            const need = 100 * (Math.floor(v.level / 10) + 1);
+            v.xp = xp; v.pct = Math.max(0, Math.min(100, Math.round(((xp - start) / need) * 100)));
+          }
+        } catch (e) { /* level only */ }
+        if (v.level) store.set('steamLevel', JSON.stringify({ t: Date.now(), v }));
+        return v.level ? v : null;
+      } catch (e) { return steamLevelNow(); } finally { lvlP = null; }
+    })();
+    return lvlP;
+  }
+  function gameBytes(g) { return g ? (g.installed ? (g.sizeOnDisk || 0) : (g.needBytes || 0)) : 0; }
+  function sizeText(g, long) {
+    if (!g) return '—';
+    if (g.installed) return g.sizeOnDisk ? `${fmtSize(g.sizeOnDisk)}${long && g.drive ? ` · ${g.drive}` : ''}` : '—';
+    if (g.needBytes) return long ? T(`${fmtSize(g.needBytes)} للتحميل · غير مثبتة`, `${fmtSize(g.needBytes)} to download · not installed`) : T(`${fmtSize(g.needBytes)} تحميل`, `${fmtSize(g.needBytes)} download`);
+    return long ? T('غير مثبتة', 'Not installed') : '—';
+  }
   /** achievement progress { got, total, pct } or null — from the loaded details, else Steam's progress cache */
   function gameAch(g) {
     if (!g) return null;
@@ -2075,6 +2244,7 @@
     if (force || now - lastLayoutCheck > 800) {
       lastLayoutCheck = now;
       const lay = themeVar('--rf-layout', 'shelf');
+      if (!BPM) Sfx.style(themeVar('--rf-sfx', '')); // the style's own sound pack (src/js/sfx-packs.js)
       const orig = lay === 'original'; // "Steam Original": leave Steam's home exactly as it is
       if (orig !== !!state.original) { state.original = orig; placement.key = ''; }
       document.documentElement.toggleAttribute('data-rfs-native', orig); // stock Steam / community theme is in charge
@@ -2118,7 +2288,7 @@
       if (current && current.sheet) closeViewer(true); // a theme's own game panel leaves with the home page
     }
     if (show && !BPM) Search.focusIfPending();
-    if (BPM) Bpm.tick(show, panel);
+    if (BPM) Bpm.tick(show, panel); else Sfx.sync(show);
     if (show && loaded && now - lastSigCheck > 5000 && !current) {
       lastSigCheck = now;
       if (Data.sig() !== state.sig) { Data.load(); render(); }
@@ -2144,7 +2314,7 @@
     // actions
     openGame, launch, openDetails: appid => SteamAPI.openDetails(appid), rerender: () => render(),
     // a theme's own game panel (layout.open(g, sheet, src) / layout.close(sheet, g)): facts, text and wired buttons
-    gameFacts, gameDesc, gameActions, gameAch, achHTML, closeGame: () => closeViewer(), get openId() { return current ? current.appid : null; },
+    gameFacts, gameDesc, gameActions, gameBytes, sizeText, steamLevel, steamLevelNow, gameAch, achHTML, closeGame: () => closeViewer(), get openId() { return current ? current.appid : null; },
     openStore: appid => SteamAPI.steamUrl('steam://store/' + appid), steamUrl: url => SteamAPI.steamUrl(url),
     showTip, hideTip, sfx, toast,
   };
@@ -2280,23 +2450,39 @@
         if (p === box) break;
       }
     }
+    /** the panel the D-pad walks button by button: the theme's game panel, or a panel a design raises over its own
+        home (layout.padScope(), e.g. Shelter OS's wrist terminal with its STAT / DATA tabs) */
+    function panelEl() {
+      if (current && current.sheet) return sheet;
+      const lay = L();
+      if (current || typeof lay.padScope !== 'function') return null;
+      try { const s = lay.padScope(); return s && s.isConnected && root.contains(s) ? s : null; } catch (e) { return null; }
+    }
     const revealSoon = () => requestAnimationFrame(() => {
-      if (current && current.sheet) reveal(padF, sheet);
+      const ps = panelEl();
+      if (ps) reveal(padF, ps === sheet ? sheet : root);
       else reveal(zone === 'acts' ? padF : selEl(), root);
     });
     function setPadF(el) {
       if (padF === el) return;
       if (padF) padF.classList.remove('rfs-padf');
       padF = el || null;
-      if (padF) { padF.classList.add('rfs-padf'); revealSoon(); }
+      if (!padF) return;
+      padF.classList.add('rfs-padf');
+      // inside a panel the cursor is also the real focus: no second (:focus) ring left on the button it came from
+      if (panelEl() && padF.focus) { try { padF.focus({ preventScroll: true }); } catch (e) { /* not focusable */ } }
+      revealSoon();
     }
     const BTN = 'button, a[href], [data-act], [data-close], [role="button"]';
     /** buttons of the panel, or of the design outside its game tiles (a tile repeated in a list is the layout's job) */
     function btns(scope) {
-      const all = [...scope.querySelectorAll(BTN)].filter(b => !b.disabled && visible(b) && !b.closest('.rf-dock, [hidden]'));
+      // [data-nopad]: a duplicate the D-pad skips (Shelter OS's dial labels repeat its tabs)
+      const all = [...scope.querySelectorAll(BTN)].filter(b => !b.disabled && !b.hasAttribute('data-nopad') && visible(b) && !b.closest('.rf-dock, [hidden]'));
       const own = all.filter(b => !all.some(o => o !== b && o.contains(b)));
-      if (scope === sheet) return own;
-      const sr = scope.getBoundingClientRect(), big = sr.width * sr.height * 0.2;
+      const sr = scope.getBoundingClientRect();
+      // a panel: everything but its click-outside backdrop (a [data-close] veil the size of the panel)
+      if (scope !== root) return own.filter(b => { const r = b.getBoundingClientRect(); return r.width * r.height < sr.width * sr.height * 0.5; });
+      const big = sr.width * sr.height * 0.2;
       return own.filter(b => {
         if (b.hasAttribute('data-appid') || b.getAttribute('tabindex') === '-1') return false; // tiles, and helper arrows the design keeps out of tab order
         const r = b.getBoundingClientRect();
@@ -2318,23 +2504,44 @@
       }
       return best;
     }
-    function sheetDefault() {
-      const list = btns(sheet);
-      setPadF(list.find(b => b.matches('[data-act="play"]')) || list.find(b => !b.matches('[data-close]')) || list[0]);
+    function sheetDefault(ps = sheet) {
+      const list = btns(ps);
+      setPadF(list.find(b => b.matches('[data-act="play"]')) || list.find(b => b.matches('.sel:not([role="tab"])'))
+        || list.find(b => !b.matches('[data-close], [role="tab"]')) || list[0]);
     }
-    function sheetPad(b) {
+    /** LB / RB: the panel's previous / next tab (ITEM · DATA · STAT …) */
+    function panelTab(ps, step) {
+      const tabs = [...ps.querySelectorAll('[role="tab"]')].filter(t => !t.hasAttribute('data-nopad') && visible(t));
+      if (tabs.length < 2) { snd('fail'); return; }
+      const at = Math.max(0, tabs.findIndex(t => t.getAttribute('aria-selected') === 'true' || t.classList.contains('on')));
+      const nx = tabs[at + step];
+      if (!nx) { snd('fail'); return; }
+      const onTab = padF && padF.matches('[role="tab"]');
+      nx.click(); snd('page');
+      if (onTab) setPadF(nx);
+      else requestAnimationFrame(() => { if (!padF || !padF.isConnected || !visible(padF)) sheetDefault(ps); });
+    }
+    function sheetPad(b, ps = sheet) {
       const d = DIR[b];
       if (d) {
-        const list = btns(sheet);
-        if (!padF || !padF.isConnected || !list.includes(padF)) { sheetDefault(); snd('move'); return; }
+        const list = btns(ps);
+        if (!padF || !padF.isConnected || !list.includes(padF)) { sheetDefault(ps); snd('move'); return; }
         const n = nearest(list, padF.getBoundingClientRect(), d[0], d[1]);
         if (n) { setPadF(n); snd('move'); } else snd('fail');
         return;
       }
       switch (b) {
-        case P.OK: if (!padF || !padF.isConnected) sheetDefault(); if (padF) { snd('ok'); padF.click(); } break;
-        case P.CANCEL: snd('out'); closeViewer(); break;
-        case P.X: { const pb = sheet.querySelector('[data-act="play"]'); if (pb) { snd('ok'); pb.click(); } break; }
+        case P.OK: if (!padF || !padF.isConnected || !ps.contains(padF)) sheetDefault(ps); if (padF) { snd('ok'); padF.click(); } break;
+        case P.CANCEL: snd('out'); if (ps === sheet) closeViewer(); else { send('Escape'); setPadF(null); } break;
+        case P.LB: panelTab(ps, -1); break;
+        case P.RB: panelTab(ps, 1); break;
+        case P.X: {
+          const g = padF && padF.isConnected && padF.dataset.appid ? byId(padF.dataset.appid) : null; // a game row of the panel
+          const pb = ps.querySelector('[data-act="play"]');
+          if (g) { snd('ok'); launch(g); } else if (pb && visible(pb)) { snd('ok'); pb.click(); } else snd('fail');
+          break;
+        }
+        case P.START: if (ps === sheet) options(); break;
         default: break;
       }
     }
@@ -2362,10 +2569,21 @@
         const list = btns(root);
         const n = padF && padF.isConnected ? nearest(list, padF.getBoundingClientRect(), d[0], d[1]) : null;
         if (n) { setPadF(n); snd('move'); return; }
-        leaveActs(); snd('move'); // nothing further that way: back to the games
+        // nothing further that way: a design may take the cursor on from there (Neon Coverflow: down into its
+        // "All games" grid), otherwise back to the games
+        const lay = L();
+        const on = typeof lay.padEdge === 'function' && lay.padEdge(d[0], d[1]);
+        leaveActs(); snd('move');
+        if (on) revealSoon();
         return;
       }
-      if (b === P.OK) { if (padF && padF.isConnected) { snd('ok'); padF.click(); } else leaveActs(); return; }
+      if (b === P.OK) {
+        if (!padF || !padF.isConnected) { leaveActs(); return; }
+        const before = selEl();
+        snd('ok'); padF.click();
+        if (selEl() !== before) { leaveActs(); revealSoon(); } // the button moved the design's own cursor (e.g. "Browse all games")
+        return;
+      }
       if (b === P.CANCEL) { leaveActs(); snd('out'); return; }
       if (b === P.X) { const g = selGame(); if (g) { snd('ok'); launch(g); } else snd('fail'); }
     }
@@ -2388,9 +2606,12 @@
       const rep = !!d.is_repeat;
       if (b === P.SELECT) { eat(e); if (!rep) selectDown = Date.now(); return; } // View: on release (View + Y stays the picker)
       if (selectDown) selectDown = -1; // another button while View is held: not "Friends"
-      if (current && current.sheet) { eat(e); if (!busy && (!rep || DIR[b])) sheetPad(b); return; }
-      if (current) { eat(e); if (b === P.CANCEL) closeViewer(); return; }
       if (b === P.Y) { eat(e); if (!rep && d.source !== 2) { try { window.__rfsBpm.open(); } catch (err) { /* no picker */ } } return; } // keyboard F4: bigpicture.js
+      const ps = panelEl();
+      if (ps) { eat(e); if (!busy && (!rep || DIR[b])) sheetPad(b, ps); return; }
+      if (current) { eat(e); if (b === P.CANCEL) closeViewer(); return; }
+      // LT: a design's extra panel (Shelter OS: raise the wrist terminal with the library STAT / DATA)
+      if (b === P.LT && typeof L().padAux === 'function') { eat(e); if (!rep) { leaveActs(); snd('into'); try { L().padAux(); } catch (err) { LOG('pad aux failed', err); } } return; }
       if (b === P.X) { eat(e); if (!rep) play(); return; }
       if (b === P.START) { eat(e); if (!rep) options(); return; }
       if (zone === 'acts') {
@@ -2407,10 +2628,13 @@
       } else {
         const before = DIR[b] ? selEl() : null;
         if (send(k, {}, rep)) {
-          eat(e);
           // the design used the press but its cursor didn't move (the edge of a row, the top of a grid): on to the
           // buttons that way — the hero's PLAY / DETAILS, a side panel's START / INFO …
-          if (before && selEl() === before && enterActs(...DIR[b])) return;
+          if (before && selEl() === before) {
+            if (enterActs(...DIR[b])) { eat(e); return; }
+            if (b === P.UP) return; // the top of the design: Up goes on to Steam's top bar (search, avatar, Themes)
+          }
+          eat(e);
           snd(b === P.LB || b === P.RB || b === P.LT || b === P.RT ? 'page' : b === P.CANCEL ? 'out' : 'move');
           revealSoon();
           return;
@@ -2437,9 +2661,11 @@
       kbd: { a: 'Enter', b: 'Esc', x: 'F3', y: 'F4', lb: 'F6', rb: 'F7', st: 'F9', vw: 'F8' },
     };
     function paintLegend(show, act) {
-      const sheetOn = !!(current && current.sheet);
-      const mode = sheetOn ? 's' : zone === 'acts' ? 'a' : 'h';
-      const k = !show || !act ? '' : [mode, LANG, kbd ? 'k' : 'p'].join();
+      const ps = panelEl();
+      const mode = ps ? 's' : zone === 'acts' ? 'a' : 'h';
+      const tabs = !!(ps && ps.querySelector('[role="tab"]'));
+      const aux = mode === 'h' && !kbd && typeof L().padAux === 'function' ? String(L().padAuxLabel || '') : '';
+      const k = !show || !act ? '' : [mode, LANG, kbd ? 'k' : 'p', tabs, aux].join();
       if (k === legendKey) return;
       legendKey = k;
       legend.classList.toggle('on', !!k);
@@ -2448,10 +2674,10 @@
       const h = (cls, cap, txt) => `<span class="lg"><kbd class="${cls}${kbd ? ' key' : ''}">${cap}</kbd>${txt ? `<span>${esc(txt)}</span>` : ''}</span>`;
       legend.dir = LTR ? 'ltr' : 'rtl';
       legend.innerHTML = mode === 's'
-        ? `<span class="sp"></span>${h('a', c.a, T('اختيار', 'Select'))}${h('x', c.x, T('تشغيل', 'Play'))}${h('b', c.b, T('رجوع', 'Back'))}`
+        ? `${tabs ? h('bump', c.lb, '') + h('bump', c.rb, T('الأقسام', 'Tabs')) : ''}<span class="sp"></span>${h('a', c.a, T('اختيار', 'Select'))}${h('x', c.x, T('تشغيل', 'Play'))}${h('y', c.y, T('الثيمات', 'Themes'))}${h('b', c.b, T('رجوع', 'Back'))}`
         : mode === 'a'
           ? `<span class="sp"></span>${h('a', c.a, T('اختيار', 'Select'))}${h('b', c.b, T('رجوع للألعاب', 'Back to games'))}`
-          : `${h('bump', c.lb, '')}${h('bump', c.rb, T('صفحة', 'Page'))}${h('menu', c.vw, T('الأصدقاء', 'Friends'))}<span class="sp"></span>${h('a', c.a, T('فتح', 'Open'))}${h('x', c.x, T('تشغيل', 'Play'))}${h('menu', c.st, T('خيارات', 'Options'))}${h('y', c.y, T('الثيمات', 'Themes'))}`;
+          : `${h('bump', c.lb, '')}${h('bump', c.rb, T('صفحة', 'Page'))}${aux ? h('bump', 'LT', aux) : ''}${h('menu', c.vw, T('الأصدقاء', 'Friends'))}<span class="sp"></span>${h('a', c.a, T('فتح', 'Open'))}${h('x', c.x, T('تشغيل', 'Play'))}${h('menu', c.st, T('خيارات', 'Options'))}${h('y', c.y, T('الثيمات', 'Themes'))}`;
     }
 
     return {
@@ -2484,8 +2710,8 @@
         const act = show && active();
         html.classList.toggle('rfs-bpm-home', show);
         root.classList.toggle('pad-idle', show && !act);
-        const sheetOn = !!(current && current.sheet);
-        if (sheetOn) { zone = 'list'; if ((!padF || !padF.isConnected || !sheet.contains(padF)) && !busy) sheetDefault(); }
+        const ps = panelEl();
+        if (ps) { zone = 'list'; if ((!padF || !padF.isConnected || !ps.contains(padF) || !visible(padF)) && !busy) sheetDefault(ps); }
         else if (zone === 'acts' && (!padF || !padF.isConnected)) leaveActs();
         else if (zone !== 'acts' && padF) setPadF(null);
         paintLegend(show, act);
@@ -2511,6 +2737,7 @@
     reload: () => { Data.load(); render(); },
     destroy() {
       clearInterval(tickTimer);
+      Sfx.stopAmb();
       Bpm.destroy();
       window.removeEventListener('keydown', onKey, true);
       window.removeEventListener('pointerdown', onFirstGesture, true);

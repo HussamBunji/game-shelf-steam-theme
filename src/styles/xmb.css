@@ -484,6 +484,97 @@ html.responsive[data-rfs-style="xmb"] :is(a.linkbar, #category_block a:not(.game
 html.responsive[data-rfs-style="xmb"] :is(a.linkbar, #category_block a:not(.game_area_details_specs_ctn)):hover { background: var(--xb-band), rgba(22, 52, 112, .78) !important; color: #fff !important; }
 html.responsive[data-rfs-style="xmb"] #category_block a * { background-color: transparent !important; }
 
+/* ═══════════════ the console store: shelves, product pages, one light vocabulary ═══════════════
+   On top of the dressing above, the store is laid out like a console's store: a floating glass bar, thin glowing
+   titles with a light rule, big rounded capsules on "shelves" that lift with a white glow ring, tall list rows with
+   large art, the game page as a product page (a large thin title, the media in a glass frame, each edition a glass
+   card with a big round Buy pill, every section a glass card), quiet glass menus. Layout only through sizes, radii,
+   padding and decoration — Steam's markup, links and buttons behave exactly as before. */
+
+/* ---- the store bar: a taller floating glass capsule; tabs are soft pills, the search a round well ---- */
+html.responsive[data-rfs-style="xmb"] :is(.store_nav_area, #store_nav_area) .store_nav_bg { border-radius: 99px !important; padding-inline: 10px !important; }
+html.responsive[data-rfs-style="xmb"] .store_nav .tab > span,
+html.responsive[data-rfs-style="xmb"] .store_nav .tab .pulldown > span { font-weight: 300 !important; font-size: 14.5px !important; letter-spacing: .02em !important; }
+html[data-rfs-lang="ar"][data-rfs-style="xmb"] .store_nav .tab > span,
+html[data-rfs-lang="ar"][data-rfs-style="xmb"] .store_nav .tab .pulldown > span { letter-spacing: 0 !important; }
+
+/* ---- shelf titles: big thin white type with a glow, a light rule fading toward the end ---- */
+html.responsive[data-rfs-style="xmb"] :is(.home_title, .home_section_title, .home_page_content > h2, .pagesubheader, .large_title) {
+  font-size: 28px !important; font-weight: 300 !important; padding-bottom: 10px !important; margin-bottom: 18px !important;
+  background: linear-gradient(to var(--xb-to, right), rgba(255, 255, 255, .4), rgba(255, 255, 255, .08) 45%, rgba(255, 255, 255, 0) 80%) bottom / 100% 1px no-repeat !important;
+}
+
+/* ---- capsules on the shelves: bigger radii, a glass frame, a strong white glow ring when hovered / focused ---- */
+html.responsive[data-rfs-style="xmb"] :is(.store_capsule, .store_main_capsule, .home_area_spotlight, .special_tiny_cap, .tab_preview_container) { border-radius: 18px !important; }
+html.responsive[data-rfs-style="xmb"] :is(.store_capsule, .home_area_spotlight, .special_tiny_cap):is(:hover, :focus-visible, .focus) {
+  transform: translateY(-4px); outline: 0 !important;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, .92), 0 0 30px rgba(150, 200, 255, .55), 0 22px 44px rgba(2, 8, 26, .6) !important;
+}
+html.responsive[data-rfs-style="xmb"] :is(.home_area_spotlight, .special_tiny_cap) { overflow: hidden; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .12), 0 12px 30px rgba(2, 8, 26, .5) !important; transition: transform .25s var(--xb-ease), box-shadow .25s var(--xb-ease) !important; }
+/* React rows: the "See more" pills and the page dots as the console's light points */
+html.responsive[data-rfs-style="xmb"] .carousel_container .carousel_thumbs > div { width: 8px !important; height: 8px !important; }
+html.responsive[data-rfs-style="xmb"] .carousel_container .carousel_thumbs > div.focus { width: 22px !important; }
+
+/* ---- list shelves (Popular / Top sellers / Specials …): tall glass rows with large rounded art ---- */
+html.responsive[data-rfs-style="xmb"] .tab_item { min-height: 82px; padding: 6px !important; border-radius: 16px !important; margin-bottom: 8px !important; }
+html.responsive[data-rfs-style="xmb"] .tab_item .tab_item_cap { margin: 0 !important; margin-inline-end: 14px !important; }
+html.responsive[data-rfs-style="xmb"] .tab_item .tab_item_cap img { border-radius: 11px; box-shadow: 0 0 0 1px rgba(255, 255, 255, .14), 0 6px 16px rgba(2, 8, 26, .45); }
+html.responsive[data-rfs-style="xmb"] .tab_item:is(:hover, .focus) .tab_item_cap img { box-shadow: 0 0 0 2px rgba(255, 255, 255, .9), 0 0 18px rgba(150, 200, 255, .5); }
+html.responsive[data-rfs-style="xmb"] .tab_item_name { font-size: 16px !important; font-weight: 300 !important; }
+html.responsive[data-rfs-style="xmb"] .tab_item:is(:hover, .focus) .tab_item_name { font-weight: 400 !important; }
+/* the hover preview on the end side: a tall glass card */
+html.responsive[data-rfs-style="xmb"] .tab_preview_container { padding: 6px !important; }
+html.responsive[data-rfs-style="xmb"] .tab_preview h2 { font-size: 20px !important; font-weight: 300 !important; color: #fff !important; text-shadow: var(--xb-glow) !important; }
+html.responsive[data-rfs-style="xmb"] .tab_preview .screenshot { border-radius: 12px !important; }
+
+/* ---- search / browse results: tall rows, larger art, a lit band on hover ---- */
+html.responsive[data-rfs-style="xmb"] .search_result_row { min-height: 64px; padding: 6px 0 !important; border-radius: 14px !important; margin-bottom: 6px !important; }
+html.responsive[data-rfs-style="xmb"] .search_result_row .search_capsule img { border-radius: 9px; box-shadow: 0 0 0 1px rgba(255, 255, 255, .14); }
+html.responsive[data-rfs-style="xmb"] .search_result_row:hover .search_capsule img { box-shadow: 0 0 0 2px rgba(255, 255, 255, .9), 0 0 16px rgba(150, 200, 255, .5); }
+html.responsive[data-rfs-style="xmb"] .search_result_row .search_name .title { font-size: 16px !important; font-weight: 300 !important; }
+html.responsive[data-rfs-style="xmb"] :is(.searchbar, .search_rule) { background: transparent !important; border: 0 !important; }
+html.responsive[data-rfs-style="xmb"] :is(#additional_search_options .block, .search_collapse_block) { border-radius: 20px !important; }
+html.responsive[data-rfs-style="xmb"] :is(.block_header, .search_collapse_block .block_header) { padding: 12px 16px 8px !important; }
+
+/* ---- the game page as a console product page ---- */
+html.responsive[data-rfs-style="xmb"] .apphub_HomeHeaderContent { padding-top: 8px !important; }
+html.responsive[dir="rtl"][data-rfs-style="xmb"] .apphub_HomeHeaderContent { padding-top: 30px !important; }
+html.responsive[data-rfs-style="xmb"] .apphub_AppName { font-size: 46px !important; line-height: 1.12 !important; text-shadow: 0 0 22px rgba(170, 210, 255, .6), 0 0 2px rgba(255, 255, 255, .4) !important; }
+html.responsive[data-rfs-style="xmb"] #game_highlights { border-radius: 24px !important; padding: 10px !important; }
+html.responsive[data-rfs-style="xmb"] :is(#highlight_player_area, .highlight_player_item, .game_header_image_full) { border-radius: 14px; overflow: hidden; }
+html.responsive[data-rfs-style="xmb"] .glance_ctn { padding: 6px 8px !important; }
+html.responsive[data-rfs-style="xmb"] .glance_ctn .game_description_snippet { font-weight: 300 !important; font-size: 14.5px !important; line-height: 1.55 !important; color: rgba(236, 243, 255, .9) !important; }
+/* each edition: a glass card; its title thin and large, the Buy pill big and round */
+html.responsive[data-rfs-style="xmb"] .game_area_purchase_game { border-radius: 22px !important; padding: 22px 28px 30px !important; margin-bottom: 18px !important; }
+html.responsive[data-rfs-style="xmb"] .game_area_purchase_game :is(h1, h2.title) { font-size: 22px !important; font-weight: 300 !important; }
+html.responsive[data-rfs-style="xmb"] .game_purchase_action_bg { height: auto !important; padding: 5px !important; padding-inline-start: 18px !important; gap: 12px; }
+html.responsive[data-rfs-style="xmb"] .game_purchase_action_bg :is(.game_purchase_price, .discount_block) { position: static !important; inset: auto !important; height: auto !important; padding: 0 !important; line-height: 1.25 !important; }
+html.responsive[data-rfs-style="xmb"] .game_purchase_action_bg .discount_block { display: inline-flex !important; align-items: center; }
+html.responsive[data-rfs-style="xmb"] .game_purchase_action_bg .discount_prices { height: auto !important; padding: 0 6px !important; }
+html.responsive[data-rfs-style="xmb"] .game_purchase_action_bg :is(.game_purchase_price, .discount_final_price) { font-size: 17px !important; font-weight: 400 !important; }
+html.responsive[data-rfs-style="xmb"] .game_purchase_action :is(.btn_addtocart, .btn_packageinfo) :is(.btn_green_steamui, .btn_blue_steamui, .btnv6_blue_hoverfade) > span {
+  height: 44px !important; line-height: 44px !important; padding-inline: 28px !important; font-size: 16px !important;
+}
+/* every section of the page: a glass card */
+html.responsive[data-rfs-style="xmb"] :is(.game_page_autocollapse_ctn, #game_area_reviews, .early_access_announcements) {
+  border-radius: 22px !important; padding: 18px 26px 22px !important; margin-bottom: 22px !important;
+  background: var(--xb-glass) !important; box-shadow: var(--xb-edge), var(--xb-depth) !important;
+}
+html.responsive[data-rfs-style="xmb"] :is(.game_page_autocollapse_ctn, #game_area_reviews, .early_access_announcements) :is(.game_page_autocollapse_ctn, .game_area_dlc_section, #game_area_reviews, .early_access_announcements) { background: none !important; box-shadow: none !important; padding: 0 !important; margin-bottom: 0 !important; }
+html.responsive[data-rfs-style="xmb"] :is(.game_page_autocollapse_ctn, #game_area_reviews, .game_area_dlc_section) :is(h2, .game_area_description h2) { margin-top: 6px !important; }
+html.responsive[data-rfs-style="xmb"] .game_page_autocollapse_readmore { background: linear-gradient(180deg, rgba(12, 30, 72, 0), rgba(12, 30, 72, .97) 70%) !important; }
+html.responsive[data-rfs-style="xmb"] .game_page_autocollapse_fade { background: linear-gradient(180deg, rgba(12, 30, 72, 0), rgba(12, 30, 72, .97)) !important; }
+html.responsive[data-rfs-style="xmb"] #game_area_description { font-weight: 300; font-size: 14.5px; line-height: 1.65; color: rgba(236, 243, 255, .88) !important; }
+html.responsive[data-rfs-style="xmb"] #game_area_description img { border-radius: 12px; }
+/* the DLC list as rows in the card */
+html.responsive[data-rfs-style="xmb"] .game_area_dlc_row { border-radius: 10px !important; padding-inline: 12px !important; }
+/* the right column cards a little rounder, the same glass */
+html.responsive[data-rfs-style="xmb"] .rightcol :is(.block, .game_meta_data .block) { border-radius: 20px !important; }
+
+/* ---- the cart: the totals as a glass card, the purchase pill large ---- */
+html.responsive[data-rfs-style="xmb"] :is(.cart_item, .cart_row) { border-radius: 16px !important; background: var(--xb-glass) !important; box-shadow: var(--xb-edge) !important; }
+html.responsive[data-rfs-style="xmb"] .cart_status_message, html.responsive[data-rfs-style="xmb"] .cart_area_body { color: rgba(236, 243, 255, .88) !important; }
+
 /* ─────────────── our filter strip (the glass bar itself is drawn by the home design CSS) ─────────────── */
 /* buttons: glass pills that glow; the active one is the white-lit pill */
 html[data-rfs-style="xmb"] #rfs-bar.inhome .tb-btn {

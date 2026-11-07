@@ -20,7 +20,7 @@ svg.rf-ic :is(path, circle, rect, ellipse) { fill: none; }
 /* breathing room between an icon and the text after it (flex rows with their own gap reset this) */
 svg.rf-ic { margin-inline-end: .42em; }
 svg.rf-ic.dd { margin-inline-end: 0; margin-inline-start: .3em; }
-:is(.tb-news, .tb-snd, .gl-quick, .cf-nav, .close, .tb-ico, .rf-ict) > svg.rf-ic,
+:is(.tb-news, .tb-snd, .tb-amb, .gl-quick, .cf-nav, .close, .tb-ico, .rf-ict) > svg.rf-ic,
 :is(#rfs-rail, #rfs-data) svg.rf-ic { margin: 0; }
 svg.rf-ic :is(.f, rect, ellipse, circle:not(.s)) { fill: var(--rf-ic-fill, rgba(var(--rf-accent-rgb, 102, 192, 244), .16)); }
 svg.rf-ic .s { fill: url(#rfs-ic-grad) var(--rf-accent, #66c0f4); stroke: none; }

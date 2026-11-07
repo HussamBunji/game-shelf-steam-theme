@@ -379,7 +379,7 @@
         [g.playtimeMin ? fmtPlaytime(g.playtimeMin) : '0', T('وقت اللعب', 'Play time')],
         [g.lastPlayed ? fmtAgo(g.lastPlayed) : '—', T('آخر مرة', 'Last played')],
         g.playtime2wksMin ? [fmtPlaytime(g.playtime2wksMin), T('آخر أسبوعين', 'Past 2 weeks')] : null,
-        [g.installed && g.sizeOnDisk ? fmtSize(g.sizeOnDisk) : T('غير مثبتة', 'Not installed'), T('الحجم', 'Size')],
+        [g.installed && g.sizeOnDisk ? fmtSize(g.sizeOnDisk) : (g.needBytes ? fmtSize(g.needBytes) : T('غير مثبتة', 'Not installed')), g.installed ? T('الحجم', 'Size') : T('حجم التحميل', 'Download size')],
       ].filter(Boolean);
       const statHTML = stats.map(([v, k]) => `<div class="cu-stat"><b dir="auto">${esc(v)}</b><small>${esc(k)}</small></div>`).join('') + achStat(g);
       // the grouped list: developer + release (the last two facts; time and size are in the stat strip), genres

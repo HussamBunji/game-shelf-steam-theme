@@ -311,7 +311,7 @@
       const rows = [[T('وقت اللعب', 'playtime'), esc(fmtPlaytime(g.playtimeMin))]];
       if (g.playtime2wksMin) rows.push([T('آخر أسبوعين', 'past_2_weeks'), esc(fmtPlaytime(g.playtime2wksMin))]);
       rows.push([T('آخر مرة لعبت', 'last_played'), g.lastPlayed ? `${esc(fmtAgo(g.lastPlayed))} ${dim(isoDate(g.lastPlayed))}` : esc(T('ما لعبتها بعد', 'never'))]);
-      rows.push([T('الحجم', 'size'), g.installed && g.sizeOnDisk ? esc(size(g.sizeOnDisk)) + (g.drive ? ' ' + dim(g.drive) : '') : '—']);
+      rows.push([T('الحجم', 'size'), g.installed && g.sizeOnDisk ? esc(size(g.sizeOnDisk)) + (g.drive ? ' ' + dim(g.drive) : '') : (g.needBytes ? esc(size(g.needBytes)) + ' ' + dim(T('للتحميل', 'to download')) : '—')]);
       rows.push([T('مثبتة', 'installed'), (g.installed ? `<b class="ok">${esc(T('نعم', 'yes'))}</b>` : `<b class="no">${esc(T('لا', 'no'))}</b>`)
         + (run ? ` <b class="run">${esc(T('· شغّالة الحين', '· running'))}</b>` : '')]);
       rows.push([T('الأنواع', 'genres'), g.genres && g.genres.length ? `<span dir="auto">${esc(g.genres.join(T('، ', ', ')))}</span>` : '—']);
@@ -351,6 +351,7 @@
     /* ---------- the game, opened: `$ open "<game>"` prints its manual page into the terminal ---------- */
     async open(g, sheet) {
       sheet.getAnimations().forEach(a => a.cancel()); // the last close() left its fade-out filled in
+      api.sfx('open');
       const facts = api.gameFacts(g);
       const desc = api.gameDesc(g);
       const run = api.running().has(g.appid);
@@ -438,6 +439,7 @@
     async close(sheet) {
       const box = $('.tmv', sheet);
       if (!box) return;
+      api.sfx('close');
       sheet.animate([{ backgroundColor: 'rgba(2, 5, 4, .86)' }, { backgroundColor: 'rgba(2, 5, 4, 0)' }], { duration: 260, easing: 'ease-in', fill: 'forwards' });
       if (reduced()) { await box.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, easing: 'ease-in', fill: 'forwards' }).finished; return; }
       // the CRT switches off: the picture collapses to a bright line, then to a dot

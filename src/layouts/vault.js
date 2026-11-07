@@ -83,12 +83,16 @@
       if (!recent.length && all[0]) recent.push(all[0]);
       this.quick = recent;
       const eq = recent[0] || null;
-      const hours = mins / 60, lvl = Math.floor(Math.sqrt(hours));
+      const hours = mins / 60;
+      // the character's level = the player's real Steam level (cached); until it arrives, the square root of hours
+      const sl = api.steamLevelNow && api.steamLevelNow();
+      if (!sl && api.steamLevel && !this._lvlAsked) { this._lvlAsked = true; api.steamLevel().then(v => { if (v) api.rerender(); }); }
+      const lvl = sl && sl.level ? sl.level : Math.floor(Math.sqrt(hours));
       const from = lvl * lvl, to = (lvl + 1) * (lvl + 1);
-      const pct = Math.max(0, Math.min(100, ((hours - from) / (to - from)) * 100));
+      const pct = sl && sl.level ? (sl.pct || 0) : Math.max(0, Math.min(100, ((hours - from) / (to - from)) * 100));
       const rank = RANKS.find(x => lvl >= x[0]);
-      const xpText = T(`${NUM.format(Math.floor(hours))} / ${NUM.format(to)} ساعة للمستوى ${NUM.format(lvl + 1)}`,
-        `${NUM.format(Math.floor(hours))} / ${NUM.format(to)} h to level ${NUM.format(lvl + 1)}`);
+      const xpText = sl && sl.level ? T(`مستوى ستيم · ${pct}% للمستوى ${NUM.format(lvl + 1)}`, `Steam level · ${pct}% to level ${NUM.format(lvl + 1)}`)
+        : T(`${NUM.format(Math.floor(hours))} / ${NUM.format(to)} ساعة للمستوى ${NUM.format(lvl + 1)}`, `${NUM.format(Math.floor(hours))} / ${NUM.format(to)} h to level ${NUM.format(lvl + 1)}`);
       // the whole collection by rarity, one segmented bar (unidentified → legendary in reading direction)
       const tot = all.length || 1, stops = [];
       let acc = 0;
@@ -144,7 +148,7 @@
       el.innerHTML = `
         <aside class="vt-hero vt-frame"><div class="vt-hero-in">
           <header class="vt-id">
-            <div class="vt-lvl" title="${esc(T('المستوى = الجذر التربيعي لمجموع ساعات لعبك', 'Level = the square root of your total hours played'))}"><small>${T('المستوى', 'Level')}</small><b>${NUM.format(lvl)}</b></div>
+            <div class="vt-lvl" title="${esc(T('مستوى حسابك في ستيم', 'Your Steam account level'))}"><small>${T('المستوى', 'Level')}</small><b>${NUM.format(lvl)}</b></div>
             <div class="vt-id-t">
               <span class="vt-kicker">${T('ورقة الشخصية', 'Character')}</span>
               <b class="vt-rank">${T(rank[1], rank[2])}</b>
@@ -296,7 +300,7 @@
         ${row(T('وقت اللعب', 'Play time'), esc(fmtPlaytime(g.playtimeMin)))}
         ${g.playtime2wksMin ? `<div class="tt-bonus">+${esc(fmtPlaytime(g.playtime2wksMin))} ${T('آخر أسبوعين', 'in the past two weeks')}</div>` : ''}
         ${row(T('آخر استخدام', 'Last used'), g.lastPlayed ? esc(fmtAgo(g.lastPlayed)) : T('ولا مرة', 'Never'))}
-        ${row(T('الحجم', 'Size'), g.installed && g.sizeOnDisk ? esc(fmtSize(g.sizeOnDisk)) : '—')}
+        ${row(T('الحجم', 'Size'), g.installed && g.sizeOnDisk ? esc(fmtSize(g.sizeOnDisk)) : esc((api.sizeText ? api.sizeText(g) : '—')))}
         ${ach ? `<div class="tt-ach">${ach}</div>` : ''}
         ${state}
         <div class="tt-foot">${T('نقرة: افحص · نقرة مع Ctrl: استخدم', 'Click: inspect · Ctrl+click: use')}</div>`;

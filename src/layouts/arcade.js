@@ -287,7 +287,7 @@
       r.genre.textContent = (g.genres || []).slice(0, 3).join(' · ');
       r.hours.textContent = fmtPlaytime(g.playtimeMin);
       r.last.textContent = g.lastPlayed ? fmtAgo(g.lastPlayed) : T('ولا مرة', 'NEVER');
-      r.size.textContent = g.sizeOnDisk ? fmtSize(g.sizeOnDisk) : '—';
+      r.size.textContent = g.installed ? (g.sizeOnDisk ? fmtSize(g.sizeOnDisk) : '—') : (api.sizeText ? api.sizeText(g) : '—');
       const st = running ? 'run' : g.installed ? 'ok' : 'ni';
       r.status.textContent = running ? T('شغّالة الحين', 'RUNNING') : g.installed ? T('جاهزة', 'READY') : T('غير مثبتة', 'NOT INSTALLED');
       if (r.status.dataset.st !== st) r.status.dataset.st = st;
@@ -576,7 +576,7 @@
       });
       const play = $('.rf-act.play', v);
       if (play) play.focus({ preventScroll: true });
-      api.sfx('tick');
+      api.sfx('open');
 
       // (played even with the OS "reduce motion" switch: a short transition the player starts, the theme's signature)
       if (!v.animate) return;
@@ -623,7 +623,7 @@
       const v = $('.arv', sheet);
       if (!v || !v.animate) return;
       const scr = $('.arv-scr', v), flash = $('.arv-flash', v);
-      api.sfx('tick');
+      api.sfx('close');
       const a = [
         flash.animate([{ opacity: 0 }, { opacity: 1, offset: .3 }, { opacity: 1 }], { duration: 300 * SLOW, fill: 'forwards' }),
         scr.animate([

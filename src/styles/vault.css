@@ -8,6 +8,7 @@
   --rf-vendor-skip: options/fonts/, options/general/alwaysShowSidebar;
   --rf-style-id: vault;
   --rf-layout: vault;
+  --rf-sfx: vault;  /* the theme's own interface sounds (src/js/sfx-packs.js) */
 
   /* fonts (Latin first, Arabic second — each script picks its own). Alegreya Sans + Noto Naskh Arabic stay readable
      at 13px; Cinzel + Aref Ruqaa are the display pair for headings only. Alegreya Sans has no 600 weight on purpose. */

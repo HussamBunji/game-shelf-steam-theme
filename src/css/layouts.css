@@ -276,7 +276,7 @@ html.rfs-home-on:not(.rfs-show-news) [data-rfs-home] > :has([data-rfs-upd]) { di
 #rfs-bar.home .tb-home { display: flex; }
 #rfs-bar .tb-btn.tb-on { display: none; }
 #rfs-bar.shelf-off .tb-btn.tb-on { display: inline-flex; }
-#rfs-bar.shelf-off .tb-src, #rfs-bar.shelf-off .tb-sort, #rfs-bar.shelf-off .tb-view, #rfs-bar.shelf-off .tb-news, #rfs-bar.shelf-off .tb-snd, #rfs-bar.shelf-off .tb-off { display: none; }
+#rfs-bar.shelf-off .tb-src, #rfs-bar.shelf-off .tb-sort, #rfs-bar.shelf-off .tb-view, #rfs-bar.shelf-off .tb-news, #rfs-bar.shelf-off .tb-snd, #rfs-bar.shelf-off .tb-amb, #rfs-bar.shelf-off .tb-off { display: none; }
 #rfs-bar .tb-btn, #rfs-bar .tb-seg button {
   height: 30px; padding: 0 11px; display: inline-flex; align-items: center; gap: 5px; cursor: pointer; white-space: nowrap;
   font: 600 12.5px var(--font); color: var(--ink);

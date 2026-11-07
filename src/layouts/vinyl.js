@@ -111,7 +111,7 @@
       tag('clock', fmtPlaytime(mins)),
       g.lastPlayed ? tag('calendar', fmtAgo(g.lastPlayed)) : '',
       g.playtime2wksMin ? tag('fire', T(`${fmtPlaytime(g.playtime2wksMin)} آخر أسبوعين`, `${fmtPlaytime(g.playtime2wksMin)} past 2 weeks`)) : '',
-      g.installed && g.sizeOnDisk ? tag('drive', fmtSize(g.sizeOnDisk)) : '',
+      g.installed && g.sizeOnDisk ? tag('drive', fmtSize(g.sizeOnDisk)) : (!g.installed && g.needBytes ? tag('download', (api.sizeText ? api.sizeText(g) : '—')) : ''),
       g.installed ? '' : tag('download', T('غير مثبتة', 'Not installed')),
     ].join('');
     const chip = run ? `<em class="vy-onair on">${esc(T('شغّالة الحين', 'Running now'))}</em>`

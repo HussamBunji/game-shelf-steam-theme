@@ -169,13 +169,101 @@
   /* ---- the categories */
   const CATS = [
     { id: 'search', icon: 'search', name: T('البحث', 'Search') },
+    { id: 'profile', icon: 'users', name: T('الملف الشخصي', 'Profile') },
     { id: 'recent', icon: 'clock', name: T('الأخيرة', 'Recent') },
     { id: 'installed', icon: 'drive', name: T('المثبتة', 'Installed') },
     { id: 'all', icon: 'library', name: T('كل الألعاب', 'All games') },
     { id: 'top', icon: 'fire', name: T('الأكثر لعباً', 'Most played') },
     { id: 'genres', icon: 'tag', name: T('الأنواع', 'Genres') },
+    { id: 'store', icon: 'cart', name: T('المتجر', 'Store') },
+    { id: 'community', icon: 'globe', name: T('المجتمع', 'Community') },
+    { id: 'friends', icon: 'msg', name: T('الأصدقاء', 'Friends') },
+    { id: 'downloads', icon: 'download', name: T('التنزيلات', 'Downloads') },
     { id: 'options', icon: 'sliders', name: T('الخيارات', 'Options') },
+    { id: 'power', icon: 'cpu', name: T('الطاقة', 'Power') },
   ];
+  /* ---- Steam's own window: its class names (Millennium's readable → hashed map), the signed-in user, the window API */
+  function steamClass(key, ...hints) {
+    const maps = [];
+    try { if (window.opener && window.opener.MILLENNIUM_API) maps.push(...(window.opener.MILLENNIUM_API.classMapList || [])); } catch (e) { /* cross-origin */ }
+    try { if (window.MILLENNIUM_API) maps.push(...(window.MILLENNIUM_API.classMapList || [])); } catch (e) { /* none */ }
+    for (const m of maps) if (m && typeof m[key] === 'string' && hints.every(h => h in m)) return m[key].split(' ')[0];
+    return '';
+  }
+  /** the signed-in user as Steam's (hidden) account box shows it: avatar + name, best effort */
+  function steamUser() {
+    const c = steamClass('AccountMenu', 'TitleBarControls');
+    const box = c && document.querySelector('.' + c);
+    if (!box) return { name: '', avatar: '' };
+    const img = box.querySelector('img');
+    return { name: (box.textContent || '').trim().split('\n')[0].trim().slice(0, 40), avatar: img && img.src ? img.src : '' };
+  }
+  const win = () => { try { return window.SteamClient && window.SteamClient.Window ? window.SteamClient.Window : null; } catch (e) { return null; } };
+  const dlInfo = () => { const d = document.getElementById('rfs-dl'), p = d && d.querySelector('.pct'); return { busy: !!d && d.classList.contains('busy'), pct: p ? p.textContent.trim() : '' }; };
+  const url = u => { try { api.steamUrl(u); } catch (e) { api.toast(T('ما قدرت أفتحها', 'Couldn\'t open that')); } };
+  /* ---- the items of the categories that came from Steam's top bar (a console "settings column" each) */
+  const ACTS = {
+    profile: [
+      { id: 'me', icon: 'users', name: T('ملفي الشخصي', 'My profile'), sub: () => steamUser().name || T('صفحتك في المجتمع', 'Your community page'), run: () => url('steam://url/SteamIDMyProfile') },
+      { id: 'account', icon: 'receipt', name: T('تفاصيل الحساب', 'Account details'), sub: () => T('المحفظة والمشتريات والأمان', 'Wallet, purchases and security'), run: () => url('steam://url/StoreAccount') },
+      { id: 'family', icon: 'users', name: T('العائلة', 'Family'), sub: () => T('إدارة عائلة ستيم', 'Manage your Steam Family'), run: () => url('steam://url/FamilyManagement') },
+    ],
+    store: [
+      { id: 'storehome', icon: 'cart', name: T('واجهة المتجر', 'Store home'), sub: () => T('العروض والجديد', 'Deals and new releases'), run: () => url('steam://url/StoreFrontPage') },
+      { id: 'storesearch', icon: 'search', name: T('البحث في المتجر', 'Search the store'), sub: () => T('كل ألعاب ستيم', 'Every game on Steam'), run: () => url('steam://url/StoreGameSearchPage') },
+      { id: 'points', icon: 'medal', name: T('متجر النقاط', 'Points Shop'), sub: () => T('استبدل نقاطك', 'Spend your points'), run: () => url('steam://url/PointsShop') },
+    ],
+    community: [
+      { id: 'commhome', icon: 'globe', name: T('صفحة المجتمع', 'Community home'), sub: () => T('النقاشات والصور والمحتوى', 'Discussions, artwork and more'), run: () => url('steam://url/CommunityFrontPage') },
+      { id: 'help', icon: 'info', name: T('الدعم', 'Support'), sub: () => T('مساعدة ستيم', 'Steam Support'), run: () => url('steam://url/HelpFrontPage') },
+    ],
+    friends: [
+      { id: 'chat', icon: 'msg', name: T('الأصدقاء والدردشة', 'Friends & chat'), sub: () => T('افتح قائمة الأصدقاء', 'Open the friends list'), run: () => url('steam://open/friends') },
+      { id: 'addfriend', icon: 'users', name: T('إضافة صديق', 'Add a friend'), sub: () => T('بالاسم أو الرابط', 'By name or invite link'), run: () => url('steam://url/CommunityAddFriends') },
+      { id: 'notes', icon: 'news', name: T('التنبيهات', 'Notifications'), sub: () => T('تنبيهات ستيم', 'Steam notifications'), run() { Chrome.peekNotifications(); } },
+    ],
+    downloads: [
+      { id: 'dl', icon: 'download', name: T('التنزيلات', 'Downloads'), sub: () => { const d = dlInfo(); return d.busy ? T(`جاري التنزيل ${d.pct}`, `Downloading ${d.pct}`) : d.pct ? T(`${d.pct} في الطابور`, `${d.pct} queued`) : T('ما في تنزيلات', 'Nothing downloading'); }, run: () => { const d = document.getElementById('rfs-dl'); if (d) d.click(); } },
+    ],
+    power: [
+      { id: 'min', icon: 'chevD', name: T('تصغير النافذة', 'Minimize'), sub: () => T('يبقى ستيم شغّال', 'Steam keeps running'), run: () => { const w = win(); if (w) w.Minimize(); } },
+      { id: 'bpm', icon: 'gamepad', name: T('وضع الشاشة الكبيرة', 'Big Picture mode'), sub: () => T('للتلفزيون ويد التحكم', 'For the TV and a controller'), run: () => url('steam://open/bigpicture') },
+      { id: 'close', icon: 'x', name: T('إغلاق النافذة', 'Close window'), sub: () => T('ستيم يبقى في شريط المهام', 'Steam stays in the tray'), run: () => { const w = win(); if (w) w.Close(); } },
+      { id: 'exit', icon: 'external', name: T('الخروج من ستيم', 'Exit Steam'), sub: () => Layout.exitArm && Date.now() - Layout.exitArm < 4000 ? T('اضغط Enter مرة ثانية للخروج', 'Press Enter again to exit') : T('يقفل ستيم بالكامل', 'Quits Steam completely'), run() { if (Layout.exitArm && Date.now() - Layout.exitArm < 4000) { Layout.exitArm = 0; url('steam://exit'); } else { Layout.exitArm = Date.now(); Layout.refreshActs(); } } },
+    ],
+  };
+  /* ---- the desktop chrome: while the Crossbar home is on screen, Steam's whole top bar is hidden (the design takes
+     the full window; a thin drag strip + fade-in window buttons in the top-end corner keep it usable). Leaving the home
+     (store, a game page …), switching theme or Big Picture brings Steam's bar back at once. */
+  const Chrome = {
+    style: null, obs: null,
+    css() {
+      const top = steamClass('TopBar', 'OuterFrame', 'ContentFrame') || '_3Z7VQ1IMk4E3HsHvrkLNgo';
+      return `html.xb-full:not(.rfs-bpm):not(.xb-peek) .${top} { display: none !important; }`;
+    },
+    init() {
+      if (this.obs) return;
+      this.style = document.createElement('style'); this.style.id = 'xb-chrome'; this.style.textContent = this.css();
+      document.head.appendChild(this.style);
+      this.obs = new MutationObserver(() => this.sync());
+      this.obs.observe(api.root, { attributes: true, attributeFilter: ['class', 'data-layout'] });
+      this.sync();
+    },
+    sync() {
+      const h = document.documentElement, r = api.root;
+      const on = r.classList.contains('on') && r.dataset.layout === 'xmb' && !h.classList.contains('rfs-bpm');
+      if (h.classList.contains('xb-full') !== on) h.classList.toggle('xb-full', on);
+      if (!on && h.classList.contains('xb-peek')) h.classList.toggle('xb-peek', false);
+    },
+    /** Notifications live in Steam's bar: show it for a moment and press its bell (the bar hides again on the next move) */
+    peekNotifications() {
+      const h = document.documentElement;
+      h.classList.toggle('xb-peek', true);
+      const c = steamClass('NotificationsButton', 'TitleBarControls');
+      requestAnimationFrame(() => { const b = c && document.querySelector('.' + c); if (b) b.click(); });
+    },
+    unpeek() { const h = document.documentElement; if (h.classList.contains('xb-peek')) h.classList.toggle('xb-peek', false); },
+  };
   /* ---- the console Options (everything the old filter strip did) */
   const OPTS = [
     { id: 'source', icon: 'library', name: T('المكتبة', 'Library'), menu: true },
@@ -185,6 +273,8 @@
     { id: 'news', icon: 'news', name: T('آخر تحديثات ألعابك', 'What\'s New'), menu: false },
     { id: 'amb', icon: 'volume', name: T('أجواء الخلفية', 'Background ambience'), menu: false },
     { id: 'msfx', icon: 'pulse', name: T('أصوات القائمة', 'Menu sounds'), menu: false },
+    { id: 'family', icon: 'owned', name: T('وضع العائلة', 'Family mode'), menu: false },
+    { id: 'settings', icon: 'sliders', name: T('إعدادات ستيم', 'Steam settings'), menu: false },
     { id: 'themes', icon: 'sparkle', name: T('تصاميم الثيم', 'Theme designs'), menu: false },
   ];
   const ON = T('شغّال', 'On'), OFF = T('طافي', 'Off');
@@ -202,6 +292,8 @@
     if (id === 'news') return st.news ? ON : OFF;
     if (id === 'amb') return XA() && XA().amb ? ON : OFF;
     if (id === 'msfx') return XA() && XA().sfx ? ON : OFF;
+    if (id === 'family') { const f = document.getElementById('rfs-family'); return f && f.classList.contains('on') ? ON : OFF; }
+    if (id === 'settings') return T('التنزيلات والحساب والواجهة', 'Downloads, account, interface');
     return T('اختر شكل ستيم كله', 'Choose the look of all of Steam');
   }
   /** the choices of a strip dropdown (opening it fills the menu; it is closed again at once) */
@@ -255,6 +347,7 @@
       this.lists = {
         search: all, recent: recent.map(g => ({ g })), installed: games.filter(g => g.installed).map(g => ({ g })),
         all, top: top.map(g => ({ g })), genres, options: OPTS.map(o => ({ opt: o })),
+        ...Object.fromEntries(Object.entries(ACTS).map(([k, v]) => [k, v.map(a => ({ act: a }))])),
       };
       // a new search shows its matches under Search; a new genre in All games — from the first one
       if (q && q !== this.lastQ) { this.cat = 'search'; this.selBy.search = null; }
@@ -279,16 +372,25 @@
       el.style.setProperty('--focus-y', G.focusY + 'px'); el.style.setProperty('--iw', iw + 'px'); el.style.setProperty('--lw', lw + 'px');
       applyTint(el, tintId());
       const [ct, cd] = clockText();
+      const me = steamUser();
       const cats = CATS.map((c, i) => {
         const n = this.lists[c.id].filter(x => !x.clear).length;
-        const sub = c.id === 'options' ? 'F2' : c.id === 'genres' ? NUM.format(n) : c.id === 'search' ? (q ? countGames(n) : 'Ctrl K') : countGames(n);
-        return `<button type="button" class="xb-cat" data-c="${c.id}" data-k="${i}" aria-label="${esc(c.name)}"><span class="ico">${ic(c.icon)}</span><span class="lb">${esc(c.name)}</span><small dir="auto">${esc(sub)}</small></button>`;
+        const sub = this.catSub(c.id, n, q, me);
+        const icon = c.id === 'profile' && me.avatar ? `<img class="av" src="${esc(me.avatar)}" alt="">` : ic(c.icon);
+        const name = c.id === 'profile' && me.name ? me.name : c.name;
+        return `<button type="button" class="xb-cat" data-c="${c.id}" data-k="${i}" aria-label="${esc(name)}"><span class="ico">${icon}</span><span class="lb" dir="auto">${esc(name)}</span><small dir="auto">${esc(sub)}</small></button>`;
       }).join('');
       const keys = OSK.map(k => `<button type="button" class="xb-k" data-k="${k}" tabindex="-1">${k}</button>`).join('')
         + `<button type="button" class="xb-k wide" data-k=" " tabindex="-1">${esc(T('مسافة', 'Space'))}</button>`
         + `<button type="button" class="xb-k wide" data-k="back" tabindex="-1" aria-label="${esc(T('حذف', 'Delete'))}">${ic(LTR ? 'chevL' : 'chevR')}${esc(T('حذف', 'Delete'))}</button>`;
       const kbd = k => `<kbd>${esc(k)}</kbd>`;
       el.innerHTML = `<div class="xb-bg" aria-hidden="true"><div class="xb-art"></div>${waveSVG()}</div>
+        <div class="xb-drag" aria-hidden="true"></div>
+        <div class="xb-win" role="group" aria-label="${esc(T('النافذة', 'Window'))}">
+          <button type="button" data-win="min" title="${esc(T('تصغير', 'Minimize'))}" aria-label="${esc(T('تصغير', 'Minimize'))}"><i class="w-min"></i></button>
+          <button type="button" data-win="max" title="${esc(T('تكبير / استعادة', 'Maximize / restore'))}" aria-label="${esc(T('تكبير', 'Maximize'))}"><i class="w-max"></i></button>
+          <button type="button" data-win="close" class="w-x" title="${esc(T('إغلاق', 'Close'))}" aria-label="${esc(T('إغلاق', 'Close'))}">${ic('x')}</button>
+        </div>
         <header class="xb-top"><div class="xb-clock" aria-label="${esc(T('الساعة', 'Clock'))}"><b dir="ltr">${esc(ct)}</b><span>${esc(cd)}</span></div></header>
         <div class="xb-search" role="search" aria-label="${esc(T('البحث في ألعابك', 'Search your games'))}">
           <div class="rf-dock" data-rfs-dock></div>
@@ -325,6 +427,11 @@
 
       api.stage.replaceChildren(el);
       Wave.attach($('.xb-wave', el));
+      Chrome.init(); Chrome.sync();
+      // the Downloads entry follows the core's live download button (an event, no polling)
+      if (this.dlObs) this.dlObs.disconnect();
+      const dl = document.getElementById('rfs-dl');
+      if (dl) { this.dlObs = new MutationObserver(() => this.refreshActs()); this.dlObs.observe(dl, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ['class'] }); }
       if (!clockTimer) clockTimer = setInterval(paintClock, 15000);
       // the strip writes its labels right after this render: the Options rows read them then
       if (this.cat === 'options') Promise.resolve().then(() => this.refreshOpts());
@@ -332,7 +439,29 @@
 
     /* ---------- state helpers ---------- */
     cur() { return this.lists[this.cat] || []; },
-    keyOf(x) { return x ? (x.g ? String(x.g.appid) : x.opt ? 'o:' + x.opt.id : 'g:' + x.genre) : null; },
+    keyOf(x) { return x ? (x.g ? String(x.g.appid) : x.opt ? 'o:' + x.opt.id : x.act ? 'a:' + x.act.id : 'g:' + x.genre) : null; },
+    /** the small line under a category's label */
+    catSub(id, n, q, me) {
+      if (id === 'options') return 'F2';
+      if (id === 'genres') return NUM.format(n);
+      if (id === 'search') return q ? countGames(n) : 'Ctrl K';
+      if (id === 'profile') return me && me.name ? T('الملف الشخصي', 'Profile') : '';
+      if (id === 'downloads') { const d = dlInfo(); return d.busy ? d.pct : d.pct ? T(`${d.pct} بالطابور`, `${d.pct} queued`) : ''; }
+      if (ACTS[id]) return '';
+      return countGames(n);
+    },
+    /** live values of the Steam items (download %, the exit confirmation) */
+    refreshActs() {
+      if (!this.el || !this.el.isConnected) return;
+      const b = this.row && this.row.querySelector('.xb-cat[data-c="downloads"] small');
+      if (b) { const t = this.catSub('downloads'); if (b.textContent !== t) b.textContent = t; }
+      if (!ACTS[this.cat]) return;
+      for (const r of this.pool.values()) {
+        const a = r.dataset.act && ACTS[this.cat].find(x => x.id === r.dataset.act), h = a && r.querySelector('.h');
+        if (h) { const t = a.sub(); if (h.textContent !== t) h.textContent = t; }
+      }
+      this.paintInfo(this.cur()[this.sel]);
+    },
     indexOf(cat, key) {
       const L = this.lists[cat] || [];
       if (key == null) return 0;
@@ -400,6 +529,10 @@
         r.innerHTML = `<div class="art"></div><div class="tx"><b class="t" dir="auto" title="${esc(g.name)}">${esc(g.name)}</b><span class="h">${esc(subLine(g, api.running().has(g.appid)))}${ach}</span></div>`;
         const art = r.firstElementChild;
         lazy(r, gg => { const u = cssUrl(first(gg.images.header) || first(gg.images.capsule)); if (art._u !== u) { art._u = u; art.style.setProperty('--img', u); } });
+      } else if (x.act) {
+        r.dataset.act = x.act.id;
+        r.classList.add('opt');
+        r.innerHTML = `<div class="art">${ic(x.act.icon)}</div><div class="tx"><b class="t">${esc(x.act.name)}</b><span class="h" dir="auto">${esc(x.act.sub())}</span></div>`;
       } else if (x.opt) {
         r.dataset.opt = x.opt.id;
         r.innerHTML = `<div class="art">${ic(x.opt.icon)}</div><div class="tx"><b class="t">${esc(x.opt.name)}</b><span class="h" dir="auto">${esc(optValue(x.opt.id))}</span></div>`;
@@ -457,7 +590,7 @@
       const x = this.cur()[this.sel];
       this.paintInfo(x);
       clearTimeout(this.settle);
-      if (!x || !x.g) { if (!x || !x.opt) this.setArt(''); return; }
+      if (!x || !x.g) { if (!x || !(x.opt || x.act)) this.setArt(''); return; }
       const g = x.g;
       // the big art + details only once the focus rests (holding ↓ must not load a hero image per row)
       this.settle = setTimeout(() => {
@@ -502,6 +635,13 @@
       const kick = `<span class="xb-kick">${esc(catName)}${pos ? `<i dir="ltr">${esc(pos)}</i>` : ''}</span>`;
       const kbd = k => `<kbd>${esc(k)}</kbd>`;
       if (!x) { box.innerHTML = kick; return; }
+      if (x.act) {
+        const a = x.act;
+        box.innerHTML = `${kick}<h2>${esc(a.name)}</h2>
+          <p class="xb-sub" dir="auto">${esc(a.sub())}</p>
+          <div class="xb-hint"><span>${kbd('Enter')}${esc(T('فتح', 'Open'))}</span></div>`;
+        return;
+      }
       if (x.opt) {
         const o = x.opt;
         box.innerHTML = `${kick}<h2>${esc(o.name)}</h2>
@@ -602,6 +742,8 @@
       const o = OPTS.find(x => x.id === id);
       if (!o) return;
       if (o.menu) { this.openMenu(id); return; }
+      if (id === 'family') { const f = document.getElementById('rfs-family'); if (f) f.click(); Promise.resolve().then(() => this.refreshOpts()); return; }
+      if (id === 'settings') { url('steam://open/settings'); return; }
       if (id === 'amb' || id === 'msfx') { const a = XA(); if (a) { if (id === 'amb') a.setAmb(!a.amb); else a.setSfx(!a.sfx); } this.refreshOpts(); return; }
       const b = bar(), btn = b && b.querySelector(id === 'news' ? '.tb-news' : id === 'sound' ? '.tb-snd' : '.tb-theme');
       if (btn) btn.click();
@@ -612,6 +754,7 @@
     activate(x, play) {
       if (!x) return;
       if (x.opt) { this.optAct(x.opt.id); return; }
+      if (x.act) { sfx('confirm'); x.act.run(); return; }
       if (!x.g) {
         api.state.genre = x.clear ? '' : x.genre;
         if (!x.clear) { this.cat = 'all'; this.selBy.all = null; }
@@ -632,6 +775,9 @@
     },
     onClick(e) {
       if (e.target.closest('#rfs-bar')) return;
+      Chrome.unpeek();
+      const wb = e.target.closest('[data-win]');
+      if (wb) { const w = win(); if (w) { if (wb.dataset.win === 'min') w.Minimize(); else if (wb.dataset.win === 'max') w.ToggleMaximize(); else w.Close(); } return; }
       if (this.om) {
         const it = e.target.closest('.xb-omi');
         if (it) this.menuPick(+it.dataset.i);
@@ -669,6 +815,7 @@
     key(e) {
       if (e.altKey || e.metaKey || !this.el || !this.el.isConnected) return false;
       if (this.om) return this.menuKey(e);
+      Chrome.unpeek();
       const k = e.key, L = this.cur();
       if (k === 'F2') { this.setCat('options'); return true; }
       // typing a name anywhere on the home page: the field opens and takes the letter (not handled → it types)

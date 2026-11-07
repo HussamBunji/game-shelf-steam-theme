@@ -162,7 +162,7 @@
     const hrs = g.playtimeMin ? shortHours(g.playtimeMin) : '—';
     const figs = fig(hrs, T('وقت اللعب', 'played'))
       + fig(run ? T('الحين', 'Now') : g.lastPlayed ? fmtAgo(g.lastPlayed) : '—', T('آخر مرة', 'last opened'))
-      + fig(g.installed ? (g.sizeOnDisk ? fmtSize(g.sizeOnDisk) : T('مثبّتة', 'Installed')) : T('غير مثبّتة', 'Not installed'), T('على جهازك', 'on this PC'));
+      + fig(g.installed ? (g.sizeOnDisk ? fmtSize(g.sizeOnDisk) : T('مثبّتة', 'Installed')) : (g.needBytes ? fmtSize(g.needBytes) : T('غير مثبّتة', 'Not installed')), g.installed ? T('على جهازك', 'on this PC') : T('للتحميل', 'to download'));
     const cap = [g.name, ...(g.genres || []).slice(0, 3)].map(esc).join(' · ');
     return `<section class="mg-cover" data-appid="${g.appid}">
       <figure class="mg-cover-fig">

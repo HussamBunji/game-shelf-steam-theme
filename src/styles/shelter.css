@@ -14,6 +14,7 @@
   --rf-vendor-skip: options/fonts/, options/general/alwaysShowSidebar;
   --rf-style-id: shelter;
   --rf-layout: shelter;
+  --rf-sfx: shelter;  /* the theme's own interface sounds (src/js/sfx-packs.js) */
 
   /* fonts (Latin first, Arabic second — each script picks its own): Share Tech Mono (a compact CRT mono that reads
      well at 13–15 px) for all text, VT323 (the phosphor terminal face, used large) for headings, tabs and big

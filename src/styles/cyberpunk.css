@@ -11,6 +11,7 @@
   --rf-vendor-skip: options/fonts/, options/general/alwaysShowSidebar;
   --rf-style-id: cyberpunk;
   --rf-layout: cyberpunk;
+  --rf-sfx: cyberpunk;  /* the theme's own interface sounds (src/js/sfx-packs.js) */
 
   /* fonts (Latin first, Arabic second — each script picks its own): Chakra Petch (angular, reads well at 13 px) +
      Cairo for the UI and headings; JetBrains Mono for the small data readouts (Arabic in them falls back to Cairo) */

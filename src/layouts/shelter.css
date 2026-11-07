@@ -586,3 +586,13 @@ html[data-rfs-lang="ar"] #rfs[data-layout="shelter"] :is(.sh-mt b, .sh-bn) { tex
   #rfs[data-layout="shelter"] .sh-t:is(:hover, .kf) { transform: none; }
   :is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-veil { transition: none; }
 }
+
+/* ---------- Big Picture: OPEN TERMINAL in the header (the controller reaches it with Up from the first row, or LT) ---------- */
+#rfs[data-layout="shelter"] .sh-termbtn { display: none; }
+html.rfs-bpm #rfs[data-layout="shelter"] .sh-termbtn {
+  display: inline-flex; align-items: center; gap: 10px; align-self: center; padding: 7px 14px; cursor: pointer;
+  font: 400 22px/1 var(--crt) !important; letter-spacing: .08em; color: var(--hi); text-shadow: var(--glow);
+  background: rgba(27, 255, 128, .07); border: 1px solid var(--ln2); border-radius: 2px;
+}
+html.rfs-bpm #rfs[data-layout="shelter"] .sh-termbtn i { width: 12px; height: 12px; border: 2px solid currentColor; box-shadow: inset 0 -4px 0 currentColor; }
+html.rfs-bpm #rfs[data-layout="shelter"] .sh-termbtn.rfs-padf { background: var(--hi); color: var(--ink); text-shadow: none; }

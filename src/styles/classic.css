@@ -28,6 +28,7 @@
   --rf-ict-glow: none;
 
   --rf-layout: shelf;
+  --rf-sfx: classic;  /* the theme's own interface sounds (src/js/sfx-packs.js) */
   --rf-bg: #110c08;
   --rf-bg-img: radial-gradient(ellipse 80% 50% at 50% 0%, rgba(255, 170, 90, .10), transparent 70%);
   --rf-panel: #1b130c;

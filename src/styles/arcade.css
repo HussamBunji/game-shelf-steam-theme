@@ -15,6 +15,7 @@
   --rf-vendor-skip: options/fonts/, options/general/alwaysShowSidebar;
   --rf-style-id: arcade;
   --rf-layout: arcade;
+  --rf-sfx: arcade;  /* the theme's own interface sounds (src/js/sfx-packs.js) */
 
   /* the cabinet palette (also used by src/layouts/arcade.css) */
   --rf-arc-red: #ff2e4d;

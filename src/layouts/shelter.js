@@ -60,7 +60,12 @@
     const ranked = all.filter(g => g.playtimeMin).sort((a, b) => b.playtimeMin - a.playtimeMin);
     const recent = all.filter(g => g.lastPlayed).sort((a, b) => b.lastPlayed - a.lastPlayed).slice(0, 10);
     const hours = min / 60;
-    return { n: all.length, min, hours, lv: levelOf(hours), inst, played, bytes, ranked, top: ranked.slice(0, 5), recent, maxMin: ranked[0] ? ranked[0].playtimeMin : 1 };
+    // LEVEL = the player's real Steam level (fetched once, cached); until it arrives, a level from play time
+    let lv = levelOf(hours);
+    const sl = api.steamLevelNow && api.steamLevelNow();
+    if (sl && sl.level) lv = { L: sl.level, frac: (sl.pct || 0) / 100, next: lv.next, steam: true, xp: sl.xp };
+    else if (api.steamLevel && !Layout._lvlAsked) { Layout._lvlAsked = true; api.steamLevel().then(v => { if (v) api.rerender(); }); }
+    return { n: all.length, min, hours, lv, inst, played, bytes, ranked, top: ranked.slice(0, 5), recent, maxMin: ranked[0] ? ranked[0].playtimeMin : 1 };
   }
 
   /* ---- the small picture for the device screen: header (wide), else the cover (tall) ---- */
@@ -71,7 +76,7 @@
   function bar3(L) {
     return `<div class="sh-b3">
       <div class="b3 s"><small>${T('ساعات', 'HRS')}</small><b>${NUM.format(Math.round(L.hours))}</b></div>
-      <div class="b3 c"><small>${T('المستوى', 'LEVEL')}</small><b>${NUM.format(L.lv.L)}</b><i class="b3-xp" title="${esc(T(`باقي ${NUM.format(Math.max(0, Math.ceil(L.lv.next - L.hours)))} ساعة للمستوى التالي`, `${NUM.format(Math.max(0, Math.ceil(L.lv.next - L.hours)))} h to the next level`))}"><i style="width:${Math.round(L.lv.frac * 100)}%"></i></i></div>
+      <div class="b3 c"><small>${T('المستوى', 'LEVEL')}</small><b>${NUM.format(L.lv.L)}</b><i class="b3-xp" title="${esc(L.lv.steam ? T(`مستوى ستيم ${NUM.format(L.lv.L)} · ${Math.round(L.lv.frac * 100)}% للمستوى التالي`, `Steam level ${NUM.format(L.lv.L)} · ${Math.round(L.lv.frac * 100)}% to the next level`) : T(`باقي ${NUM.format(Math.max(0, Math.ceil(L.lv.next - L.hours)))} ساعة للمستوى التالي`, `${NUM.format(Math.max(0, Math.ceil(L.lv.next - L.hours)))} h to the next level`))}"><i style="width:${Math.round(L.lv.frac * 100)}%"></i></i></div>
       <div class="b3 e"><small>${T('ألعاب', 'GAMES')}</small><b>${NUM.format(L.n)}</b></div>
     </div>`;
   }
@@ -85,7 +90,7 @@
     const n = dial.length;
     const labels = dial.map(([id, label], k) => {
       const a = n === 1 ? 0 : -60 + k * (120 / (n - 1));
-      return `<button class="sh-dl" type="button" tabindex="-1" ${attr}="${id}" style="--a:${a.toFixed(1)}deg">${label}</button>`;
+      return `<button class="sh-dl" type="button" tabindex="-1" data-nopad ${attr}="${id}" style="--a:${a.toFixed(1)}deg">${label}</button>`;
     }).join('');
     const k = Math.max(0, dial.findIndex(d => d[0] === cur));
     const rot = n === 1 ? 0 : -60 + k * (120 / (n - 1));
@@ -162,6 +167,7 @@
             <span><small>${T('الأغراض', 'ITEMS')}</small><b>${NUM.format(all.length)}</b></span>
             <span><small>${T('جاهزة', 'READY')}</small><b>${NUM.format(L.inst)}</b></span>
             <span><small>${T('الوزن', 'WEIGHT')}</small><b dir="ltr">${L.bytes ? esc(fmtSize(L.bytes)) : '—'}</b></span>
+            <button class="sh-termbtn" type="button" data-act="term"><i aria-hidden="true"></i>${T('افتح الجهاز', 'OPEN TERMINAL')}</button>
           </div>
         </header>
         <div class="rf-dock sh-dock" data-rfs-dock></div>
@@ -205,6 +211,11 @@
         if (i >= 0) { this.cur = i; if (keepRing) { this.kf = this.items[i]; this.kf.classList.toggle('kf', true); } }
       }
       el.addEventListener('click', e => this.onClick(e));
+      // the terminal's highlighted entry follows the focus (Tab, or the controller in Big Picture)
+      el.addEventListener('focusin', e => {
+        const pk = this.term && e.target.closest && e.target.closest('.sh-pick');
+        if (pk && !pk.classList.contains('sel')) this.pick(pk.dataset.pick, +pk.dataset.k);
+      });
       api.stage.replaceChildren(el);
       if (this.term) this.raiseTerm(true);
       this.paintTerm();
@@ -245,7 +256,7 @@
           <section class="sh-card sh-lv">
             <h4 class="sh-h">${T('المستوى', 'LEVEL')}</h4>
             <div class="sh-lvrow"><b class="sh-lvn">${NUM.format(L.lv.L)}</b>
-              <div class="sh-lvt"><span>${T('خبرة', 'XP')} <b>${NUM.format(Math.floor(L.hours))}</b> / ${NUM.format(L.lv.next)} ${T('ساعة', 'H')}</span>
+              <div class="sh-lvt"><span>${L.lv.steam ? `${T('خبرة ستيم', 'STEAM XP')} <b>${NUM.format(L.lv.xp || 0)}</b> · ${Math.round(L.lv.frac * 100)}%` : `${T('خبرة', 'XP')} <b>${NUM.format(Math.floor(L.hours))}</b> / ${NUM.format(L.lv.next)} ${T('ساعة', 'H')}`}</span>
                 <span class="sh-xp" style="--seg:${Math.round(L.lv.frac * 20)}"><i></i></span>
                 <small>${T(`المستوى التالي بعد ${NUM.format(toNext)} ساعة لعب`, `NEXT LEVEL IN ${NUM.format(toNext)} H OF PLAY`)}</small></div></div>
           </section>
@@ -348,6 +359,7 @@
       const r = this.r;
       const act = e.target.closest('[data-act]');
       if (act && act.dataset.act === 'lower') { this.lowerTerm(); return; }
+      if (act && act.dataset.act === 'term') { if (!this.term) this.raiseTerm(); return; }
       const tt = e.target.closest('[data-ttab]');
       if (tt && this.term) { this.setTermTab(tt.dataset.ttab); return; }
       const pk = e.target.closest('.sh-pick');
@@ -389,6 +401,11 @@
       items[k].focus({ preventScroll: true });
     },
 
+    /* ---- Big Picture (src/js/shelf.js host): the raised terminal is a panel the D-pad walks (tabs, entries,
+       close); LT raises it from the home */
+    padScope() { return this.term && this.r ? this.r.rig : null; },
+    padAux() { if (!this.term) this.raiseTerm(); },
+    get padAuxLabel() { return T('الجهاز', 'Terminal'); },
     /** the element the device "looks at" when it opens a game */
     source(appid) {
       const t = api.stage.querySelector(`.sh-t[data-appid="${appid}"] .art`);

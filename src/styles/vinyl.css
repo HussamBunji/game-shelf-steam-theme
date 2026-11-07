@@ -8,6 +8,7 @@
   --rf-vendor-skip: options/fonts/, options/general/alwaysShowSidebar;
   --rf-style-id: vinyl;
   --rf-layout: vinyl;
+  --rf-sfx: vinyl;  /* the theme's own interface sounds (src/js/sfx-packs.js) */
 
   /* fonts: UI = DM Sans + Tajawal, display = Righteous + Lalezar (Latin first, Arabic second — each script
      picks its own). Righteous and Lalezar ship one weight only, so headings stay at 400 (no fake bold). */

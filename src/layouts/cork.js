@@ -325,7 +325,7 @@
       const byKey = Layout.byKey; Layout.byKey = false;
       const focusPlay = () => { const p = byKey && acts.querySelector('[data-act="play"]'); if (p) p.focus({ preventScroll: true }); };
 
-      api.sfx('swish');
+      api.sfx('open');
       dim.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 260, easing: 'ease-out' });
       const rc = card.getBoundingClientRect();
       let fly;
@@ -353,7 +353,7 @@
     async close(sheet) {
       const card = sheet.querySelector('.ckv-card'), dim = sheet.querySelector('.ckv-dim');
       if (!card) { putBack(); return; }
-      api.sfx('swish');
+      api.sfx('close');
       if (dim) dim.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 350, easing: 'ease-in', fill: 'forwards' });
       const t1 = card.animate([{ transform: 'none' }, { transform: 'scaleX(0)' }], { duration: 80, easing: 'cubic-bezier(.55,0,1,.45)', fill: 'forwards' });
       await t1.finished;

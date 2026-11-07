@@ -10,6 +10,7 @@
   --rf-vendor-skip: options/fonts/, options/general/alwaysShowSidebar;
   --rf-style-id: cupertino;
   --rf-layout: cupertino;
+  --rf-sfx: cupertino;  /* the theme's own interface sounds (src/js/sfx-packs.js) */
 
   /* fonts: Inter + IBM Plex Sans Arabic for everything (Latin first, Arabic second — each script picks its own).
      Display titles use the same pair, bold, with tight Latin tracking (0 in Arabic, set below). */

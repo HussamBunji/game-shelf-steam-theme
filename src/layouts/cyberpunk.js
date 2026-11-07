@@ -72,7 +72,7 @@
     const strip = [
       ro(T('الساعات', 'HOURS'), g.playtimeMin ? fmtPlaytime(g.playtimeMin) : '—'),
       ro(T('آخر تشغيل', 'LAST RUN'), g.lastPlayed ? fmtAgo(g.lastPlayed) : '—'),
-      ro(T('الحجم', 'SIZE'), g.installed && g.sizeOnDisk ? fmtSize(g.sizeOnDisk) : '—'),
+      ro(T('الحجم', 'SIZE'), g.installed && g.sizeOnDisk ? fmtSize(g.sizeOnDisk) : (api.sizeText ? api.sizeText(g) : '—')),
       achRo(g),
       ro(T('الحالة', 'STATUS'), status[1], status[0]),
     ].join('');

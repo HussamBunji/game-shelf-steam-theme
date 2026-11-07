@@ -14,6 +14,7 @@
   --rf-vendor-skip: options/fonts/, options/general/alwaysShowSidebar;
   --rf-style-id: cork;
   --rf-layout: cork;
+  --rf-sfx: cork;  /* the theme's own interface sounds (src/js/sfx-packs.js) */
 
   /* icons: coral-to-mustard pen strokes; icon tiles are glossy red push-pin heads with a cream symbol */
   --rf-ic-1: #ff9b7e;

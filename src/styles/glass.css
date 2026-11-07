@@ -28,6 +28,7 @@
   --rf-ict-glow: none;
 
   --rf-layout: gallery;
+  --rf-sfx: glass;  /* the theme's own interface sounds (src/js/sfx-packs.js) */
   --rf-bg: #0c1420;
   --rf-bg-img:
     radial-gradient(ellipse 60% 45% at 15% 0%, rgba(102, 192, 244, .16), transparent 70%),

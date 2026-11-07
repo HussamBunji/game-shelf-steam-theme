@@ -14,6 +14,7 @@
   --rf-vendor-skip: options/fonts/, options/general/alwaysShowSidebar;
   --rf-style-id: magazine;
   --rf-layout: magazine;
+  --rf-sfx: magazine;  /* the theme's own interface sounds (src/js/sfx-packs.js) */
 
   /* icons: thin red strokes; tiles are minimal outlined squares with cream strokes and a red underline when active */
   --rf-ic-1: #ff6b57;

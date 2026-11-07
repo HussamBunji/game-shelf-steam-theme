@@ -351,3 +351,28 @@ html[data-rfs-lang="ar"] #rfs-sheet[data-layout="xmb"] .xo-body h2 { text-align:
 @media (prefers-reduced-motion: reduce) {
   #rfs-sheet[data-layout="xmb"] :is(.rf-act, .xo-x) { transition: none; }
 }
+
+/* ═════════════ no Steam top bar on the Crossbar home (xmb.js Chrome sets html.xb-full while the home is on screen):
+   a thin invisible drag strip along the top, and the window buttons fading in only in the top-end corner ═════════════ */
+#rfs[data-layout="xmb"] :is(.xb-drag, .xb-win) { display: none; }
+html.xb-full:not(.rfs-bpm) #rfs[data-layout="xmb"] .xb-drag { display: block; position: absolute; z-index: 45; top: 0; inset-inline: 0 150px; height: 12px; -webkit-app-region: drag; }
+html.xb-full:not(.rfs-bpm) #rfs[data-layout="xmb"] .xb-win {
+  display: flex; position: absolute; z-index: 46; top: 0; inset-inline-end: 0; height: 34px; padding: 0 6px; gap: 2px; align-items: center;
+  opacity: 0; transition: opacity .25s var(--xb-ease);
+}
+html.xb-full:not(.rfs-bpm) #rfs[data-layout="xmb"] .xb-win:is(:hover, :focus-within) { opacity: 1; }
+#rfs[data-layout="xmb"] .xb-win button {
+  width: 40px; height: 26px; padding: 0; border: 0; border-radius: 8px; cursor: pointer; display: grid; place-items: center;
+  color: rgba(255, 255, 255, .85); background: transparent; transition: background-color .15s, box-shadow .15s;
+}
+#rfs[data-layout="xmb"] .xb-win button:hover { background: rgba(255, 255, 255, .14); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .25); }
+#rfs[data-layout="xmb"] .xb-win button.w-x:hover { background: rgba(232, 72, 88, .85); box-shadow: none; }
+#rfs[data-layout="xmb"] .xb-win .w-min { width: 11px; height: 1.5px; background: currentColor; }
+#rfs[data-layout="xmb"] .xb-win .w-max { width: 10px; height: 10px; border: 1.5px solid currentColor; border-radius: 2px; box-sizing: border-box; }
+#rfs[data-layout="xmb"] .xb-win svg.rf-ic { width: 13px; height: 13px; margin: 0; stroke: currentColor; filter: none; }
+/* the clock steps down under the window buttons' corner */
+html.xb-full:not(.rfs-bpm) #rfs[data-layout="xmb"] .xb-top { padding-top: 34px; }
+/* Profile: the user's own avatar as the category icon */
+#rfs[data-layout="xmb"] .xb-cat .ico > img.av { width: 42px; height: 42px; border-radius: 12px; object-fit: cover; box-shadow: 0 0 0 1.5px rgba(255, 255, 255, .5); transition: transform .35s var(--xb-ease), box-shadow .35s; }
+#rfs[data-layout="xmb"] .xb-cat.on .ico > img.av { transform: scale(1.18); box-shadow: 0 0 0 2px #fff, 0 0 16px rgba(var(--xb-g), .8); }
+#rfs[data-layout="xmb"] .xb-info .xb-sub { margin: 0; font-size: 14px; font-weight: 400; line-height: 1.5; color: var(--xb-dim); }
