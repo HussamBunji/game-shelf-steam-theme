@@ -38,6 +38,13 @@
     rules.push(String.raw({ raw: strings }, ...vals));
   }
 
+  /** the same, for rules that must stay on under a community base too (the rfs-skin sheet is switched off then) */
+  const urules = [];
+  function urule(strings, ...vals) {
+    if (vals.some(v => !v)) return;
+    urules.push(String.raw({ raw: strings }, ...vals));
+  }
+
   const A = 'rgba(var(--rf-accent-rgb), ';
 
   /* ---------------- window frame + top bar ---------------- */
@@ -128,6 +135,51 @@
   rule`${TB('NotificationsMenu')}, ${TB('AccountMenuPopup')} { background: var(--rf-panel) !important; border: var(--rf-card-border) !important; border-radius: var(--rf-radius-lg) !important; }`;
   rule`${TB('NotificationMenuItem')}:hover { background: ${A}.14) !important; }`;
 
+  /* ---------------- the user box (account + its buttons) ----------------
+     The community base (SpaceTheme) parks it at the bottom of the left sidebar. Our home designs hide that sidebar,
+     so it ended up floating alone in the corner, over the designs' own buttons. Each style now gives it a place of
+     its own, the same on the store, the library and every game page:
+       • a footer bar along the bottom of the window (Arcade = the cabinet's control panel, Terminal = the status
+         line, Vinyl, Classic) — Steam's frame is shortened by its height, so nothing is ever under it;
+       • or the title bar, just before the window buttons and never over them (Glass, Magazine, Vault, Cork, Neon,
+         SpaceTheme).
+     Colours come from --rf-footer-* / --rf-user-* in styles/*.css. Material You keeps its own toolbar; Steam
+     Original keeps Valve's. */
+  const U = 'html:not([data-rfs-style="material"]):not([data-rfs-style="original"])';
+  const FOOT = 'html:is([data-rfs-style="arcade"], [data-rfs-style="terminal"], [data-rfs-style="vinyl"], [data-rfs-style="classic"])';
+  const HEAD = 'html:is([data-rfs-style="glass"], [data-rfs-style="magazine"], [data-rfs-style="vault"], [data-rfs-style="cork"], [data-rfs-style="neon"], [data-rfs-style="space"])';
+  urule`${FOOT} ${C('TitleBarControls')} {
+    position: fixed !important; inset: auto 0 0 0 !important; z-index: 900; display: flex !important;
+    flex-direction: row !important; align-items: center !important; justify-content: flex-start !important;
+    width: auto !important; max-width: none !important; height: 46px !important; gap: 8px !important; margin: 0 !important; padding: 0 16px !important;
+    background: var(--rf-footer-bg, var(--rf-sidebar, #0e141c)) !important; border: 0 !important;
+    border-top: var(--rf-footer-line, 1px solid ${A}.22)) !important; border-radius: 0 !important; box-shadow: 0 -6px 18px rgba(0, 0, 0, .25) !important;
+    -webkit-app-region: no-drag; }`;
+  urule`${FOOT} ${C('OuterFrame')} { padding-bottom: 46px !important; box-sizing: border-box !important; }`;
+  urule`${HEAD} ${C('TitleBarControls')} {
+    position: relative !important; inset: auto !important; z-index: 5; display: flex !important;
+    flex-direction: row !important; align-items: center !important; flex: 0 0 auto !important;
+    width: auto !important; max-width: none !important; height: 100% !important; gap: 6px !important; margin: 0 28px 0 0 !important; padding: 0 !important;
+    background: none !important; border: 0 !important; box-shadow: none !important; -webkit-app-region: no-drag; }`;
+  urule`${U} ${C('TitleBarControls')} > * { flex: 0 0 auto !important; width: auto !important; }`;
+  urule`${U} ${C('TitleBarControls')} .userpanel-buttoncontainer { display: flex !important; flex-direction: row !important; gap: 4px !important; width: auto !important; }`;
+  urule`${U} ${C('TitleBarControls')} ${C('AccountMenu')} {
+    height: 32px !important; max-height: 32px !important; padding: 0 12px 0 4px !important; gap: 8px !important;
+    font: var(--rf-user-font, 600 13px var(--rf-font-ui, inherit)) !important; color: var(--rf-user-ink, var(--rf-text)) !important;
+    background: var(--rf-user-bg, ${A}.10)) !important; border: var(--rf-user-border, 1px solid ${A}.28)) !important;
+    border-radius: var(--rf-user-radius, var(--rf-radius)) !important; box-shadow: var(--rf-user-shadow, none) !important; }`;
+  urule`${U} ${C('TitleBarControls')} ${C('AccountMenu')}:hover { background: var(--rf-user-bg-hover, ${A}.2)) !important; }`;
+  urule`${U} ${C('TitleBarControls')} ${C('AccountMenu')} .avatarHolder { margin: 0 !important; }`;
+  urule`${U} ${C('TitleBarControls')} .userpanel-buttoncontainer > :not(#rfs-family), ${U} ${C('TitleBarControls')} .userpanel-buttoncontainer :is(button, [class*="Button"]) {
+    width: 32px !important; min-width: 32px !important; height: 32px !important; padding: 0 !important; }`;
+  /* SpaceTheme builds the settings button itself: its inner box was 28 px and top-aligned — the same 32 px as the rest */
+  urule`${U} ${C('TitleBarControls')} .userpanel-buttoncontainer .st-steam-settings > * {
+    width: 32px !important; height: 32px !important; display: flex !important; align-items: center !important; justify-content: center !important; }`;
+  urule`${U} ${C('TitleBarControls')} .userpanel-buttoncontainer :is(button, [class*="Button"], .st-steam-settings > *) {
+    border-radius: var(--rf-user-radius, var(--rf-radius)) !important; }`;
+  /* the sidebar no longer needs the empty space it kept at the bottom for the box */
+  urule`${U} ._3x1HklzyDs4TEjACrRO2tB ._1ijTaXJJA5YWl_fW2IxcaT { margin-bottom: 12px !important; }`;
+
   /* ---------------- in-client browser URL bar (store / community) ---------------- */
   rule`${C('URLBar')} { background: var(--rf-topbar) !important; border-bottom: 1px solid ${A}.18) !important; }`;
   rule`${C('URLBarText')}, ${C('URL', 'URLBar')} { color: var(--rf-text-dim) !important; }`;
@@ -171,11 +223,16 @@
     button:focus-visible, [role="button"]:focus-visible, input:focus-visible { outline: 2px solid ${A}.85) !important; outline-offset: 2px; }
   `);
 
+  /* a style switched live (shelf.js swaps the style sheet in every window without reloading Steam) re-runs these */
+  const restyleHooks = [];
   function inject() {
     if (!document.head) return void setTimeout(inject, 50);
     let s = document.getElementById('rfs-skin');
     if (!s) { s = document.createElement('style'); s.id = 'rfs-skin'; document.head.appendChild(s); }
     s.textContent = rules.join('\n');
+    let us = document.getElementById('rfs-skin-user');
+    if (!us) { us = document.createElement('style'); us.id = 'rfs-skin-user'; document.head.appendChild(us); }
+    us.textContent = urules.join('\n');
     // "Steam Original" style: keep Steam exactly as Valve ships it (the style sheet stays, switched off)
     // off when Steam is styled by someone else: "Steam Original" (stock) or a community theme base (--rf-vendor)
     const sync = () => {
@@ -189,6 +246,7 @@
     // just re-check a few times while the window's own CSS is still arriving, then stop (~25 hidden windows run this)
     sync();
     [300, 1000, 2500, 6000].forEach(ms => setTimeout(sync, ms));
+    restyleHooks.push(sync);
   }
 
   /* ---- the style's font pair (Latin + Arabic) for every Steam window: --rf-font-ui / --rf-font-gf come from the
@@ -210,7 +268,8 @@
   }
   inject();
   { const v = n => getComputedStyle(document.documentElement).getPropertyValue(n); [0, 300, 1500, 5000].forEach(ms => setTimeout(() => applyFonts(v), ms)); }
-  window.__rfsSkin = { rules: rules.length, missing: [...new Set(missing)] };
+  restyleHooks.push(() => applyFonts(n => getComputedStyle(document.documentElement).getPropertyValue(n)));
+  window.__rfsSkin = { rules: rules.length, missing: [...new Set(missing)], restyle: () => restyleHooks.forEach(f => { try { f(); } catch (e) { /* keep going */ } }) };
 
   /* ---- bundled community themes (src/vendor: SpaceTheme, Material — both MIT, see their LICENSE files) ----
      Their style file sets --rf-vendor; this loads that theme's own CSS/JS into this window, mapped exactly
@@ -266,6 +325,7 @@
       }
     }
     check();
+    restyleHooks.push(check);
     // dialogs / friends windows get their matching class a moment after they open — re-check a few times, then stop
     [300, 1000, 2500, 6000, 15000].forEach(ms => setTimeout(check, ms));
   })();

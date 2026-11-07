@@ -1,0 +1,387 @@
+/* ═══ Corkboard (لوحة الذكريات) — home design (src/layouts/cork.js) ═══
+   A warm cork board: the pinned paper filter strip, kraft index tabs, one sticky note per group and polaroids
+   held by washi tape or push pins. Static gradients only (no images, no filters); every polaroid has a fixed
+   2D tilt, and only the hovered / keyboard-focused one straightens, lifts and casts a shadow.
+   Fonts: the !important on font-family is needed, the theme's font rule (skin.js) is itself !important. */
+#rfs[data-layout="cork"] {
+  --ck-paper: #fffdf8;
+  --ck-paper-2: #f5eee1;
+  --ck-ink: #2f3b6e;        /* ballpoint blue: the handwriting */
+  --ck-pencil: #7a6852;
+  --ck-red: #d9472f;
+  --ck-brown: #3b2614;
+  /* cork: dark and light granules at odd spots on co-prime tiles (so no grid shows), two soft mottles,
+     light from the top, darker edges. All static gradients: painted once, never animated. */
+  background:
+    radial-gradient(circle at 20% 30%, rgba(70, 40, 15, .3) 0 1.1px, transparent 1.9px) 0 0 / 23px 19px,
+    radial-gradient(circle at 72% 64%, rgba(70, 40, 15, .24) 0 .8px, transparent 1.5px) 0 0 / 17px 29px,
+    radial-gradient(circle at 46% 82%, rgba(255, 236, 205, .24) 0 .9px, transparent 1.7px) 0 0 / 31px 13px,
+    radial-gradient(circle at 86% 14%, rgba(255, 236, 205, .18) 0 .7px, transparent 1.4px) 0 0 / 11px 37px,
+    radial-gradient(ellipse 3px 2px at 32% 70%, rgba(104, 64, 28, .34), transparent) 0 0 / 41px 47px,
+    radial-gradient(ellipse at 50% 50%, rgba(128, 84, 42, .22), transparent 62%) 0 0 / 163px 121px,
+    radial-gradient(ellipse at 50% 50%, rgba(214, 170, 120, .16), transparent 60%) 70px 40px / 211px 173px,
+    linear-gradient(90deg, rgba(48, 26, 8, .32), transparent 6%, transparent 94%, rgba(48, 26, 8, .32)),
+    linear-gradient(180deg, rgba(255, 224, 176, .16), transparent 600px),
+    #b4875a;
+}
+#rfs[data-layout="cork"] .ck { padding: 18px 28px 64px; }
+
+/* ---------- index: kraft tabs that jump to a board ---------- */
+#rfs[data-layout="cork"] .ck-index { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 7px; margin: 16px 2px 0; }
+#rfs[data-layout="cork"] .ck-idx-lbl {
+  display: inline-flex; align-items: center; margin-inline-end: 4px; color: var(--ck-brown);
+  font-family: var(--rf-heading-font) !important; font-size: 20px; font-weight: 700; line-height: 1;
+}
+#rfs[data-layout="cork"] .ck-idx-lbl > svg.rf-ic { stroke: var(--ck-brown); }
+#rfs[data-layout="cork"] .ck-tab {
+  display: inline-flex; align-items: baseline; gap: 5px; padding: 4px 11px 3px; cursor: pointer;
+  font-family: var(--rf-heading-font) !important; font-size: 18px; font-weight: 700; line-height: 1.2; color: #3d2a17;
+  background: linear-gradient(#f2e0be, #e3cb9f);
+  border: 1px solid rgba(80, 50, 20, .3); border-bottom-color: rgba(80, 50, 20, .5); border-radius: 2px;
+  transform: rotate(-1deg);
+  transition: transform .12s ease-out, background .12s;
+}
+#rfs[data-layout="cork"] .ck-tab:nth-of-type(even) { transform: rotate(1.1deg); }
+#rfs[data-layout="cork"] .ck-tab:nth-of-type(3n) { transform: rotate(-.4deg); }
+#rfs[data-layout="cork"] .ck-tab:hover { transform: translateY(-2px) rotate(0deg); background: linear-gradient(#fff6d6, #ffe68a); }
+#rfs[data-layout="cork"] .ck-tab b { font-size: 10.5px; font-weight: 800; color: rgba(61, 42, 23, .6); }
+
+/* ---------- a board: sticky-note header + twine, then the polaroids ---------- */
+#rfs[data-layout="cork"] .ck-board { scroll-margin-top: 14px; }
+#rfs[data-layout="cork"] .ck-head { display: flex; align-items: center; gap: 18px; margin: 42px 4px 26px; }
+#rfs[data-layout="cork"] .ck-board:first-of-type .ck-head { margin-top: 32px; }
+#rfs[data-layout="cork"] .ck-note {
+  --note: #ffe27a; --nr: -1.6deg;
+  position: relative; flex: 0 1 auto; min-width: 150px; max-width: min(460px, 60%);
+  padding: 17px 22px 10px; text-align: center; color: #3a2a17;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .24), transparent 35%, rgba(90, 60, 10, .06)), var(--note);
+  box-shadow: 0 12px 14px -10px rgba(46, 24, 6, .62), 0 1px 2px rgba(46, 24, 6, .22);
+  transform: rotate(var(--nr));
+}
+#rfs[data-layout="cork"] .ck-note.n1 { --note: #ffc9cc; --nr: 1.2deg; }
+#rfs[data-layout="cork"] .ck-note.n2 { --note: #c9ecd8; --nr: -.9deg; }
+#rfs[data-layout="cork"] .ck-note.n3 { --note: #cfe2f7; --nr: 1.7deg; }
+#rfs[data-layout="cork"] .ck-note h3 {
+  margin: 0; color: #3a2a17; overflow-wrap: anywhere;
+  font-family: var(--rf-heading-font) !important; font-size: 28px; font-weight: 700; line-height: 1.2;
+}
+#rfs[data-layout="cork"] .ck-note small { display: block; margin-top: 3px; font-size: 12px; font-weight: 700; color: rgba(58, 42, 23, .68); }
+/* the icon tile is the note's push pin */
+#rfs[data-layout="cork"] .ck-note > .rf-ict { position: absolute; top: -12px; left: 50%; width: 24px; height: 24px; margin-left: -12px; }
+#rfs[data-layout="cork"] .ck-note > .rf-ict > svg.rf-ic { width: 13px; height: 13px; }
+#rfs[data-layout="cork"] .ck-twine {
+  position: relative; flex: 1 1 auto; height: 3px; border-radius: 2px; opacity: .9;
+  background: repeating-linear-gradient(90deg, #6f4f2e 0 7px, #9a744a 7px 10px);
+}
+#rfs[data-layout="cork"] .ck-twine::after {
+  content: ''; position: absolute; top: -5px; inset-inline-end: -5px; width: 13px; height: 13px; border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 30%, rgba(255, 255, 255, .8) 0 1.5px, transparent 3px),
+    radial-gradient(circle at 50% 45%, #f5bd3a 0 50%, #a77610 100%);
+}
+#rfs[data-layout="cork"] .ck-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(176px, 1fr)); gap: 32px 26px; padding: 4px 6px; }
+
+/* ---------- a polaroid ---------- */
+#rfs[data-layout="cork"] .ck-p {
+  position: relative; display: grid; grid-template-columns: 100%; align-content: start;
+  padding: 8px 8px 9px; cursor: pointer;
+  background: linear-gradient(170deg, var(--ck-paper), var(--ck-paper-2));
+  border: 1px solid rgba(96, 64, 32, .16); border-bottom-color: rgba(96, 64, 32, .34); border-radius: 2px;
+  transform: translateY(0) scale(1) rotate(var(--r, 0deg));          /* static 2D tilt, no layer */
+  transition: transform .13s cubic-bezier(.2, .8, .3, 1), box-shadow .13s;   /* short: hover must feel instant */
+  scroll-margin-block: 80px;
+}
+#rfs[data-layout="cork"] .ck-p .art {
+  grid-area: 1 / 1; position: relative; aspect-ratio: 16 / 10;
+  background: var(--img, none) center / cover no-repeat, linear-gradient(160deg, #d9cfbd, #bdb099);
+  border: 1px solid rgba(40, 25, 10, .14);
+}
+#rfs[data-layout="cork"] .ck-p.cp .art { background-position: center 26%, 0 0; }
+#rfs[data-layout="cork"] .ck-p .cap {
+  margin-top: 7px; padding: 0 4px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  color: var(--ck-ink); font-family: var(--rf-heading-font) !important; font-size: 20px; font-weight: 600; line-height: 1.32;
+}
+#rfs[data-layout="cork"] .ck-p .sub {
+  padding: 0 4px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  color: var(--ck-pencil); font-size: 11px; font-weight: 700; line-height: 1.45;
+}
+/* the play sticker: shares the photo's grid cell, bottom inline-end corner; visible on hover / focus only */
+#rfs[data-layout="cork"] .ck-p .go {
+  grid-area: 1 / 1; align-self: end; justify-self: end; margin: 0 8px 8px;
+  display: grid; place-items: center; width: 34px; height: 34px; padding: 0; cursor: pointer;
+  border: 2px solid #fff; border-radius: 50%;
+  color: var(--rf-play-ink, #0f2a0b); background: linear-gradient(135deg, var(--rf-play-1, #8fd17f), var(--rf-play-2, #4f9e48));
+  opacity: 0; transition: opacity .15s;
+}
+#rfs[data-layout="cork"] .ck-p .go > svg.rf-ic { width: 15px; height: 15px; margin: 0; }
+#rfs[data-layout="cork"] .ck-p:is(:hover, .kf) .go { opacity: 1; box-shadow: 0 3px 7px rgba(30, 15, 4, .4); }
+#rfs[data-layout="cork"] .ck-p .go:hover { background: linear-gradient(135deg, #a6e096, #5db455); }
+
+/* hover / keyboard focus: ONLY this polaroid straightens, lifts and gets a soft shadow */
+#rfs[data-layout="cork"] .ck-p:hover,
+#rfs[data-layout="cork"] .ck-p.kf {
+  z-index: 4;
+  transform: translateY(-7px) scale(1.04) rotate(0deg);
+  box-shadow: 0 16px 26px -6px rgba(46, 24, 6, .5), 0 4px 8px rgba(46, 24, 6, .22);
+}
+#rfs[data-layout="cork"] .ck-p:active { transform: translateY(-4px) scale(1.02) rotate(0deg); }
+/* keyboard ring: a red marker line around the photo */
+#rfs[data-layout="cork"] .ck-p.kf { outline: 3px solid rgba(217, 71, 47, .9); outline-offset: 4px; }
+
+/* washi tape (t0–t3): a translucent strip with zig-zag ends across the top edge */
+#rfs[data-layout="cork"] .ck-p:is(.t0, .t1, .t2, .t3)::before {
+  content: ''; position: absolute; z-index: 2; top: -10px; left: 50%; width: 74px; height: 21px; margin-left: -37px;
+  background: var(--tape); transform: rotate(var(--tr, -4deg)); pointer-events: none;
+  clip-path: polygon(0 0, 100% 0, 96% 25%, 100% 50%, 96% 75%, 100% 100%, 0 100%, 4% 75%, 0 50%, 4% 25%);
+}
+#rfs[data-layout="cork"] .ck-p.t0 { --tr: -5deg; --tape: repeating-linear-gradient(135deg, rgba(255, 255, 255, .32) 0 5px, transparent 5px 10px), rgba(240, 192, 76, .86); }
+#rfs[data-layout="cork"] .ck-p.t1 { --tr: 4deg; --tape: radial-gradient(circle, rgba(255, 255, 255, .6) 0 1.3px, transparent 1.8px) 0 0 / 8px 8px, rgba(132, 202, 174, .86); }
+#rfs[data-layout="cork"] .ck-p.t2 { --tr: -2deg; --tape: linear-gradient(rgba(255, 255, 255, .28), transparent 45%, rgba(0, 0, 0, .05)), rgba(239, 158, 160, .84); }
+#rfs[data-layout="cork"] .ck-p.t3 { --tr: 6deg; --tape: repeating-linear-gradient(90deg, rgba(255, 255, 255, .34) 0 3px, transparent 3px 9px), rgba(138, 186, 230, .84); }
+/* push pins (p0–p3): a glossy head (::before) and its small shadow on the frame (::after) */
+#rfs[data-layout="cork"] .ck-p:is(.p0, .p1, .p2, .p3)::before {
+  content: ''; position: absolute; z-index: 2; top: -7px; left: 50%; width: 17px; height: 17px; margin-left: -8.5px;
+  border-radius: 50%; pointer-events: none;
+  background:
+    radial-gradient(circle at 36% 30%, rgba(255, 255, 255, .9) 0 1.8px, rgba(255, 255, 255, 0) 4px),
+    radial-gradient(circle at 50% 45%, var(--pin) 0 52%, var(--pin-d) 100%);
+}
+#rfs[data-layout="cork"] .ck-p:is(.p0, .p1, .p2, .p3)::after {
+  content: ''; position: absolute; z-index: 1; top: 3px; left: 50%; width: 18px; height: 10px; margin-left: -3px;
+  border-radius: 50%; pointer-events: none;
+  background: radial-gradient(closest-side, rgba(40, 20, 6, .38), rgba(40, 20, 6, 0));
+}
+#rfs[data-layout="cork"] .ck-p.p0 { --pin: #f0654b; --pin-d: #a32d1c; }
+#rfs[data-layout="cork"] .ck-p.p1 { --pin: #f5bd3a; --pin-d: #a77610; }
+#rfs[data-layout="cork"] .ck-p.p2 { --pin: #4cb39b; --pin-d: #23705f; }
+#rfs[data-layout="cork"] .ck-p.p3 { --pin: #5d86dc; --pin-d: #2c4f9e; }
+
+/* not installed: a faded old print (a cream wash, no filter); running: a green line and caption */
+#rfs[data-layout="cork"] .ck-p.ni .art::after {
+  content: ''; position: absolute; inset: 0; background: rgba(246, 236, 214, .46); transition: opacity .2s;
+}
+#rfs[data-layout="cork"] .ck-p.ni:is(:hover, .kf) .art::after { opacity: .35; }
+#rfs[data-layout="cork"] .ck-p.ni .cap { color: #5d6690; }
+#rfs[data-layout="cork"] .ck-p.run .art { outline: 3px solid #4fae52; outline-offset: -3px; }
+#rfs[data-layout="cork"] .ck-p.run .sub { color: #2e8a3b; }
+/* a caption cut off by "…" shows the whole name on hover / keyboard focus (cork.js measures it once): a slightly
+   smaller hand on the same line (.fit), or two lines where the hours line was (.full). Same height either way. */
+#rfs[data-layout="cork"] .ck-p.fit:is(:hover, .kf) .cap { font-size: var(--fs, 18px); line-height: 26.4px; text-overflow: clip; }
+#rfs[data-layout="cork"] .ck-p.full:is(:hover, .kf) .cap {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
+  white-space: normal; overflow-wrap: anywhere; font-size: 17.5px; line-height: 21.2px;
+}
+#rfs[data-layout="cork"] .ck-p.full:is(:hover, .kf) .sub { display: none; }
+/* the details viewer took this photo off the board: an empty frame stays behind */
+#rfs[data-layout="cork"] .ck-p.taken .art { visibility: hidden; }
+/* the game panel (layout.open) took the whole polaroid off the board: only its pin or tape stays */
+#rfs[data-layout="cork"] .ck-p.ck-out,
+#rfs[data-layout="cork"] .ck-p.ck-out:is(:hover, .kf, :active) {
+  background: transparent; border-color: transparent; box-shadow: none; outline: 0;
+  transform: rotate(var(--r, 0deg)); transition: none;
+}
+#rfs[data-layout="cork"] .ck-p.ck-out > *,
+#rfs[data-layout="cork"] .ck-p.ck-out::after { visibility: hidden; }
+
+/* ═════════════ the opened game (#rfs-sheet): the polaroid off the board, turned over and written on ═════════════
+   One element (.ckv-card) moves: 2D transforms only (cork.js). Front = the polaroid itself; back (.flip) = a paper
+   card: handwritten name, a lined page for the description, a sticky note with the facts, paper-tag buttons. */
+#rfs-sheet[data-layout="cork"] {
+  --ck-paper: #fffdf8;
+  --ck-paper-2: #f5eee1;
+  --ck-ink: #2f3b6e;
+  --ck-text: #2b2116;
+  --ck-pencil: #7a6852;
+  --ck-red: #d9472f;
+  --ck-back: #fcf7ec;
+  color: var(--ck-text);
+}
+#rfs-sheet[data-layout="cork"] .ckv-dim {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 75% 70% at 50% 46%, rgba(40, 21, 6, .5), rgba(22, 11, 3, .74));
+}
+#rfs-sheet[data-layout="cork"] .ckv {
+  position: absolute; inset: 0; display: grid; grid-template: 100% / 100%; place-items: center; pointer-events: none;
+}
+#rfs-sheet[data-layout="cork"] .ckv-card { position: relative; width: var(--w, 196px); pointer-events: auto; }
+#rfs-sheet[data-layout="cork"] .ckv-card:not(.flip) .ckv-back,
+#rfs-sheet[data-layout="cork"] .ckv-card.flip .ckv-front { display: none; }
+
+/* front: the same polaroid as on the board */
+#rfs-sheet[data-layout="cork"] .ckv-front {
+  display: grid; grid-template-columns: 100%; padding: 8px 8px 9px;
+  background: linear-gradient(170deg, var(--ck-paper), var(--ck-paper-2));
+  border: 1px solid rgba(96, 64, 32, .16); border-bottom-color: rgba(96, 64, 32, .34); border-radius: 2px;
+  box-shadow: 0 16px 24px -8px rgba(20, 10, 2, .55), 0 3px 6px rgba(20, 10, 2, .22);
+}
+#rfs-sheet[data-layout="cork"] .art { background: var(--img, none) center / cover no-repeat, linear-gradient(160deg, #d9cfbd, #bdb099); }
+#rfs-sheet[data-layout="cork"] .ckv-front .art { aspect-ratio: 16 / 10; border: 1px solid rgba(40, 25, 10, .14); }
+#rfs-sheet[data-layout="cork"] .ckv-front .cap {
+  margin-top: 7px; padding: 0 4px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  color: var(--ck-ink); font-family: var(--rf-heading-font) !important; font-size: 20px; font-weight: 600; line-height: 1.32;
+}
+#rfs-sheet[data-layout="cork"] .ckv-front .sub {
+  padding: 0 4px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  color: var(--ck-pencil); font-size: 11px; font-weight: 700; line-height: 1.45;
+}
+#rfs-sheet[data-layout="cork"] .ckv-card.run .ckv-front .sub { color: #2e8a3b; }
+
+/* back: the written card */
+#rfs-sheet[data-layout="cork"] .ckv-card.flip {
+  display: flex; flex-direction: column; width: min(820px, calc(100% - 72px)); max-height: calc(100% - 64px);
+}
+#rfs-sheet[data-layout="cork"] .ckv-back {
+  position: relative; flex: 0 1 auto; min-height: 0;
+  display: grid; grid-template-columns: minmax(0, 1fr) 258px; grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 20px 30px; padding: 30px 34px 26px;
+  background: linear-gradient(176deg, #fffdf8, var(--ck-back) 55%, #f4ebd9);
+  border: 1px solid rgba(96, 64, 32, .2); border-bottom-color: rgba(96, 64, 32, .36); border-radius: 2px;
+  box-shadow: 0 34px 60px -22px rgba(12, 6, 1, .8), 0 4px 10px rgba(12, 6, 1, .3);
+}
+/* name in ballpoint, underlined twice with a red pen */
+#rfs-sheet[data-layout="cork"] .ckv-head { grid-column: 1 / -1; min-height: 76px; padding-inline-end: 262px; }
+#rfs-sheet[data-layout="cork"] .ckv-head h2 {
+  margin: 0; color: var(--ck-ink); overflow-wrap: anywhere;
+  font-family: var(--rf-heading-font) !important; font-size: 44px; font-weight: 700; line-height: 1.04;
+}
+#rfs-sheet[data-layout="cork"] .ckv-head h2::after {
+  content: ''; display: block; width: min(250px, 80%); height: 10px; margin-top: 3px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 250 10' preserveAspectRatio='none'%3E%3Cpath d='M2 4.5C50 2 95 6 140 3.6S215 2.4 248 4' fill='none' stroke='%23d9472f' stroke-width='2.4' stroke-linecap='round'/%3E%3Cpath d='M14 8.2C70 6 130 8.6 236 6.6' fill='none' stroke='%23d9472f' stroke-width='1.6' stroke-linecap='round' opacity='.75'/%3E%3C/svg%3E") 0 0 / 100% 100% no-repeat;
+}
+#rfs-sheet[data-layout="cork"] .ckv-tags { margin: 8px 0 0; color: var(--ck-pencil); font-size: 12.5px; font-weight: 800; line-height: 1.5; }
+#rfs-sheet[data-layout="cork"] .ckv-tags i {
+  display: inline-block; width: 4px; height: 4px; margin: 0 8px; border-radius: 50%; vertical-align: middle; background: currentColor; opacity: .55;
+}
+/* the photo again, small and taped to the corner */
+#rfs-sheet[data-layout="cork"] .ckv-snap {
+  position: absolute; z-index: 2; top: -26px; inset-inline-end: 50px; width: 214px; padding: 7px 7px 22px;
+  background: linear-gradient(170deg, #fff, #f6f0e4);
+  box-shadow: 0 10px 18px -8px rgba(20, 10, 2, .55), 0 1px 2px rgba(20, 10, 2, .22);
+  transform: rotate(3deg);
+}
+html:not([data-rfs-lang="en"]) #rfs-sheet[data-layout="cork"] .ckv-snap { transform: rotate(-3deg); }
+#rfs-sheet[data-layout="cork"] .ckv-snap .art { aspect-ratio: 460 / 215; border: 1px solid rgba(40, 25, 10, .12); }
+#rfs-sheet[data-layout="cork"] .ckv-snap::before {
+  content: ''; position: absolute; top: -11px; left: 50%; width: 84px; height: 22px; margin-left: -42px; transform: rotate(-5deg);
+  background: repeating-linear-gradient(135deg, rgba(255, 255, 255, .32) 0 5px, transparent 5px 10px), rgba(240, 192, 76, .84);
+  clip-path: polygon(0 0, 100% 0, 96% 25%, 100% 50%, 96% 75%, 100% 100%, 0 100%, 4% 75%, 0 50%, 4% 25%);
+}
+#rfs-sheet[data-layout="cork"] .ckv-card.t1 .ckv-snap::before { background: radial-gradient(circle, rgba(255, 255, 255, .6) 0 1.3px, transparent 1.8px) 0 0 / 8px 8px, rgba(132, 202, 174, .86); }
+#rfs-sheet[data-layout="cork"] .ckv-card:is(.t2, .p0) .ckv-snap::before { background: linear-gradient(rgba(255, 255, 255, .28), transparent 45%, rgba(0, 0, 0, .05)), rgba(239, 158, 160, .84); }
+#rfs-sheet[data-layout="cork"] .ckv-card:is(.t3, .p3) .ckv-snap::before { background: repeating-linear-gradient(90deg, rgba(255, 255, 255, .34) 0 3px, transparent 3px 9px), rgba(138, 186, 230, .84); }
+/* close: pull the red pin */
+#rfs-sheet[data-layout="cork"] .ckv-x {
+  position: absolute; z-index: 3; top: -14px; inset-inline-end: -14px; display: grid; place-items: center;
+  width: 32px; height: 32px; padding: 0; cursor: pointer; border-radius: 50%;
+  background: radial-gradient(circle at 34% 28%, #ffd6c8 0 7%, #f87a5f 32%, #d94a33 68%, #9c2c1b 100%);
+  border: 1px solid rgba(110, 28, 14, .55);
+  box-shadow: inset 0 -2px 3px rgba(110, 24, 10, .45), inset 0 1px 1px rgba(255, 255, 255, .45), 0 3px 6px rgba(20, 10, 4, .45);
+  transition: transform .12s ease-out;
+}
+#rfs-sheet[data-layout="cork"] .ckv-x:hover { transform: scale(1.1); }
+#rfs-sheet[data-layout="cork"] .ckv-x:focus-visible { outline: 2px dashed #fff3c4; outline-offset: 2px; }
+#rfs-sheet[data-layout="cork"] .ckv-x > svg.rf-ic { width: 14px; height: 14px; margin: 0; stroke: #fffaf0; stroke-width: 2.6; }
+/* the description on a page of lined notebook paper (red margin line, blue rules; the text sits on the lines) */
+#rfs-sheet[data-layout="cork"] .ckv-lined {
+  min-height: 0; overflow: auto; padding: 4px 18px 0 46px;
+  background:
+    linear-gradient(90deg, transparent 31px, rgba(217, 71, 47, .5) 31px 32.5px, transparent 32.5px),
+    repeating-linear-gradient(180deg, transparent 0 25px, rgba(72, 112, 184, .24) 25px 26px),
+    #fffefb;
+  background-attachment: local;
+  border: 1px solid rgba(96, 64, 32, .14); border-radius: 1px;
+  box-shadow: 0 1px 3px rgba(40, 20, 5, .12);
+}
+html:not([data-rfs-lang="en"]) #rfs-sheet[data-layout="cork"] .ckv-lined {
+  padding: 4px 46px 0 18px;
+  background:
+    linear-gradient(270deg, transparent 31px, rgba(217, 71, 47, .5) 31px 32.5px, transparent 32.5px),
+    repeating-linear-gradient(180deg, transparent 0 25px, rgba(72, 112, 184, .24) 25px 26px),
+    #fffefb;
+  background-attachment: local;
+}
+#rfs-sheet[data-layout="cork"] .ckv-lined p { margin: 0 0 26px; color: var(--ck-text); font-size: 15px; font-weight: 600; line-height: 26px; }
+#rfs-sheet[data-layout="cork"] .ckv-lined p.none { color: var(--ck-pencil); font-style: italic; }
+#rfs-sheet[data-layout="cork"] .ckv-lined::-webkit-scrollbar { width: 8px; }
+#rfs-sheet[data-layout="cork"] .ckv-lined::-webkit-scrollbar-thumb { background: rgba(122, 104, 82, .45); border-radius: 4px; }
+/* the facts on a sticky note */
+#rfs-sheet[data-layout="cork"] .ckv-note {
+  position: relative; align-self: start; padding: 18px 16px 10px; color: #3a2a17;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .26), transparent 32%, rgba(90, 60, 10, .06)), #ffe27a;
+  box-shadow: 0 12px 14px -10px rgba(46, 24, 6, .6), 0 1px 2px rgba(46, 24, 6, .2);
+  transform: rotate(.9deg);
+}
+html:not([data-rfs-lang="en"]) #rfs-sheet[data-layout="cork"] .ckv-note { transform: rotate(-.9deg); }
+#rfs-sheet[data-layout="cork"] .ckv-note > b {
+  display: block; margin: 0 0 4px; color: #3a2a17;
+  font-family: var(--rf-heading-font) !important; font-size: 25px; font-weight: 700; line-height: 1.1;
+}
+#rfs-sheet[data-layout="cork"] .ckv-note dl { margin: 0; }
+#rfs-sheet[data-layout="cork"] .ckv-note dl > div {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 6px 0 5px;
+  border-bottom: 1px dashed rgba(90, 60, 20, .32);
+}
+#rfs-sheet[data-layout="cork"] .ckv-note dl > div:last-child { border-bottom: 0; }
+#rfs-sheet[data-layout="cork"] .ckv-note dt { flex: none; color: rgba(58, 42, 23, .74); font-size: 12px; font-weight: 700; }
+#rfs-sheet[data-layout="cork"] .ckv-note dd { margin: 0; min-width: 0; text-align: end; color: #2b2116; font-size: 14px; font-weight: 800; overflow-wrap: anywhere; }
+
+/* the buttons: Play is a green luggage tag with a punched hole, the others are strips of washi tape */
+#rfs-sheet[data-layout="cork"] .ckv-foot { grid-column: 1 / -1; display: flex; align-items: center; }
+#rfs-sheet[data-layout="cork"] .rf-acts { gap: 14px; }
+#rfs-sheet[data-layout="cork"] .rf-act {
+  height: 40px; padding: 0 22px; gap: 8px; border: 0; border-radius: 0; cursor: pointer;
+  color: #3a2a17; font: 800 14px var(--rf-font-ui, 'Segoe UI', sans-serif);
+  background: repeating-linear-gradient(135deg, rgba(255, 255, 255, .3) 0 6px, transparent 6px 12px), #ead6ae;
+  clip-path: polygon(0 0, 100% 0, 97% 25%, 100% 50%, 97% 75%, 100% 100%, 0 100%, 3% 75%, 0 50%, 3% 25%);
+  transform: rotate(-.8deg);
+  transition: transform .12s ease-out, background-color .12s;
+}
+#rfs-sheet[data-layout="cork"] .rf-act[data-act="store"] {
+  background: radial-gradient(circle, rgba(255, 255, 255, .55) 0 1.3px, transparent 1.8px) 0 0 / 8px 8px, #bfe3cf;
+  transform: rotate(.7deg);
+}
+#rfs-sheet[data-layout="cork"] .rf-act:not(.play):is(:hover, :focus-visible) {
+  background: linear-gradient(rgba(255, 255, 255, .25), transparent), #ffe27a; transform: translateY(-2px) rotate(0deg);
+}
+#rfs-sheet[data-layout="cork"] .rf-act:focus-visible { outline: 0; text-decoration: underline 2px #d9472f; text-underline-offset: 4px; }
+#rfs-sheet[data-layout="cork"] .rf-act > svg.rf-ic { width: 16px; height: 16px; margin: 0; stroke: currentColor; }
+#rfs-sheet[data-layout="cork"] .rf-act > svg.rf-ic :is(.f, rect, ellipse, circle:not(.s)) { fill: currentColor; fill-opacity: .14; }
+#rfs-sheet[data-layout="cork"] .rf-act > svg.rf-ic .s { fill: currentColor; }
+#rfs-sheet[data-layout="cork"] .rf-act.play {
+  height: 42px; padding-inline: 36px 24px; color: #fff; text-shadow: 0 1px 0 rgba(20, 60, 16, .4); font-size: 15px;
+  background:
+    radial-gradient(circle at 15px 50%, var(--ck-back) 0 4.5px, rgba(20, 60, 16, .45) 5px, transparent 6.5px),
+    linear-gradient(#64b45a, #3d8f39);
+  clip-path: polygon(18px 0, 100% 0, 100% 100%, 18px 100%, 0 50%);
+  transform: none;
+}
+html:not([data-rfs-lang="en"]) #rfs-sheet[data-layout="cork"] .rf-act.play {
+  background:
+    radial-gradient(circle at calc(100% - 15px) 50%, var(--ck-back) 0 4.5px, rgba(20, 60, 16, .45) 5px, transparent 6.5px),
+    linear-gradient(#64b45a, #3d8f39);
+  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 50%, calc(100% - 18px) 100%, 0 100%);
+}
+#rfs-sheet[data-layout="cork"] .rf-act.play:is(:hover, :focus-visible) { transform: translateY(-2px); }
+#rfs-sheet[data-layout="cork"] .rf-act.play:hover {
+  background:
+    radial-gradient(circle at 15px 50%, var(--ck-back) 0 4.5px, rgba(20, 60, 16, .45) 5px, transparent 6.5px),
+    linear-gradient(#74c269, #46a041);
+}
+html:not([data-rfs-lang="en"]) #rfs-sheet[data-layout="cork"] .rf-act.play:hover {
+  background:
+    radial-gradient(circle at calc(100% - 15px) 50%, var(--ck-back) 0 4.5px, rgba(20, 60, 16, .45) 5px, transparent 6.5px),
+    linear-gradient(#74c269, #46a041);
+}
+#rfs-sheet[data-layout="cork"] .rf-act.play.is-running { text-shadow: none; }
+
+/* narrow window: the facts go under the description, the photo stays small */
+@media (max-width: 760px) {
+  #rfs-sheet[data-layout="cork"] .ckv-back { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto auto; padding: 24px 22px 20px; }
+  #rfs-sheet[data-layout="cork"] .ckv-head { padding-inline-end: 150px; }
+  #rfs-sheet[data-layout="cork"] .ckv-snap { width: 140px; inset-inline-end: 26px; }
+  #rfs-sheet[data-layout="cork"] .ckv-note { align-self: stretch; }
+}
+
+/* ---------- nothing to show ---------- */
+#rfs[data-layout="cork"] .ck-empty { display: flex; justify-content: center; padding: 80px 20px; }
+#rfs[data-layout="cork"] .ck-empty .ck-note { max-width: 460px; padding: 22px 30px 14px; }

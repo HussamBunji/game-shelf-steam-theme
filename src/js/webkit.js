@@ -14,11 +14,11 @@
 
   /* ---- which theme style + language are active?  Millennium only injects the default style into web
      pages, so ask Millennium for the user's choices and switch the variable set / texts ourselves. */
-  const STYLE_IDS = { 'Classic Shelf': 'classic', 'Neon Coverflow': 'neon', 'Glass Gallery': 'glass', 'Steam Original': 'original', 'SpaceTheme': 'space', 'Material You': 'material' };
+  const STYLE_IDS = { 'Classic Shelf': 'classic', 'Neon Coverflow': 'neon', 'Glass Gallery': 'glass', 'Steam Original': 'original', 'SpaceTheme': 'space', 'Material You': 'material', 'Terminal': 'terminal', 'RPG Vault': 'vault', 'Vinyl Records': 'vinyl', 'Corkboard': 'cork', 'Retro Arcade': 'arcade', 'Magazine': 'magazine' };
   // styles that do not use our own store recolour (stock Steam, or a bundled community theme)
   // every style now leaves the store to stock Steam or a community theme base (SpaceTheme / Material);
   // the old colour-classifying recolour below stays in the code but is switched off
-  const NATIVE = new Set(['classic', 'neon', 'glass', 'original', 'space', 'material']);
+  const NATIVE = new Set(['classic', 'neon', 'glass', 'original', 'space', 'material', 'terminal', 'vault', 'vinyl', 'cork', 'arcade', 'magazine']);
   const html = document.documentElement;
   let LANG = 'en'; // English by default
   try {
@@ -118,6 +118,8 @@
       applyFonts(n => getComputedStyle(html).getPropertyValue(n));
       storeLanguage();
       if (lang !== LANG) { LANG = lang; html.setAttribute('data-rfs-lang', lang); onLangChange(); }
+      const fam = c.Family !== 'Off'; // Family mode: the button next to the user name sets it (shelf.js)
+      if (fam !== safeOn) { safeOn = fam; filterAdult(); }
       try { localStorage.setItem('rfs.style', id); localStorage.setItem('rfs.lang', lang); } catch (e) { /* ignore */ }
       return true;
     } catch (e) { return false; }
@@ -125,7 +127,7 @@
   // Millennium's bridge isn't always ready when the page starts — retry quickly until it answers
   (async () => { for (let i = 0; i < 40; i++) { if (await syncStyle()) break; await new Promise(r => setTimeout(r, 500)); } })();
   // pages that stay open (store, wishlist…) follow a theme / language switch without a reload
-  setInterval(syncStyle, 10000); // fallback only — becoming visible / focused re-checks at once
+  setInterval(syncStyle, 3000); // a Family mode / theme switch from the user box shows here within 3 s, no reload
   document.addEventListener('visibilitychange', syncStyle);
   window.addEventListener('focus', syncStyle);
 
@@ -266,6 +268,7 @@
     hourglass: '<path d="M6.5 3h11M6.5 21h11"/><path class="f" d="M8 3c0 4.2 4 5 4 9s-4 4.8-4 9h8c0-4.2-4-5-4-9s4-4.8 4-9"/>',
     ticket: '<path class="f" d="M3 8.5A2.5 2.5 0 0 0 5.5 6h13A2.5 2.5 0 0 0 21 8.5v7a2.5 2.5 0 0 0-2.5 2.5h-13A2.5 2.5 0 0 0 3 15.5Z"/><path d="M14.5 6.5v1.6M14.5 11.2v1.6M14.5 15.9v1.6"/>',
     filter: '<path class="f" d="M4 5h16l-6.2 7.6V19l-3.6 1.6v-8Z"/>',
+    shield: '<path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.2 7.5 9.5 4.3-1.3 7.5-4.9 7.5-9.5V6Z"/><path d="m8.5 12 2.4 2.4 4.6-4.8"/>',
     gift: '<rect x="3.5" y="8" width="17" height="4.2" rx="1"/><path d="M5 12.2V20h14v-7.8M12 8v12"/><path d="M12 8C10.6 4.6 6.5 4 6.5 6.4 6.5 7.6 8.6 8 12 8Zm0 0c1.4-3.4 5.5-4 5.5-1.6 0 1.2-2.1 1.6-5.5 1.6Z"/>',
     receipt: '<path class="f" d="M6 3h12v18l-3-2-3 2-3-2-3 2Z"/><path d="M9 8h6M9 11.5h6M9 15h3.5"/>',
     external: '<path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
@@ -305,7 +308,8 @@
     [T('تصفح', 'Browse'), [['percent', T('العروض والخصومات', 'Specials'), S + '/specials'], ['trend', T('الأكثر مبيعًا', 'Top Sellers'), S + '/charts/topselling/global'], ['sparkle', T('الجديد والرائج', 'New & Trending'), S + '/explore/new/'],
       ['hourglass', T('قادم قريبًا', 'Upcoming'), S + '/explore/upcoming/'], ['ticket', T('ألعاب مجانية', 'Free to Play'), S + '/genre/Free%20to%20Play/'], ['filter', T('البحث المتقدم', 'Advanced Search'), S + '/search/']]],
     [T('حسابي', 'My Account'), [['star', T('قائمة الأمنيات', 'Wishlist'), S + '/wishlist/'], ['cart', T('السلة', 'Cart'), S + '/cart/'], ['receipt', T('سجل المشتريات', 'Purchase History'), S + '/account/history/'],
-      ['gift', T('متجر النقاط', 'Points Shop'), S + '/points/shop/']]],
+      ['gift', T('متجر النقاط', 'Points Shop'), S + '/points/shop/'], ['gift', T('بطاقات الهدايا', 'Gift Cards'), S + '/digitalgiftcards/'],
+      ['shield', T('إعدادات المحتوى في ستيم', 'Steam content settings'), S + '/account/preferences/']]],
   ];
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const qs = s => document.querySelector(s);
@@ -442,6 +446,52 @@
     const b = qbtn.getBoundingClientRect();
     setStyles(qmenu, { top: Math.round(b.bottom + 8) + 'px', left: Math.round(Math.max(12, b.right - qmenu.offsetWidth)) + 'px' });
   }
+
+  /* ---- Family mode (button next to the user name, shelf.js; saved as the theme condition "Family"). On (the default), adult games disappear from every store
+     page: an item is adult when Steam tags it with content descriptor 3 (adult only sexual content) or 4 (frequent
+     nudity or sexual content) — read from the page's own data-ds-descids and from the store's item cache, which the
+     newer React carousels fill. Steam's own account setting (Quick links → "Steam mature content setting") also
+     removes them on Steam's side; this works even when that setting is open. */
+  const ADULT = new Set([3, 4]);
+  const adultIds = new Set();
+  let safeOn = getComputedStyle(document.documentElement).getPropertyValue('--rf-family').trim() !== 'off';
+  function learnAdult() {
+    for (const el of document.querySelectorAll('[data-ds-descids][data-ds-appid]')) {
+      let d = []; try { d = JSON.parse(el.getAttribute('data-ds-descids') || '[]'); } catch (e) { /* ignore */ }
+      if (d.some(x => ADULT.has(+x))) String(el.getAttribute('data-ds-appid')).split(',').forEach(id => adultIds.add(+id));
+    }
+    try {
+      const m = window.StoreItemCache && window.StoreItemCache.m_mapApps;
+      if (m) for (const [id, it] of m) if (it && (it.m_ContentDescriptorIDs || []).some(x => ADULT.has(+x))) adultIds.add(+id);
+    } catch (e) { /* cache not there */ }
+  }
+  /** the box of one item: climb from its link while the parent still holds only this game, and stays card-sized */
+  function itemBox(a, id) {
+    let el = a;
+    for (let i = 0; i < 6; i++) {
+      const p = el.parentElement;
+      if (!p || p === document.body) break;
+      const r = p.getBoundingClientRect();
+      if (r.width > 760 || r.height > 620) break;
+      const others = [...p.querySelectorAll('a[href*="/app/"]')].some(x => { const m = /\/app\/(\d+)/.exec(x.href); return m && +m[1] !== id; });
+      if (others) break;
+      el = p;
+    }
+    return el;
+  }
+  function filterAdult() {
+    if (!/store\.steampowered\.com/.test(location.host) || !document.body) return;
+    document.documentElement.classList.toggle('rfs-safe', safeOn);
+    if (!safeOn) { document.querySelectorAll('[data-rfs-adult]').forEach(e => e.removeAttribute('data-rfs-adult')); return; }
+    learnAdult();
+    if (!adultIds.size) return;
+    for (const el of document.querySelectorAll('[data-ds-appid]')) if (String(el.getAttribute('data-ds-appid')).split(',').some(id => adultIds.has(+id))) el.setAttribute('data-rfs-adult', '');
+    for (const a of document.querySelectorAll('a[href*="/app/"]')) {
+      const m = /\/app\/(\d+)/.exec(a.href);
+      if (m && adultIds.has(+m[1]) && !a.closest('[data-rfs-adult]')) itemBox(a, +m[1]).setAttribute('data-rfs-adult', '');
+    }
+  }
+
 
   /* ---- right data panel (store game pages): the SteamDB-style numbers people scroll for, beside the page.
      Live players (Steam Web API), the same game's price in other Steam regions converted to KWD
@@ -586,6 +636,8 @@
     onLangChange = () => { if (rail) renderRail(); if (dataEl && dataFor) renderData(dataFor); if (qbtn) placeQuick(); };
     placeRail();
     setInterval(placeRail, 1500);
+    filterAdult();
+    setInterval(filterAdult, 1200); // carousels and infinite lists keep adding items
     addEventListener('resize', () => { column = null; placeRail(); });
     setTimeout(() => rail && renderRail(), 2500); // purchase / wishlist blocks may load late
     // the old colour-classifying recolour is off for every style (they all build on stock Steam or a community

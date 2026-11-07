@@ -1,0 +1,88 @@
+/* THEMES picker card for خزنة المغامر (Adventurer's Vault): a mini RPG inventory screen —
+   the CHARACTER window (level medallion, the equipped item on its arcane circle between two columns of quick slots,
+   the emerald Play button, the rarity bar) beside the INVENTORY window (gold title rule, the one filter panel with
+   its rarity gems, and two rows of portrait item slots framed by rarity). Plain CSS shapes only; logical insets so
+   it mirrors in Arabic like the real page. */
+#rfs-themes .tp-vault {
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(217, 176, 102, .1), transparent 70%), #0e0b08;
+}
+/* the two windows: leather, a gold rule inside, garnet corners */
+#rfs-themes .tp-vault :is(.pv-a, .pv-b) {
+  top: 9px; bottom: 9px; border-radius: 2px; border: 1px solid #6e5430;
+  box-shadow: inset 0 0 0 1px #0b0806, inset 0 0 0 2px rgba(217, 176, 102, .45), 0 0 0 1px #000;
+}
+#rfs-themes .tp-vault :is(.pv-a, .pv-b)::after {
+  content: ''; position: absolute; inset: -3px; pointer-events: none;
+  background:
+    radial-gradient(circle, #962f40 0 1.6px, #e8c779 2px 3px, transparent 3.4px) top left / 8px 8px no-repeat,
+    radial-gradient(circle, #962f40 0 1.6px, #e8c779 2px 3px, transparent 3.4px) top right / 8px 8px no-repeat,
+    radial-gradient(circle, #962f40 0 1.6px, #e8c779 2px 3px, transparent 3.4px) bottom left / 8px 8px no-repeat,
+    radial-gradient(circle, #962f40 0 1.6px, #e8c779 2px 3px, transparent 3.4px) bottom right / 8px 8px no-repeat;
+}
+/* character window: medallion, arcane circle, the equipped item (epic), quick slots, Play, rarity bar */
+#rfs-themes .tp-vault .pv-a {
+  inset-inline-start: 9px; width: 68px;
+  background:
+    radial-gradient(circle at 34px 18px, #f6e3a8 0 2px, transparent 2.5px),
+    radial-gradient(circle at 34px 18px, #2c2219 0 7px, #d9b066 7.5px 9px, #17120d 9.5px 10.5px, rgba(217, 176, 102, .5) 11px 11.8px, transparent 12.2px),
+    radial-gradient(circle at 34px 58px, transparent 0 22px, rgba(217, 176, 102, .45) 22.5px 23.5px, transparent 24px),
+    linear-gradient(to top, rgba(178, 98, 255, .45), transparent 60%) 24px 41px / 20px 30px no-repeat,
+    linear-gradient(150deg, #6a4f8a, #24182e 80%) 24px 41px / 20px 30px no-repeat,
+    linear-gradient(rgb(178, 98, 255), rgb(178, 98, 255)) 23px 40px / 22px 32px no-repeat,
+    linear-gradient(150deg, #3f6aa0, #141c2a) 9px 41px / 10px 14px no-repeat,
+    linear-gradient(150deg, #8b6a3a, #241a10) 9px 58px / 10px 14px no-repeat,
+    linear-gradient(150deg, #3a7a52, #13241a) 49px 41px / 10px 14px no-repeat,
+    linear-gradient(150deg, #8a3a3a, #2a1212) 49px 58px / 10px 14px no-repeat,
+    linear-gradient(rgba(72, 150, 255, .9), rgba(72, 150, 255, .9)) 8px 40px / 12px 16px no-repeat,
+    linear-gradient(rgba(178, 98, 255, .9), rgba(178, 98, 255, .9)) 8px 57px / 12px 16px no-repeat,
+    linear-gradient(rgba(82, 214, 98, .9), rgba(82, 214, 98, .9)) 48px 40px / 12px 16px no-repeat,
+    linear-gradient(rgba(72, 150, 255, .9), rgba(72, 150, 255, .9)) 48px 57px / 12px 16px no-repeat,
+    linear-gradient(180deg, #3cb068, #15532e) 9px 85px / 50px 6px no-repeat,
+    linear-gradient(#e2bf6e, #e2bf6e) 8px 84px / 52px 8px no-repeat,
+    linear-gradient(rgba(217, 176, 102, .3), rgba(217, 176, 102, .3)) 8px 99px / 52px 1px no-repeat,
+    linear-gradient(rgba(217, 176, 102, .22), rgba(217, 176, 102, .22)) 8px 104px / 24px 3px no-repeat,
+    linear-gradient(rgba(217, 176, 102, .22), rgba(217, 176, 102, .22)) 36px 104px / 24px 3px no-repeat,
+    linear-gradient(90deg, rgb(150, 146, 138) 0 22%, rgb(236, 232, 222) 22% 34%, rgb(82, 214, 98) 34% 60%, rgb(72, 150, 255) 60% 84%, rgb(178, 98, 255) 84% 95%, rgb(255, 152, 48) 95%) 8px 113px / 52px 3px no-repeat,
+    linear-gradient(180deg, #221b15, #120e0b);
+}
+/* inventory window: gold title rule + the one filter panel */
+#rfs-themes .tp-vault .pv-b {
+  inset-inline-start: 84px; inset-inline-end: 9px;
+  background:
+    radial-gradient(circle, #e8c779 0 1.6px, transparent 2px) 50% 8px / 100% 5px no-repeat,
+    linear-gradient(90deg, transparent, #c9a24e 30%, transparent 44% 56%, #c9a24e 70%, transparent) 10px 10px / calc(100% - 20px) 1px no-repeat,
+    linear-gradient(rgba(217, 176, 102, .7), rgba(217, 176, 102, .7)) 50% 8px / 26px 4px no-repeat,
+    linear-gradient(180deg, #2a221b, #1a1511) 6px 17px / calc(100% - 12px) 22px no-repeat,
+    linear-gradient(180deg, #221b15, #120e0b);
+}
+#rfs-themes .tp-vault .pv-b::before {
+  content: ''; position: absolute; top: 16px; inset-inline: 6px; height: 22px; border: 1px solid rgba(217, 176, 102, .4); border-radius: 1px;
+  background: linear-gradient(#0e0b08, #0e0b08) 4px 3px / 46% 6px no-repeat;
+}
+/* the rarity gems in the filter panel */
+#rfs-themes .tp-vault .pv-c {
+  top: 39px; inset-inline-start: 96px; width: 120px; height: 5px;
+  background: linear-gradient(90deg,
+    rgb(217, 176, 102) 0 12%, transparent 12% 16%, rgb(255, 152, 48) 16% 28%, transparent 28% 32%,
+    rgb(178, 98, 255) 32% 44%, transparent 44% 48%, rgb(72, 150, 255) 48% 60%, transparent 60% 64%,
+    rgb(82, 214, 98) 64% 76%, transparent 76% 80%, rgb(236, 232, 222) 80% 92%, transparent 92%);
+  opacity: .85;
+}
+/* the bag: two rows of portrait item slots, each with its rarity frame, tint and gem */
+#rfs-themes .tp-vault .pv-i {
+  --c: 150, 146, 138;
+  top: 54px; inset-inline-start: calc(94px + var(--i) * (100% - 112px) / 6); width: calc((100% - 112px) / 6 - 5px); height: 27px; border-radius: 1.5px;
+  border: 1px solid rgb(var(--c));
+  background:
+    radial-gradient(circle at 76% 13%, #63e08c 0 1.4px, #e2bf6e 1.8px 2.4px, transparent 2.8px),
+    linear-gradient(to top, rgba(var(--c), .35), transparent 55%),
+    linear-gradient(160deg, hsl(calc(25deg + var(--i) * 41deg) 32% 36%), #15110d 85%);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .6), inset 0 0 6px rgba(var(--c), .45), 0 0 0 1px #000;
+}
+#rfs-themes .tp-vault .pv-i:nth-child(n+10) { top: 89px; inset-inline-start: calc(94px + (var(--i) - 6) * (100% - 112px) / 6); }
+/* rarity per slot (children 4–15 are the twelve slots) */
+#rfs-themes .tp-vault .pv-i:is(:nth-child(4), :nth-child(12)) { --c: 255, 152, 48; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .6), inset 0 0 7px rgba(255, 152, 48, .55), 0 0 5px rgba(255, 152, 48, .45); }
+#rfs-themes .tp-vault .pv-i:is(:nth-child(5), :nth-child(10)) { --c: 178, 98, 255; }
+#rfs-themes .tp-vault .pv-i:is(:nth-child(6), :nth-child(8), :nth-child(13)) { --c: 72, 150, 255; }
+#rfs-themes .tp-vault .pv-i:is(:nth-child(7), :nth-child(11), :nth-child(15)) { --c: 82, 214, 98; }
+#rfs-themes .tp-vault .pv-i:is(:nth-child(9), :nth-child(14)) { --c: 236, 232, 222; }

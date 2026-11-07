@@ -344,3 +344,8 @@ html[data-rfs-style="material"] #rfs-qmenu section { background: rgb(29, 32, 38)
 html[data-rfs-style="glass"] :is(#rfs-rail, #rfs-data) section { background: linear-gradient(150deg, rgba(42, 62, 90, .94), rgba(20, 31, 48, .96)) !important; }
 #rfs-data .rd-dot { animation: rfs-live-dot 2s ease-in-out infinite; box-shadow: 0 0 0 3px color-mix(in srgb, var(--rf-play-1) 25%, transparent); }
 @keyframes rfs-live-dot { 50% { opacity: .35; } }
+
+/* ═════════════ Family mode (webkit.js filterAdult) + the gift card link ═════════════ */
+html.rfs-safe [data-rfs-adult] { display: none !important; }
+/* "Send a Gift Card" sat on top of the featured carousel's corner: it lives in Quick links → My account now */
+.home_gift_card_link.gift_card_desktop { display: none !important; }

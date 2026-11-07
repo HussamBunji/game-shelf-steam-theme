@@ -1,0 +1,731 @@
+/* ═══ Theme 11 — الأركيد (Retro Arcade) ═══
+   Home: a 1980s cabinet's "select your game" screen (CRT monitor + high-score list, arrow keys).
+   Chrome: 8-bit pixel boxes — square corners, notched borders built from stepped box-shadows, bevels and hard drop
+   shadows, in arcade red / yellow / cyan / magenta on deep indigo. */
+:root {
+  /* fonts (Latin first, Arabic second — each script picks its own); loaded by skin.js / webkit.js:
+     UI = Pixelify Sans + Kufam (blocky Kufi) · headings/labels = Press Start 2P + Lalezar · scoreboard digits = VT323 */
+  --rf-font-ui: 'Pixelify Sans', 'Kufam', 'Segoe UI', sans-serif;
+  --rf-font-gf: "family=Pixelify+Sans:wght@400;500;600;700&family=Kufam:wght@400;500;600;700&family=Press+Start+2P&family=VT323&family=Lalezar";
+  --rf-heading-font: 'Press Start 2P', 'Lalezar', 'Pixelify Sans', 'Segoe UI', sans-serif;
+
+  /* layout base: SpaceTheme (MIT, src/vendor/space) — its sidebar, search, centred store/library;
+     this style supplies the colours below, its own fonts, home design, icons and the pixel rules further down */
+  --rf-vendor: space;
+  --rf-vendor-skip: options/fonts/, options/general/alwaysShowSidebar;
+  --rf-style-id: arcade;
+  --rf-layout: arcade;
+
+  /* the cabinet palette (also used by src/layouts/arcade.css) */
+  --rf-arc-red: #ff2e4d;
+  --rf-arc-yellow: #ffd400;
+  --rf-arc-cyan: #22e4ff;
+  --rf-arc-magenta: #ff3ddc;
+  --rf-arc-green: #3dff6e;
+  --rf-arc-blue: #3b5bff;
+  --rf-arc-ink: #07061a;
+  --rf-arc-box: #0e0b2b;
+  --rf-arc-key: #1d1750;
+  --rf-arc-line: #2d2670;
+  --rf-arc-digits: 'VT323', 'Kufam', ui-monospace, monospace;
+  --rf-arc-pix-ar: 'Lalezar', 'Press Start 2P', 'Kufam', sans-serif; /* Arabic labels: Lalezar draws the Latin words too */
+  --rf-arc-pix: 'Press Start 2P', 'Lalezar', 'Pixelify Sans', sans-serif; /* pixel headings on the web pages (Latin) */
+
+  /* icons: chunky square-capped strokes, yellow to cyan; tiles are bevelled pixel squares */
+  --rf-ic-1: #ffe14d;
+  --rf-ic-2: #22e4ff;
+  --rf-ic-fill: rgba(255, 225, 77, .2);
+  --rf-ic-sw: 2.1;
+  --rf-ic-glow: none;
+  --rf-ict-bg: #1d1750;
+  --rf-ict-border: 2px solid #000;
+  --rf-ict-radius: 0px;
+  --rf-ict-shadow: inset -2px -2px 0 0 rgba(0, 0, 0, .45), inset 2px 2px 0 0 rgba(255, 255, 255, .18), 2px 2px 0 0 rgba(0, 0, 0, .55);
+  --rf-ict-shadow-hi: inset -2px -2px 0 0 rgba(0, 0, 0, .45), inset 2px 2px 0 0 rgba(255, 255, 255, .22), 0 0 0 2px #ffd400;
+  --rf-ict-1: #ffe14d;
+  --rf-ict-2: #ff6a3d;
+  --rf-ict-fill: rgba(255, 106, 61, .22);
+  --rf-ict-glow: none;
+
+  --rf-bg: #07061a;
+  --rf-bg-img:
+    radial-gradient(rgba(255, 255, 255, .045) 1px, transparent 1.6px) 0 0 / 22px 22px,
+    radial-gradient(ellipse 75% 55% at 50% 0%, rgba(59, 91, 255, .16), transparent 70%);
+  --rf-panel: #110e2e;
+  --rf-panel-2: #1a1545;
+  --rf-panel-3: #251e5e;
+  --rf-border: rgba(140, 125, 255, .28);
+  --rf-text: #f5f3ff;
+  --rf-text-dim: #a29fd0;
+  --rf-accent: #ffd400;
+  --rf-accent-2: #ff3ddc;
+  --rf-accent-rgb: 255, 212, 0;
+  --rf-accent-ink: #140e00;
+  --rf-play-1: #3dff6e;
+  --rf-play-2: #12b347;
+  --rf-play-ink: #031a0a;
+  --rf-glow: 255, 61, 220;
+
+  /* chrome shape: no curves anywhere — pixels only */
+  --rf-radius: 0px;
+  --rf-radius-lg: 0px;
+  --rf-topbar: linear-gradient(#141036, #0c0a24);
+  --rf-topbar-line: linear-gradient(90deg, #ff2e4d 0 25%, #ffd400 25% 50%, #22e4ff 50% 75%, #ff3ddc 75%);
+  --rf-sidebar: #0b0922;
+  --rf-card: rgba(26, 21, 69, .85);
+  --rf-card-border: 2px solid #2d2670;
+  --rf-card-hover-shadow: 0 0 0 2px #ffd400, 4px 4px 0 2px #000;
+  --rf-heading-case: uppercase;
+  --rf-heading-spacing: .04em;
+  --rf-blur: 0px;
+
+  --rf-led-rgb: 255, 212, 0;
+  --rf-plate-1: #ffd400;
+  --rf-plate-2: #ff9f1a;
+  --rf-plate-ink: #140e00;
+}
+
+/* SpaceTheme's colour slots, filled with the cabinet palette (deep indigo, arcade-yellow accent, square corners).
+   :root:root outranks SpaceTheme's own root.css, which loads after this file. */
+:root:root {
+  --st-accent-1: 255, 212, 0;
+  --st-accent-2: 255, 228, 92;
+  --st-background: 7, 6, 26;
+  --st-color-1: 12, 10, 36;
+  --st-color-2: 29, 23, 80;
+  --st-color-3: 17, 14, 46;
+  --st-color-4: 24, 20, 64;
+  --st-color-5: 59, 51, 160;
+  --st-color-6: 45, 38, 112;
+  --st-border-radius: 0px;
+  --st-green: 18, 179, 71;
+  --st-green-hover: 34, 204, 88;
+  --st-blue: 59, 91, 255;
+  --st-blue-hover: 92, 118, 255;
+  --st-red: 255, 46, 77;
+  --st-red-hover: 255, 90, 114;
+  --st-yellow: 255, 212, 0;
+  --st-yellow-hover: 255, 228, 92;
+}
+
+/* ══════════════════════════ Steam windows (stable class names only) ══════════════════════════ */
+
+/* buttons: chunky 8-bit keys — notched black outline, bevel, a hard shadow under; pressing sinks them 2px */
+html[data-rfs-style="arcade"] .DialogButton {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: #1d1750 !important;
+  color: #f5f3ff !important;
+  font-weight: 600 !important;
+  letter-spacing: .03em;
+  text-shadow: none !important;
+  box-shadow:
+    inset -2px -2px 0 0 rgba(0, 0, 0, .45), inset 2px 2px 0 0 rgba(255, 255, 255, .2),
+    0 -2px 0 0 #000, 0 2px 0 0 #000, -2px 0 0 0 #000, 2px 0 0 0 #000,
+    0 5px 0 0 rgba(0, 0, 0, .5) !important;
+  transition: none !important;
+}
+html[data-rfs-style="arcade"] .DialogButton:not(:disabled):hover { background: #2e2794 !important; color: #ffd400 !important; }
+html[data-rfs-style="arcade"] .DialogButton:is(.Primary, .Green) { background: #ffd400 !important; color: #140e00 !important; }
+html[data-rfs-style="arcade"] .DialogButton:is(.Primary, .Green):not(:disabled):hover { background: #ffe14d !important; color: #140e00 !important; }
+html[data-rfs-style="arcade"] .DialogButton:not(:disabled):active {
+  transform: translateY(2px);
+  box-shadow:
+    inset 2px 2px 0 0 rgba(0, 0, 0, .45),
+    0 -2px 0 0 #000, 0 2px 0 0 #000, -2px 0 0 0 #000, 2px 0 0 0 #000 !important;
+}
+html[data-rfs-style="arcade"] .DialogButton:disabled {
+  opacity: .5;
+  box-shadow: 0 -2px 0 0 #000, 0 2px 0 0 #000, -2px 0 0 0 #000, 2px 0 0 0 #000 !important;
+}
+html[data-rfs-style="arcade"] .DialogButton:focus-visible { outline: 2px dashed #ffd400 !important; outline-offset: 5px; }
+
+/* text fields + dropdowns + checkboxes: square wells with a pixel rim */
+html[data-rfs-style="arcade"] .DialogInput {
+  border-radius: 0 !important;
+  background-color: #05040f !important;
+  color: #f5f3ff !important;
+  caret-color: #ffd400;
+  box-shadow: inset 0 0 0 2px #3b33a0, inset 4px 4px 0 0 rgba(0, 0, 0, .45) !important;
+}
+html[data-rfs-style="arcade"] .DialogInput:focus { box-shadow: inset 0 0 0 2px #ffd400, inset 4px 4px 0 0 rgba(0, 0, 0, .45) !important; }
+html[data-rfs-style="arcade"] .DialogDropDown {
+  border-radius: 0 !important;
+  box-shadow: inset -2px -2px 0 0 rgba(0, 0, 0, .4), inset 2px 2px 0 0 rgba(255, 255, 255, .14), 0 0 0 2px #000 !important;
+}
+html[data-rfs-style="arcade"] .DialogCheckbox { border-radius: 0 !important; box-shadow: inset 0 0 0 2px #3b33a0 !important; }
+/* SpaceTheme paints the chosen radio option with the accent — on arcade yellow it needs dark ink */
+html[data-rfs-style="arcade"] div[role="radiogroup"] div[role="radio"][aria-checked="true"] { color: #140e00 !important; }
+/* window close button: arcade red, not the yellow accent */
+html[data-rfs-style="arcade"] .title-area .title-area-icon.closeButton:hover { background: #ff2e4d !important; }
+
+/* scrollbars: a square, bevelled block on a dark rail (beats SpaceTheme's own !important rules) */
+html[data-rfs-style="arcade"]::-webkit-scrollbar,
+html[data-rfs-style="arcade"] *::-webkit-scrollbar { width: 12px !important; height: 12px !important; }
+html[data-rfs-style="arcade"]::-webkit-scrollbar-track,
+html[data-rfs-style="arcade"] *::-webkit-scrollbar-track { border-radius: 0 !important; background: rgba(5, 4, 15, .55) !important; }
+html[data-rfs-style="arcade"]::-webkit-scrollbar-thumb,
+html[data-rfs-style="arcade"] *::-webkit-scrollbar-thumb {
+  border-radius: 0 !important;
+  border: 2px solid transparent !important;
+  background-clip: padding-box !important;
+  background-color: #4a3fc0 !important;
+  box-shadow: inset -2px -2px 0 0 rgba(0, 0, 0, .4), inset 2px 2px 0 0 rgba(255, 255, 255, .25);
+}
+html[data-rfs-style="arcade"]::-webkit-scrollbar-thumb:hover,
+html[data-rfs-style="arcade"] *::-webkit-scrollbar-thumb:hover { border-width: 2px !important; background-color: #ffd400 !important; }
+html[data-rfs-style="arcade"]::-webkit-scrollbar-corner,
+html[data-rfs-style="arcade"] *::-webkit-scrollbar-corner { background: transparent; }
+
+html[data-rfs-style="arcade"] ::selection { background: #ff3ddc; color: #fff; }
+
+/* our icons everywhere: square line caps and mitred corners read as pixels */
+html[data-rfs-style="arcade"] svg.rf-ic { stroke-linecap: square; stroke-linejoin: miter; }
+
+/* ══════════════════════════ store + community + help pages ══════════════════════════
+   The web pages become an arcade cabinet: a marquee-striped menu bar, pixel-font headings (Press Start 2P / Lalezar),
+   chunky bevelled keys with a stepped black outline, pixel boxes for every panel, scoreboard rows for every list
+   (a colour rank stripe at the start), and CRT digits (VT323) for prices. Body text, prices and forms stay in the
+   plain UI font sizes so everything reads easily. Images are never filtered.
+   :not(#rfs-arc) lifts these rules above SpaceTheme's long selectors without touching the other styles. */
+
+/* ── the canvas: deep indigo, a faint dot grid, a blue glow at the top ── */
+html[data-rfs-style="arcade"]:not(#rfs-arc) body {
+  background-image:
+    radial-gradient(ellipse 70% 520px at 50% 0, rgba(59, 91, 255, .13), transparent 70%),
+    radial-gradient(rgba(255, 255, 255, .04) 1px, transparent 1.6px) !important;
+  background-size: 100% 900px, 22px 22px !important;
+  background-repeat: no-repeat, repeat !important;
+}
+
+/* ── headings: pixel caps in arcade yellow with a magenta hard shadow ── */
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(
+  .home_title, #discounts_and_events_title, .WidgetHeaderCtn > div:first-child, .home_page_content h2, .home_ctn h2,
+  .page_content h2, .page_content_ctn h2, .leftcol h2, .rightcol h2, .game_page_autocollapse_ctn h2, .game_area_description h2,
+  #game_area_reviews h2, .pageheader, h2.pageheader, .page_content_ctn h1, .responsive_page_template_content h1,
+  .large_title, .discussion_primary_header, .help_header, .help_intro_text, .login_client_waitforauth_title,
+  .profile_page h2, .profile_header .persona_name .actual_persona_name, .badge_title, .market_header_text, .apphub_AppName,
+  #appHubAppName, .workshop_browse_header, .rightSectionTopTitle, footer#footer h3, #footer .rule ~ div h3,
+  .cE9cj0nbqpY- .X7xBVzjXbzw-, .HlR2pryjZOg- h1, .dMXRMeBnIbQ-
+) {
+  font-family: var(--rf-arc-pix) !important;
+  font-weight: 400 !important;
+  font-size: 13px !important;
+  line-height: 1.6 !important;
+  color: #ffd400 !important;
+  text-transform: uppercase;
+  letter-spacing: .04em !important;
+  text-shadow: 2px 2px 0 #b3127a !important;
+}
+/* the big ones: page / game titles */
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(.apphub_AppName, #appHubAppName, .pageheader, h2.pageheader, .page_content_ctn h1,
+  .responsive_page_template_content h1, .large_title, .help_header, .login_client_waitforauth_title,
+  .profile_header .persona_name .actual_persona_name, .cE9cj0nbqpY- .X7xBVzjXbzw-, .HlR2pryjZOg- h1, .dMXRMeBnIbQ-) {
+  font-size: 19px !important;
+  line-height: 1.45 !important;
+  text-shadow: 3px 3px 0 #b3127a !important;
+}
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(footer#footer h3) { font-size: 10px !important; color: #22e4ff !important; text-shadow: none !important; }
+/* Arabic: Lalezar (Press Start 2P has no Arabic letters) at sizes that match */
+html[data-rfs-style="arcade"][data-rfs-lang="ar"]:not(#rfs-arc) :is(
+  .home_title, #discounts_and_events_title, .WidgetHeaderCtn > div:first-child, .home_page_content h2, .home_ctn h2,
+  .page_content h2, .page_content_ctn h2, .leftcol h2, .rightcol h2, .game_page_autocollapse_ctn h2, .game_area_description h2,
+  #game_area_reviews h2, .discussion_primary_header, .help_intro_text, .profile_page h2, .badge_title, .market_header_text,
+  .workshop_browse_header, .rightSectionTopTitle, footer#footer h3
+) { font-family: var(--rf-arc-pix-ar) !important; font-size: 21px !important; line-height: 1.4 !important; letter-spacing: 0 !important; }
+html[data-rfs-style="arcade"][data-rfs-lang="ar"]:not(#rfs-arc) :is(.apphub_AppName, #appHubAppName, .pageheader, h2.pageheader, .page_content_ctn h1,
+  .responsive_page_template_content h1, .large_title, .help_header, .login_client_waitforauth_title,
+  .profile_header .persona_name .actual_persona_name, .cE9cj0nbqpY- .X7xBVzjXbzw-, .HlR2pryjZOg- h1, .dMXRMeBnIbQ-) {
+  font-family: var(--rf-arc-pix-ar) !important; font-size: 30px !important; line-height: 1.3 !important; letter-spacing: 0 !important;
+}
+html[data-rfs-style="arcade"][data-rfs-lang="ar"]:not(#rfs-arc) footer#footer h3 { font-size: 17px !important; }
+/* section titles on the store home get a pixel arrow in front, like the cursor in the game list */
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(.home_title, #discounts_and_events_title)::before {
+  content: '';
+  display: inline-block;
+  width: 9px;
+  height: 12px;
+  margin-inline-end: 12px;
+  vertical-align: -1px;
+  background: #22e4ff;
+  clip-path: polygon(0 0, 33% 0, 33% 17%, 67% 17%, 67% 33%, 100% 33%, 100% 67%, 67% 67%, 67% 83%, 33% 83%, 33% 100%, 0 100%);
+}
+html[data-rfs-style="arcade"][data-rfs-lang="ar"]:not(#rfs-arc) :is(.home_title, #discounts_and_events_title)::before { transform: scaleX(-1); vertical-align: 2px; }
+/* subtitles + small section labels: cyan pixel-ish caps */
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(.home_section_subtitle, .home_page_content .home_title b, .block_title, .game_area_purchase h2.title, .home_tabs_row .tab_content) {
+  letter-spacing: .03em;
+}
+
+/* ── the store menu bar (React StoreMenu, two builds) + its placeholder: a cabinet marquee with the 4-colour stripe ── */
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(._-6WU-qJBwUo- .XLbP8xOkCYw-, .dm2SGcwBwj4- .WCG-2-OYepA-, .StoreMenuLoadingPlaceholder .PlaceholderInner, :is(.store_nav_area, #store_nav_area) .store_nav_bg) {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background:
+    linear-gradient(90deg, #ff2e4d 0 25%, #ffd400 25% 50%, #22e4ff 50% 75%, #ff3ddc 75%) left bottom / 100% 3px no-repeat,
+    linear-gradient(#171245, #0e0b2b) !important;
+  box-shadow:
+    inset 0 2px 0 0 #2e2774,
+    0 -3px 0 0 #000, 0 3px 0 0 #000, -3px 0 0 0 #000, 3px 0 0 0 #000,
+    0 8px 0 0 rgba(0, 0, 0, .35) !important;
+}
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(._-6WU-qJBwUo- .XLbP8xOkCYw- ._2U8ldyeSqVI-.xybfgg9GK6o-, .dm2SGcwBwj4- .WCG-2-OYepA- .EYF1OQwj3TE-.dF8HGBmYIK8-, .store_nav .tab > span) {
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(._-6WU-qJBwUo- .XLbP8xOkCYw- ._2U8ldyeSqVI-.xybfgg9GK6o-, .dm2SGcwBwj4- .WCG-2-OYepA- .EYF1OQwj3TE-.dF8HGBmYIK8-):hover { color: #ffd400 !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(._-6WU-qJBwUo- .XLbP8xOkCYw- .vph-SVDaiKo-, .dm2SGcwBwj4- .WCG-2-OYepA- .IG5AcX8yPdI-) { height: 3px !important; background-color: #ffd400 !important; border-radius: 0 !important; }
+/* the store search: a dark well with a cyan pixel rim */
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(._-6WU-qJBwUo- .XLbP8xOkCYw- .Tx-rbJxeMFs-, .dm2SGcwBwj4- .WCG-2-OYepA- ._5fxF1NcznNc-) {
+  border-radius: 0 !important;
+  background-color: #05040f !important;
+  box-shadow: inset 0 0 0 2px #22e4ff, inset 4px 4px 0 0 rgba(0, 0, 0, .5) !important;
+}
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(._-6WU-qJBwUo- .XLbP8xOkCYw- .Tx-rbJxeMFs-, .dm2SGcwBwj4- .WCG-2-OYepA- ._5fxF1NcznNc-):focus-within { box-shadow: inset 0 0 0 2px #ffd400, inset 4px 4px 0 0 rgba(0, 0, 0, .5) !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(.rFKwchjD-WU-, .S-0LcpbLAf8-) { caret-color: #ffd400; }
+/* classic store tabs (older pages) */
+html[data-rfs-style="arcade"]:not(#rfs-arc) .store_nav .tab { border-radius: 0 !important; transition: none !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) .store_nav .tab:is(:hover, .focus) { background: #ffd400 !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) .store_nav .tab:is(:hover, .focus) > span,
+html[data-rfs-style="arcade"]:not(#rfs-arc) .store_nav .tab:is(:hover, .focus) .pulldown > span { color: #140e00 !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(.store_nav .search_area .searchbox, #store_search .searchbox) {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background-color: #05040f !important;
+  box-shadow: inset 0 0 0 2px #22e4ff, inset 4px 4px 0 0 rgba(0, 0, 0, .45) !important;
+}
+html[data-rfs-style="arcade"]:not(#rfs-arc) #store_nav_search_term { color: #f5f3ff !important; caret-color: #ffd400; }
+
+/* ── buttons: 8-bit keys — bevel, stepped black outline, a hard shadow; pressed = sinks 2px ── */
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(.btn_green_steamui, .btn_blue_steamui, .btnv6_blue_hoverfade, .btnv6_white_transparent, .btnv6_lightblue_blue,
+  .btn_grey_steamui, .btn_grey_black, .btn_grey_white_innerfade, .btn_blue_white_innerfade, .btn_darkblue_white_innerfade, .btn_green_white_innerfade,
+  .btnv6_green_white_innerfade, .btn_darkred_white_innerfade, .btn_profile_action, .btn_black, .btn_grey_grey, .btnv6_grey_black) {
+  border: 0 !important;
+  border-radius: 0 !important;
+  text-shadow: none !important;
+  transition: none !important;
+  box-shadow:
+    inset -2px -2px 0 0 rgba(0, 0, 0, .38), inset 2px 2px 0 0 rgba(255, 255, 255, .26),
+    0 -2px 0 0 #000, 0 2px 0 0 #000, -2px 0 0 0 #000, 2px 0 0 0 #000,
+    0 4px 0 0 rgba(0, 0, 0, .55) !important;
+}
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(.btn_green_steamui, .btn_blue_steamui, .btnv6_blue_hoverfade, .btnv6_white_transparent, .btnv6_lightblue_blue,
+  .btn_grey_steamui, .btn_grey_black, .btn_grey_white_innerfade, .btn_blue_white_innerfade, .btn_darkblue_white_innerfade, .btn_green_white_innerfade,
+  .btnv6_green_white_innerfade, .btn_darkred_white_innerfade, .btn_profile_action, .btn_black, .btn_grey_grey, .btnv6_grey_black) > span {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  color: inherit !important;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+/* play / buy: score green */
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(.btn_green_steamui, .btn_green_white_innerfade, .btnv6_green_white_innerfade) { background: #12b347 !important; color: #fff !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(.btn_green_steamui, .btn_green_white_innerfade, .btnv6_green_white_innerfade):hover { background: #3dff6e !important; color: #031a0a !important; }
+/* secondary: an indigo key with cyan letters, lights up cyan */
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(.btn_blue_steamui, .btnv6_blue_hoverfade, .btn_blue_white_innerfade, .btn_darkblue_white_innerfade, .btnv6_lightblue_blue) { background: #1d1750 !important; color: #22e4ff !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(.btn_blue_steamui, .btnv6_blue_hoverfade, .btn_blue_white_innerfade, .btn_darkblue_white_innerfade, .btnv6_lightblue_blue):hover { background: #22e4ff !important; color: #04131a !important; }
+/* plain: a dark key that lights up arcade yellow */
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(.btnv6_white_transparent, .btn_grey_steamui, .btn_grey_black, .btn_grey_white_innerfade, .btn_profile_action, .btn_black, .btn_grey_grey, .btnv6_grey_black) { background: #15123a !important; color: #e4e1ff !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(.btnv6_white_transparent, .btn_grey_steamui, .btn_grey_black, .btn_grey_white_innerfade, .btn_profile_action, .btn_black, .btn_grey_grey, .btnv6_grey_black):hover { background: #ffd400 !important; color: #140e00 !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) .btn_darkred_white_innerfade { background: #c2133a !important; color: #fff !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) .btn_darkred_white_innerfade:hover { background: #ff2e4d !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(.btn_green_steamui, .btn_blue_steamui, .btnv6_blue_hoverfade, .btnv6_white_transparent, .btnv6_lightblue_blue,
+  .btn_grey_steamui, .btn_grey_black, .btn_grey_white_innerfade, .btn_blue_white_innerfade, .btn_darkblue_white_innerfade, .btn_green_white_innerfade,
+  .btnv6_green_white_innerfade, .btn_darkred_white_innerfade, .btn_profile_action, .btn_black):active {
+  transform: translateY(2px);
+  box-shadow: inset 2px 2px 0 0 rgba(0, 0, 0, .4), 0 -2px 0 0 #000, 0 2px 0 0 #000, -2px 0 0 0 #000, 2px 0 0 0 #000 !important;
+}
+/* React store buttons (cart, news, points shop …) and the Steam dialog buttons on web pages */
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(.cE9cj0nbqpY- button, .DialogButton, .PJz5mrc1q-s-) {
+  border-radius: 0 !important;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  font-weight: 700 !important;
+  box-shadow:
+    inset -2px -2px 0 0 rgba(0, 0, 0, .38), inset 2px 2px 0 0 rgba(255, 255, 255, .22),
+    0 -2px 0 0 #000, 0 2px 0 0 #000, -2px 0 0 0 #000, 2px 0 0 0 #000, 0 4px 0 0 rgba(0, 0, 0, .55) !important;
+}
+/* the cart's "Continue to payment": the yellow START key */
+html[data-rfs-style="arcade"]:not(#rfs-arc) .cE9cj0nbqpY- :is(.i1XZFikuzME-, ._982gncrqNug-) button:last-of-type { background: #ffd400 !important; color: #140e00 !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) .cE9cj0nbqpY- :is(.i1XZFikuzME-, ._982gncrqNug-) button:last-of-type:hover { background: #ffe14d !important; }
+
+/* ── panels: pixel boxes (square, a 2px indigo line inside, a stepped black outline) ── */
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(
+  .game_area_purchase_game, .block.responsive_apppage_details_right, .game_meta_data .block, .rightcol .block:not(.recommendation_reasons),
+  #game_area_description, .game_area_description, #game_area_reviews, .review_box, .game_page_autocollapse_ctn .game_area_dlc_section,
+  .home_tabs_content, .page_content .block_content_inner, .search_rightcol .block_content, #additional_search_options .block_content,
+  .cE9cj0nbqpY- :is(._982gncrqNug-, .i1XZFikuzME-, .nfxC9n3FRVE-, .uOkrV3eksDM-),
+  .profile_content, .profile_header_content, .profile_customization, .badge_row, .rightbox, .forum_list_right, .help_login_nag,
+  .error_bg, .market_search_sidebar_contents, .market_home_listing_table, .apphub_HomeHeaderContent, .workshop_browse_menu_area
+) {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background-color: #0e0b2b !important;
+  background-image: none !important;
+  box-shadow: inset 0 0 0 2px #2d2670, 0 -3px 0 0 #000, 0 3px 0 0 #000, -3px 0 0 0 #000, 3px 0 0 0 #000 !important;
+}
+html[data-rfs-style="arcade"]:not(#rfs-arc) .game_area_description { padding: 16px 18px !important; }
+/* the buy box: a magenta strip on top, the title in white pixel caps */
+html[data-rfs-style="arcade"]:not(#rfs-arc) .game_area_purchase_game {
+  box-shadow: inset 0 4px 0 0 #ff3ddc, inset 0 0 0 2px #2d2670, 0 -3px 0 0 #000, 0 3px 0 0 #000, -3px 0 0 0 #000, 3px 0 0 0 #000 !important;
+}
+html[data-rfs-style="arcade"]:not(#rfs-arc) .game_area_purchase_game h1 {
+  font-family: var(--rf-arc-pix) !important;
+  font-size: 12px !important;
+  line-height: 1.7 !important;
+  color: #fff !important;
+  text-transform: uppercase;
+  text-shadow: 2px 2px 0 #b3127a !important;
+}
+html[data-rfs-style="arcade"][data-rfs-lang="ar"]:not(#rfs-arc) .game_area_purchase_game h1 { font-family: var(--rf-arc-pix-ar) !important; font-size: 20px !important; line-height: 1.4 !important; }
+/* the coin slot: price + button cluster */
+html[data-rfs-style="arcade"]:not(#rfs-arc) .game_purchase_action_bg {
+  border-radius: 0 !important;
+  background: #05040f !important;
+  box-shadow: 0 -2px 0 0 #000, 0 2px 0 0 #000, -2px 0 0 0 #000, 2px 0 0 0 #000, inset 0 0 0 2px #2d2670 !important;
+}
+
+/* ── prices: CRT digits (VT323), discounts are yellow pixel chips, sale prices glow score green ── */
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(.game_purchase_price, .discount_final_price, .price:not(.price_info), .StoreSalePriceBox, .StoreSalePriceWidgetContainer > div:last-child) {
+  font-family: var(--rf-arc-digits) !important;
+  font-size: 21px !important;
+  letter-spacing: .02em;
+}
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(.discount_original_price, .StoreOriginalPrice) { font-family: var(--rf-arc-digits) !important; font-size: 15px !important; color: #8e8ac0 !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(.discount_pct, .StoreSaleDiscountBox) {
+  border-radius: 0 !important;
+  font-family: var(--rf-arc-digits) !important;
+  font-size: 22px !important;
+  color: #140e00 !important;
+  background: #ffd400 !important;
+  box-shadow: inset -2px -2px 0 0 rgba(0, 0, 0, .25), inset 2px 2px 0 0 rgba(255, 255, 255, .45) !important;
+}
+html[data-rfs-style="arcade"]:not(#rfs-arc) .discount_block:not(.no_discount) .discount_final_price { color: #3dff6e !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) .discount_block.no_discount .discount_final_price { color: #fff !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(.discount_block, .discount_prices, .game_purchase_price) { border-radius: 0 !important; }
+
+/* user tags: square cyan chips */
+html[data-rfs-style="arcade"]:not(#rfs-arc) .app_tag {
+  border-radius: 0 !important;
+  color: #22e4ff !important;
+  background: #110e2e !important;
+  box-shadow: inset 0 0 0 2px #2d2670 !important;
+}
+html[data-rfs-style="arcade"]:not(#rfs-arc) .app_tag:hover { color: #04131a !important; background: #22e4ff !important; box-shadow: inset 0 0 0 2px #000 !important; }
+/* review scores: cyan = positive, yellow = mixed, red = negative */
+html[data-rfs-style="arcade"]:not(#rfs-arc) .game_review_summary.positive { color: #22e4ff !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) .game_review_summary.mixed { color: #ffd400 !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) .game_review_summary.negative { color: #ff2e4d !important; }
+
+/* ── lists as scoreboards: a rank stripe at the start cycling red / yellow / cyan / magenta, a yellow frame on hover ── */
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(.tab_item, .tab_row_item, .search_result_row, .market_listing_row, .forum_topic, .discussions_forum_row, .help_wizard_button, ._6-rISlJoUe0-, .market_search_game_button_group .game_button) {
+  border: 0 !important;
+  border-radius: 0 !important;
+  border-inline-start: 4px solid var(--rk, #ff2e4d) !important;
+  background-color: #0e0b2b !important;
+  background-image: none !important;
+  box-shadow: inset 0 -2px 0 0 #07061a !important;
+  transition: none !important;
+}
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(.tab_item, .tab_row_item, .search_result_row, .market_listing_row, .forum_topic, .discussions_forum_row, .help_wizard_button, ._6-rISlJoUe0-, .market_search_game_button_group .game_button):nth-child(4n+2) { --rk: #ffd400; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(.tab_item, .tab_row_item, .search_result_row, .market_listing_row, .forum_topic, .discussions_forum_row, .help_wizard_button, ._6-rISlJoUe0-, .market_search_game_button_group .game_button):nth-child(4n+3) { --rk: #22e4ff; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(.tab_item, .tab_row_item, .search_result_row, .market_listing_row, .forum_topic, .discussions_forum_row, .help_wizard_button, ._6-rISlJoUe0-, .market_search_game_button_group .game_button):nth-child(4n) { --rk: #ff3ddc; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(.tab_item, .tab_row_item, .search_result_row, .market_listing_row, .forum_topic, .discussions_forum_row, .help_wizard_button, ._6-rISlJoUe0-, .market_search_game_button_group .game_button):is(:hover, .focus) {
+  background-color: #1d1750 !important;
+  box-shadow: inset 0 0 0 2px #ffd400 !important;
+}
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(.tab_item, .tab_row_item):is(:hover, .focus) :is(.tab_item_name, .tab_item_content) { color: #ffd400 !important; }
+/* the rank digits on the charts */
+html[data-rfs-style="arcade"]:not(#rfs-arc) ._6-rISlJoUe0- > td:first-child { font-family: var(--rf-arc-digits) !important; font-size: 28px !important; color: var(--rk, #ff2e4d) !important; }
+/* help topics + market games: names in caps */
+html[data-rfs-style="arcade"]:not(#rfs-arc) .help_wizard_button { color: #f5f3ff !important; font-weight: 600; letter-spacing: .02em; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) .help_wizard_button:hover { color: #ffd400 !important; }
+
+/* tab rows (home: New & Trending …, market: Popular / Newly listed, community hub sections): pixel keys */
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(.home_tabs_row .tab_content, .market_tab_well_tab .market_tab_well_tab_contents, .apphub_sectionTab) {
+  border-radius: 0 !important;
+  background: #15123a !important;
+  box-shadow: inset -2px -2px 0 0 rgba(0, 0, 0, .4), inset 2px 2px 0 0 rgba(255, 255, 255, .14) !important;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(.home_tabs_row .tab.active .tab_content, .market_tab_well_tab.active .market_tab_well_tab_contents, .apphub_sectionTab.active) {
+  background: #ffd400 !important;
+  color: #140e00 !important;
+}
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(.market_tab_well_tab, .market_tab_well_tabs, .market_tab_well_tab_left, .market_tab_well_tab_right) { background: none !important; border-radius: 0 !important; }
+
+/* ── home: the big carousel and capsules get a stepped pixel frame; dots are pixels ── */
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(.store_main_capsule, .home_discounts_block .store_capsule, .tab_item_cap, .sale_capsule, .apphub_Card) {
+  border-radius: 0 !important;
+  box-shadow: 0 -3px 0 0 #000, 0 3px 0 0 #000, -3px 0 0 0 #000, 3px 0 0 0 #000 !important;
+}
+html[data-rfs-style="arcade"]:not(#rfs-arc) .store_main_capsule:hover { box-shadow: 0 0 0 3px #ffd400, 6px 6px 0 3px rgba(0, 0, 0, .55) !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(.carousel__dot, .carousel_thumbs > div, .focus_dot) { border-radius: 0 !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) .store_main_capsule .info { background: linear-gradient(#141036, #0b0922) !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) .store_main_capsule .app_name > div { font-weight: 700; text-transform: uppercase; letter-spacing: .03em; }
+
+/* ── footer: a dark cabinet base with the marquee stripe on top ── */
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(#footer, footer#footer, #footer_spacer + #footer) {
+  border-radius: 0 !important;
+  background:
+    linear-gradient(90deg, #ff2e4d 0 25%, #ffd400 25% 50%, #22e4ff 50% 75%, #ff3ddc 75%) left top / 100% 4px no-repeat,
+    #0b0922 !important;
+  box-shadow: 0 -3px 0 0 #000 !important;
+}
+
+/* ── community: profile, hub, market, workshop, discussions, badges ── */
+html[data-rfs-style="arcade"]:not(#rfs-arc) .profile_header_bg_texture { background-color: #0b0922 !important; background-image: none !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) .profile_header_content { padding: 24px !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) .profile_header .playerAvatar { border-radius: 0 !important; box-shadow: 0 0 0 3px #000, 0 0 0 6px #ff3ddc !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(.profile_private_info, .profile_header_summary) { color: #c9c6ee !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) .profile_count_link_total { font-family: var(--rf-arc-digits) !important; font-size: 24px !important; color: #ffd400 !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(.profile_count_link .count_link_label, .profile_in_game_header) { text-transform: uppercase; letter-spacing: .04em; color: #22e4ff !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(.workshopItem .workshopItemPreviewHolder, .workshopBrowseItems .workshopItem) { border-radius: 0 !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) .workshopItemPreviewHolder { box-shadow: 0 0 0 2px #000, 0 0 0 4px #2d2670 !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) .workshopItem:hover .workshopItemPreviewHolder { box-shadow: 0 0 0 2px #000, 0 0 0 4px #ffd400 !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(.forum_topic_name, .discussions_forum_row .forum_name, .market_listing_item_name) { font-weight: 700 !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) .market_listing_row .normal_price, html[data-rfs-style="arcade"]:not(#rfs-arc) .market_table_value .normal_price { font-family: var(--rf-arc-digits) !important; font-size: 19px !important; color: #3dff6e !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) .market_listing_num_listings_qty { font-family: var(--rf-arc-digits) !important; font-size: 19px !important; color: #fff !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(.market_listing_table_header, .market_table_header) { color: #ff2e4d !important; text-transform: uppercase; letter-spacing: .05em; font-weight: 700 !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) .apphub_StoreAppData .apphub_StorePrice { font-family: var(--rf-arc-digits) !important; font-size: 20px !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(.apphub_sectionTabs, .apphub_HeaderTop) { border-radius: 0 !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) .apphub_sectionTab { margin-inline-end: 6px; padding-inline: 10px !important; }
+
+/* ── forms (login, checkout, search boxes on community / help): dark wells with a cyan pixel rim ── */
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(input[type="text"], input[type="password"], input[type="email"], input[type="search"], input[type="number"], textarea, select):not(.rFKwchjD-WU-):not(.S-0LcpbLAf8-):not(#store_nav_search_term) {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background-color: #05040f !important;
+  color: #f5f3ff !important;
+  caret-color: #ffd400;
+  box-shadow: inset 0 0 0 2px #3b33a0, inset 3px 3px 0 0 rgba(0, 0, 0, .5) !important;
+}
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(input[type="text"], input[type="password"], input[type="email"], input[type="search"], input[type="number"], textarea, select):not(.rFKwchjD-WU-):not(.S-0LcpbLAf8-):not(#store_nav_search_term):focus {
+  outline: none !important;
+  box-shadow: inset 0 0 0 2px #ffd400, inset 3px 3px 0 0 rgba(0, 0, 0, .5) !important;
+}
+html[data-rfs-style="arcade"]:not(#rfs-arc) ::placeholder { color: #7d79b3 !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) [class*="newlogindialog"] button[type="submit"],
+html[data-rfs-style="arcade"]:not(#rfs-arc) form button[type="submit"]:not(.A42lZ-U1dhI-):not(.et-RRc3JMu8-) {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: #ffd400 !important;
+  color: #140e00 !important;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  box-shadow: inset -2px -2px 0 0 rgba(0, 0, 0, .3), inset 2px 2px 0 0 rgba(255, 255, 255, .45),
+    0 -2px 0 0 #000, 0 2px 0 0 #000, -2px 0 0 0 #000, 2px 0 0 0 #000, 0 4px 0 0 rgba(0, 0, 0, .55) !important;
+}
+/* "please wait — verifying login" screen (the client's own sign-in hand-off) */
+html[data-rfs-style="arcade"]:not(#rfs-arc) .login_client_waitforauth { background: transparent !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) .login_client_waitforauth_desc { color: #22e4ff !important; font-family: var(--rf-arc-digits) !important; font-size: 26px !important; }
+
+/* ── news hub + charts (React pages Steam leaves in its own blue-grey): back to the cabinet palette ── */
+html[data-rfs-style="arcade"]:not(#rfs-arc) :is(.QiZCPwhEAvE-, .yDJ1-6CIoOA-, .xE9Dp6pmE08-, .MaaVjvZivZw-) { background-color: transparent !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) ._1-sUXu7fTvU- { background-color: #0b0922 !important; box-shadow: inset -2px 0 0 0 #2d2670 !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) .SlFMYJwWSU4- { font-weight: 700 !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) .MaaVjvZivZw- span { font-family: var(--rf-arc-pix) !important; font-size: 11px !important; color: #22e4ff !important; text-transform: uppercase; }
+html[data-rfs-style="arcade"][data-rfs-lang="ar"]:not(#rfs-arc) .MaaVjvZivZw- span { font-family: var(--rf-arc-pix-ar) !important; font-size: 19px !important; }
+
+/* ══════════════════════════ our own pieces ══════════════════════════ */
+
+/* the library filter strip (docked in the home design) + the Ctrl+K floating search */
+html[data-rfs-style="arcade"] #rfs-bar:is(.inhome, .float) {
+  border: 0;
+  border-radius: 0;
+  background: #0e0b2b;
+  box-shadow: inset 0 0 0 2px #2d2670, 0 -3px 0 0 #000, 0 3px 0 0 #000, -3px 0 0 0 #000, 3px 0 0 0 #000;
+}
+html[data-rfs-style="arcade"] #rfs-bar.inhome { gap: 10px; padding: 8px 10px; }
+html[data-rfs-style="arcade"] #rfs-bar.float { box-shadow: inset 0 0 0 2px #3b33a0, 0 0 0 3px #000, 8px 8px 0 3px rgba(0, 0, 0, .55); }
+html[data-rfs-style="arcade"] #rfs-bar :is(.tb-btn, .tb-seg button) {
+  height: 30px;
+  margin: 2px;
+  border: 0;
+  border-radius: 0;
+  background: #1d1750;
+  color: #f5f3ff;
+  transition: none;
+  box-shadow:
+    inset -2px -2px 0 0 rgba(0, 0, 0, .45), inset 2px 2px 0 0 rgba(255, 255, 255, .16),
+    0 -2px 0 0 #000, 0 2px 0 0 #000, -2px 0 0 0 #000, 2px 0 0 0 #000;
+}
+html[data-rfs-style="arcade"] #rfs-bar :is(.tb-btn, .tb-seg button):hover { background: #2e2794; color: #ffd400; }
+html[data-rfs-style="arcade"] #rfs-bar :is(.tb-btn, .tb-seg button):active { transform: translateY(2px); }
+html[data-rfs-style="arcade"] #rfs-bar :is(.tb-btn.on, .tb-seg button.on, .rf-dd.open > .tb-btn) { background: #ffd400; color: #140e00; }
+html[data-rfs-style="arcade"] #rfs-bar :is(.tb-btn.on, .tb-seg button.on, .rf-dd.open > .tb-btn) > svg.rf-ic,
+html[data-rfs-style="arcade"] #rfs-bar :is(.tb-btn.on, .tb-seg button.on, .rf-dd.open > .tb-btn) > svg.rf-ic * { stroke: currentColor; }
+html[data-rfs-style="arcade"] #rfs-bar .tb-search {
+  height: 32px;
+  border: 0;
+  border-radius: 0;
+  background: #05040f;
+  box-shadow: inset 0 0 0 2px #22e4ff, inset 4px 4px 0 0 rgba(0, 0, 0, .5);
+}
+html[data-rfs-style="arcade"] #rfs-bar .tb-search:focus-within { box-shadow: inset 0 0 0 2px #ffd400, inset 4px 4px 0 0 rgba(0, 0, 0, .5), 0 0 0 2px #000; }
+html[data-rfs-style="arcade"] #rfs-bar .tb-q { font-size: 14px; caret-color: #ffd400; }
+html[data-rfs-style="arcade"] #rfs-bar .tb-q::placeholder { color: #6f6aa8; }
+html[data-rfs-style="arcade"] #rfs-bar :is(.tb-kbd, .pl-foot kbd) {
+  border-radius: 0;
+  background: #1d1750;
+  color: #c9c6ee;
+  font: 400 15px/1 var(--rf-arc-digits) !important;
+  box-shadow: inset 0 -2px 0 0 rgba(0, 0, 0, .5), 0 0 0 1px #000;
+}
+/* dropdown menus + search results: a pixel window with a hard shadow; the hovered line turns into a yellow bar */
+html[data-rfs-style="arcade"] #rfs-bar :is(.rf-dd-menu, .tb-results) {
+  border: 0;
+  border-radius: 0;
+  background: #0e0b2b;
+  box-shadow: inset 0 0 0 2px #3b33a0, 0 0 0 3px #000, 8px 8px 0 3px rgba(0, 0, 0, .55);
+}
+html[data-rfs-style="arcade"] #rfs-bar .rf-dd-menu button { border-radius: 0; border-inline-start: 4px solid transparent; }
+html[data-rfs-style="arcade"] #rfs-bar .rf-dd-menu button:hover,
+html[data-rfs-style="arcade"] #rfs-bar :is(.pl-item.sel, .pl-item:hover) { background: #ffd400; color: #140e00; }
+html[data-rfs-style="arcade"] #rfs-bar .rf-dd-menu button:hover b,
+html[data-rfs-style="arcade"] #rfs-bar :is(.pl-item.sel, .pl-item:hover) .pl-meta { color: #3a2c00; }
+html[data-rfs-style="arcade"] #rfs-bar .rf-dd-menu button.on { background: #1d1750; color: #ffd400; border-inline-start-color: #ffd400; }
+html[data-rfs-style="arcade"] #rfs-bar .pl-item { border-radius: 0; }
+html[data-rfs-style="arcade"] #rfs-bar .pl-item img { border-radius: 0; box-shadow: 0 0 0 2px #000; }
+html[data-rfs-style="arcade"] #rfs-bar .pl-tag { border-radius: 0; }
+html[data-rfs-style="arcade"] #rfs-bar .pl-sec { color: #ff3ddc; text-transform: uppercase; letter-spacing: .05em; }
+html[data-rfs-style="arcade"] #rfs-bar .pl-foot { background: #07061a; border-top: 2px solid #2d2670; }
+
+/* toast + hover card: small pixel boxes */
+html[data-rfs-style="arcade"] #rfs-toast {
+  border: 0;
+  border-radius: 0;
+  background: #0e0b2b;
+  color: #f5f3ff;
+  box-shadow: inset 0 0 0 2px #ffd400, 0 0 0 3px #000, 6px 6px 0 3px rgba(0, 0, 0, .55);
+}
+html[data-rfs-style="arcade"] #rfs .rf-tip { border: 0; border-radius: 0; background: #0e0b2b; box-shadow: inset 0 0 0 2px #22e4ff, 0 0 0 2px #000; }
+
+/* the THEMES picker while Arcade is on: a pixel window */
+html[data-rfs-style="arcade"] #rfs-themes .tp-box {
+  border: 0;
+  border-radius: 0;
+  background: #0e0b2b;
+  box-shadow:
+    inset 0 0 0 3px #2d2670,
+    0 -4px 0 0 #000, 0 4px 0 0 #000, -4px 0 0 0 #000, 4px 0 0 0 #000,
+    10px 10px 0 4px rgba(0, 0, 0, .5);
+}
+html[data-rfs-style="arcade"] #rfs-themes .tp-head h2 { font: 400 14px/1.5 var(--rf-heading-font) !important; color: #ffd400; text-transform: uppercase; }
+html[data-rfs-style="arcade"][data-rfs-lang="ar"] #rfs-themes .tp-head h2 { font: 400 24px/1.4 var(--rf-arc-pix-ar) !important; }
+html[data-rfs-style="arcade"] #rfs-themes .tp-card { border-radius: 0; border-color: #2d2670; }
+html[data-rfs-style="arcade"] #rfs-themes .tp-card:hover { border-color: #ffd400; box-shadow: 6px 6px 0 0 rgba(0, 0, 0, .6); }
+html[data-rfs-style="arcade"] #rfs-themes .tp-card.cur { border-color: #ffd400; }
+html[data-rfs-style="arcade"] #rfs-themes :is(.tp-cur, .tp-lang, .tp-lang button) { border-radius: 0; }
+html[data-rfs-style="arcade"] #rfs-themes .tp-close {
+  border: 0;
+  border-radius: 0;
+  background: #1d1750;
+  box-shadow: inset -2px -2px 0 0 rgba(0, 0, 0, .45), inset 2px 2px 0 0 rgba(255, 255, 255, .16), 0 0 0 2px #000;
+}
+html[data-rfs-style="arcade"] #rfs-themes .tp-close:hover { color: #ffd400; }
+
+/* ── store side panels (#rfs-rail / #rfs-data), Quick links (#rfs-qbtn / #rfs-qmenu) ── */
+html[data-rfs-style="arcade"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) section {
+  margin: 3px 3px 14px;
+  padding: 12px;
+  border: 0;
+  border-radius: 0;
+  background: #0e0b2b;
+  box-shadow: inset 0 0 0 2px #2d2670, 0 -3px 0 0 #000, 0 3px 0 0 #000, -3px 0 0 0 #000, 3px 0 0 0 #000;
+}
+html[data-rfs-style="arcade"] #rfs-qmenu section { margin: 3px; background: #0e0b2b !important; }
+/* headings: small pixel caps over a dashed magenta rule */
+html[data-rfs-style="arcade"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) h4 {
+  margin: 0 0 10px;
+  padding: 0 2px 8px;
+  font: 400 10px/1.5 var(--rf-heading-font) !important;
+  color: #ffd400;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  background: repeating-linear-gradient(90deg, #ff3ddc 0 4px, transparent 4px 8px) left bottom / 100% 2px no-repeat;
+}
+html[data-rfs-style="arcade"][data-rfs-lang="ar"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) h4 { font: 400 17px/1.5 var(--rf-arc-pix-ar) !important; letter-spacing: 0; }
+html[data-rfs-style="arcade"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) h4 small { font: 400 16px/1 var(--rf-arc-digits) !important; color: #a29fd0; letter-spacing: 0; text-transform: none; }
+
+/* left rail: links light up as yellow bars, buttons are pixel keys */
+html[data-rfs-style="arcade"] #rfs-rail .rr-link { border-radius: 0; padding: 6px 8px; }
+html[data-rfs-style="arcade"] #rfs-rail .rr-link:hover { background: #1d1750; color: #ffd400 !important; }
+html[data-rfs-style="arcade"] #rfs-rail .rr-link.cur { background: #ffd400; color: #140e00 !important; }
+html[data-rfs-style="arcade"] #rfs-rail .rr-app img { border-radius: 0; box-shadow: 0 0 0 2px #000, 0 0 0 4px #2d2670; }
+html[data-rfs-style="arcade"] #rfs-rail .rr-app b { text-transform: uppercase; letter-spacing: .02em; }
+html[data-rfs-style="arcade"] #rfs-rail .rr-own { color: #3dff6e; }
+html[data-rfs-style="arcade"] #rfs-rail .rr-price { font: 400 24px/1 var(--rf-arc-digits) !important; color: #3dff6e; }
+html[data-rfs-style="arcade"] #rfs-rail .rr-price i { border-radius: 0; background: #ffd400; color: #140e00; font: 400 16px/1.1 var(--rf-arc-digits) !important; }
+html[data-rfs-style="arcade"] #rfs-rail .rr-btn {
+  margin: 2px;
+  border: 0;
+  border-radius: 0;
+  background: #1d1750;
+  color: #22e4ff !important;
+  box-shadow:
+    inset -2px -2px 0 0 rgba(0, 0, 0, .45), inset 2px 2px 0 0 rgba(255, 255, 255, .16),
+    0 -2px 0 0 #000, 0 2px 0 0 #000, -2px 0 0 0 #000, 2px 0 0 0 #000;
+}
+html[data-rfs-style="arcade"] #rfs-rail .rr-btn:hover { background: #22e4ff; color: #04131a !important; }
+html[data-rfs-style="arcade"] #rfs-rail .rr-btn:active { transform: translateY(2px); }
+html[data-rfs-style="arcade"] #rfs-rail .rr-btn.go { background: #12b347; color: #fff !important; }
+html[data-rfs-style="arcade"] #rfs-rail .rr-btn.go:hover { background: #3dff6e; color: #031a0a !important; }
+html[data-rfs-style="arcade"] #rfs-rail .rr-btn.on { color: #ffd400 !important; box-shadow: inset 0 0 0 2px #ffd400, 0 0 0 2px #000; }
+html[data-rfs-style="arcade"] #rfs-rail .rr-btn:is(:hover, .go) > svg.rf-ic,
+html[data-rfs-style="arcade"] #rfs-rail .rr-btn:is(:hover, .go) > svg.rf-ic * { stroke: currentColor; }
+
+/* right data panel: a scoreboard — big CRT digits, square country chips, framed best / home rows */
+html[data-rfs-style="arcade"] #rfs-data .rd-live b { font: 400 36px/1 var(--rf-arc-digits) !important; color: #ffd400; letter-spacing: .04em; text-shadow: 2px 2px 0 #b3127a; }
+html[data-rfs-style="arcade"] #rfs-data .rd-live small { font: 400 9px/1.7 var(--rf-heading-font) !important; color: #22e4ff; text-transform: uppercase; }
+html[data-rfs-style="arcade"][data-rfs-lang="ar"] #rfs-data .rd-live small { font: 400 16px/1.5 var(--rf-arc-pix-ar) !important; }
+html[data-rfs-style="arcade"] #rfs-data .rd-dot { border-radius: 0; }
+html[data-rfs-style="arcade"] #rfs-data .rd-row { border-radius: 0; }
+html[data-rfs-style="arcade"] #rfs-data .rd-row:nth-of-type(even) { background: rgba(255, 255, 255, .025); }
+html[data-rfs-style="arcade"] #rfs-data .rd-cc {
+  border: 0;
+  border-radius: 0;
+  background: #1d1750;
+  color: #c9c6ee;
+  font: 400 16px/1 var(--rf-arc-digits) !important;
+  box-shadow: inset -2px -2px 0 0 rgba(0, 0, 0, .4), inset 2px 2px 0 0 rgba(255, 255, 255, .14);
+}
+html[data-rfs-style="arcade"] #rfs-data :is(.rd-kwd, .rd-diff, .rd-loc) { font-family: var(--rf-arc-digits) !important; letter-spacing: .02em; }
+html[data-rfs-style="arcade"] #rfs-data .rd-kwd { font-size: 19px; color: #fff; }
+html[data-rfs-style="arcade"] #rfs-data .rd-diff { font-size: 16px; }
+html[data-rfs-style="arcade"] #rfs-data .rd-loc { font-size: 15px; }
+html[data-rfs-style="arcade"] #rfs-data .rd-tag { border-radius: 0; background: #ff3ddc; color: #fff; }
+html[data-rfs-style="arcade"] #rfs-data .rd-row.home { background: rgba(255, 212, 0, .08); box-shadow: inset 0 0 0 2px #ffd400; }
+html[data-rfs-style="arcade"] #rfs-data .rd-row.home .rd-cc { background: #ffd400; color: #140e00; }
+html[data-rfs-style="arcade"] #rfs-data .rd-row.best { background: rgba(61, 255, 110, .08); box-shadow: inset 0 0 0 2px #3dff6e; }
+html[data-rfs-style="arcade"] #rfs-data .rd-row.best .rd-cc { background: #3dff6e; color: #031a0a; }
+html[data-rfs-style="arcade"] #rfs-data .rd-row.best .rd-tag { background: #3dff6e; color: #031a0a; }
+html[data-rfs-style="arcade"] #rfs-data :is(.rd-fact, .rd-link) { border: 0; border-radius: 0; background: #110e2e; box-shadow: inset 0 0 0 2px #2d2670; }
+html[data-rfs-style="arcade"] #rfs-data .rd-link:hover { background: #1d1750; box-shadow: inset 0 0 0 2px #ffd400; }
+html[data-rfs-style="arcade"] #rfs-data .rd-skel { border-radius: 0; }
+
+/* Quick links: the header button is a pixel key with a pixel-caps label, the menu rows light up yellow */
+html[data-rfs-style="arcade"] #rfs-qbtn {
+  border: 0;
+  border-radius: 0;
+  background: #1d1750;
+  color: #f5f3ff;
+  text-transform: uppercase;
+  box-shadow:
+    inset -2px -2px 0 0 rgba(0, 0, 0, .45), inset 2px 2px 0 0 rgba(255, 255, 255, .16),
+    0 -2px 0 0 #000, 0 2px 0 0 #000, -2px 0 0 0 #000, 2px 0 0 0 #000;
+}
+/* the label is a span inside: target it directly (the page-wide font rule would beat inheritance) */
+html[data-rfs-style="arcade"] :is(#rfs-qbtn, #rfs-qbtn > span) { font: 400 10px/1 var(--rf-heading-font) !important; }
+html[data-rfs-style="arcade"][data-rfs-lang="ar"] :is(#rfs-qbtn, #rfs-qbtn > span) { font: 400 17px/1 var(--rf-arc-pix-ar) !important; }
+html[data-rfs-style="arcade"] #rfs-qbtn:hover { background: #2e2794; color: #ffd400; }
+html[data-rfs-style="arcade"] #rfs-qmenu .ql { border-radius: 0; }
+html[data-rfs-style="arcade"] #rfs-qmenu .ql:hover { background: #1d1750; color: #ffd400 !important; }
+html[data-rfs-style="arcade"] #rfs-qmenu .ql.cur { background: #ffd400; color: #140e00 !important; }
+
+/* the user box and its footer bar (skin.js) */
+html[data-rfs-style="arcade"] { --rf-footer-bg: #0b0620; --rf-footer-line: 2px solid #ff2fa8; --rf-user-radius: 0; --rf-user-bg: #120a2e; --rf-user-bg-hover: #2a1660; --rf-user-border: 2px solid #ffd400; --rf-user-shadow: 3px 3px 0 #000; --rf-user-ink: #ffd400; --rf-user-font: 400 13px var(--rf-heading-font); }

@@ -1,0 +1,432 @@
+/* ═══ Terminal (الطرفية) — home design (src/layouts/terminal.js) ═══
+   Scoped to #rfs[data-layout="terminal"]. Logical properties throughout: the interface is right-to-left in Arabic and
+   left-to-right in English; only the command lines (prompt, cat) are always left-to-right.
+   Performance: no transforms, filters or blurs on rows; the only constant animations are the prompt cursor and the
+   status square of a running game (opacity on one tiny element each). The game panel (#rfs-sheet) animates once
+   when it opens / closes. */
+#rfs[data-layout="terminal"],
+#rfs-sheet[data-layout="terminal"] {
+  --tm-g: var(--rf-accent, #39ff88);
+  --tm-a: var(--rf-accent-2, #ffb000);
+  --tm-ink: var(--rf-accent-ink, #03140a);
+  --tm-rgb: var(--rf-accent-rgb, 57, 255, 136);
+  --tm-text: var(--rf-text, #b6f0c9);
+  --tm-dim: var(--rf-text-dim, #5f9474);
+  --tm-hi: #eafff1;
+  --tm-bg: var(--rf-panel, #080d0c);
+  --tm-bg-2: var(--rf-panel-2, #0c1311);
+  --tm-line: rgba(var(--tm-rgb), .22);
+  --tm-row: 24px;
+}
+
+/* ---------- the window ---------- */
+#rfs[data-layout="terminal"] .tm {
+  /* ch columns resolve against each grid's own font, so the header row and the game rows share one font-size (12.5px).
+     First column: the line number (a CSS counter, as wide as the longest number — terminal.js sets --tm-ln here) */
+  --tm-lnw: calc(var(--tm-ln, 3) * 1ch);
+  --tm-cols: var(--tm-lnw) 12px minmax(0, 1fr) 8ch 9ch 11ch;
+  display: flex; padding: 12px 16px 14px; overflow: hidden;
+  font: 400 13px/1.45 var(--font); color: var(--tm-text);
+}
+#rfs[data-layout="terminal"] .tm-win {
+  flex: 1 1 auto; min-width: 0; min-height: 0; display: flex; flex-direction: column;
+  background: var(--tm-bg); border: 1px solid rgba(var(--tm-rgb), .32);
+  box-shadow: 0 0 0 1px #000, 0 22px 60px rgba(0, 0, 0, .55);
+}
+
+/* title bar: three square dots · ~/library — steam · library totals */
+#rfs[data-layout="terminal"] .tm-title {
+  flex: none; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 12px;
+  height: 28px; padding-inline: 10px; white-space: nowrap;
+  background: var(--tm-bg-2); border-bottom: 1px solid var(--tm-line);
+  font-size: 11.5px; color: var(--tm-dim);
+}
+#rfs[data-layout="terminal"] .tm-dots { display: flex; gap: 6px; justify-self: start; }
+#rfs[data-layout="terminal"] .tm-dots i { display: block; width: 9px; height: 9px; border: 1px solid var(--tm-g); }
+#rfs[data-layout="terminal"] .tm-dots i:nth-child(1) { background: var(--tm-a); border-color: var(--tm-a); }
+#rfs[data-layout="terminal"] .tm-dots i:nth-child(2) { background: var(--tm-g); }
+#rfs[data-layout="terminal"] .tm-dots i:nth-child(3) { border-color: rgba(var(--tm-rgb), .45); }
+#rfs[data-layout="terminal"] .tm-ttl { font-weight: 500; letter-spacing: .04em; color: var(--tm-text); }
+#rfs[data-layout="terminal"] .tm-meta { justify-self: end; min-width: 0; overflow: hidden; text-overflow: ellipsis; font-feature-settings: "zero" 1; }
+
+/* prompt line + the filter strip right under it */
+#rfs[data-layout="terminal"] .tm-head {
+  flex: none; display: flex; flex-direction: column; gap: 8px;
+  padding: 9px 12px 10px; border-bottom: 1px solid var(--tm-line);
+}
+#rfs[data-layout="terminal"] .tm-cmd {
+  direction: ltr; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-size: 13px; line-height: 20px; color: var(--tm-text);
+}
+#rfs[data-layout="terminal"] .tm-u { font-weight: 700; color: var(--tm-g); }
+#rfs[data-layout="terminal"] .tm-p { font-weight: 700; color: var(--tm-a); }
+#rfs[data-layout="terminal"] .tm-s { color: var(--tm-text); }
+#rfs[data-layout="terminal"] .tm-k { font-weight: 600; color: var(--tm-hi); }
+#rfs[data-layout="terminal"] .tm-w { color: var(--tm-text); }
+#rfs[data-layout="terminal"] .tm-f { color: var(--tm-dim); }
+#rfs[data-layout="terminal"] .tm-v { color: var(--tm-a); }
+#rfs[data-layout="terminal"] .tm-cur {
+  display: inline-block; width: .62em; height: 1.05em; margin-inline-start: 3px; vertical-align: -.18em;
+  background: var(--tm-g); animation: tm-blink 1.06s steps(1, end) infinite;
+}
+@keyframes tm-blink { 50% { opacity: 0; } }
+#rfs[data-layout="terminal"] .rf-dock > #rfs-bar.inhome { margin: 0; }
+
+/* ---------- body: game table | info pane ---------- */
+#rfs[data-layout="terminal"] .tm-body {
+  flex: 1 1 auto; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) var(--tm-info-w, 330px);
+}
+#rfs[data-layout="terminal"] .tm-list { position: relative; min-height: 0; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; background: var(--tm-bg); }
+
+/* narrower windows: drop size, then last played (terminal.js sets the classes) */
+#rfs[data-layout="terminal"] .tm.nsz { --tm-cols: var(--tm-lnw) 12px minmax(0, 1fr) 8ch 11ch; }
+#rfs[data-layout="terminal"] .tm.nlp { --tm-cols: var(--tm-lnw) 12px minmax(0, 1fr) 8ch; }
+#rfs[data-layout="terminal"] .tm.nsz .c-sz,
+#rfs[data-layout="terminal"] .tm.nlp .c-lp { display: none; }
+
+#rfs[data-layout="terminal"] :is(.tm-th, .tm-r) {
+  display: grid; grid-template-columns: var(--tm-cols); column-gap: 14px; align-items: center;
+  padding-inline: 10px 14px; white-space: nowrap; font-size: 12.5px;
+}
+/* line numbers, like a pager with  :set number  (a counter: no extra element per row) */
+#rfs[data-layout="terminal"] .tm-th::before { content: '#'; text-align: end; font-size: 10.5px; color: var(--tm-dim); }
+#rfs[data-layout="terminal"] .tm-rows { counter-reset: tmln; }
+#rfs[data-layout="terminal"] .tm-r::before {
+  counter-increment: tmln; content: counter(tmln); text-align: end; overflow: hidden;
+  font-size: 11px; color: rgba(var(--tm-rgb), .34); font-feature-settings: "tnum" 1;
+}
+#rfs[data-layout="terminal"] :is(.tm-th, .tm-r) > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+#rfs[data-layout="terminal"] :is(.tm-th, .tm-r) > :is(.c-hr, .c-sz, .c-lp) { text-align: end; }
+
+/* sticky column headers (click to sort) */
+#rfs[data-layout="terminal"] .tm-th {
+  position: sticky; top: 0; z-index: 2; height: 26px; line-height: 25px;
+  background: var(--tm-bg-2); border-bottom: 1px solid var(--tm-line);
+  font-weight: 600; text-transform: uppercase; color: var(--tm-a);
+}
+/* labels hug their text (start- or end-aligned like their column); the sort mark hangs in the gap after the label */
+#rfs[data-layout="terminal"] .tm-th > span { position: relative; overflow: visible; justify-self: start; font-size: 10.5px; letter-spacing: .08em; }
+#rfs[data-layout="terminal"] .tm-th > :is(.c-hr, .c-sz, .c-lp) { justify-self: end; }
+#rfs[data-layout="terminal"] .tm-th [data-sort] { cursor: pointer; }
+#rfs[data-layout="terminal"] .tm-th [data-sort]:hover,
+#rfs[data-layout="terminal"] .tm-th .on { color: var(--tm-g); }
+#rfs[data-layout="terminal"] .tm-th .on::after {
+  content: ''; position: absolute; top: 50%; inset-inline-start: 100%; margin: -2px 0 0; margin-inline-start: 3px;
+  border: 4px solid transparent; border-bottom: 0; border-top-color: currentColor;
+}
+#rfs[data-layout="terminal"] .tm-th .c-nm.on::after { margin-top: -3px; border-top: 0; border-bottom: 4px solid currentColor; } /* A→Z runs upward */
+
+/* rows: one element + five spans each */
+#rfs[data-layout="terminal"] .tm-rows { padding: 2px 0 10px; }
+#rfs[data-layout="terminal"] .tm-r {
+  height: var(--tm-row); line-height: var(--tm-row); cursor: pointer;
+  scroll-margin-block: 27px 6px; /* scrollIntoView keeps the row clear of the sticky header */
+}
+/* instant CSS hover (the cursor itself follows on the next frame) */
+#rfs[data-layout="terminal"] .tm-r:hover { background: rgba(var(--tm-rgb), .12); }
+#rfs[data-layout="terminal"] .tm-r:hover::before { color: var(--tm-a); }
+#rfs[data-layout="terminal"] .tm-r:hover .c-nm { color: var(--tm-hi); }
+#rfs[data-layout="terminal"] .tm-r .c-nm { color: var(--tm-text); }
+#rfs[data-layout="terminal"] .tm-r.ni .c-nm { color: var(--tm-dim); }
+#rfs[data-layout="terminal"] .tm-r.run .c-nm { color: var(--tm-a); }
+#rfs[data-layout="terminal"] .tm-r :is(.c-hr, .c-sz) { color: var(--tm-text); font-feature-settings: "zero" 1, "tnum" 1; }
+#rfs[data-layout="terminal"] .tm-r .c-lp { color: var(--tm-dim); font-feature-settings: "zero" 1, "tnum" 1; }
+/* status square: filled = installed, ring = not installed, pulsing = running */
+#rfs[data-layout="terminal"] .tm-r .c-st { width: 9px; height: 9px; justify-self: center; border: 1px solid var(--tm-g); background: var(--tm-g); }
+#rfs[data-layout="terminal"] .tm-r.ni .c-st { background: transparent; border-color: rgba(var(--tm-rgb), .5); }
+#rfs[data-layout="terminal"] .tm-r.run .c-st { animation: tm-pulse 1.4s ease-in-out infinite; }
+@keyframes tm-pulse { 50% { opacity: .25; } }
+/* the selected row is inverse video */
+#rfs[data-layout="terminal"] .tm-r.sel,
+#rfs[data-layout="terminal"] .tm-r.sel:hover { background: var(--tm-g); }
+#rfs[data-layout="terminal"] .tm-r.sel > span,
+#rfs[data-layout="terminal"] .tm-r.sel:hover .c-nm { color: var(--tm-ink); }
+#rfs[data-layout="terminal"] .tm-r.sel::before { color: var(--tm-ink); font-weight: 700; }
+#rfs[data-layout="terminal"] .tm-r.sel .c-nm { font-weight: 700; }
+#rfs[data-layout="terminal"] .tm-r.sel .c-st { background: var(--tm-ink); border-color: var(--tm-ink); }
+#rfs[data-layout="terminal"] .tm-r.sel.ni .c-st { background: transparent; }
+
+#rfs[data-layout="terminal"] .tm-empty { display: flex; flex-direction: column; gap: 4px; padding: 18px 14px; color: var(--tm-text); }
+#rfs[data-layout="terminal"] .tm-empty code { align-self: flex-start; font: inherit; color: var(--tm-a); }
+
+/* ---------- info pane: cat <game>.info ---------- */
+#rfs[data-layout="terminal"] .tm-info {
+  min-height: 0; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain;
+  padding: 12px 14px 16px; background: var(--tm-bg); border-inline-start: 1px solid var(--tm-line);
+}
+#rfs[data-layout="terminal"] .tm-cat {
+  direction: ltr; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-size: 12px; color: var(--tm-dim);
+}
+#rfs[data-layout="terminal"] .tm-cat .tm-s { color: var(--tm-g); }
+#rfs[data-layout="terminal"] .tm-cat b { font-weight: 600; color: var(--tm-text); }
+
+/* the picture in a ruled frame with bright corners and labels sitting on the rule */
+#rfs[data-layout="terminal"] .tm-frame {
+  --c: var(--tm-g); --l: rgba(var(--tm-rgb), .32);
+  position: relative; margin: 16px 0 14px; padding: 6px; cursor: pointer;
+  border: 1px solid transparent; background-origin: border-box; background-repeat: no-repeat;
+  background-image:
+    linear-gradient(var(--c), var(--c)), linear-gradient(var(--c), var(--c)),
+    linear-gradient(var(--c), var(--c)), linear-gradient(var(--c), var(--c)),
+    linear-gradient(var(--c), var(--c)), linear-gradient(var(--c), var(--c)),
+    linear-gradient(var(--c), var(--c)), linear-gradient(var(--c), var(--c)),
+    linear-gradient(var(--l), var(--l)), linear-gradient(var(--l), var(--l)),
+    linear-gradient(var(--l), var(--l)), linear-gradient(var(--l), var(--l));
+  background-size: 12px 1px, 1px 12px, 12px 1px, 1px 12px, 12px 1px, 1px 12px, 12px 1px, 1px 12px, 100% 1px, 100% 1px, 1px 100%, 1px 100%;
+  background-position: 0 0, 0 0, 100% 0, 100% 0, 0 100%, 0 100%, 100% 100%, 100% 100%, 0 0, 0 100%, 0 0, 100% 0;
+}
+#rfs[data-layout="terminal"] .tm-frame:hover { --l: rgba(var(--tm-rgb), .6); }
+#rfs[data-layout="terminal"] .tm-frame::before,
+#rfs[data-layout="terminal"] .tm-frame::after {
+  position: absolute; padding: 0 6px; direction: ltr; font-size: 10px; line-height: 14px; letter-spacing: .04em; background: var(--tm-bg);
+}
+#rfs[data-layout="terminal"] .tm-frame::before { content: '[ header.jpg ]'; top: -8px; inset-inline-start: 12px; color: var(--tm-a); }
+#rfs[data-layout="terminal"] .tm-frame::after { content: '460x215'; bottom: -8px; inset-inline-end: 12px; color: var(--tm-dim); }
+/* phosphor monochrome (the green layer lends its hue to the picture's light), static scanlines; full colour on hover */
+#rfs[data-layout="terminal"] .tm-img {
+  aspect-ratio: 460 / 215; background-color: #0a1210;
+  background-image:
+    repeating-linear-gradient(to bottom, rgba(0, 0, 0, .26) 0 1px, transparent 1px 3px),
+    linear-gradient(rgba(var(--tm-rgb), .9), rgba(var(--tm-rgb), .9)),
+    var(--img, none);
+  background-size: auto, auto, cover;
+  background-position: 0 0, 0 0, center 30%;
+  background-repeat: repeat, no-repeat, no-repeat;
+  background-blend-mode: normal, color, normal;
+}
+#rfs[data-layout="terminal"] .tm-frame:hover .tm-img {
+  background-image: linear-gradient(transparent, transparent), linear-gradient(transparent, transparent), var(--img, none);
+  background-blend-mode: normal;
+}
+#rfs[data-layout="terminal"] .tm-frame.noimg .tm-img {
+  background-image:
+    repeating-linear-gradient(to bottom, rgba(0, 0, 0, .3) 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse at center, rgba(var(--tm-rgb), .1), transparent 70%);
+}
+#rfs[data-layout="terminal"] .tm-frame.taken .tm-img { visibility: hidden; } /* the CD case is out of its frame */
+
+#rfs[data-layout="terminal"] .tm-name { margin: 0 0 10px; font-size: 15px; line-height: 1.35; font-weight: 700; color: var(--tm-g); overflow-wrap: anywhere; }
+
+/* key: value lines */
+#rfs[data-layout="terminal"] .tm-kv {
+  display: grid; grid-template-columns: max-content minmax(0, 1fr); column-gap: 1.4ch; row-gap: 3px;
+  margin: 0 0 14px; font-size: 12.5px; line-height: 18px;
+}
+#rfs[data-layout="terminal"] .tm-kv dt { color: var(--tm-dim); }
+#rfs[data-layout="terminal"] .tm-kv dt::after { content: ':'; }
+#rfs[data-layout="terminal"] .tm-kv dd { min-width: 0; margin: 0; color: var(--tm-text); overflow-wrap: anywhere; font-feature-settings: "zero" 1; }
+#rfs[data-layout="terminal"] .tm-kv b { font-weight: 600; }
+#rfs[data-layout="terminal"] .tm-kv .ok { color: var(--tm-g); }
+#rfs[data-layout="terminal"] .tm-kv :is(.no, .run) { color: var(--tm-a); }
+#rfs[data-layout="terminal"] .tm-dim { font-style: normal; color: var(--tm-dim); }
+
+/* description, quoted under a "# about" comment */
+#rfs[data-layout="terminal"] .tm-about { margin-bottom: 14px; }
+#rfs[data-layout="terminal"] .tm-cmt { display: block; margin-bottom: 4px; font-size: 11.5px; color: var(--tm-dim); }
+#rfs[data-layout="terminal"] .tm-desc {
+  margin: 0; padding-inline-start: 10px; border-inline-start: 1px solid var(--tm-line);
+  font-size: 12px; line-height: 1.65; color: var(--tm-text);
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 7; overflow: hidden;
+}
+#rfs[data-layout="terminal"] .tm-desc.dim { color: var(--tm-dim); }
+
+/* [ PLAY ]  [ DETAILS ]  [ GAME PAGE ] — bracket buttons, inverse video on hover */
+#rfs[data-layout="terminal"] .tm-acts { display: flex; flex-wrap: wrap; gap: 6px 4px; margin-inline-start: -8px; }
+#rfs[data-layout="terminal"] .tm-act {
+  display: inline-flex; align-items: center; gap: 1ch; height: 28px; padding: 0 8px; cursor: pointer; white-space: nowrap;
+  border: 0; border-radius: 0; background: transparent; color: var(--tm-text);
+  font: 600 12px var(--font); letter-spacing: .06em; text-transform: uppercase;
+}
+#rfs[data-layout="terminal"] .tm-act::before { content: '['; color: var(--tm-g); }
+#rfs[data-layout="terminal"] .tm-act::after { content: ']'; color: var(--tm-g); }
+#rfs[data-layout="terminal"] .tm-act.go { font-weight: 700; color: var(--tm-g); }
+#rfs[data-layout="terminal"] .tm-act.go.run { color: var(--tm-a); }
+#rfs[data-layout="terminal"] .tm-act:is(:hover, :focus-visible) { background: var(--tm-g); color: var(--tm-ink); outline: none; }
+#rfs[data-layout="terminal"] .tm-act:is(:hover, :focus-visible)::before,
+#rfs[data-layout="terminal"] .tm-act:is(:hover, :focus-visible)::after { color: inherit; }
+
+/* nothing listed */
+#rfs[data-layout="terminal"] .tm-info.none :is(.tm-frame, .tm-kv, .tm-about, .tm-acts) { display: none; }
+#rfs[data-layout="terminal"] .tm-info.none .tm-name { margin-top: 12px; font-weight: 500; color: var(--tm-dim); }
+
+/* ---------- status line ---------- */
+#rfs[data-layout="terminal"] .tm-status {
+  flex: none; display: flex; align-items: stretch; gap: 14px; height: 24px; white-space: nowrap;
+  background: var(--tm-bg-2); border-top: 1px solid var(--tm-line);
+  font-size: 11px; line-height: 23px; color: var(--tm-dim);
+}
+#rfs[data-layout="terminal"] .tm-mode { padding: 0 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--tm-ink); background: var(--tm-g); }
+#rfs[data-layout="terminal"] .tm-keys { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+#rfs[data-layout="terminal"] .tm-keys > i { margin: 0 .8ch; font-style: normal; color: rgba(var(--tm-rgb), .35); }
+#rfs[data-layout="terminal"] .tm-keys kbd {
+  display: inline-block; min-width: 2.2ch; margin: 0 1px; padding: 0 3px; line-height: 14px; text-align: center;
+  font: 600 10px var(--font); color: var(--tm-text); border: 1px solid var(--tm-line);
+}
+#rfs[data-layout="terminal"] .tm-pos { padding-inline-end: 12px; font-weight: 600; color: var(--tm-a); font-feature-settings: "zero" 1, "tnum" 1; }
+
+/* ═════════════ the game, opened: $ open "<game>" prints its manual page ═════════════
+   #rfs-sheet sits exactly over the home design. One window, centred, PC-sized: title bar · prompt · man header ·
+   picture + [ RUN ] [ INFO ] [ STORE ] + tags | NAME / SYNOPSIS / FACTS / DESCRIPTION · a pager status line. */
+#rfs-sheet[data-layout="terminal"] { background: rgba(2, 5, 4, .86); }
+#rfs-sheet[data-layout="terminal"].on { display: flex; align-items: center; justify-content: center; padding: 22px 26px; }
+#rfs-sheet[data-layout="terminal"] .tmv {
+  width: min(1060px, 100%); max-height: 100%; min-height: 0; display: flex; flex-direction: column;
+  background: var(--tm-bg); border: 1px solid rgba(var(--tm-rgb), .5);
+  box-shadow: 0 0 0 1px #000, 0 0 0 5px rgba(var(--tm-rgb), .05), 0 30px 90px rgba(0, 0, 0, .75);
+  font: 400 13px/1.5 var(--rf-font-ui); color: var(--tm-text); transform-origin: 50% 50%;
+}
+/* title bar */
+#rfs-sheet[data-layout="terminal"] .tmv-title {
+  flex: none; display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 12px;
+  height: 30px; padding-inline: 10px 6px; white-space: nowrap;
+  background: var(--tm-bg-2); border-bottom: 1px solid var(--tm-line); font-size: 11.5px; color: var(--tm-dim);
+}
+#rfs-sheet[data-layout="terminal"] .tm-dots { display: flex; gap: 6px; justify-self: start; }
+#rfs-sheet[data-layout="terminal"] .tm-dots i { display: block; width: 9px; height: 9px; border: 1px solid var(--tm-g); }
+#rfs-sheet[data-layout="terminal"] .tm-dots i:nth-child(1) { background: var(--tm-a); border-color: var(--tm-a); }
+#rfs-sheet[data-layout="terminal"] .tm-dots i:nth-child(2) { background: var(--tm-g); }
+#rfs-sheet[data-layout="terminal"] .tm-dots i:nth-child(3) { border-color: rgba(var(--tm-rgb), .45); }
+#rfs-sheet[data-layout="terminal"] .tmv-ttl { font-weight: 500; letter-spacing: .04em; color: var(--tm-text); }
+#rfs-sheet[data-layout="terminal"] .tmv-x {
+  justify-self: end; display: inline-flex; align-items: center; gap: .6ch; height: 22px; padding: 0 6px; cursor: pointer;
+  border: 0; border-radius: 0; background: transparent; color: var(--tm-dim); font: 600 11px var(--rf-font-ui); letter-spacing: .06em;
+}
+#rfs-sheet[data-layout="terminal"] .tmv-x::before { content: '['; color: var(--tm-g); }
+#rfs-sheet[data-layout="terminal"] .tmv-x::after { content: ']'; color: var(--tm-g); }
+#rfs-sheet[data-layout="terminal"] .tmv-x:is(:hover, :focus-visible) { background: var(--tm-g); color: var(--tm-ink); outline: none; }
+#rfs-sheet[data-layout="terminal"] .tmv-x:is(:hover, :focus-visible)::before,
+#rfs-sheet[data-layout="terminal"] .tmv-x:is(:hover, :focus-visible)::after { color: inherit; }
+
+#rfs-sheet[data-layout="terminal"] .tmv-body { flex: 1 1 auto; min-height: 0; overflow: auto; padding: 14px 22px 18px; overscroll-behavior: contain; }
+/* the prompt: the command types itself (terminal.js grows .tmv-typed in steps) */
+#rfs-sheet[data-layout="terminal"] .tmv-cmd { direction: ltr; text-align: left; white-space: nowrap; overflow: hidden; font-size: 13px; line-height: 20px; }
+#rfs-sheet[data-layout="terminal"] .tmv-typed { display: inline-block; max-width: 100%; overflow: hidden; vertical-align: bottom; white-space: nowrap; }
+#rfs-sheet[data-layout="terminal"] :is(.tm-u, .tm-p) { font-weight: 700; }
+#rfs-sheet[data-layout="terminal"] .tm-u { color: var(--tm-g); }
+#rfs-sheet[data-layout="terminal"] .tm-p { color: var(--tm-a); }
+#rfs-sheet[data-layout="terminal"] .tm-k { font-weight: 600; color: var(--tm-hi); }
+#rfs-sheet[data-layout="terminal"] .tm-w { color: var(--tm-text); }
+#rfs-sheet[data-layout="terminal"] .tm-f { color: var(--tm-dim); }
+#rfs-sheet[data-layout="terminal"] .tm-v { color: var(--tm-a); }
+#rfs-sheet[data-layout="terminal"] .tm-cur {
+  display: inline-block; width: .62em; height: 1.05em; margin-inline-start: 3px; vertical-align: -.18em;
+  background: var(--tm-g); animation: tm-blink 1.06s steps(1, end) infinite;
+}
+
+/* man header:  ELDEN_RING(6)        Steam Games Manual        ELDEN_RING(6) */
+#rfs-sheet[data-layout="terminal"] .mp-head {
+  display: flex; justify-content: space-between; gap: 16px; margin: 12px 0 16px; padding-bottom: 8px;
+  border-bottom: 1px solid var(--tm-line); white-space: nowrap; overflow: hidden;
+  font-size: 11.5px; font-weight: 600; letter-spacing: .06em; color: var(--tm-dim);
+}
+#rfs-sheet[data-layout="terminal"] .mp-head .c { font-weight: 400; color: var(--tm-text); }
+
+#rfs-sheet[data-layout="terminal"] .mp-cols { display: grid; grid-template-columns: minmax(250px, 380px) minmax(0, 1fr); gap: 18px 28px; align-items: start; }
+
+/* the picture in a ruled frame with bright corners (full colour here), a label sitting on the rule */
+#rfs-sheet[data-layout="terminal"] .mp-frame {
+  --c: var(--tm-g); --l: rgba(var(--tm-rgb), .34);
+  position: relative; padding: 6px; margin-top: 8px;
+  background-repeat: no-repeat;
+  background-image:
+    linear-gradient(var(--c), var(--c)), linear-gradient(var(--c), var(--c)),
+    linear-gradient(var(--c), var(--c)), linear-gradient(var(--c), var(--c)),
+    linear-gradient(var(--c), var(--c)), linear-gradient(var(--c), var(--c)),
+    linear-gradient(var(--c), var(--c)), linear-gradient(var(--c), var(--c)),
+    linear-gradient(var(--l), var(--l)), linear-gradient(var(--l), var(--l)),
+    linear-gradient(var(--l), var(--l)), linear-gradient(var(--l), var(--l));
+  background-size: 14px 1px, 1px 14px, 14px 1px, 1px 14px, 14px 1px, 1px 14px, 14px 1px, 1px 14px, 100% 1px, 100% 1px, 1px 100%, 1px 100%;
+  background-position: 0 0, 0 0, 100% 0, 100% 0, 0 100%, 0 100%, 100% 100%, 100% 100%, 0 0, 0 100%, 0 0, 100% 0;
+}
+#rfs-sheet[data-layout="terminal"] .mp-frame::before {
+  content: '[ header.jpg ]'; position: absolute; top: -8px; inset-inline-start: 12px; padding: 0 6px;
+  direction: ltr; font-size: 10px; line-height: 14px; letter-spacing: .04em; color: var(--tm-a); background: var(--tm-bg);
+}
+#rfs-sheet[data-layout="terminal"] .mp-img {
+  aspect-ratio: 460 / 215; background-color: #0a1210;
+  background-image: repeating-linear-gradient(to bottom, rgba(0, 0, 0, .12) 0 1px, transparent 1px 3px), var(--img, none);
+  background-size: auto, cover; background-position: 0 0, center 30%; background-repeat: repeat, no-repeat;
+}
+#rfs-sheet[data-layout="terminal"] .mp-frame.noimg .mp-img {
+  background-image: repeating-linear-gradient(to bottom, rgba(0, 0, 0, .3) 0 1px, transparent 1px 3px), radial-gradient(ellipse at center, rgba(var(--tm-rgb), .12), transparent 70%);
+}
+
+/* [ RUN ]  [ INFO ]  [ STORE ] — the wired api.gameActions buttons, bracketed; RUN is the one solid block */
+#rfs-sheet[data-layout="terminal"] .mp-acts { margin-top: 16px; }
+#rfs-sheet[data-layout="terminal"] .rf-acts { display: flex; flex-wrap: wrap; gap: 8px; }
+#rfs-sheet[data-layout="terminal"] .rf-act {
+  display: inline-flex; align-items: center; gap: 1ch; height: 32px; padding: 0 12px; cursor: pointer; white-space: nowrap;
+  border: 1px solid rgba(var(--tm-rgb), .45); border-radius: 0; background: transparent; box-shadow: none;
+  color: var(--tm-text); font: 600 12.5px var(--rf-font-ui); letter-spacing: .08em; text-transform: uppercase;
+}
+#rfs-sheet[data-layout="terminal"] .rf-act::before { content: '['; color: var(--tm-g); font-weight: 400; }
+#rfs-sheet[data-layout="terminal"] .rf-act::after { content: ']'; color: var(--tm-g); font-weight: 400; }
+#rfs-sheet[data-layout="terminal"] .rf-act > svg { display: none; }
+#rfs-sheet[data-layout="terminal"] .rf-act.play { min-width: 112px; justify-content: center; background: var(--tm-g); border-color: var(--tm-g); color: var(--tm-ink); font-weight: 800; }
+#rfs-sheet[data-layout="terminal"] .rf-act.play::before,
+#rfs-sheet[data-layout="terminal"] .rf-act.play::after { color: inherit; }
+#rfs-sheet[data-layout="terminal"] .rf-act.play.is-running { background: transparent; border-color: var(--tm-a); color: var(--tm-a); }
+#rfs-sheet[data-layout="terminal"] .rf-act:is(:hover, :focus-visible) { background: var(--tm-g); border-color: var(--tm-g); color: var(--tm-ink); outline: none; }
+#rfs-sheet[data-layout="terminal"] .rf-act:is(:hover, :focus-visible)::before,
+#rfs-sheet[data-layout="terminal"] .rf-act:is(:hover, :focus-visible)::after { color: inherit; }
+#rfs-sheet[data-layout="terminal"] .rf-act.play:is(:hover, :focus-visible) { background: var(--tm-a); border-color: var(--tm-a); color: #1a1000; }
+#rfs-sheet[data-layout="terminal"] .rf-act:focus-visible { box-shadow: 0 0 0 1px var(--tm-bg), 0 0 0 2px var(--tm-a); }
+
+/* tags as #hashtags */
+#rfs-sheet[data-layout="terminal"] .mp-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+#rfs-sheet[data-layout="terminal"] .mp-tags span { padding: 1px 7px; font-size: 11.5px; line-height: 18px; color: var(--tm-text); border: 1px solid var(--tm-line); }
+#rfs-sheet[data-layout="terminal"] .mp-tags span::before { content: '#'; margin-inline-end: 1px; color: var(--tm-a); }
+
+/* the manual: amber section names, body indented 4 columns, key ......... value facts */
+#rfs-sheet[data-layout="terminal"] .mp-main section { margin-bottom: 14px; }
+#rfs-sheet[data-layout="terminal"] .mp-main section:last-child { margin-bottom: 0; }
+#rfs-sheet[data-layout="terminal"] .mp-main h4 { margin: 0 0 4px; font: 700 12px/18px var(--rf-font-ui); letter-spacing: .14em; text-transform: uppercase; color: var(--tm-a); }
+#rfs-sheet[data-layout="terminal"] .mp-main section > :not(h4) { margin: 0; padding-inline-start: 4ch; }
+#rfs-sheet[data-layout="terminal"] .mp-name { font-size: 13px; line-height: 1.5; color: var(--tm-dim); overflow-wrap: anywhere; }
+#rfs-sheet[data-layout="terminal"] .mp-name b { font-size: 16px; font-weight: 800; color: var(--tm-hi); }
+#rfs-sheet[data-layout="terminal"] .mp-syn { direction: ltr; text-align: left; font-size: 13px; }
+#rfs-sheet[data-layout="terminal"] .mp-facts { max-width: 560px; }
+#rfs-sheet[data-layout="terminal"] .mp-kv { display: flex; align-items: baseline; gap: 1ch; font-size: 12.5px; line-height: 21px; }
+#rfs-sheet[data-layout="terminal"] .mp-kv .k { flex: none; color: var(--tm-dim); }
+#rfs-sheet[data-layout="terminal"] .mp-kv i { flex: 1 1 auto; min-width: 2ch; border-bottom: 1px dotted rgba(var(--tm-rgb), .28); transform: translateY(-4px); }
+#rfs-sheet[data-layout="terminal"] .mp-kv .v { flex: 0 1 auto; min-width: 0; color: var(--tm-text); text-align: end; overflow-wrap: anywhere; font-feature-settings: "zero" 1, "tnum" 1; }
+#rfs-sheet[data-layout="terminal"] .mp-desc { max-width: 72ch; font-size: 12.5px; line-height: 1.7; color: var(--tm-text); }
+#rfs-sheet[data-layout="terminal"] .mp-desc.dim { color: var(--tm-dim); }
+
+/* pager status line:  MAN  Manual page elden_ring(6) line 1 (END)        Enter run · arrows buttons · Esc back */
+#rfs-sheet[data-layout="terminal"] .tmv-status {
+  flex: none; display: flex; align-items: stretch; gap: 14px; height: 24px; white-space: nowrap; overflow: hidden;
+  background: var(--tm-bg-2); border-top: 1px solid var(--tm-line); font-size: 11px; line-height: 23px; color: var(--tm-dim);
+}
+#rfs-sheet[data-layout="terminal"] .tm-mode { padding: 0 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #1a1000; background: var(--tm-a); }
+#rfs-sheet[data-layout="terminal"] .tmv-where { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; color: var(--tm-text); }
+#rfs-sheet[data-layout="terminal"] .tmv-keys { padding-inline-end: 12px; }
+#rfs-sheet[data-layout="terminal"] .tmv-keys > i { margin: 0 .8ch; font-style: normal; color: rgba(var(--tm-rgb), .35); }
+#rfs-sheet[data-layout="terminal"] .tmv-keys kbd {
+  display: inline-block; min-width: 2.2ch; margin: 0 1px; padding: 0 3px; line-height: 14px; text-align: center;
+  font: 600 10px var(--rf-font-ui); color: var(--tm-text); border: 1px solid var(--tm-line);
+}
+
+/* print-in: each block appears in three quick steps, one after another (about 300 to 560 ms) */
+#rfs-sheet[data-layout="terminal"] .tmv.shown .ln { animation: tm-print 90ms steps(3, end) both; }
+#rfs-sheet[data-layout="terminal"] .tmv.shown .mp-head { animation-delay: 300ms; }
+#rfs-sheet[data-layout="terminal"] .tmv.shown .mp-main section:nth-child(1) { animation-delay: 330ms; }
+#rfs-sheet[data-layout="terminal"] .tmv.shown .mp-frame { animation-delay: 360ms; }
+#rfs-sheet[data-layout="terminal"] .tmv.shown .mp-main section:nth-child(2) { animation-delay: 390ms; }
+#rfs-sheet[data-layout="terminal"] .tmv.shown .mp-acts { animation-delay: 410ms; }
+#rfs-sheet[data-layout="terminal"] .tmv.shown .mp-main section:nth-child(3) { animation-delay: 430ms; }
+#rfs-sheet[data-layout="terminal"] .tmv.shown .mp-tags { animation-delay: 450ms; }
+#rfs-sheet[data-layout="terminal"] .tmv.shown .mp-main section:nth-child(4) { animation-delay: 470ms; }
+@keyframes tm-print { from { opacity: 0; } to { opacity: 1; } }
+
+/* smaller windows: one column, the picture capped */
+@media (max-width: 900px) {
+  #rfs-sheet[data-layout="terminal"] .mp-cols { grid-template-columns: minmax(0, 1fr); }
+  #rfs-sheet[data-layout="terminal"] .mp-side { max-width: 380px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #rfs[data-layout="terminal"] :is(.tm-cur, .tm-r.run .c-st) { animation: none; }
+  #rfs-sheet[data-layout="terminal"] .tm-cur { animation: none; } /* the page still prints in: opacity only, nothing moves */
+}

@@ -1,0 +1,2 @@
+/* Family mode on (default): the store hides games not suitable for the family (webkit.js) */
+:root { --rf-family: on; }

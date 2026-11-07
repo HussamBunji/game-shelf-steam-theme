@@ -1,0 +1,569 @@
+/* ═══ Vinyl Records (متجر الأسطوانات) — home design CSS (src/layouts/vinyl.js) ═══
+   Everything is scoped to #rfs[data-layout="vinyl"]. Written right-to-left first (Arabic); the few things that
+   depend on direction read --vy-dir / --vy-ang, which the English (left-to-right) rule flips.
+   Performance: the turning record on the deck is the only animation; in the crates only the hovered / focused
+   sleeve moves, the record inside it stays visibility:hidden (not painted) until then; no filters, no blur, no 3D. */
+#rfs[data-layout="vinyl"] {
+  --vy-dir: -1;      /* records slide toward the reading end: left in Arabic, right in English */
+  --vy-ang: 270deg;  /* bars fill from the reading start */
+  --vy-sun: 86%;     /* where the sunset rings sit: behind the turntable */
+  --vy-gold: #f3c35a;
+}
+html[data-rfs-lang="en"] #rfs[data-layout="vinyl"] { --vy-dir: 1; --vy-ang: 90deg; --vy-sun: 14%; }
+
+#rfs[data-layout="vinyl"] .vy { position: relative; padding: 18px 22px 44px; overflow-x: clip; }
+
+/* ═════════════ the "Now Playing" deck ═════════════ */
+#rfs[data-layout="vinyl"] .vy-deck {
+  --tt: 208px; /* record diameter; everything on the turntable follows it */
+  position: relative; isolation: isolate; overflow: hidden;
+  display: flex; align-items: center; gap: 30px;
+  padding: 24px 28px 32px; border-radius: 22px;
+  background:
+    radial-gradient(ellipse 55% 95% at var(--vy-sun) 55%, rgba(232, 116, 42, .16), transparent 70%),
+    repeating-linear-gradient(90deg, rgba(255, 226, 186, .022) 0 1px, transparent 1px 5px),
+    linear-gradient(160deg, #3a2618, #24170f 60%, #1d130c);
+  border: 1px solid rgba(240, 200, 140, .14);
+  box-shadow: inset 0 1px 0 rgba(255, 220, 170, .1), 0 18px 40px rgba(0, 0, 0, .45);
+}
+/* the game's big art, faint, as a backdrop (the page's only large image) */
+#rfs[data-layout="vinyl"] .vy-deck-bg {
+  position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background: center 30% / cover no-repeat; opacity: .15;
+}
+/* 70s sunset rings behind the turntable + a shade under the text */
+#rfs[data-layout="vinyl"] .vy-deck::after {
+  content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(circle at var(--vy-sun) 120%, transparent 0 150px, rgba(232, 116, 42, .08) 150px 168px, transparent 168px 190px,
+      rgba(227, 178, 60, .06) 190px 208px, transparent 208px 230px, rgba(200, 69, 45, .05) 230px 248px, transparent 248px 270px,
+      rgba(232, 116, 42, .035) 270px 288px, transparent 288px),
+    linear-gradient(var(--vy-ang), transparent 30%, rgba(26, 18, 12, .6));
+}
+/* the three-colour rule along the bottom edge */
+#rfs[data-layout="vinyl"] .vy-deck::before {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 9px; z-index: 2; pointer-events: none;
+  background: linear-gradient(#e3b23c 0 3px, #e8742a 3px 6px, #c8452d 6px 9px);
+}
+#rfs[data-layout="vinyl"] :is(.vy-tt, .vy-sleeve, .vy-info) { position: relative; z-index: 1; }
+
+/* ---- the turntable (drawn left-to-right in both languages: it is a picture) ---- */
+#rfs[data-layout="vinyl"] .vy-tt {
+  --P: calc(var(--tt) + 14px); /* platter */
+  flex: none; direction: ltr; cursor: pointer;
+  width: calc(var(--P) + 96px); height: calc(var(--P) + 36px); border-radius: 18px;
+  background:
+    repeating-linear-gradient(97deg, rgba(255, 214, 160, .04) 0 2px, transparent 2px 9px),
+    linear-gradient(145deg, #74472b, #57341f 45%, #3e2414);
+  box-shadow: inset 0 1px 0 rgba(255, 222, 176, .28), inset 0 -4px 10px rgba(0, 0, 0, .35), 0 0 0 1px rgba(20, 10, 4, .6), 0 16px 30px rgba(0, 0, 0, .5);
+}
+/* platter: aluminium rim with strobe dots */
+#rfs[data-layout="vinyl"] .vy-platter {
+  position: absolute; left: 18px; top: 18px; width: var(--P); height: var(--P); border-radius: 50%;
+  background: repeating-conic-gradient(#cfc6b5 0 1.5deg, #6e665b 1.5deg 3deg);
+  box-shadow: 0 0 0 3px #2a1a10, 0 6px 14px rgba(0, 0, 0, .5);
+}
+/* light on the vinyl: it stays still while the record turns underneath */
+#rfs[data-layout="vinyl"] .vy-platter::after {
+  content: ''; position: absolute; inset: 7px; z-index: 2; border-radius: 50%; pointer-events: none;
+  background: conic-gradient(from 210deg, transparent 0 6%, rgba(255, 240, 220, .13) 11%, transparent 17% 50%, rgba(255, 240, 220, .09) 60%, transparent 66%);
+}
+/* the record: grooves, a smooth lead-in band, an outer rim — and the ONE animation of this design */
+#rfs[data-layout="vinyl"] .vy-disc {
+  position: absolute; inset: 7px; z-index: 1; border-radius: 50%;
+  background:
+    radial-gradient(circle closest-side, transparent 0 95%, rgba(255, 240, 220, .07) 96%, transparent 98.5%),
+    radial-gradient(circle closest-side, transparent 0 37%, #100c0b 37.5% 41%, transparent 41.5%),
+    repeating-radial-gradient(circle closest-side, #161211 0 1.1%, #241d1b 1.4% 2.1%),
+    #141010;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .7), 0 4px 10px rgba(0, 0, 0, .5);
+  animation: vy-spin 9s linear infinite;
+}
+#rfs[data-layout="vinyl"] .vy-deck.running .vy-disc { animation-duration: 3.4s; }
+@keyframes vy-spin { to { transform: rotate(360deg); } }
+/* centre label = the game's cover, with the spindle on top */
+#rfs[data-layout="vinyl"] .vy-label {
+  position: absolute; inset: 31%; border-radius: 50%;
+  background: var(--cap, none) center 25% / cover no-repeat, radial-gradient(circle, #f0c766, #e8742a 70%, #c8452d);
+  box-shadow: 0 0 0 2px rgba(10, 6, 4, .6), inset 0 0 0 2px rgba(255, 240, 210, .35), inset 0 0 14px rgba(0, 0, 0, .35);
+}
+#rfs[data-layout="vinyl"] .vy-label::after {
+  content: ''; position: absolute; inset: 43%; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fbf3e2, #a99c86 70%); box-shadow: 0 0 0 2px rgba(0, 0, 0, .45);
+}
+/* tonearm: pivot (the element), arm (::before) and headshell (::after); --arm comes from the side-A progress */
+#rfs[data-layout="vinyl"] .vy-arm {
+  position: absolute; z-index: 3; top: 20px; right: 22px; width: 38px; height: 38px; border-radius: 50%;
+  background: radial-gradient(circle at 38% 34%, #fbf3e2, #b9ae98 45%, #6d6355 75%, #3d352c);
+  box-shadow: 0 0 0 4px rgba(30, 18, 10, .55), 0 4px 10px rgba(0, 0, 0, .5);
+}
+#rfs[data-layout="vinyl"] .vy-arm::before {
+  content: ''; position: absolute; left: calc(50% - 3px); top: 50%; width: 6px; height: calc(var(--tt) * .66);
+  border-radius: 3px; transform-origin: 50% 0; transform: rotate(var(--arm, 27deg));
+  background: linear-gradient(90deg, #7c7366, #f4ecdc 45%, #9a907f);
+  box-shadow: 2px 3px 6px rgba(0, 0, 0, .45);
+}
+#rfs[data-layout="vinyl"] .vy-arm::after {
+  content: ''; position: absolute; left: calc(50% - 8px); top: 50%; width: 16px; height: 26px; border-radius: 3px 3px 6px 6px;
+  transform-origin: 50% 0; transform: rotate(var(--arm, 27deg)) translateY(calc(var(--tt) * .66 - 6px));
+  background: linear-gradient(90deg, #2b211b, #5a4c40 50%, #2b211b);
+  box-shadow: inset 0 -5px 0 #e8742a, 2px 3px 6px rgba(0, 0, 0, .5);
+}
+/* power light (teal while the game runs) + the 33 / 45 speed keys */
+#rfs[data-layout="vinyl"] .vy-led {
+  position: absolute; right: 30px; bottom: 50px; width: 8px; height: 8px; border-radius: 50%;
+  background: #6b2a12; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .5), 0 0 0 2px rgba(20, 10, 4, .4);
+}
+#rfs[data-layout="vinyl"] .vy-deck.running .vy-led { background: #6fe0d2; box-shadow: 0 0 0 2px rgba(20, 10, 4, .4), 0 0 10px rgba(111, 224, 210, .85); }
+#rfs[data-layout="vinyl"] .vy-knobs { position: absolute; right: 16px; bottom: 16px; display: flex; gap: 5px; }
+#rfs[data-layout="vinyl"] .vy-knobs i {
+  width: 27px; height: 18px; border-radius: 5px; font-style: normal; font-size: 9.5px; font-weight: 700; line-height: 18px; text-align: center;
+  color: #3a2a1d; background: linear-gradient(#efe6d6, #b9ad98);
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .22), 0 1px 2px rgba(0, 0, 0, .5);
+}
+#rfs[data-layout="vinyl"] .vy-knobs i:first-child { color: #3a1f0e; background: linear-gradient(#f6cf6c, #d9962c); }
+
+/* ---- the empty album sleeve beside it (the record is on the turntable) ---- */
+#rfs[data-layout="vinyl"] .vy-sleeve {
+  flex: none; width: calc(var(--tt) - 6px); aspect-ratio: 1; border-radius: 4px; cursor: pointer;
+  background:
+    linear-gradient(125deg, rgba(255, 255, 255, .16), transparent 32% 70%, rgba(0, 0, 0, .25)),
+    radial-gradient(circle closest-side, transparent 0 84%, rgba(255, 244, 225, .09) 86% 90%, transparent 92%),
+    var(--cap, none) center 28% / cover no-repeat,
+    linear-gradient(135deg, #e8742a, #c8452d);
+  box-shadow: inset 0 0 0 1px rgba(255, 240, 210, .1), inset 8px 0 12px -8px rgba(0, 0, 0, .55), 0 14px 28px rgba(0, 0, 0, .55);
+  transition: transform .25s ease, opacity .3s;
+}
+#rfs[data-layout="vinyl"] .vy-sleeve:hover { transform: translateY(-3px) rotate(-1.2deg); }
+/* while its record is out on the turntable (vinyl.js open), the sleeve's spot stays empty */
+html:has(#rfs-sheet.on) #rfs[data-layout="vinyl"] .vy-deck .taken { opacity: 0; }
+/* the deck's record rests while a game is open (one turning label at a time) */
+html:has(#rfs-sheet.on) #rfs[data-layout="vinyl"] .vy-disc { animation-play-state: paused; }
+
+/* ---- track info ---- */
+#rfs[data-layout="vinyl"] .vy-info { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 11px; }
+#rfs[data-layout="vinyl"] .vy-kicker { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 12.5px; font-weight: 700; color: var(--vy-gold); }
+html[data-rfs-lang="en"] #rfs[data-layout="vinyl"] .vy-kicker > span { font-size: 11.5px; text-transform: uppercase; letter-spacing: .1em; }
+#rfs[data-layout="vinyl"] .vy-kicker > svg.rf-ic { width: 17px; height: 17px; margin: 0; }
+#rfs[data-layout="vinyl"] .vy-onair {
+  display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: 99px;
+  font-style: normal; font-size: 11.5px; font-weight: 600; color: var(--muted);
+  background: rgba(243, 230, 207, .07); border: 1px solid rgba(243, 230, 207, .15);
+}
+#rfs[data-layout="vinyl"] .vy-onair.on { color: #08211f; background: linear-gradient(180deg, #6fd3c6, #3a9a90); border-color: transparent; }
+#rfs[data-layout="vinyl"] .vy-onair.on::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #08211f; }
+#rfs[data-layout="vinyl"] .vy-title {
+  margin: 0; max-width: 100%;
+  font-family: var(--rf-heading-font) !important; font-weight: 400; font-synthesis: none; font-size: 34px; line-height: 1.15;
+  color: #fbeed6; text-shadow: 0 2px 0 rgba(0, 0, 0, .35), 0 0 26px rgba(232, 116, 42, .22);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere;
+}
+/* meta: price tags, flat at the start and round at the end */
+#rfs[data-layout="vinyl"] .vy-meta { display: flex; flex-wrap: wrap; gap: 7px; }
+#rfs[data-layout="vinyl"] .vy-meta span {
+  display: inline-flex; align-items: center; gap: 6px; padding-block: 4px; padding-inline: 10px 13px;
+  font-size: 12.5px; color: var(--ink); background: rgba(20, 12, 8, .55); border: 1px solid rgba(243, 230, 207, .13);
+  border-start-start-radius: 4px; border-end-start-radius: 4px; border-start-end-radius: 99px; border-end-end-radius: 99px;
+}
+#rfs[data-layout="vinyl"] .vy-meta svg.rf-ic { margin: 0; }
+/* side A: the playtime bar, split into tracks */
+#rfs[data-layout="vinyl"] .vy-side { width: min(460px, 100%); }
+#rfs[data-layout="vinyl"] .vy-side-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 7px; font-size: 12px; color: var(--muted); }
+#rfs[data-layout="vinyl"] .vy-side-head b { font-family: var(--rf-heading-font) !important; font-weight: 400; font-synthesis: none; font-size: 15px; color: var(--vy-gold); }
+#rfs[data-layout="vinyl"] .vy-bar {
+  height: 8px; border-radius: 99px; background: rgba(243, 230, 207, .13);
+  -webkit-mask: repeating-linear-gradient(var(--vy-ang), #000 0 calc(12.5% - 3px), transparent calc(12.5% - 3px) 12.5%);
+  mask: repeating-linear-gradient(var(--vy-ang), #000 0 calc(12.5% - 3px), transparent calc(12.5% - 3px) 12.5%);
+}
+#rfs[data-layout="vinyl"] .vy-bar i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(var(--vy-ang), #e3b23c, #e8742a 60%, #c8452d); }
+/* buttons: walnut pills, Play is the burnt-orange one (teal while the game runs) */
+#rfs[data-layout="vinyl"] .vy-acts { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
+#rfs[data-layout="vinyl"] .vy-btn {
+  display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 18px; cursor: pointer; white-space: nowrap;
+  font-size: 13.5px; font-weight: 700; color: #f6e7cb; border: 0; border-radius: 99px;
+  background: linear-gradient(180deg, #6a4128, #4a2b18);
+  box-shadow: inset 0 1px 0 rgba(255, 220, 170, .25), inset 0 -2px 4px rgba(0, 0, 0, .3), 0 0 0 1px rgba(20, 10, 4, .55), 0 4px 10px rgba(0, 0, 0, .35);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .35);
+  transition: background .15s, box-shadow .15s, transform .15s;
+}
+#rfs[data-layout="vinyl"] .vy-btn:hover { background: linear-gradient(180deg, #7b4c2f, #57331d); transform: translateY(-1px); }
+#rfs[data-layout="vinyl"] .vy-btn:focus-visible { outline: 2px solid var(--vy-gold); outline-offset: 2px; }
+#rfs[data-layout="vinyl"] .vy-btn > svg.rf-ic { margin: 0; }
+#rfs[data-layout="vinyl"] .vy-btn.play {
+  height: 40px; padding: 0 26px; font-size: 14.5px; color: #fff3dc;
+  background: linear-gradient(180deg, #ec8a3c, #c4511f 55%, #a8401c);
+  box-shadow: inset 0 1px 0 rgba(255, 228, 190, .55), inset 0 -3px 5px rgba(100, 25, 5, .35), 0 0 0 1px rgba(80, 25, 5, .6), 0 6px 16px rgba(196, 81, 31, .35);
+  text-shadow: 0 1px 0 rgba(90, 25, 5, .55);
+}
+#rfs[data-layout="vinyl"] .vy-btn.play:hover { background: linear-gradient(180deg, #f39a4c, #d25e28 55%, #b4481f); }
+#rfs[data-layout="vinyl"] .vy-deck.running .vy-btn.play {
+  color: #08211f; text-shadow: none;
+  background: linear-gradient(180deg, #6fd3c6, #3a9a90);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .45), 0 0 0 1px rgba(8, 40, 36, .6), 0 6px 16px rgba(58, 154, 144, .35);
+}
+
+/* ═════════════ the filter strip + the crates ═════════════ */
+#rfs[data-layout="vinyl"] .rf-dock { margin: 22px 0 6px; }
+#rfs[data-layout="vinyl"] .vy-head {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 6px 14px; margin: 6px 0 22px; padding-bottom: 16px;
+  background: linear-gradient(#e3b23c 0 3px, transparent 3px 5px, #e8742a 5px 8px, transparent 8px 10px, #c8452d 10px 13px) left bottom / 100% 13px no-repeat;
+}
+#rfs[data-layout="vinyl"] .vy-head h3 {
+  display: flex; align-items: center; gap: 11px; margin: 0;
+  font-weight: 400; font-synthesis: none; font-size: 23px; line-height: 1.2; color: #fbeed6;
+}
+/* the theme's global font rule (body * … !important) reaches every element, so name the display face on the span itself */
+#rfs[data-layout="vinyl"] .vy-head h3 > span { font-family: var(--rf-heading-font) !important; }
+html[data-rfs-lang="en"] #rfs[data-layout="vinyl"] .vy-head h3 { letter-spacing: .02em; }
+#rfs[data-layout="vinyl"] .vy-head .rf-ict { width: 30px; height: 30px; }
+#rfs[data-layout="vinyl"] .vy-head .rf-ict > svg.rf-ic { width: 18px; height: 18px; }
+#rfs[data-layout="vinyl"] .vy-count { font-size: 12.5px; color: var(--muted); }
+#rfs[data-layout="vinyl"] .vy-keys { margin-inline-start: auto; display: flex; align-items: center; flex-wrap: wrap; gap: 5px; font-size: 11.5px; color: var(--muted); }
+#rfs[data-layout="vinyl"] .vy-keys kbd {
+  min-width: 20px; padding: 2px 6px; border-radius: 5px; text-align: center;
+  font-family: var(--rf-font-ui, var(--font)); font-size: 10.5px; font-weight: 700; color: #3a1f0e;
+  background: linear-gradient(#f3e6cf, #d9c39a); box-shadow: inset 0 -2px 0 rgba(90, 55, 25, .3);
+}
+#rfs[data-layout="vinyl"] .vy-keys i { width: 4px; height: 4px; margin: 0 5px; border-radius: 50%; background: rgba(243, 230, 207, .3); }
+
+#rfs[data-layout="vinyl"] .vy-crates { display: grid; grid-template-columns: repeat(auto-fill, minmax(146px, 1fr)); gap: 26px 20px; padding-top: 10px; }
+#rfs[data-layout="vinyl"] .vy-crates > .rf-empty { grid-column: 1 / -1; }
+
+/* ---- crate dividers: a kraft card with a tab, the letter (or band) in the display face, the 70s rule ---- */
+#rfs[data-layout="vinyl"] .vy-div { position: relative; min-width: 0; }
+#rfs[data-layout="vinyl"] .vy-div::before {
+  content: ''; position: absolute; top: -9px; inset-inline-start: 10px; width: 44%; height: 18px; border-radius: 7px 7px 0 0;
+  background: #e8d3a5; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .4);
+}
+#rfs[data-layout="vinyl"] .vy-div:nth-child(3n+2)::before { inset-inline-start: 28%; }
+#rfs[data-layout="vinyl"] .vy-div:nth-child(3n)::before { inset-inline-start: auto; inset-inline-end: 10px; }
+#rfs[data-layout="vinyl"] .vy-div b {
+  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  aspect-ratio: 1; padding: 10px 10px 26px; overflow: hidden; border-radius: 3px 3px 4px 4px;
+  font-family: var(--rf-heading-font) !important; font-weight: 400; font-synthesis: none; font-size: 54px; line-height: 1;
+  text-align: center; overflow-wrap: anywhere; color: #4a2410;
+  background: repeating-linear-gradient(90deg, rgba(120, 80, 40, .05) 0 1px, transparent 1px 4px), linear-gradient(170deg, #ecd8aa, #d4b47a);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .45), inset 0 -1px 0 rgba(90, 55, 25, .3), 0 6px 14px rgba(0, 0, 0, .4);
+}
+#rfs[data-layout="vinyl"] .vy-div b.mid { font-size: 30px; }
+#rfs[data-layout="vinyl"] .vy-div b.word { font-size: 21px; line-height: 1.15; }
+#rfs[data-layout="vinyl"] .vy-div b::before {
+  content: attr(data-kick); display: block; margin-bottom: 4px;
+  font-family: var(--rf-font-ui, sans-serif); font-size: 10.5px; font-weight: 700; line-height: 1.2; color: #8a5a30;
+}
+html[data-rfs-lang="en"] #rfs[data-layout="vinyl"] .vy-div b::before { text-transform: uppercase; letter-spacing: .12em; }
+#rfs[data-layout="vinyl"] .vy-div b::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 12px; height: 9px;
+  background: linear-gradient(#e3b23c 0 3px, #e8742a 3px 6px, #c8452d 6px 9px);
+}
+#rfs[data-layout="vinyl"] .vy-div small { display: block; margin-top: 10px; font-size: 11.5px; color: var(--muted); text-align: center; }
+
+/* ---- album sleeves: .art::before is the record (hidden until hover), .art::after the printed sleeve ---- */
+#rfs[data-layout="vinyl"] .vy-it { --img: none; --lb: #e8742a; position: relative; min-width: 0; cursor: pointer; }
+#rfs[data-layout="vinyl"] .vy-it:nth-child(4n+2) { --lb: #e3b23c; }
+#rfs[data-layout="vinyl"] .vy-it:nth-child(4n+3) { --lb: #3a9a90; }
+#rfs[data-layout="vinyl"] .vy-it:nth-child(4n) { --lb: #c8452d; }
+#rfs[data-layout="vinyl"] .vy-it .art { position: relative; aspect-ratio: 1; border-radius: 3px; }
+#rfs[data-layout="vinyl"] .vy-it .art::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit;
+  background:
+    var(--vy-over, linear-gradient(transparent, transparent)),
+    linear-gradient(125deg, rgba(255, 255, 255, .13), transparent 30% 72%, rgba(0, 0, 0, .22)),
+    radial-gradient(circle closest-side, transparent 0 84%, rgba(255, 244, 225, .08) 86% 90%, transparent 92%),
+    var(--img) center 28% / cover no-repeat,
+    linear-gradient(140deg, #4a2d1b, #2a1a10);
+  box-shadow: inset 0 0 0 1px rgba(255, 240, 210, .09), 0 6px 14px rgba(0, 0, 0, .45);
+  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .15s;
+}
+/* not installed = still sealed in cellophane */
+#rfs[data-layout="vinyl"] .vy-it.ni {
+  --vy-over: linear-gradient(115deg, transparent 0 36%, rgba(255, 255, 255, .17) 41%, transparent 46% 60%, rgba(255, 255, 255, .09) 64%, transparent 68%), linear-gradient(rgba(28, 18, 11, .42), rgba(28, 18, 11, .42));
+}
+#rfs[data-layout="vinyl"] .vy-it .art::before {
+  content: ''; position: absolute; top: 4%; left: 4%; width: 92%; height: 92%; border-radius: 50%;
+  visibility: hidden; pointer-events: none;
+  background:
+    conic-gradient(from 200deg, transparent 0 7%, rgba(255, 240, 220, .14) 11%, transparent 16% 50%, rgba(255, 240, 220, .09) 59%, transparent 64%),
+    radial-gradient(circle closest-side, #efe4cf 0 3.5%, #1a1210 4% 6%, transparent 6.5%),
+    radial-gradient(circle closest-side, transparent 0 22%, rgba(255, 240, 210, .45) 22.5% 23.5%, transparent 24%),
+    radial-gradient(circle closest-side, var(--lb) 0 34%, #0f0b0a 34.5% 38%, transparent 38.5%),
+    repeating-radial-gradient(circle closest-side, #161211 0 1.4%, #241c1a 1.7% 2.6%),
+    #141010;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .7), 0 6px 14px rgba(0, 0, 0, .5);
+  transition: transform .25s cubic-bezier(.2, .8, .2, 1), visibility 0s linear .25s;
+}
+/* hover / keyboard ring: ONLY this sleeve moves — the record slides half out, the sleeve gives way a little */
+#rfs[data-layout="vinyl"] .vy-it:is(:hover, .kf) { z-index: 3; }
+#rfs[data-layout="vinyl"] .vy-it.flip { --vy-flip: -1; }
+#rfs[data-layout="vinyl"] .vy-it:is(:hover, .kf) .art::before {
+  visibility: visible; transform: translateX(calc(var(--vy-dir) * var(--vy-flip, 1) * 50%));
+  transition: transform .3s cubic-bezier(.2, .8, .2, 1), visibility 0s;
+}
+#rfs[data-layout="vinyl"] .vy-it:is(:hover, .kf) .art::after {
+  transform: translateX(calc(var(--vy-dir) * var(--vy-flip, 1) * -5%));
+  box-shadow: inset 0 0 0 1px rgba(255, 240, 210, .12), 0 14px 26px rgba(0, 0, 0, .6);
+}
+#rfs[data-layout="vinyl"] .vy-it.running .art::after { box-shadow: 0 0 0 2px #3a9a90, 0 6px 14px rgba(0, 0, 0, .45); }
+#rfs[data-layout="vinyl"] .vy-it.kf .art::after { box-shadow: 0 0 0 2px #1a120c, 0 0 0 4px var(--vy-gold), 0 14px 26px rgba(0, 0, 0, .6); }
+html:has(#rfs-sheet.on) #rfs[data-layout="vinyl"] .vy-it.taken .art { opacity: 0; }
+/* album title + hours */
+#rfs[data-layout="vinyl"] .vy-it .t {
+  margin-top: 10px; font-size: 13px; font-weight: 700; line-height: 1.3; color: var(--ink);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; unicode-bidi: plaintext; text-align: right; transition: color .15s;
+}
+html[data-rfs-lang="en"] #rfs[data-layout="vinyl"] .vy-it .t { text-align: left; }
+#rfs[data-layout="vinyl"] .vy-it:is(:hover, .kf) .t { color: var(--vy-gold); }
+#rfs[data-layout="vinyl"] .vy-it .h { margin-top: 2px; font-size: 11.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#rfs[data-layout="vinyl"] .vy-it.running .h { color: #5fc9bc; font-weight: 600; }
+/* the one shared play button (vinyl.js moves it to the sleeve under the mouse / the keyboard ring) */
+#rfs[data-layout="vinyl"] .vy-it .pl {
+  position: absolute; z-index: 2; bottom: 8px; inset-inline-start: 8px; width: 36px; height: 36px; padding: 0; border: 0; border-radius: 50%;
+  display: grid; place-items: center; cursor: pointer; color: #fff3dc;
+  background: radial-gradient(circle at 35% 30%, #f39a4c, #c4511f 60%, #a8401c);
+  box-shadow: 0 0 0 2px rgba(20, 10, 4, .55), 0 6px 14px rgba(0, 0, 0, .5);
+  opacity: 0; transform: scale(.8); transition: opacity .15s, transform .15s;
+}
+#rfs[data-layout="vinyl"] .vy-it:is(:hover, .kf) .pl { opacity: 1; transform: none; }
+#rfs[data-layout="vinyl"] .vy-it .pl:hover { background: radial-gradient(circle at 35% 30%, #ffad62, #d65f28 60%, #b4481f); }
+#rfs[data-layout="vinyl"] .vy-it .pl > svg.rf-ic { width: 16px; height: 16px; margin: 0; stroke: currentColor; filter: none; }
+#rfs[data-layout="vinyl"] .vy-it .pl > svg.rf-ic .s { fill: currentColor; stroke: none; }
+#rfs[data-layout="vinyl"] .vy-it .pl > svg.rf-ic :is(.f, rect, ellipse, circle:not(.s)) { fill: currentColor; fill-opacity: .2; }
+
+/* ═════════════ smaller windows (vinyl.js sets .narrow / .tiny from the panel width) ═════════════ */
+#rfs[data-layout="vinyl"] .vy.narrow .vy-deck { --tt: 188px; gap: 24px; }
+#rfs[data-layout="vinyl"] .vy.narrow .vy-sleeve { display: none; }
+#rfs[data-layout="vinyl"] .vy.narrow .vy-keys { display: none; }
+#rfs[data-layout="vinyl"] .vy.tiny { padding-inline: 14px; }
+#rfs[data-layout="vinyl"] .vy.tiny .vy-deck { --tt: 150px; gap: 18px; padding: 18px 18px 26px; }
+#rfs[data-layout="vinyl"] .vy.tiny .vy-title { font-size: 26px; }
+#rfs[data-layout="vinyl"] .vy.tiny .vy-crates { grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); gap: 22px 14px; }
+
+@media (prefers-reduced-motion: reduce) {
+  #rfs[data-layout="vinyl"] .vy-disc { animation: none; }
+  #rfs[data-layout="vinyl"] .vy-it .art::before,
+  #rfs[data-layout="vinyl"] .vy-it .art::after { transition: none; }
+}
+
+/* ═════════════ the open record (#rfs-sheet, vinyl.js open / close) ═════════════
+   A listening booth over the crates: the album sleeve and the turntable (a picture, always drawn left-to-right),
+   beside it the liner notes on a cream insert. Every size in the booth follows --D (the record's diameter, set by
+   vinyl.js from the panel size) through --u = D / 300, so the tonearm always lands on the outer groove.
+   Only the record's small label turns; the grooves are round, so the record itself never has to. */
+#rfs-sheet[data-layout="vinyl"] { --vy-gold: #f3c35a; --vy-glow: 66%; }
+html[data-rfs-lang="en"] #rfs-sheet[data-layout="vinyl"] { --vy-glow: 34%; }
+/* the dimmed shop behind: a warm lamp over the booth, faint paper fibres */
+#rfs-sheet[data-layout="vinyl"] .vy-scrim {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 46% 62% at var(--vy-glow) 48%, rgba(232, 116, 42, .17), transparent 72%),
+    repeating-linear-gradient(90deg, rgba(255, 226, 186, .016) 0 1px, transparent 1px 5px),
+    rgba(17, 11, 7, .95);
+}
+#rfs-sheet[data-layout="vinyl"] .vy-view {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 44px;
+  padding: 34px 40px; pointer-events: none; outline: 0;
+}
+#rfs-sheet[data-layout="vinyl"] .vy-view > * { pointer-events: auto; }
+#rfs-sheet[data-layout="vinyl"] .vy-view:not(.ready) > * { pointer-events: none; } /* a double-click can't press Play */
+
+/* ---- the booth ---- */
+#rfs-sheet[data-layout="vinyl"] .vy-booth {
+  --u: calc(var(--D, 300px) / 300);
+  position: relative; flex: none; display: flex; align-items: center; direction: ltr;
+}
+/* the album sleeve: the game's cover, worn at the edges, the opening on the right where the record comes out */
+#rfs-sheet[data-layout="vinyl"] .vy-sl {
+  position: relative; z-index: 2; flex: none; width: calc(var(--u) * 252); aspect-ratio: 1; margin-right: calc(var(--u) * -14);
+  border-radius: 3px;
+  background:
+    linear-gradient(125deg, rgba(255, 255, 255, .16), transparent 30% 72%, rgba(0, 0, 0, .24)),
+    radial-gradient(circle closest-side, transparent 0 84%, rgba(255, 244, 225, .09) 86% 90%, transparent 92%),
+    var(--img, none) center 28% / cover no-repeat,
+    linear-gradient(135deg, #e8742a, #c8452d);
+  box-shadow: inset 0 0 0 1px rgba(255, 240, 210, .12), inset -12px 0 14px -10px rgba(0, 0, 0, .75), 0 22px 40px rgba(0, 0, 0, .6);
+}
+/* the turntable: a walnut plinth with a brushed-steel edge and the three-colour pinstripe along its front */
+#rfs-sheet[data-layout="vinyl"] .vy-plinth {
+  position: relative; z-index: 1; flex: none; width: calc(var(--u) * 456); height: calc(var(--u) * 356);
+  border-radius: calc(var(--u) * 18);
+  background:
+    linear-gradient(#e3b23c 0 33%, #e8742a 33% 66%, #c8452d 66%) left calc(var(--u) * 20) bottom calc(var(--u) * 9) / calc(100% - var(--u) * 40) calc(var(--u) * 5) no-repeat,
+    repeating-linear-gradient(97deg, rgba(255, 214, 160, .045) 0 2px, transparent 2px 9px),
+    linear-gradient(145deg, #7a4b2d, #5a3620 45%, #3e2414);
+  box-shadow: inset 0 1px 0 rgba(255, 222, 176, .3), inset 0 -5px 12px rgba(0, 0, 0, .35), 0 0 0 1px rgba(20, 10, 4, .65),
+    0 0 0 calc(var(--u) * 4) rgba(196, 186, 168, .16), 0 26px 50px rgba(0, 0, 0, .6);
+}
+/* the platter: strobe dots on the aluminium rim, a dark rubber mat inside */
+#rfs-sheet[data-layout="vinyl"] .vy-platter {
+  position: absolute; left: calc(var(--u) * 20); top: calc(var(--u) * 20); width: calc(var(--u) * 316); aspect-ratio: 1; border-radius: 50%;
+  background:
+    repeating-radial-gradient(circle closest-side, #1c1613 0 2.2%, #221b17 2.6% 3.6%) center / 94% 94% no-repeat,
+    repeating-conic-gradient(#d6cdbc 0 1.5deg, #6e665b 1.5deg 3deg);
+  box-shadow: 0 0 0 calc(var(--u) * 3) #2a1a10, 0 calc(var(--u) * 6) calc(var(--u) * 14) rgba(0, 0, 0, .5);
+}
+/* the record: grooves, a smooth lead-in band, the light of the shop lamp on it */
+#rfs-sheet[data-layout="vinyl"] .vy-rec {
+  position: absolute; z-index: 1; left: calc(var(--u) * 28); top: calc(var(--u) * 28); width: var(--D, 300px); aspect-ratio: 1; border-radius: 50%;
+  background:
+    conic-gradient(from 210deg, transparent 0 6%, rgba(255, 240, 220, .15) 11%, transparent 17% 50%, rgba(255, 240, 220, .1) 60%, transparent 66%),
+    radial-gradient(circle closest-side, transparent 0 96%, rgba(255, 240, 220, .08) 97%, transparent 99%),
+    radial-gradient(circle closest-side, transparent 0 43%, #0f0b0a 43.5% 46%, transparent 46.5%),
+    repeating-radial-gradient(circle closest-side, #161211 0 1%, #262019 1.3% 1.9%),
+    #141010;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .7), 0 calc(var(--u) * 8) calc(var(--u) * 18) rgba(0, 0, 0, .55);
+}
+/* spindle */
+#rfs-sheet[data-layout="vinyl"] .vy-rec::after {
+  content: ''; position: absolute; z-index: 2; left: 50%; top: 50%; width: calc(var(--u) * 11); height: calc(var(--u) * 11);
+  margin: calc(var(--u) * -5.5); border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fbf3e2, #a99c86 70%); box-shadow: 0 0 0 calc(var(--u) * 2) rgba(0, 0, 0, .5);
+}
+/* the printed label (the one turning element): deep brown field for the game's logo, orange and mustard rings */
+#rfs-sheet[data-layout="vinyl"] .vy-rec-label {
+  position: absolute; inset: 29%; border-radius: 50%; overflow: hidden;
+  background:
+    radial-gradient(circle closest-side, transparent 0 96%, rgba(255, 240, 210, .45) 96.5% 98%, transparent 98.5%),
+    radial-gradient(circle closest-side, transparent 0 79%, #c4511f 79.5% 86%, #e3b23c 86.5% 91%, #e8742a 91.5%),
+    repeating-radial-gradient(circle closest-side, #2c1b11 0 3%, #301e13 3.4% 6%);
+  box-shadow: inset 0 0 calc(var(--u) * 10) rgba(0, 0, 0, .35);
+  will-change: transform;
+}
+#rfs-sheet[data-layout="vinyl"] .vy-rec-logo {
+  position: absolute; left: 14%; top: 14%; width: 72%; height: 30%; object-fit: contain; pointer-events: none;
+}
+#rfs-sheet[data-layout="vinyl"] .vy-rec-name {
+  position: absolute; left: 16%; right: 16%; top: 13%; height: 33%; display: flex; align-items: center; justify-content: center;
+  overflow: hidden; text-align: center; overflow-wrap: anywhere;
+  font-family: var(--rf-heading-font) !important; font-weight: 400; font-synthesis: none;
+  font-size: calc(var(--u) * 13); line-height: 1.1; color: #fbeed6;
+}
+#rfs-sheet[data-layout="vinyl"] .vy-rec-label.logo .vy-rec-name { display: none; }
+#rfs-sheet[data-layout="vinyl"] .vy-rec-label small {
+  position: absolute; left: 0; right: 0; top: 63%; text-align: center; white-space: nowrap;
+  font-size: calc(var(--u) * 7.5); font-weight: 700; letter-spacing: .08em; color: rgba(243, 195, 90, .85); text-transform: uppercase;
+}
+/* the tonearm: a steel tube turning on its pivot (vinyl.js swings it in); counterweight above, headshell below */
+#rfs-sheet[data-layout="vinyl"] .vy-tarm {
+  position: absolute; z-index: 3; left: calc(var(--u) * 409); top: calc(var(--u) * 34); width: calc(var(--u) * 6); height: calc(var(--u) * 250);
+  border-radius: calc(var(--u) * 3); transform-origin: 50% 0; transform: rotate(3deg);
+  background: linear-gradient(90deg, #7c7366, #f4ecdc 45%, #9a907f);
+  box-shadow: calc(var(--u) * 3) calc(var(--u) * 5) calc(var(--u) * 7) rgba(0, 0, 0, .45);
+}
+#rfs-sheet[data-layout="vinyl"] .vy-tarm::before {
+  content: ''; position: absolute; left: calc(50% - var(--u) * 10); top: calc(var(--u) * -42); width: calc(var(--u) * 20); height: calc(var(--u) * 28);
+  border-radius: calc(var(--u) * 4); background: linear-gradient(90deg, #2e2722, #8a8174 45%, #2e2722);
+}
+#rfs-sheet[data-layout="vinyl"] .vy-tarm::after {
+  content: ''; position: absolute; left: calc(50% - var(--u) * 9); bottom: calc(var(--u) * -6); width: calc(var(--u) * 18); height: calc(var(--u) * 32);
+  border-radius: calc(var(--u) * 3) calc(var(--u) * 3) calc(var(--u) * 6) calc(var(--u) * 6);
+  background: linear-gradient(90deg, #2b211b, #5a4c40 50%, #2b211b);
+  box-shadow: inset 0 calc(var(--u) * -7) 0 #e8742a, calc(var(--u) * 2) calc(var(--u) * 3) calc(var(--u) * 6) rgba(0, 0, 0, .5);
+}
+#rfs-sheet[data-layout="vinyl"] .vy-pivot {
+  position: absolute; z-index: 4; left: calc(var(--u) * 392); top: calc(var(--u) * 14); width: calc(var(--u) * 40); aspect-ratio: 1; border-radius: 50%;
+  background: radial-gradient(circle at 38% 34%, #fbf3e2, #b9ae98 45%, #6d6355 75%, #3d352c);
+  box-shadow: 0 0 0 calc(var(--u) * 4) rgba(30, 18, 10, .55), 0 calc(var(--u) * 4) calc(var(--u) * 10) rgba(0, 0, 0, .5);
+}
+/* power light (orange; teal while the game runs), the brand plate and the 33 / 45 keys */
+#rfs-sheet[data-layout="vinyl"] .vy-led {
+  position: absolute; left: calc(var(--u) * 352); top: calc(var(--u) * 30); width: calc(var(--u) * 9); height: calc(var(--u) * 9); border-radius: 50%;
+  background: #f08a3c; box-shadow: 0 0 0 calc(var(--u) * 2) rgba(20, 10, 4, .45), 0 0 calc(var(--u) * 10) rgba(240, 138, 60, .8);
+}
+#rfs-sheet[data-layout="vinyl"] .vy-plinth.running .vy-led { background: #6fe0d2; box-shadow: 0 0 0 calc(var(--u) * 2) rgba(20, 10, 4, .45), 0 0 calc(var(--u) * 10) rgba(111, 224, 210, .85); }
+#rfs-sheet[data-layout="vinyl"] .vy-brand {
+  position: absolute; right: calc(var(--u) * 16); bottom: calc(var(--u) * 40);
+  font-family: var(--rf-heading-font) !important; font-weight: 400; font-synthesis: none; font-size: calc(var(--u) * 11);
+  letter-spacing: .14em; text-transform: uppercase; color: rgba(243, 230, 207, .5);
+}
+#rfs-sheet[data-layout="vinyl"] .vy-speed { position: absolute; right: calc(var(--u) * 16); bottom: calc(var(--u) * 18); display: flex; gap: calc(var(--u) * 4); }
+#rfs-sheet[data-layout="vinyl"] .vy-speed i {
+  width: calc(var(--u) * 26); height: calc(var(--u) * 16); border-radius: calc(var(--u) * 4); font-style: normal; text-align: center;
+  font-size: calc(var(--u) * 8.5); font-weight: 700; line-height: calc(var(--u) * 16); color: #3a2a1d;
+  background: linear-gradient(#efe6d6, #b9ad98); box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .22), 0 1px 2px rgba(0, 0, 0, .5);
+}
+#rfs-sheet[data-layout="vinyl"] .vy-speed i.on { color: #3a1f0e; background: linear-gradient(#f6cf6c, #d9962c); }
+
+/* ---- the liner notes: a cream insert, the 70s rule on top, the facts as side A's track list ---- */
+#rfs-sheet[data-layout="vinyl"] .vy-notes {
+  position: relative; flex: none; width: var(--NW, 420px); max-height: 100%; overflow-y: auto; overscroll-behavior: contain;
+  padding: 28px 26px 24px; border-radius: 4px 4px 12px 12px; color: #3a1f0e;
+  background:
+    linear-gradient(#e3b23c 0 3px, #e8742a 3px 6px, #c8452d 6px 9px) top / 100% 9px no-repeat,
+    radial-gradient(circle at 100% 100%, transparent 0 150px, rgba(120, 80, 40, .08) 151px 153px, transparent 154px),
+    repeating-linear-gradient(90deg, rgba(120, 80, 40, .04) 0 1px, transparent 1px 4px),
+    linear-gradient(175deg, #f8eedb, #efe0c0 60%, #e6d2a8);
+  box-shadow: inset 0 -1px 0 rgba(90, 55, 25, .25), 0 26px 50px rgba(0, 0, 0, .55);
+}
+#rfs-sheet[data-layout="vinyl"] .vy-notes::-webkit-scrollbar { width: 8px; }
+#rfs-sheet[data-layout="vinyl"] .vy-notes::-webkit-scrollbar-thumb { background: rgba(122, 86, 52, .45); border-radius: 99px; }
+#rfs-sheet[data-layout="vinyl"] .vy-n-kick {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 6px 9px; font-size: 11.5px; font-weight: 700; color: #8a5a30;
+}
+html[data-rfs-lang="en"] #rfs-sheet[data-layout="vinyl"] .vy-n-kick { text-transform: uppercase; letter-spacing: .1em; font-size: 10.5px; }
+#rfs-sheet[data-layout="vinyl"] .vy-n-kick > svg.rf-ic { width: 16px; height: 16px; margin: 0; stroke: #b4481f; filter: none; }
+#rfs-sheet[data-layout="vinyl"] .vy-n-kick > svg.rf-ic :is(.f, circle:not(.s)) { fill: rgba(180, 72, 31, .14); }
+#rfs-sheet[data-layout="vinyl"] .vy-n-kick > svg.rf-ic .s { fill: #b4481f; }
+#rfs-sheet[data-layout="vinyl"] .vy-n-cat { margin-inline-start: auto; font-weight: 600; color: #9a7350; }
+#rfs-sheet[data-layout="vinyl"] .vy-n-st {
+  padding: 2px 9px; border-radius: 99px; font-style: normal; font-size: 10.5px; letter-spacing: .04em;
+  color: #6a4a2c; background: rgba(90, 55, 25, .1); text-transform: none;
+}
+#rfs-sheet[data-layout="vinyl"] .vy-n-st.on { color: #08211f; background: linear-gradient(180deg, #6fd3c6, #3a9a90); }
+#rfs-sheet[data-layout="vinyl"] .vy-n-title {
+  margin: 10px 0 10px; font-family: var(--rf-heading-font) !important; font-weight: 400; font-synthesis: none;
+  font-size: 30px; line-height: 1.12; color: #3a1f0e; overflow-wrap: anywhere;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+#rfs-sheet[data-layout="vinyl"] .vy-n-genres { display: flex; flex-wrap: wrap; gap: 6px; }
+#rfs-sheet[data-layout="vinyl"] .vy-n-genres span {
+  padding: 2px 10px; border-radius: 99px; font-size: 11.5px; font-weight: 700; color: #a8401c;
+  border: 1.5px solid rgba(168, 64, 28, .4); background: rgba(255, 250, 238, .5);
+}
+#rfs-sheet[data-layout="vinyl"] .vy-tracks {
+  list-style: none; margin: 16px 0 0; padding: 16px 0 0;
+  background: linear-gradient(#e3b23c 0 2px, transparent 2px 4px, #e8742a 4px 6px, transparent 6px 8px, #c8452d 8px 10px) top / 100% 10px no-repeat;
+}
+#rfs-sheet[data-layout="vinyl"] .vy-tracks li { display: flex; align-items: baseline; gap: 9px; padding: 5px 0; font-size: 13px; min-width: 0; }
+#rfs-sheet[data-layout="vinyl"] .vy-tracks i {
+  flex: none; min-width: 24px; font-style: normal; font-size: 13px; color: #c4511f;
+  font-family: var(--rf-heading-font) !important; font-weight: 400; font-synthesis: none;
+}
+#rfs-sheet[data-layout="vinyl"] .vy-tracks span { flex: none; color: #6a4a2c; font-weight: 500; }
+#rfs-sheet[data-layout="vinyl"] .vy-tracks em { flex: 1 1 12px; min-width: 12px; border-bottom: 2px dotted rgba(122, 86, 52, .38); transform: translateY(-4px); }
+#rfs-sheet[data-layout="vinyl"] .vy-tracks b { flex: 0 1 auto; min-width: 0; max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #2a1206; font-weight: 700; }
+#rfs-sheet[data-layout="vinyl"] .vy-n-desc {
+  margin: 14px 0 0; font-size: 13.5px; line-height: 1.6; color: #4e3220;
+  display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden;
+}
+/* the wired buttons: walnut pills on the insert, Play is the burnt-orange one (teal while the game runs) */
+#rfs-sheet[data-layout="vinyl"] .rf-acts { margin-top: 20px; gap: 8px; }
+#rfs-sheet[data-layout="vinyl"] .rf-act {
+  height: 36px; padding: 0 14px; gap: 7px; border: 0; border-radius: 99px;
+  font-size: 13px; font-weight: 700; color: #f6e7cb; text-shadow: 0 1px 0 rgba(0, 0, 0, .35);
+  background: linear-gradient(180deg, #6a4128, #4a2b18);
+  box-shadow: inset 0 1px 0 rgba(255, 220, 170, .25), inset 0 -2px 4px rgba(0, 0, 0, .3), 0 0 0 1px rgba(60, 30, 10, .4), 0 3px 8px rgba(60, 30, 10, .3);
+  transition: background .15s, transform .15s;
+}
+#rfs-sheet[data-layout="vinyl"] .rf-act:hover { background: linear-gradient(180deg, #7b4c2f, #57331d); transform: translateY(-1px); }
+#rfs-sheet[data-layout="vinyl"] .rf-act:focus-visible { outline: 2px solid #c4511f; outline-offset: 2px; }
+#rfs-sheet[data-layout="vinyl"] .rf-act.play {
+  height: 40px; padding: 0 20px; font-size: 14px; color: #fff3dc;
+  background: linear-gradient(180deg, #ec8a3c, #c4511f 55%, #a8401c);
+  box-shadow: inset 0 1px 0 rgba(255, 228, 190, .55), inset 0 -3px 5px rgba(100, 25, 5, .35), 0 0 0 1px rgba(80, 25, 5, .55), 0 6px 14px rgba(196, 81, 31, .35);
+  text-shadow: 0 1px 0 rgba(90, 25, 5, .55);
+}
+#rfs-sheet[data-layout="vinyl"] .rf-act.play:hover { background: linear-gradient(180deg, #f39a4c, #d25e28 55%, #b4481f); }
+#rfs-sheet[data-layout="vinyl"] .rf-act.play.is-running { color: #08211f; text-shadow: none; background: linear-gradient(180deg, #6fd3c6, #3a9a90); }
+#rfs-sheet[data-layout="vinyl"] .rf-act > svg.rf-ic { width: 15px; height: 15px; margin: 0; stroke: currentColor; filter: none; }
+#rfs-sheet[data-layout="vinyl"] .rf-act > svg.rf-ic .s { fill: currentColor; stroke: none; }
+#rfs-sheet[data-layout="vinyl"] .rf-act > svg.rf-ic :is(.f, rect, ellipse, circle:not(.s)) { fill: currentColor; fill-opacity: .2; }
+/* close: a walnut knob in the corner */
+#rfs-sheet[data-layout="vinyl"] .vy-x {
+  position: absolute; z-index: 5; top: 18px; inset-inline-end: 20px; width: 36px; height: 36px; padding: 0; border: 0; border-radius: 50%;
+  display: grid; place-items: center; cursor: pointer; color: #f6e7cb;
+  background: radial-gradient(circle at 38% 32%, #7b4c2f, #4a2b18 70%);
+  box-shadow: inset 0 1px 0 rgba(255, 220, 170, .3), 0 0 0 1px rgba(20, 10, 4, .6), 0 0 0 4px rgba(243, 230, 207, .08), 0 6px 14px rgba(0, 0, 0, .5);
+  transition: background .15s, color .15s;
+}
+#rfs-sheet[data-layout="vinyl"] .vy-x:hover { color: #fff3dc; background: radial-gradient(circle at 38% 32%, #ec8a3c, #b4481f 70%); }
+#rfs-sheet[data-layout="vinyl"] .vy-x > svg.rf-ic { width: 16px; height: 16px; margin: 0; stroke: currentColor; filter: none; }

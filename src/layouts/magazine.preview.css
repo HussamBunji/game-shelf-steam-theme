@@ -1,0 +1,62 @@
+/* Magazine (المجلة) — picker card art: a mini magazine spread on ink paper.
+   pv-a = masthead title (with a red full stop) · pv-b = cover photo · pv-c = cover text column
+   pv-i × 12 = three text columns below: a red section label, then three short articles each.
+   Rules (top hairline, double masthead rule, the line above the columns) are painted on the card itself. */
+#rfs-themes .tp-magazine {
+  background:
+    linear-gradient(rgba(239, 230, 214, .3), rgba(239, 230, 214, .3)) 12px 6px / calc(100% - 24px) 1px no-repeat,
+    linear-gradient(#efe6d6, #efe6d6) 12px 24px / calc(100% - 24px) 2px no-repeat,
+    linear-gradient(#efe6d6, #efe6d6) 12px 28px / calc(100% - 24px) 1px no-repeat,
+    linear-gradient(rgba(239, 230, 214, .22), rgba(239, 230, 214, .22)) 12px 99px / calc(100% - 24px) 1px no-repeat,
+    #131313;
+}
+/* the spread reads right-to-left in Arabic */
+html:not([data-rfs-lang="en"]) #rfs-themes .tp-magazine { transform: scaleX(-1); }
+
+/* masthead: "GAME SHELF" as blocky letters, centred, with a red full stop */
+#rfs-themes .tp-magazine .pv-a {
+  top: 10px; left: 28%; right: 28%; height: 9px;
+  background: repeating-linear-gradient(90deg, #efe6d6 0 8px, transparent 8px 10px, #efe6d6 10px 15px, transparent 15px 18px);
+}
+#rfs-themes .tp-magazine .pv-a::after { content: ''; position: absolute; left: calc(100% + 3px); bottom: 0; width: 4px; height: 4px; background: #e63b2e; }
+
+/* cover photo: a warm "image" with the red rule under it */
+#rfs-themes .tp-magazine .pv-b {
+  left: 12px; top: 35px; width: 56%; height: 56px;
+  background:
+    radial-gradient(circle at 32% 42%, rgba(240, 168, 122, .85), transparent 38%),
+    radial-gradient(ellipse 60% 70% at 78% 70%, rgba(120, 52, 40, .9), transparent 70%),
+    linear-gradient(160deg, #3b332e, #191817);
+  box-shadow: inset 0 -2px 0 #e63b2e;
+}
+
+/* cover text: red kicker, two headline lines, deck lines, a cream button */
+#rfs-themes .tp-magazine .pv-c {
+  left: calc(56% + 22px); right: 12px; top: 35px; height: 56px;
+  background:
+    linear-gradient(#e63b2e, #e63b2e) 0 0 / 36% 3px no-repeat,
+    linear-gradient(#efe6d6, #efe6d6) 0 8px / 100% 7px no-repeat,
+    linear-gradient(#efe6d6, #efe6d6) 0 18px / 68% 7px no-repeat,
+    linear-gradient(rgba(239, 230, 214, .38), rgba(239, 230, 214, .38)) 0 31px / 100% 2px no-repeat,
+    linear-gradient(rgba(239, 230, 214, .38), rgba(239, 230, 214, .38)) 0 36px / 82% 2px no-repeat,
+    linear-gradient(#efe6d6, #efe6d6) 0 46px / 42% 10px no-repeat,
+    linear-gradient(rgba(239, 230, 214, .4), rgba(239, 230, 214, .4)) calc(60% + 5px) 46px / 30% 10px no-repeat;
+}
+
+/* three columns × four rows: row 0 = red section label, rows 1–3 = thumb + title + standfirst.
+   pv-i are the 4th…15th <i> of the card, so nth-of-type picks the column and the row. */
+#rfs-themes .tp-magazine .pv-i {
+  --c: 0; --r: 0;
+  top: calc(105px + var(--r) * 11px); left: calc(12px + var(--c) * (100% - 24px) / 3); width: calc((100% - 24px) / 3 - 12px); height: 8px;
+  background:
+    linear-gradient(#5d544c, #5d544c) 0 0 / 15px 8px no-repeat,
+    linear-gradient(rgba(239, 230, 214, .78), rgba(239, 230, 214, .78)) 19px 1px / 62% 2px no-repeat,
+    linear-gradient(rgba(239, 230, 214, .32), rgba(239, 230, 214, .32)) 19px 5px / 44% 1px no-repeat;
+}
+#rfs-themes .tp-magazine .pv-i:nth-of-type(3n+2) { --c: 1; }
+#rfs-themes .tp-magazine .pv-i:nth-of-type(3n) { --c: 2; }
+#rfs-themes .tp-magazine .pv-i:nth-of-type(n+7) { --r: 1; }
+#rfs-themes .tp-magazine .pv-i:nth-of-type(n+10) { --r: 2; }
+#rfs-themes .tp-magazine .pv-i:nth-of-type(n+13) { --r: 3; }
+/* row 0: the red section labels */
+#rfs-themes .tp-magazine .pv-i:nth-of-type(-n+6) { height: 3px; background: linear-gradient(#e63b2e, #e63b2e) 0 0 / 40% 3px no-repeat; }

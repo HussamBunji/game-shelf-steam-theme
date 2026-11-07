@@ -1,0 +1,65 @@
+/* ═══ Corkboard (لوحة الذكريات) — THEMES picker card: a mini cork board ═══
+   pv-c = the pinned paper filter strip, pv-a = a sticky note, pv-b = its twine, pv-i ×12 = tilted polaroids
+   (odd ones taped, even ones pinned). Plain shapes and gradients, no images. */
+#rfs-themes .tp-cork {
+  background:
+    radial-gradient(circle at 30% 40%, rgba(74, 44, 18, .36) 0 .8px, transparent 1.4px) 0 0 / 9px 8px,
+    radial-gradient(circle at 60% 70%, rgba(255, 236, 205, .26) 0 .7px, transparent 1.2px) 0 0 / 7px 11px,
+    radial-gradient(circle at 50% 50%, rgba(92, 56, 24, .24) 0 1.2px, transparent 2px) 0 0 / 19px 17px,
+    linear-gradient(90deg, rgba(48, 26, 8, .32), transparent 12%, transparent 88%, rgba(48, 26, 8, .32)),
+    #b4875a;
+}
+/* the filter strip: cream paper with a red and a mustard pin */
+#rfs-themes .tp-cork .pv-c {
+  left: 8%; right: 8%; top: 9px; height: 12px; border-radius: 2px;
+  background: linear-gradient(#fffdf7, #f2e9d6); box-shadow: 0 2px 3px rgba(40, 20, 5, .35);
+}
+#rfs-themes .tp-cork .pv-c::before,
+#rfs-themes .tp-cork .pv-c::after {
+  content: ''; position: absolute; top: -3px; width: 6px; height: 6px; border-radius: 50%;
+  background: radial-gradient(circle at 50% 45%, #f0654b 0 50%, #a32d1c 100%);
+}
+#rfs-themes .tp-cork .pv-c::before { left: 6px; }
+#rfs-themes .tp-cork .pv-c::after { right: 6px; background: radial-gradient(circle at 50% 45%, #f5bd3a 0 50%, #a77610 100%); }
+/* a yellow sticky note with a scribbled title, then the twine running from it */
+#rfs-themes .tp-cork .pv-a {
+  left: 7%; top: 27px; width: 46px; height: 21px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .25), transparent 40%), #ffe27a;
+  box-shadow: 0 3px 4px -1px rgba(40, 20, 5, .45); transform: rotate(-4deg);
+}
+#rfs-themes .tp-cork .pv-a::after {
+  content: ''; position: absolute; left: 8px; right: 10px; top: 9px; height: 3px; border-radius: 2px; background: rgba(61, 48, 32, .55);
+}
+#rfs-themes .tp-cork .pv-b {
+  left: calc(7% + 56px); right: 8%; top: 38px; height: 2px; border-radius: 1px;
+  background: repeating-linear-gradient(90deg, #6f4f2e 0 4px, #9a744a 4px 6px);
+}
+/* polaroids: two rows of six — a coloured photo inside a white frame, an ink caption line */
+#rfs-themes .tp-cork .pv-i {
+  top: 54px; left: calc(7% + var(--i) * 14.6%); width: 12%; height: 40px;
+  background:
+    linear-gradient(160deg, hsl(calc(18deg + var(--i) * 31deg) 46% 60%), hsl(calc(200deg + var(--i) * 23deg) 34% 32%)) 3px 3px / calc(100% - 6px) 24px no-repeat,
+    #fbf8f1;
+  box-shadow: 0 2px 3px rgba(40, 20, 5, .35);
+  transform: rotate(-3deg);
+  transition: transform .2s ease-out, box-shadow .2s;
+}
+#rfs-themes .tp-cork .pv-i:nth-child(n+10) { top: 100px; left: calc(7% + (var(--i) - 6) * 14.6%); }
+#rfs-themes .tp-cork .pv-i:nth-child(even) { transform: rotate(2.5deg); }
+#rfs-themes .tp-cork .pv-i:nth-child(3n) { transform: rotate(-1deg); }
+#rfs-themes .tp-cork .pv-i::after {
+  content: ''; position: absolute; left: 5px; right: 6px; bottom: 6px; height: 2px; border-radius: 1px; background: rgba(47, 59, 110, .5);
+}
+#rfs-themes .tp-cork .pv-i:nth-child(odd)::before {
+  content: ''; position: absolute; top: -3px; left: 28%; width: 44%; height: 6px; background: rgba(240, 192, 76, .85); transform: rotate(-6deg);
+}
+#rfs-themes .tp-cork .pv-i:nth-child(4n+1)::before { background: rgba(132, 202, 174, .88); transform: rotate(5deg); }
+#rfs-themes .tp-cork .pv-i:nth-child(even)::before {
+  content: ''; position: absolute; top: -2px; left: 50%; width: 6px; height: 6px; margin-left: -3px; border-radius: 50%;
+  background: radial-gradient(circle at 50% 45%, #f0654b 0 50%, #a32d1c 100%);
+}
+#rfs-themes .tp-cork .pv-i:nth-child(4n)::before { background: radial-gradient(circle at 50% 45%, #5d86dc 0 50%, #2c4f9e 100%); }
+/* hovering the card: one polaroid straightens and lifts, like on the real board */
+#rfs-themes .tp-card:hover .tp-cork .pv-i:nth-child(6) {
+  z-index: 2; transform: translateY(-3px) scale(1.1) rotate(0deg); box-shadow: 0 6px 9px rgba(40, 20, 5, .45);
+}

@@ -4,19 +4,19 @@
    html[data-rfs-style] is set by skin.js in Steam windows and by webkit.js on store/community pages.
    =================================================================== */
 
-/* title bar (SpaceTheme family: SpaceTheme + Classic / Glass / Neon) */
+/* title bar — every style built on SpaceTheme (all but Steam Original and Material You) */
 /* the word mark just says "Steam" */
-html:is([data-rfs-style="space"], [data-rfs-style="classic"], [data-rfs-style="glass"], [data-rfs-style="neon"]) .bSKGlAJG2UVWTsntEJY2v::after {
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"]) .bSKGlAJG2UVWTsntEJY2v::after {
   content: "Steam" !important; color: rgb(var(--st-accent-2)) !important; font-weight: 700 !important;
 }
-html:is([data-rfs-style="space"], [data-rfs-style="classic"], [data-rfs-style="glass"], [data-rfs-style="neon"]) ._2UyOBeiSdBayaFdRa39N2O:nth-of-type(1)::after {
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"]) ._2UyOBeiSdBayaFdRa39N2O:nth-of-type(1)::after {
   content: "" !important;
 }
 /* View · Friends · Games · Help always visible (SpaceTheme only shows them on hover) */
-html:is([data-rfs-style="space"], [data-rfs-style="classic"], [data-rfs-style="glass"], [data-rfs-style="neon"]) ._1Ky59qmywxOUtNcI1cgmkX ._2Lu3d-5qLmW4i19ysTt2jT {
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"]) ._1Ky59qmywxOUtNcI1cgmkX ._2Lu3d-5qLmW4i19ysTt2jT {
   color: #8b929a !important;
 }
-html:is([data-rfs-style="space"], [data-rfs-style="classic"], [data-rfs-style="glass"], [data-rfs-style="neon"]) ._1Ky59qmywxOUtNcI1cgmkX ._2Lu3d-5qLmW4i19ysTt2jT:hover {
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"]) ._1Ky59qmywxOUtNcI1cgmkX ._2Lu3d-5qLmW4i19ysTt2jT:hover {
   color: #fff !important;
 }
 

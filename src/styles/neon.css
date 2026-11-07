@@ -3,12 +3,12 @@
 :root {
   /* fonts: futuristic geometric pair (Latin first, Arabic second — each script picks its own); loaded by skin.js / webkit.js */
   --rf-font-ui: 'Exo 2', 'Reem Kufi', 'Segoe UI', sans-serif;
-  --rf-font-gf: "family=Exo+2:wght@400;500;600;700;800&family=Reem+Kufi:wght@400;500;600;700";
+  --rf-font-gf: "family=Exo+2:wght@400;500;600;700;800&family=Reem+Kufi:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700";
 
   /* layout base: SpaceTheme (MIT, src/vendor/space) — its sidebar, search, centred store/library;
      this style supplies the colours below, its own font, home design, icons and flair.css touches */
   --rf-vendor: space;
-  --rf-vendor-skip: options/fonts/;
+  --rf-vendor-skip: options/fonts/, options/general/alwaysShowSidebar;
   --rf-style-id: neon;
 
   /* icons: glowing neon tubes, cyan to magenta */
@@ -65,6 +65,17 @@
   --rf-plate-1: #ff7cc6;
   --rf-plate-2: #9b3eff;
   --rf-plate-ink: #ffffff;
+
+  /* web-page materials (store, community, help) */
+  --ne-mono: 'JetBrains Mono', 'Cascadia Mono', Consolas, monospace;   /* prices and counters */
+  --ne-panel: rgba(9, 7, 22, .93);
+  /* hairline corner brackets: magenta top-start, cyan bottom-end (pure gradients, no extra elements) */
+  --ne-brackets:
+    linear-gradient(#ff3ea5, #ff3ea5) 0 0 / 14px 2px no-repeat, linear-gradient(#ff3ea5, #ff3ea5) 0 0 / 2px 14px no-repeat,
+    linear-gradient(#3ef0ff, #3ef0ff) 100% 100% / 14px 2px no-repeat, linear-gradient(#3ef0ff, #3ef0ff) 100% 100% / 2px 14px no-repeat;
+  --ne-to: right;     /* "start → end" for gradients (left in Arabic) */
+  --ne-x: 2px;        /* inline-start edge of inset shadows (−2px in Arabic) */
+  --ne-track: .12em;  /* letter tracking for capitals (0 in Arabic: spacing breaks the joined script) */
 }
 
 /* SpaceTheme's colour slots, filled with this style's palette (ink violet, cyan accent).
@@ -79,5 +90,273 @@
   --st-color-4: 19, 15, 40;
   --st-color-5: 44, 33, 86;
   --st-color-6: 37, 28, 72;
+  --st-green: 46, 230, 160;
+  --st-green-hover: 90, 245, 185;
+  --st-blue: 92, 222, 255;           /* SpaceTheme uses it mostly for link text: a readable neon cyan */
+  --st-blue-hover: 160, 240, 255;
+  --st-red: 255, 70, 120;
+  --st-red-hover: 255, 110, 150;
+  --st-yellow: 255, 200, 70;
+  --st-yellow-hover: 255, 215, 110;
   --st-border-radius: 2px;
 }
+
+html[data-rfs-style="neon"][data-rfs-lang="ar"] { --ne-to: left; --ne-x: -2px; --ne-track: 0; }
+
+/* ═════════════════════════════ store + community + help pages ═════════════════════════════
+   Synthwave: the page is a dark violet night with a faint magenta/cyan grid and a horizon glow, panels are near-black
+   with hairline cyan frames and magenta/cyan corner brackets, crisp corners everywhere, headings are glowing capitals
+   over a magenta-to-cyan line, buttons are lit tubes (cyan to buy, magenta outlines for the rest) and every price is
+   in a monospaced face. Glows are cheap text/box shadows only. Everything is scoped (the store pages carry every style). */
+
+/* ---- the page: SpaceTheme paints it on one fixed body::before layer (no repaint on scroll) ---- */
+html[data-rfs-style="neon"] body::before {
+  background:
+    linear-gradient(180deg, transparent 62%, rgba(255, 62, 165, .08) 82%, rgba(155, 62, 255, .16)),
+    radial-gradient(ellipse 72% 42% at 50% -8%, rgba(155, 62, 255, .3), transparent 70%),
+    linear-gradient(rgba(255, 62, 165, .06) 1px, transparent 1px) 0 0 / 100% 46px,
+    linear-gradient(90deg, rgba(62, 240, 255, .045) 1px, transparent 1px) 0 0 / 46px 100%,
+    linear-gradient(180deg, #08061a, #06050d 55%, #0a0618) !important;
+}
+html[data-rfs-style="neon"] :is(.login_client_waitforauth, .react_landing_background, .SaleBackground, .SaleBackgroundCtn, .home_page_body_ctn, .game_page_background, .page_content_ctn, .apphub_background, .profile_page:not(.has_profile_background)) {
+  background-color: transparent !important;
+}
+html[data-rfs-style="neon"] :is(.QiZCPwhEAvE-, .yDJ1-6CIoOA-) { background: transparent !important; }
+
+/* ---- the store's top bar: a lit tube frame — cyan hairline, magenta underglow ---- */
+html[data-rfs-style="neon"] :is(._-6WU-qJBwUo- .XLbP8xOkCYw-, .dm2SGcwBwj4- .WCG-2-OYepA-, .Panel:has(> .Panel > div > div > form input), .StoreMenuLoadingPlaceholder .PlaceholderInner) {
+  background: linear-gradient(90deg, rgba(255, 62, 165, .14), rgba(12, 9, 28, .96) 22%, rgba(12, 9, 28, .96) 78%, rgba(62, 240, 255, .14)) !important;
+  border: 1px solid rgba(62, 240, 255, .55) !important; border-radius: 2px !important;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .6), 0 0 16px rgba(62, 240, 255, .22), inset 0 -1px 0 rgba(255, 62, 165, .7), 0 8px 26px rgba(0, 0, 0, .55) !important;
+}
+html[data-rfs-style="neon"] :is(.XLbP8xOkCYw-, .WCG-2-OYepA-) :is(._2U8ldyeSqVI-, .EYF1OQwj3TE-) { color: #d9f8ff !important; font-weight: 600 !important; }
+html[data-rfs-style="neon"] :is(.XLbP8xOkCYw-, .WCG-2-OYepA-) :is(._2U8ldyeSqVI-, .EYF1OQwj3TE-):hover { color: #3ef0ff !important; text-shadow: 0 0 8px rgba(62, 240, 255, .7) !important; }
+html[data-rfs-style="neon"] :is(.XLbP8xOkCYw-, .WCG-2-OYepA-) form {
+  background: #05040c !important; border: 1px solid rgba(255, 62, 165, .55) !important; border-radius: 1px !important; box-shadow: inset 0 0 10px rgba(255, 62, 165, .12) !important;
+}
+html[data-rfs-style="neon"] :is(.XLbP8xOkCYw-, .WCG-2-OYepA-) form:focus-within { border-color: #ff3ea5 !important; box-shadow: 0 0 12px rgba(255, 62, 165, .45), inset 0 0 10px rgba(255, 62, 165, .15) !important; }
+html[data-rfs-style="neon"] :is(.XLbP8xOkCYw-, .WCG-2-OYepA-) form input { color: #f2fbff !important; }
+html[data-rfs-style="neon"] :is(.XLbP8xOkCYw-, .WCG-2-OYepA-) form input::placeholder { color: #8a7fb5 !important; }
+html[data-rfs-style="neon"] [id^="searchSuggestions"] {
+  background: var(--ne-brackets), rgba(8, 6, 20, .98) !important; border: 1px solid rgba(62, 240, 255, .5) !important; border-radius: 2px !important;
+  box-shadow: 0 0 20px rgba(62, 240, 255, .2), 0 18px 40px rgba(0, 0, 0, .7) !important;
+}
+html[data-rfs-style="neon"] :is(.store_nav_area, #store_nav_area) .store_nav_bg {
+  background: rgba(12, 9, 28, .96) !important; border: 1px solid rgba(62, 240, 255, .55) !important; border-radius: 2px !important;
+  box-shadow: 0 0 16px rgba(62, 240, 255, .22), inset 0 -1px 0 rgba(255, 62, 165, .7) !important;
+}
+html[data-rfs-style="neon"] .store_nav .tab > span { color: #d9f8ff !important; }
+html[data-rfs-style="neon"] :is(.store_nav .tab:hover, .store_nav .tab.focus) { background: rgba(62, 240, 255, .1) !important; }
+html[data-rfs-style="neon"] .store_nav .searchbox { background: #05040c !important; border: 1px solid rgba(255, 62, 165, .55) !important; border-radius: 1px !important; }
+html[data-rfs-style="neon"] #store_nav_search_term { color: #f2fbff !important; }
+
+/* ---- headings: glowing capitals over a magenta-to-cyan line ---- */
+html[data-rfs-style="neon"] :is(.home_section_title, .home_title, h2.discussion_primary_header, .home_page_content > h2, h2.pageheader, .page_header_ctn .pagesubheader, #game_area_reviews > h2,
+  #game_area_description > h2:not(.bb_tag), .game_area_description > h2:not(.bb_tag), .game_area_dlc_section > h2, .game_purchase_options_editions_header_title,
+  .block_header, .block_title, .SaleSectionHeader, .ContentHubTitle, #StoreTemplate h1, .market_title_text, .profile_customization_header,
+  .discussions_header, .rightbox_content_header, .large_title, .help_header, .apphub_sectionTitle, .badges_sheet_header, .pageheader, #payment_header, .game_page_background h2:not(.bb_tag, .title)) {
+  font-family: var(--rf-font-ui) !important; font-weight: 700 !important; text-transform: uppercase !important; letter-spacing: var(--ne-track) !important;
+  color: #effcff !important; text-shadow: 0 0 6px rgba(62, 240, 255, .75), 0 0 18px rgba(62, 240, 255, .32) !important;
+}
+html[data-rfs-style="neon"] :is(.home_section_title, .home_title, h2.discussion_primary_header, .game_purchase_options_editions_header, #game_area_reviews > h2, #game_area_description > h2:not(.bb_tag),
+  .game_area_dlc_section > h2, .block_header, .SaleSectionHeader, .profile_customization_header, .discussions_header, .game_page_background h2:not(.bb_tag, .title)) {
+  padding-bottom: 6px !important; border: 0 !important;
+  background: linear-gradient(to var(--ne-to), #ff3ea5, #9b3eff 30%, #3ef0ff 60%, transparent 92%) 0 100% / 100% 1px no-repeat !important;
+}
+html[data-rfs-style="neon"] .apphub_AppName {
+  font-family: var(--rf-font-ui) !important; font-weight: 800 !important; text-transform: uppercase; letter-spacing: var(--ne-track) !important; color: #fff !important;
+  text-shadow: 0 0 8px rgba(255, 62, 165, .8), 0 0 22px rgba(255, 62, 165, .4), 0 0 2px #fff !important;
+}
+
+/* ---- big panels: near-black, hairline cyan frame, magenta/cyan corner brackets ---- */
+html[data-rfs-style="neon"] :is(.block.game_media_and_summary_ctn, .rightcol .block:not(.game_media_and_summary_ctn), .responsive_apppage_details_right.block,
+  .steam_curators_block, .search_page .searchbar, #additional_search_options .block, .game_area_purchase_game, .apphub_StoreInfoHeader,
+  .market_content_block, .forum_list_right, .rightbox, .help_login_nag, .error_bg, .profile_customization, .profile_header_bg_texture,
+  .checkout .payment_info_form_area, .checkout_content_box, .checkout_review_cart_area, .account_setting_block, .accountBox, .youraccount_page .account_table_ctn, .home_discount_games_ctn, .-IN79XL9SlI-) {
+  background: var(--ne-brackets), var(--ne-panel) !important;
+  border: 1px solid rgba(62, 240, 255, .28) !important; border-radius: 2px !important;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .6), 0 0 22px rgba(62, 240, 255, .07), inset 0 0 30px rgba(155, 62, 255, .05) !important;
+}
+html[data-rfs-style="neon"] :is(#additional_search_options .block .block_content, .rightcol .block .block_content, .glance_ctn) { background: transparent !important; }
+html[data-rfs-style="neon"] .game_area_purchase_game h2.title { color: #fff !important; text-shadow: 0 0 8px rgba(62, 240, 255, .55) !important; }
+html[data-rfs-style="neon"] .game_purchase_action_bg {
+  background: #05040c !important; border: 1px solid rgba(62, 240, 255, .4) !important; border-radius: 2px !important; box-shadow: 0 0 10px rgba(62, 240, 255, .14) !important;
+}
+html[data-rfs-style="neon"] :is(.game_purchase_price, .game_purchase_action .price) {
+  color: #3ef0ff !important; background: transparent !important; font-family: var(--ne-mono) !important; font-weight: 700 !important; text-shadow: 0 0 6px rgba(62, 240, 255, .5) !important;
+}
+
+/* ---- repeated rows: dark strips with a hairline; hover lights the frame and a magenta start edge ---- */
+html[data-rfs-style="neon"] :is(.tab_item, .tab_row_item, .search_page #search_result_container .search_result_row, .market_listing_row, .market_recent_listing_row,
+  .discussions_forum_row, .recent_game_discussion, .forum_topic, .badge_row, .game_area_dlc_row, .help_wizard_button, .wishlist_row, .apphub_Card,
+  .market_search_game_button_group .game_button, .cL3tfa-JDBE-) {
+  background: rgba(12, 9, 30, .88) !important;
+  border: 1px solid rgba(62, 240, 255, .16) !important; border-radius: 2px !important;
+  box-shadow: none !important; transition: border-color .12s, box-shadow .12s !important;
+}
+html[data-rfs-style="neon"] :is(.tab_item, .tab_row_item, .search_page #search_result_container .search_result_row, .market_listing_row, .market_recent_listing_row,
+  .discussions_forum_row, .recent_game_discussion, .forum_topic, .badge_row, .game_area_dlc_row, .help_wizard_button, .wishlist_row, .apphub_Card,
+  .market_search_game_button_group .game_button, .cL3tfa-JDBE-):hover {
+  border-color: rgba(62, 240, 255, .7) !important;
+  box-shadow: inset var(--ne-x) 0 0 #ff3ea5, 0 0 0 1px rgba(62, 240, 255, .25), 0 0 16px rgba(62, 240, 255, .22) !important;
+}
+html[data-rfs-style="neon"] :is(.tab_item_name, .search_name .title, .market_listing_item_name, .discussions_forumlist_forumname, .game_area_dlc_name, .tab_item_title, .game_button_game_name) { color: #f2fbff !important; }
+
+/* ---- capsule rows stand on a glowing floor line ---- */
+html[data-rfs-style="neon"] :is(.carousel_container .carousel_items, .SaleSectionCarousel .SliderBody) {
+  box-shadow: 0 10px 0 -8px #3ef0ff, 0 14px 16px -10px rgba(62, 240, 255, .7), 0 22px 30px -16px rgba(255, 62, 165, .45) !important; margin-bottom: 16px !important;
+}
+
+/* ---- buttons: lit tubes. Buy / main step = solid cyan, everything else = magenta outline ---- */
+html[data-rfs-style="neon"] :is(.btn_green_steamui, .btn_green_white_innerfade, .btnv6_green_white_innerfade, .item_market_action_button_green) {
+  color: #00131c !important; text-shadow: none !important; font-weight: 700 !important; letter-spacing: .04em;
+  background: linear-gradient(180deg, #8ff8ff, #3ef0ff 45%, #1fb8ff) !important; border: 1px solid #c8fcff !important; border-radius: 2px !important;
+  box-shadow: 0 0 12px rgba(62, 240, 255, .55), inset 0 0 0 1px rgba(255, 255, 255, .3) !important;
+}
+html[data-rfs-style="neon"] :is(.btn_green_steamui, .btn_green_white_innerfade, .btnv6_green_white_innerfade, .item_market_action_button_green):hover {
+  box-shadow: 0 0 20px rgba(62, 240, 255, .9), 0 0 2px #fff, inset 0 0 0 1px rgba(255, 255, 255, .45) !important;
+}
+html[data-rfs-style="neon"] :is(.btn_blue_steamui, .btnv6_blue_hoverfade, .btnv6_white_transparent, .btn_grey_steamui, .btnv6_grey_black, .btn_grey_black,
+  .btn_darkblue_white_innerfade, .btnv6_blue_blue_innerfade, .btn_grey_white_innerfade, .btn_profile_action, .pagebtn, .help_site_button, .FollowButton, .znS2DqGQQHM-, .PwGZnF9BFA8-) {
+  color: #ffd9ef !important; text-shadow: none !important;
+  background: rgba(255, 62, 165, .07) !important; border: 1px solid rgba(255, 62, 165, .75) !important; border-radius: 2px !important;
+  box-shadow: 0 0 8px rgba(255, 62, 165, .22), inset 0 0 8px rgba(255, 62, 165, .1) !important;
+}
+html[data-rfs-style="neon"] :is(.btn_blue_steamui, .btnv6_blue_hoverfade, .btnv6_white_transparent, .btn_grey_steamui, .btnv6_grey_black, .btn_grey_black,
+  .btn_darkblue_white_innerfade, .btnv6_blue_blue_innerfade, .btn_grey_white_innerfade, .btn_profile_action, .pagebtn, .help_site_button, .FollowButton, .znS2DqGQQHM-, .PwGZnF9BFA8-):hover {
+  color: #fff !important; background: rgba(255, 62, 165, .2) !important; border-color: #ff7cc6 !important;
+  box-shadow: 0 0 16px rgba(255, 62, 165, .55), inset 0 0 10px rgba(255, 62, 165, .2) !important;
+}
+html[data-rfs-style="neon"] :is(.btn_green_steamui, .btn_green_white_innerfade, .btnv6_green_white_innerfade, .btn_blue_steamui, .btnv6_blue_hoverfade, .btnv6_white_transparent,
+  .btn_grey_steamui, .btnv6_grey_black, .btn_grey_black, .btn_darkblue_white_innerfade, .btnv6_blue_blue_innerfade, .btn_grey_white_innerfade, .btn_profile_action) > span {
+  background: transparent !important; color: inherit !important; border-radius: 0 !important; text-shadow: none !important;
+}
+html[data-rfs-style="neon"] :is(body.responsive_page, body.v6, #StoreTemplate) .DialogButton {
+  color: #ffd9ef !important; text-shadow: none !important; background: rgba(255, 62, 165, .07) !important;
+  border: 1px solid rgba(255, 62, 165, .75) !important; border-radius: 2px !important; box-shadow: 0 0 8px rgba(255, 62, 165, .22) !important;
+}
+html[data-rfs-style="neon"] :is(body.responsive_page, body.v6, #StoreTemplate) .DialogButton:not(:disabled):hover { color: #fff !important; background: rgba(255, 62, 165, .2) !important; box-shadow: 0 0 16px rgba(255, 62, 165, .55) !important; }
+html[data-rfs-style="neon"] :is(body.responsive_page, body.v6, #StoreTemplate) :is(.DialogButton.Primary, .DialogButton.Green),
+html[data-rfs-style="neon"] #StoreTemplate button[class*="WPxeXV5lR1E"],
+html[data-rfs-style="neon"] :is(.btn_login_nag_left, .rmgCh57vTjU-, .QSC5IqjmQXQ-) {
+  color: #00131c !important; text-shadow: none !important; font-weight: 700 !important;
+  background: linear-gradient(180deg, #8ff8ff, #3ef0ff 45%, #1fb8ff) !important; border: 1px solid #c8fcff !important; border-radius: 2px !important;
+  box-shadow: 0 0 12px rgba(62, 240, 255, .55), inset 0 0 0 1px rgba(255, 255, 255, .3) !important;
+}
+html[data-rfs-style="neon"] :is(body.responsive_page, body.v6, #StoreTemplate) :is(.DialogButton.Primary, .DialogButton.Green):not(:disabled):hover,
+html[data-rfs-style="neon"] #StoreTemplate button[class*="WPxeXV5lR1E"]:hover,
+html[data-rfs-style="neon"] :is(.btn_login_nag_left, .rmgCh57vTjU-, .QSC5IqjmQXQ-):hover { box-shadow: 0 0 20px rgba(62, 240, 255, .9), 0 0 2px #fff !important; }
+html[data-rfs-style="neon"] .btn_login_nag_left > span { background: transparent !important; color: inherit !important; }
+
+/* ---- forms: black terminals with a magenta hairline; focus lights the tube ---- */
+html[data-rfs-style="neon"] :is(body.responsive_page, body.v6, #StoreTemplate) :is(input:is([type="text"], [type="search"], [type="password"], [type="email"], [type="number"], [type="tel"], :not([type])), textarea, select, .DialogInput, .gray_bevel):not(.XLbP8xOkCYw- *, .WCG-2-OYepA- *, .PwGZnF9BFA8- *) {
+  color: #f2fbff !important; background-color: #05040c !important;
+  border: 1px solid rgba(255, 62, 165, .5) !important; border-radius: 1px !important; box-shadow: inset 0 0 10px rgba(255, 62, 165, .1) !important;
+}
+html[data-rfs-style="neon"] :is(body.responsive_page, body.v6, #StoreTemplate) :is(input, textarea, select, .DialogInput):focus {
+  border-color: #3ef0ff !important; outline: none !important; box-shadow: 0 0 12px rgba(62, 240, 255, .45), inset 0 0 8px rgba(62, 240, 255, .12) !important;
+}
+html[data-rfs-style="neon"] :is(body.responsive_page, body.v6, #StoreTemplate) :is(input, textarea)::placeholder { color: #7f76a8 !important; }
+html[data-rfs-style="neon"] .PwGZnF9BFA8- :is(input, .DialogInput, div) { border: 0 !important; box-shadow: none !important; background: transparent !important; }
+
+/* ---- prices: monospaced digits; the discount is a magenta block, the price glows cyan ---- */
+html[data-rfs-style="neon"] body :is(.discount_block, .StoreSalePriceWidgetContainer) {
+  background: #05040c !important; border-radius: 2px !important; box-shadow: inset 0 0 0 1px rgba(62, 240, 255, .35), 0 0 10px rgba(62, 240, 255, .12) !important;
+}
+html[data-rfs-style="neon"] body :is(.discount_block .discount_pct, .game_description_column .discount_pct, .discount_pct, .StoreSaleDiscountBox,
+  .StoreSalePriceWidgetContainer > :nth-last-child(2):not(.StoreSalePrepurchaseLabel), .hPiY1A-1izA-, .nw-DtQ670Sc-) {
+  color: #1c0012 !important; background: linear-gradient(180deg, #ff7cc6, #ff3ea5) !important; font-family: var(--ne-mono) !important; font-weight: 700 !important;
+  border-radius: 1px !important; text-shadow: none !important; box-shadow: 0 0 10px rgba(255, 62, 165, .55) !important;
+}
+html[data-rfs-style="neon"] body .StoreSalePriceWidgetContainer > :nth-last-child(2):not(.StoreSalePrepurchaseLabel) * { color: inherit !important; background: transparent !important; font-family: inherit !important; }
+html[data-rfs-style="neon"] body :is(.discount_block .discount_prices .discount_final_price, .game_description_column .discount_final_price, .discount_final_price,
+  .StoreSalePriceWidgetContainer > div:not(.StoreSaleDiscountBox) > div:last-child, .market_table_value .normal_price, .normal_price, .sale_price, .cQ79XIQ7w-Y-) {
+  color: #8ff8ff !important; font-family: var(--ne-mono) !important; text-shadow: 0 0 6px rgba(62, 240, 255, .45) !important;
+}
+html[data-rfs-style="neon"] body .discount_block.no_discount .discount_prices .discount_final_price { color: #8ff8ff !important; }
+html[data-rfs-style="neon"] body :is(.discount_original_price, .StoreSalePriceWidgetContainer.Discounted > div:not(.StoreSaleDiscountBox) > div:first-child:not(:last-child)) {
+  color: #8d86b8 !important; font-family: var(--ne-mono) !important; text-shadow: none !important;
+}
+html[data-rfs-style="neon"] body .cQ79XIQ7w-Y- { background: #05040c !important; }
+html[data-rfs-style="neon"] body :is(.market_listing_num_listings_qty, .market_table_value, .tab_item_discount, .search_price) { font-family: var(--ne-mono) !important; }
+
+/* ---- tags: hairline cyan labels ---- */
+html[data-rfs-style="neon"] :is(.app_tag, .WidgetTag) {
+  color: #9ff7ff !important; background: rgba(62, 240, 255, .05) !important;
+  border: 1px solid rgba(62, 240, 255, .4) !important; border-radius: 1px !important; box-shadow: none !important;
+}
+html[data-rfs-style="neon"] :is(.app_tag, .WidgetTag):hover { color: #00131c !important; background: #3ef0ff !important; box-shadow: 0 0 12px rgba(62, 240, 255, .6) !important; }
+html[data-rfs-style="neon"] body .game_review_summary.positive { color: #4dffc0 !important; text-shadow: 0 0 6px rgba(77, 255, 192, .35); }
+html[data-rfs-style="neon"] body .game_review_summary.mixed { color: #ffd166 !important; }
+
+/* ---- Steam's leftover blues re-tuned to neon ---- */
+html[data-rfs-style="neon"] :is(h2.bb_tag, .bb_h2, .bb_h3, .help_intro_text, .help_section_text, .game_area_details_specs_ctn .label, .market_search_sidebar_section_tip_small, .FollowBtnText) { color: #6ff6ff !important; }
+html[data-rfs-style="neon"] .game_page_autocollapse_readmore { background: linear-gradient(180deg, rgba(7, 5, 18, 0), #07051a 72%) !important; color: #ff7cc6 !important; }
+html[data-rfs-style="neon"] .store_main_capsule .info { background: var(--ne-brackets), rgba(9, 7, 22, .94) !important; box-shadow: inset 1px 0 0 rgba(62, 240, 255, .35) !important; }
+html[data-rfs-style="neon"] #marketBetaNoteCtn { background: rgba(255, 62, 165, .07) !important; border: 1px solid rgba(255, 62, 165, .45) !important; border-radius: 2px !important; }
+html[data-rfs-style="neon"] :is(.apphub_HeaderBottomBG, .group_content.bottomless, .apphub_CardAnnouncementBG) { background-image: none !important; }
+html[data-rfs-style="neon"] .discussionSearchTextContainer { background: #05040c !important; border: 1px solid rgba(255, 62, 165, .5) !important; border-radius: 1px !important; }
+html[data-rfs-style="neon"] .yY5kIMMmcbU- { background: rgba(62, 240, 255, .1) !important; box-shadow: inset var(--ne-x) 0 0 #3ef0ff !important; }
+html[data-rfs-style="neon"] :is(.market_search_game_button_group .game_button_contents, .market_search_sidebar_search_box, .market_search_box_container) { background: transparent !important; }
+html[data-rfs-style="neon"] .game_area_details_specs_ctn { background: rgba(12, 9, 30, .8) !important; border-radius: 1px !important; }
+html[data-rfs-style="neon"] .game_area_details_specs_ctn:hover { box-shadow: inset var(--ne-x) 0 0 #ff3ea5, 0 0 0 1px rgba(62, 240, 255, .3) !important; }
+html[data-rfs-style="neon"] .DRM_notice { color: #e3dcff !important; background: rgba(255, 62, 165, .06) !important; border: 1px solid rgba(255, 62, 165, .4) !important; border-radius: 1px !important; }
+html[data-rfs-style="neon"] .game_language_options .checkcol span { color: #3ef0ff !important; }
+html[data-rfs-style="neon"] .carousel__slider { background: rgba(9, 7, 22, .85) !important; box-shadow: inset 0 0 0 1px rgba(62, 240, 255, .2) !important; }
+/* Points Shop (React, hashed classes under the stable #points_shop_root — re-check after a Steam update) */
+html[data-rfs-style="neon"] #points_shop_root .GRnRr6m2Ebs- { background-color: transparent !important; }
+html[data-rfs-style="neon"] #points_shop_root :is(.yu4-si75KQE-, .d7He2hxHNDQ-) { background: var(--ne-brackets), var(--ne-panel) !important; border: 1px solid rgba(62, 240, 255, .28) !important; border-radius: 2px !important; }
+html[data-rfs-style="neon"] #points_shop_root .iC89KZRmD3g- { color: #ff7cc6 !important; text-shadow: 0 0 8px rgba(255, 62, 165, .5); letter-spacing: var(--ne-track); }
+
+/* ---- community tabs: unlit outlines; the active one is a lit cyan tube ---- */
+html[data-rfs-style="neon"] :is(.apphub_sectionTab, .group_tab, .market_tab_well_tab) {
+  color: #d9f8ff !important; border-radius: 2px !important; background: rgba(12, 9, 30, .9) !important; border: 1px solid rgba(62, 240, 255, .3) !important;
+}
+html[data-rfs-style="neon"] :is(.apphub_sectionTab.active, .group_tab.active, .market_tab_well_tab_active) {
+  background: #3ef0ff !important; border-color: #c8fcff !important; box-shadow: 0 0 14px rgba(62, 240, 255, .55) !important;
+}
+html[data-rfs-style="neon"] :is(.apphub_sectionTab.active, .group_tab.active, .market_tab_well_tab_active):not(#rfs-x),
+html[data-rfs-style="neon"] :is(.apphub_sectionTab.active, .group_tab.active, .market_tab_well_tab_active) * { color: #00131c !important; }
+html[data-rfs-style="neon"] :is(.market_tab_well_tab_active, .market_tab_well_tab_inactive) .market_tab_well_tab_contents { background: transparent !important; color: inherit !important; }
+html[data-rfs-style="neon"] :is(.market_home_listing_table, .market_search_sidebar_contents, .market_listing_table) { background: transparent !important; }
+html[data-rfs-style="neon"] .apphub_HeaderBottom { background: rgba(9, 7, 22, .9) !important; box-shadow: inset 0 -1px 0 rgba(255, 62, 165, .7) !important; }
+
+/* ---- footer: black base under a magenta-to-cyan tube ---- */
+html[data-rfs-style="neon"] #footer {
+  background: linear-gradient(90deg, #ff3ea5, #9b3eff 50%, #3ef0ff) 0 0 / 100% 1px no-repeat, rgba(6, 5, 14, .95) !important;
+  border-top: 0 !important; box-shadow: 0 -10px 30px rgba(155, 62, 255, .12) !important;
+}
+html[data-rfs-style="neon"] #footer a { color: #8ff8ff !important; }
+html[data-rfs-style="neon"] #footer a:hover { color: #fff !important; text-shadow: 0 0 8px rgba(62, 240, 255, .7); }
+html[data-rfs-style="neon"] #footer h3 { color: #ff7cc6 !important; letter-spacing: var(--ne-track) !important; }
+
+/* ═════════════ our pieces ═════════════ */
+/* store side panels + Quick links: black consoles with corner brackets, mono read-outs, tube buttons */
+html[data-rfs-style="neon"] body :is(#rfs-rail, #rfs-data, #rfs-qmenu) section {
+  background: var(--ne-brackets), rgba(8, 6, 20, .96) !important; border: 1px solid rgba(62, 240, 255, .35); border-radius: 2px;
+  box-shadow: 0 0 16px rgba(62, 240, 255, .12), inset 0 0 20px rgba(155, 62, 255, .06);
+}
+html[data-rfs-style="neon"] body :is(#rfs-rail, #rfs-data, #rfs-qmenu) h4 { letter-spacing: var(--ne-track); }
+html[data-rfs-style="neon"] body #rfs-rail .rr-app b { color: #fff; text-shadow: 0 0 8px rgba(255, 62, 165, .6); }
+html[data-rfs-style="neon"] body #rfs-rail .rr-app img { border-radius: 1px; box-shadow: 0 0 0 1px rgba(62, 240, 255, .5), 0 0 14px rgba(62, 240, 255, .25); }
+html[data-rfs-style="neon"] body #rfs-rail .rr-price { color: #8ff8ff; font-family: var(--ne-mono) !important; text-shadow: 0 0 6px rgba(62, 240, 255, .45); }
+html[data-rfs-style="neon"] body #rfs-rail .rr-price i, html[data-rfs-style="neon"] body #rfs-data .rd-tag { color: #1c0012; background: #ff3ea5; border-radius: 1px; box-shadow: 0 0 8px rgba(255, 62, 165, .5); }
+html[data-rfs-style="neon"] body #rfs-rail .rr-btn { border-radius: 2px; }
+html[data-rfs-style="neon"] body #rfs-rail .rr-btn:not(.go) { color: #ffd9ef !important; border: 1px solid rgba(255, 62, 165, .7); background: rgba(255, 62, 165, .06); box-shadow: 0 0 8px rgba(255, 62, 165, .2); }
+html[data-rfs-style="neon"] body #rfs-rail .rr-btn:not(.go):hover { color: #fff !important; background: rgba(255, 62, 165, .2); box-shadow: 0 0 14px rgba(255, 62, 165, .5); }
+html[data-rfs-style="neon"] body #rfs-rail .rr-btn.go { color: #00131c !important; background: linear-gradient(180deg, #8ff8ff, #3ef0ff 45%, #1fb8ff); border: 1px solid #c8fcff; box-shadow: 0 0 12px rgba(62, 240, 255, .5); }
+html[data-rfs-style="neon"] body :is(#rfs-rail .rr-link, #rfs-qmenu .ql, #rfs-data .rd-row) { border-radius: 1px; }
+html[data-rfs-style="neon"] body :is(#rfs-rail .rr-link, #rfs-qmenu .ql):hover { background: rgba(62, 240, 255, .08); box-shadow: inset var(--ne-x) 0 0 #ff3ea5; }
+html[data-rfs-style="neon"] body #rfs-data .rd-cc { font-family: var(--ne-mono) !important; border-radius: 1px; color: #9ff7ff; background: transparent; border-color: rgba(62, 240, 255, .35); }
+html[data-rfs-style="neon"] body #rfs-data .rd-row.home { background: rgba(62, 240, 255, .07); box-shadow: inset 0 0 0 1px rgba(62, 240, 255, .5); }
+html[data-rfs-style="neon"] body #rfs-data .rd-row.home .rd-cc { color: #00131c; background: #3ef0ff; }
+html[data-rfs-style="neon"] body #rfs-data .rd-kwd { color: #8ff8ff; }
+html[data-rfs-style="neon"] body #rfs-data .rd-link:hover { border-color: rgba(255, 62, 165, .7); box-shadow: 0 0 12px rgba(255, 62, 165, .3); }
+html[data-rfs-style="neon"] body #rfs-qbtn {
+  color: #d9f8ff; font-weight: 600; border-radius: 2px; background: rgba(8, 6, 20, .9); border: 1px solid rgba(62, 240, 255, .6);
+  box-shadow: 0 0 10px rgba(62, 240, 255, .3), inset 0 0 8px rgba(62, 240, 255, .1);
+}
+html[data-rfs-style="neon"] body #rfs-qbtn:hover { color: #fff; border-color: #3ef0ff; box-shadow: 0 0 16px rgba(62, 240, 255, .6), inset 0 0 10px rgba(62, 240, 255, .2); }
+
+/* the user box and its footer bar (skin.js) */
+html[data-rfs-style="neon"] { --rf-footer-bg: #07040f; --rf-footer-line: 1px solid rgba(62, 240, 255, .45); --rf-user-radius: 99px; --rf-user-shadow: 0 0 12px rgba(var(--rf-glow), .35); }

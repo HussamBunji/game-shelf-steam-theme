@@ -1,0 +1,607 @@
+/* ═══ Theme 8 — خزنة المغامر (Adventurer's Vault) ═══
+   Home: an RPG inventory screen (character sheet + a bag of item slots framed by rarity = your hours).
+   Chrome: dark leather and stone, gold double hairlines, carved bevelled buttons, garnet gems with gold rims. */
+:root {
+  /* layout base: SpaceTheme (MIT, src/vendor/space) — its sidebar, search, centred store/library;
+     this style supplies the colours below, its own fonts, home design, icons and the rules further down */
+  --rf-vendor: space;
+  --rf-vendor-skip: options/fonts/, options/general/alwaysShowSidebar;
+  --rf-style-id: vault;
+  --rf-layout: vault;
+
+  /* fonts (Latin first, Arabic second — each script picks its own). Alegreya Sans + Noto Naskh Arabic stay readable
+     at 13px; Cinzel + Aref Ruqaa are the display pair for headings only. Alegreya Sans has no 600 weight on purpose. */
+  --rf-font-ui: 'Alegreya Sans', 'Noto Naskh Arabic', 'Segoe UI', sans-serif;
+  --rf-font-gf: "family=Alegreya+Sans:wght@400;500;700;800&family=Noto+Naskh+Arabic:wght@400;500;600;700&family=Cinzel:wght@500;600;700&family=Aref+Ruqaa:wght@400;700";
+  --rf-heading-font: 'Cinzel', 'Aref Ruqaa', 'Alegreya Sans', 'Noto Naskh Arabic', serif;
+  --rf-heading-case: none;           /* Cinzel is a capitals face already */
+  --rf-heading-spacing: .05em;
+  /* buttons and small labels: Cinzel capitals for Latin, a sturdy Naskh for Arabic (Ruqaa is too ornate that small) */
+  --vt-btn-font: 'Cinzel', 'Noto Naskh Arabic', 'Alegreya Sans', serif;
+  --vt-track: .06em;                 /* letter tracking for capitals (0 in Arabic: spacing breaks the joined script) */
+
+  /* icons: gold strokes; tiles are faceted garnets set in a gold rim */
+  --rf-ic-1: #f6dd9a;
+  --rf-ic-2: #c48a36;
+  --rf-ic-fill: rgba(217, 176, 102, .16);
+  --rf-ic-sw: 1.8;
+  --rf-ic-glow: none;
+  --rf-ict-bg: radial-gradient(circle at 31% 26%, rgba(255, 225, 225, .5) 0 1.5px, transparent 6px),
+    conic-gradient(from 200deg at 50% 56%, #7d2433, #b0414f, #5c1824, #93303f, #641b28, #a63a49, #7d2433);
+  --rf-ict-border: 1px solid #d9b066;
+  --rf-ict-radius: 7px;
+  --rf-ict-shadow: inset 0 0 0 1px rgba(40, 10, 14, .85), inset 0 -3px 5px rgba(20, 4, 8, .55), 0 0 0 1px rgba(60, 42, 16, .9), 0 2px 4px rgba(0, 0, 0, .55);
+  --rf-ict-shadow-hi: inset 0 0 0 1px rgba(40, 10, 14, .85), inset 0 -3px 5px rgba(20, 4, 8, .55), 0 0 0 1px #f3dc9c, 0 0 9px rgba(255, 196, 110, .45), 0 2px 4px rgba(0, 0, 0, .55);
+  --rf-ict-1: #fff1cc;
+  --rf-ict-2: #f0c970;
+  --rf-ict-fill: rgba(255, 225, 160, .18);
+  --rf-ict-glow: none;
+
+  /* palette: torch-lit stone, worn leather, parchment text, gold leaf */
+  --rf-bg: #0f0c0a;
+  --rf-bg-img:
+    radial-gradient(ellipse 70% 42% at 50% -6%, rgba(214, 160, 72, .11), transparent 70%),
+    radial-gradient(ellipse 50% 40% at 100% 100%, rgba(120, 40, 50, .07), transparent 70%);
+  --rf-panel: #1a1511;
+  --rf-panel-2: #241d17;
+  --rf-panel-3: #30271f;
+  --rf-border: rgba(217, 176, 102, .2);
+  --rf-text: #efe6d2;
+  --rf-text-dim: #b3a58c;
+  --rf-accent: #d9b066;
+  --rf-accent-2: #a8742e;
+  --rf-accent-rgb: 217, 176, 102;
+  --rf-accent-ink: #1e1408;
+  --rf-play-1: #4fc574;
+  --rf-play-2: #1f7a42;
+  --rf-play-ink: #04210f;
+  --rf-glow: 255, 170, 70;
+
+  /* chrome shape: carved, nearly square corners */
+  --rf-radius: 3px;
+  --rf-radius-lg: 6px;
+  --rf-topbar: linear-gradient(#221b15, #15110d);
+  --rf-topbar-line: linear-gradient(90deg, transparent, #b8893f 18%, #f3dc9c 50%, #b8893f 82%, transparent);
+  --rf-sidebar: linear-gradient(90deg, #120f0c, #17130f);
+  --rf-card: rgba(255, 236, 200, .035);
+  --rf-card-border: 1px solid rgba(217, 176, 102, .24);
+  --rf-card-hover-shadow: 0 0 0 1px rgba(217, 176, 102, .6), 0 10px 26px rgba(0, 0, 0, .55);
+  --rf-blur: 0px;
+
+  --rf-led-rgb: 255, 200, 120;
+  --rf-plate-1: #f0d08a;
+  --rf-plate-2: #b8863c;
+  --rf-plate-ink: #2a1a08;
+
+  /* rarity (r, g, b): 0 unidentified · 1 common · 2 uncommon · 3 rare · 4 epic · 5 legendary */
+  --vt-r0: 150, 146, 138;
+  --vt-r1: 236, 232, 222;
+  --vt-r2: 82, 214, 98;
+  --vt-r3: 72, 150, 255;
+  --vt-r4: 178, 98, 255;
+  --vt-r5: 255, 152, 48;
+  --vt-gold: 217, 176, 102;
+  /* leather grain (one small SVG tile, rasterised once) for the few big panels */
+  --vt-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .55 0 0 0 0 .42 0 0 0 0 .26 0 0 0 .1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  /* gold filigree: a diamond (garnet in gold) and four corners — window frames in the library and on the store pages */
+  --vt-dia: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='9'%3E%3Cpath d='M4.5 0 9 4.5 4.5 9 0 4.5Z' fill='%23e8c779'/%3E%3Cpath d='M4.5 2.6 6.4 4.5 4.5 6.4 2.6 4.5Z' fill='%238e2a3a'/%3E%3C/svg%3E");
+  /* filigree corners: a gold double rule meeting at a garnet set in gold */
+  --vt-orn-tl: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Cg fill='none' stroke='%23d9b066'%3E%3Cpath d='M1.5 44V16M16 1.5H44' stroke-width='1.4'/%3E%3Cpath d='M6.5 44V20M20 6.5H44' stroke-opacity='.5'/%3E%3Cpath d='M15 9q8 0 10-6M9 15q0 8-6 10' stroke-opacity='.75'/%3E%3C/g%3E%3Cpath d='M9 1.5 16.5 9 9 16.5 1.5 9Z' fill='%23e8c779' stroke='%23140e08'/%3E%3Cpath d='M9 5 13 9 9 13 5 9Z' fill='%23962f40'/%3E%3Cpath d='M9 5 11 7 9 9 7 7Z' fill='%23e88a98' fill-opacity='.6'/%3E%3C/svg%3E");
+  --vt-orn-tr: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Cg transform='matrix(-1 0 0 1 44 0)'%3E%3Cg fill='none' stroke='%23d9b066'%3E%3Cpath d='M1.5 44V16M16 1.5H44' stroke-width='1.4'/%3E%3Cpath d='M6.5 44V20M20 6.5H44' stroke-opacity='.5'/%3E%3Cpath d='M15 9q8 0 10-6M9 15q0 8-6 10' stroke-opacity='.75'/%3E%3C/g%3E%3Cpath d='M9 1.5 16.5 9 9 16.5 1.5 9Z' fill='%23e8c779' stroke='%23140e08'/%3E%3Cpath d='M9 5 13 9 9 13 5 9Z' fill='%23962f40'/%3E%3Cpath d='M9 5 11 7 9 9 7 7Z' fill='%23e88a98' fill-opacity='.6'/%3E%3C/g%3E%3C/svg%3E");
+  --vt-orn-bl: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Cg transform='matrix(1 0 0 -1 0 44)'%3E%3Cg fill='none' stroke='%23d9b066'%3E%3Cpath d='M1.5 44V16M16 1.5H44' stroke-width='1.4'/%3E%3Cpath d='M6.5 44V20M20 6.5H44' stroke-opacity='.5'/%3E%3Cpath d='M15 9q8 0 10-6M9 15q0 8-6 10' stroke-opacity='.75'/%3E%3C/g%3E%3Cpath d='M9 1.5 16.5 9 9 16.5 1.5 9Z' fill='%23e8c779' stroke='%23140e08'/%3E%3Cpath d='M9 5 13 9 9 13 5 9Z' fill='%23962f40'/%3E%3C/g%3E%3C/svg%3E");
+  --vt-orn-br: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Cg transform='matrix(-1 0 0 -1 44 44)'%3E%3Cg fill='none' stroke='%23d9b066'%3E%3Cpath d='M1.5 44V16M16 1.5H44' stroke-width='1.4'/%3E%3Cpath d='M6.5 44V20M20 6.5H44' stroke-opacity='.5'/%3E%3Cpath d='M15 9q8 0 10-6M9 15q0 8-6 10' stroke-opacity='.75'/%3E%3C/g%3E%3Cpath d='M9 1.5 16.5 9 9 16.5 1.5 9Z' fill='%23e8c779' stroke='%23140e08'/%3E%3Cpath d='M9 5 13 9 9 13 5 9Z' fill='%23962f40'/%3E%3C/g%3E%3C/svg%3E");
+  --vt-orns: var(--vt-orn-tl) top left / 44px 44px no-repeat, var(--vt-orn-tr) top right / 44px 44px no-repeat,
+    var(--vt-orn-bl) bottom left / 44px 44px no-repeat, var(--vt-orn-br) bottom right / 44px 44px no-repeat;
+  /* the same corners, small, for bars and cards */
+  --vt-orns-s: var(--vt-orn-tl) top left / 24px 24px no-repeat, var(--vt-orn-tr) top right / 24px 24px no-repeat,
+    var(--vt-orn-bl) bottom left / 24px 24px no-repeat, var(--vt-orn-br) bottom right / 24px 24px no-repeat;
+}
+
+/* SpaceTheme's colour slots (r, g, b), filled with the vault palette.
+   :root:root outranks SpaceTheme's own root.css, which loads after this file. */
+:root:root {
+  --st-accent-1: 217, 176, 102;
+  --st-accent-2: 240, 212, 150;
+  --st-background: 15, 12, 10;
+  --st-color-1: 22, 18, 14;
+  --st-color-2: 38, 31, 25;
+  --st-color-3: 26, 21, 17;
+  --st-color-4: 33, 27, 21;
+  --st-color-5: 74, 60, 40;
+  --st-color-6: 62, 50, 34;
+  --st-green: 47, 150, 86;
+  --st-green-hover: 62, 172, 102;
+  --st-blue: 72, 130, 220;
+  --st-blue-hover: 96, 150, 235;
+  --st-border-radius: 3px;
+}
+
+/* Arabic: no letter tracking anywhere (it pulls the joined letters apart); "start → end" gradients run right to left */
+html[data-rfs-style="vault"][data-rfs-lang="ar"] { --vt-track: 0; --rf-heading-spacing: 0; --vt-to: left; }
+
+/* ═════════════ Steam windows (stable class names only) ═════════════ */
+html[data-rfs-style="vault"] ::selection { background: rgba(217, 176, 102, .38); color: #fff6e0; }
+html[data-rfs-style="vault"] ::-webkit-scrollbar { width: 12px !important; height: 12px !important; }
+html[data-rfs-style="vault"] ::-webkit-scrollbar-track { background: rgba(0, 0, 0, .22) !important; border-radius: 0 !important; }
+html[data-rfs-style="vault"] ::-webkit-scrollbar-thumb {
+  border: 3px solid transparent !important; border-radius: 6px !important;
+  background: linear-gradient(90deg, #5e4626, #a98240 50%, #5e4626) padding-box !important;
+}
+html[data-rfs-style="vault"] ::-webkit-scrollbar-thumb:hover { border-width: 2px !important; background: linear-gradient(90deg, #7a5d30, #d9b066 50%, #7a5d30) padding-box !important; }
+html[data-rfs-style="vault"] ::-webkit-scrollbar-corner { background: transparent !important; }
+
+/* buttons: dark stone, gold double border (outer border + inner inset line), a slight bevel */
+html[data-rfs-style="vault"] .DialogButton {
+  color: #f1e4c4 !important; text-shadow: 0 1px 0 rgba(0, 0, 0, .75) !important;
+  background: linear-gradient(180deg, #3b342c 0%, #2a241e 52%, #1e1a16 100%) !important;
+  border: 1px solid #c9a24e !important; border-radius: 3px !important;
+  box-shadow: inset 0 0 0 2px #17130f, inset 0 0 0 3px rgba(217, 176, 102, .42),
+    inset 0 6px 7px -4px rgba(255, 240, 205, .14), inset 0 -6px 7px -4px rgba(0, 0, 0, .45),
+    0 1px 0 rgba(0, 0, 0, .65), 0 2px 6px rgba(0, 0, 0, .35) !important;
+  transition: background .15s, border-color .15s, color .15s !important;
+}
+html[data-rfs-style="vault"] .DialogButton:not(:disabled):hover,
+html[data-rfs-style="vault"] .DialogButton:focus-visible {
+  color: #fff4d4 !important; border-color: #ecca7c !important;
+  background: linear-gradient(180deg, #4a4136 0%, #322a22 52%, #241f1a 100%) !important;
+}
+html[data-rfs-style="vault"] .DialogButton:not(:disabled):active {
+  background: linear-gradient(180deg, #1a1612, #28221c) !important;
+  box-shadow: inset 0 0 0 2px #17130f, inset 0 0 0 3px rgba(217, 176, 102, .42), inset 0 3px 6px rgba(0, 0, 0, .6) !important;
+}
+html[data-rfs-style="vault"] .DialogButton:disabled { opacity: .5; }
+/* the main action of a dialog: gold leaf */
+html[data-rfs-style="vault"] :is(.DialogButton.Primary, .DialogButton.Green) {
+  color: #23170a !important; text-shadow: 0 1px 0 rgba(255, 240, 200, .45) !important;
+  background: linear-gradient(180deg, #f3d891 0%, #d1a54e 50%, #a8772e 100%) !important; border-color: #f6e2a6 !important;
+  box-shadow: inset 0 0 0 2px #6b4b1c, inset 0 0 0 3px rgba(255, 236, 180, .55), inset 0 -5px 7px -4px rgba(80, 50, 10, .5),
+    0 1px 0 rgba(0, 0, 0, .65), 0 2px 8px rgba(0, 0, 0, .4) !important;
+}
+html[data-rfs-style="vault"] :is(.DialogButton.Primary, .DialogButton.Green):not(:disabled):hover {
+  color: #1a1006 !important; background: linear-gradient(180deg, #fbe6aa 0%, #e0b65e 50%, #b8863c 100%) !important;
+}
+html[data-rfs-style="vault"] :is(.DialogButton.Primary, .DialogButton.Green):not(:disabled):active {
+  background: linear-gradient(180deg, #a8772e 0%, #c99a45 60%, #e0b65e 100%) !important;
+}
+html[data-rfs-style="vault"] .DialogInput {
+  color: #f1e4c4 !important; background: #120e0b !important;
+  border: 1px solid rgba(201, 162, 78, .45) !important; border-radius: 3px !important;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, .7), 0 1px 0 rgba(255, 230, 180, .05) !important;
+}
+html[data-rfs-style="vault"] .DialogInput:focus { border-color: #e2bf6e !important; box-shadow: inset 0 2px 5px rgba(0, 0, 0, .7), 0 0 0 2px rgba(217, 176, 102, .22) !important; }
+html[data-rfs-style="vault"] .DialogInput::placeholder { color: #8d8068 !important; }
+html[data-rfs-style="vault"] .DialogDropDown {
+  color: #f1e4c4 !important; border-radius: 3px !important;
+  background: linear-gradient(180deg, #332c25, #221d18) !important; border: 1px solid rgba(201, 162, 78, .6) !important;
+  box-shadow: inset 0 0 0 1px #17130f, inset 0 5px 6px -4px rgba(255, 240, 205, .1), 0 1px 0 rgba(0, 0, 0, .55) !important;
+}
+html[data-rfs-style="vault"] .DialogDropDown:hover { border-color: #e2bf6e !important; }
+/* only the frame — Steam's own checked colour stays readable */
+html[data-rfs-style="vault"] .DialogCheckbox {
+  border: 1px solid #c9a24e !important; border-radius: 2px !important;
+  box-shadow: inset 0 0 0 1px rgba(23, 19, 15, .9), inset 0 1px 3px rgba(0, 0, 0, .55) !important;
+}
+
+/* ═════════════ store, community, help: every page is an RPG menu screen ═════════════
+   Torch-lit stone behind everything; content sits on leather plates with a gold hairline; headings are engraved
+   capitals with a gold rule ending in a garnet; buy = an emerald set in gold, other buttons = carved stone; the price
+   is gold, the discount an emerald tag; review scores and highlights use the rarity colours. Prices, forms and text
+   stay in the plain UI font at full contrast. Steam's React pages use hashed class names — those rules are marked
+   "hashed" (the same classes SpaceTheme targets for this Steam build); structure / [data-rfs] fallbacks cover the rest. */
+
+/* ---- the backdrop: SpaceTheme paints the page on ONE fixed body::before layer (no repaint on scroll) ---- */
+html[data-rfs-style="vault"] body::before {
+  background:
+    radial-gradient(ellipse 60% 38% at 50% -4%, rgba(232, 168, 78, .16), transparent 72%),
+    radial-gradient(ellipse 40% 60% at -6% 40%, rgba(150, 47, 64, .08), transparent 70%),
+    radial-gradient(ellipse 40% 60% at 106% 60%, rgba(150, 47, 64, .07), transparent 70%),
+    radial-gradient(ellipse 120% 90% at 50% 40%, transparent 55%, rgba(0, 0, 0, .55)),
+    var(--vt-grain),
+    linear-gradient(180deg, #17120e, #0f0c09 60%, #0b0907) !important;
+}
+html[data-rfs-style="vault"] body { color: #e9dfc8; }
+html[data-rfs-style="vault"] body :is(.store_bg_overlay, .home_page_takeover_link) { opacity: .5 !important; }
+
+/* ---- the store's top bar: a leather band in a gold double rule with garnet corners (hashed, + the sticky tag) ---- */
+html[data-rfs-style="vault"] :is(._-6WU-qJBwUo- .XLbP8xOkCYw-, .dm2SGcwBwj4- .WCG-2-OYepA-, :is(.store_nav_area, #store_nav_area) .store_nav_bg),
+html[data-rfs-style="vault"] body.v6 .StoreMenuLoadingPlaceholder .PlaceholderInner {
+  border: 1px solid #6e5430 !important; border-radius: 3px !important;
+  background: var(--vt-orns-s), linear-gradient(180deg, rgba(255, 228, 180, .06), transparent 60%), var(--vt-grain), linear-gradient(180deg, #2a2119, #18130e) !important;
+  box-shadow: inset 0 0 0 1px #0b0806, inset 0 0 0 2px rgba(217, 176, 102, .5), inset 0 0 0 5px #16110c, inset 0 0 0 6px rgba(217, 176, 102, .14),
+    0 0 0 1px #000, 0 10px 26px rgba(0, 0, 0, .55) !important;
+}
+html[data-rfs-style="vault"] [data-rfs-sticky] { backdrop-filter: none !important; }
+/* the menu titles: engraved small capitals, a gold rule under the open / hovered one (hashed) */
+html[data-rfs-style="vault"] :is(._-6WU-qJBwUo- .XLbP8xOkCYw- .onHfKWJa1T8- ._2U8ldyeSqVI-.xybfgg9GK6o-, .dm2SGcwBwj4- .WCG-2-OYepA- ._1T0orHOy3Sc- .EYF1OQwj3TE-.dF8HGBmYIK8-) {
+  font-family: var(--vt-btn-font) !important; letter-spacing: var(--vt-track) !important; color: #eadcbc !important; text-shadow: 0 1px 0 #000 !important;
+}
+html[data-rfs-style="vault"] :is(._-6WU-qJBwUo- .XLbP8xOkCYw- .onHfKWJa1T8- ._2U8ldyeSqVI-.xybfgg9GK6o-, .dm2SGcwBwj4- .WCG-2-OYepA- ._1T0orHOy3Sc- .EYF1OQwj3TE-.dF8HGBmYIK8-):is(:hover, .xf0Bphr6uMo-, .NmzlVu-XMK4-) { color: #f6dc8e !important; }
+/* the store search: a recessed well with a gold rim (hashed + classic) */
+html[data-rfs-style="vault"] :is(._-6WU-qJBwUo- .XLbP8xOkCYw- .onHfKWJa1T8- .Tx-rbJxeMFs-, .dm2SGcwBwj4- .WCG-2-OYepA- ._1T0orHOy3Sc- ._5fxF1NcznNc-, .store_nav .searchbox, #store_search .searchbox) {
+  background: #0e0b08 !important; border: 1px solid rgba(201, 162, 78, .6) !important; border-radius: 3px !important;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, .8), 0 1px 0 rgba(255, 230, 180, .06) !important;
+}
+html[data-rfs-style="vault"] :is(.Tx-rbJxeMFs-, ._5fxF1NcznNc-) input { color: #f1e4c4 !important; }
+html[data-rfs-style="vault"] :is(.Tx-rbJxeMFs-, ._5fxF1NcznNc-) input::placeholder { color: #9a8a6c !important; font-style: italic; }
+
+/* ---- headings: engraved gold capitals over a gold rule that starts with a garnet ---- */
+html[data-rfs-style="vault"] body :is(
+  .home_title, .home_page_content h2, .home_page_content .home_page_content_title, #discounts_and_events_title,
+  .page_content > h2, .pageheader, h2.pageheader, .game_purchase_options_editions_header_title, .page_title_area h2, .game_area_purchase > h2, #game_area_description h2,
+  .game_page_autocollapse_ctn > h2, .game_area_description h2, #game_area_reviews h2, .user_reviews_header, .sys_req > h2,
+  .block > .block_title, .rightcol .block_header, .block_header, .game_area_dlc_section h2, .recommendation_reasons_header,
+  .profile_count_link_preview_ctn .profile_header_title, .profile_customization_header, .apphub_sectionTitle,
+  .market_header_text, .market_section_title, .discussion_primary_header, .large_title, .forum_header_title,
+  .badges_sheet_header, .profile_xp_block_header, .help_section_title, .help_page_title, .help_featured_header
+) {
+  font-family: var(--rf-heading-font) !important; font-weight: 700 !important; letter-spacing: var(--rf-heading-spacing) !important;
+  text-transform: none !important; color: #f0d595 !important; text-shadow: 0 1px 0 #000, 0 0 14px rgba(255, 190, 90, .18) !important;
+  border: 0 !important; padding-inline-start: 0 !important; padding-bottom: 7px !important;
+  background: var(--vt-dia) var(--vt-start-x, left) bottom -4px / 9px 9px no-repeat,
+    linear-gradient(to var(--vt-end-x, right), rgba(217, 176, 102, .75), rgba(217, 176, 102, .15) 60%, transparent) bottom / 100% 1px no-repeat !important;
+}
+html[data-rfs-style="vault"] body :is(.home_title, .pageheader, h2.pageheader, .large_title, .help_page_title) { font-size: 22px !important; }
+html[data-rfs-style="vault"][data-rfs-lang="ar"] { --vt-start-x: right; --vt-end-x: left; }
+/* the game's own title on its store page and hub */
+html[data-rfs-style="vault"] body :is(#appHubAppName, .apphub_AppName) {
+  font-family: var(--rf-heading-font) !important; font-weight: 700 !important; letter-spacing: .03em !important; color: #f6e3a8 !important;
+  text-shadow: 0 2px 0 #000, 0 0 18px rgba(255, 190, 90, .25) !important;
+}
+
+/* ---- leather plates: the store's panels and rows, a gold hairline on a dark-leather gradient ---- */
+html[data-rfs-style="vault"] body :is(
+  .game_area_purchase_game, .game_meta_data .block.responsive_apppage_details_right, .game_meta_data .block.responsive_apppage_details_left,
+  #game_highlights .rightcol, .glance_ctn_responsive_right, .game_area_play_stats, .review_box, .game_area_dlc_section .game_area_dlc_list,
+  .search_result_row, #additional_search_options .search_collapse_block,
+  .search_page .searchbar, .home_tab_bg_ctn .tabs_menu_ctn, .home_tabs_columns .tab_row_item, .home_tabs_columns #tab_preview_container .tab_preview,
+  .home_content .home_content_item, .block.responsive_apppage_reviewblock, .apphub_Card, .profile_customization, .profile_content .profile_leftcol .profile_customization,
+  .market_home_listing_table, .market_listing_row.market_recent_listing_row, #myMarketTabs, .market_search_sidebar_contents, .market_content_block,
+  .forum_topic, .rightbox, .badge_row, .badges_sheet, .profile_xp_block, .help_featured_topic, .help_content_box
+) {
+  background: linear-gradient(180deg, rgba(255, 236, 200, .045), transparent 70px), linear-gradient(180deg, #1f1913, #15110d) !important;
+  border: 1px solid rgba(217, 176, 102, .26) !important; border-radius: 3px !important;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 236, 200, .05), 0 6px 16px rgba(0, 0, 0, .35) !important;
+}
+/* rows you can click light up in gold */
+html[data-rfs-style="vault"] body :is(.search_result_row, .home_tabs_columns .tab_row_item, .apphub_Card, .forum_topic, .badge_row, .market_listing_row.market_recent_listing_row, .help_featured_topic, .home_content_item):hover {
+  border-color: rgba(240, 212, 150, .7) !important;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .5), inset 0 0 20px rgba(255, 190, 90, .07), 0 0 0 1px rgba(217, 176, 102, .25), 0 8px 20px rgba(0, 0, 0, .5) !important;
+}
+html[data-rfs-style="vault"] body .home_tabs_columns .tab_row_item.focus {
+  border-color: #e2bf6e !important;
+  background: linear-gradient(to var(--vt-end-x, right), rgba(217, 176, 102, .16), transparent 60%), linear-gradient(180deg, #241c15, #17120e) !important;
+}
+/* the big framed ones: purchase boxes, the game's highlight column — a gold double rule and garnet corners */
+html[data-rfs-style="vault"] body :is(.game_area_purchase_game, #game_highlights .rightcol, .checkout .payment_info_form_area) {
+  border-color: #6e5430 !important;
+  background: var(--vt-orns-s), linear-gradient(180deg, rgba(255, 236, 200, .05), transparent 80px), var(--vt-grain), linear-gradient(180deg, #221b14, #15110d) !important;
+  box-shadow: inset 0 0 0 1px #0b0806, inset 0 0 0 2px rgba(217, 176, 102, .45), inset 0 0 0 5px #16110c, inset 0 0 0 6px rgba(217, 176, 102, .13),
+    0 0 0 1px #000, 0 10px 26px rgba(0, 0, 0, .5) !important;
+}
+html[data-rfs-style="vault"] body .game_area_purchase_game h1 { font-family: var(--rf-heading-font) !important; color: #f3e2b6 !important; letter-spacing: .02em; }
+/* the main carousel and capsules: art in a gold frame (no filters on the images themselves) */
+html[data-rfs-style="vault"] body :is(.carousel_container.maincap .store_main_capsule, .store_capsule, .tab_item_cap, .search_capsule, .capsule.headerv5) {
+  outline: 1px solid rgba(217, 176, 102, .28); outline-offset: -1px;
+}
+html[data-rfs-style="vault"] body .carousel_container.maincap .store_main_capsule {
+  border-radius: 3px !important; box-shadow: 0 0 0 1px #000, 0 0 0 3px #1a140f, 0 0 0 4px rgba(217, 176, 102, .45), 0 16px 34px rgba(0, 0, 0, .6) !important;
+}
+html[data-rfs-style="vault"] body .carousel_container.maincap .store_main_capsule .info { background: linear-gradient(180deg, #231b14, #15110d) !important; }
+html[data-rfs-style="vault"] body .store_capsule:hover { outline-color: rgba(240, 212, 150, .8); }
+/* carousel pages = small cut gems */
+html[data-rfs-style="vault"] body .carousel_thumbs > div {
+  width: 9px !important; height: 9px !important; margin: 0 5px !important; border-radius: 1px !important; transform: rotate(45deg);
+  background: #3b2f21 !important; box-shadow: 0 0 0 1px rgba(217, 176, 102, .45) !important;
+}
+html[data-rfs-style="vault"] body .carousel_thumbs > div.focus { background: linear-gradient(135deg, #fff1c4, #e2b25a 55%, #9c6a22) !important; box-shadow: 0 0 0 1px #000, 0 0 8px rgba(255, 190, 90, .6) !important; }
+html[data-rfs-style="vault"] body .carousel_thumbs { background: transparent !important; }
+html[data-rfs-style="vault"] body .carousel_container .arrow > div { filter: sepia(1) saturate(1.6) hue-rotate(-12deg) brightness(.95); }
+
+/* ---- text: readable parchment on leather, gold links ---- */
+html[data-rfs-style="vault"] body :is(.game_description_snippet, .game_area_description, .glance_ctn, .review_box .content, .apphub_CardTextContent, .forum_topic_name) { color: #e6dbc2 !important; }
+html[data-rfs-style="vault"] body :is(.dev_row a, .glance_details a, .game_area_details_specs a, .apphub_CardContentAuthorName a, .whiteLink, .market_listing_item_name_link) { color: #e8c779 !important; }
+html[data-rfs-style="vault"] body :is(.dev_row a, .glance_details a, .whiteLink):hover { color: #fff3d0 !important; }
+
+/* ---- prices: the price is gold, the discount an emerald tag, the old price struck in ash ---- */
+html[data-rfs-style="vault"] body :is(.discount_block, .game_purchase_price, .price) { border-radius: 2px !important; }
+html[data-rfs-style="vault"] body .discount_block:not(.discount_block_inline) {
+  background: #0f0c09 !important; box-shadow: 0 0 0 1px rgba(217, 176, 102, .35) !important;
+}
+html[data-rfs-style="vault"] body .discount_block .discount_prices .discount_final_price,
+html[data-rfs-style="vault"] body .discount_block.no_discount .discount_prices .discount_final_price,
+html[data-rfs-style="vault"] body .game_area_purchase_game .game_purchase_price {
+  color: #f6d885 !important; font-weight: 700 !important; text-shadow: 0 1px 0 #000 !important;
+}
+html[data-rfs-style="vault"] body .discount_block .discount_prices { background: transparent !important; }
+html[data-rfs-style="vault"] body .discount_block .discount_original_price { color: #9c8f78 !important; }
+html[data-rfs-style="vault"] body .discount_block .discount_pct,
+html[data-rfs-style="vault"] body .discount_pct {
+  color: #04210f !important; font-weight: 800 !important; border-radius: 2px !important;
+  background: linear-gradient(180deg, #8fe8a0, #3fae5a) !important;
+  box-shadow: inset 0 0 0 1px rgba(4, 33, 15, .45), inset 0 1px 0 rgba(255, 255, 255, .4) !important;
+}
+html[data-rfs-style="vault"] body .game_area_purchase_game .game_purchase_price { background: #0f0c09 !important; box-shadow: 0 0 0 1px rgba(217, 176, 102, .35) !important; }
+
+/* ---- review scores in rarity colours: positive = uncommon green, mixed = gold, negative = garnet ---- */
+html[data-rfs-style="vault"] body .game_review_summary.positive { color: #6fe08a !important; }
+html[data-rfs-style="vault"] body .game_review_summary.mixed { color: #f0c560 !important; }
+html[data-rfs-style="vault"] body .game_review_summary:is(.negative, .not_enough_reviews) { color: #ff8a7a !important; }
+html[data-rfs-style="vault"] body :is(.user_reviews_summary_row .subtitle, .release_date .subtitle, .dev_row .subtitle) { color: #a9997c !important; }
+
+/* ---- buttons ---- */
+/* buy = an emerald set in gold */
+html[data-rfs-style="vault"] .btn_green_steamui, html[data-rfs-style="vault"] body .btn_green_white_innerfade {
+  color: #effff3 !important; text-shadow: 0 1px 0 rgba(0, 0, 0, .55) !important;
+  background: linear-gradient(180deg, #38a862 0%, #1f7441 55%, #15532e 100%) !important;
+  border: 1px solid #d9b066 !important; border-radius: 3px !important;
+  box-shadow: inset 0 0 0 2px #0f2c18, inset 0 0 0 3px rgba(240, 212, 150, .55), inset 0 6px 7px -4px rgba(220, 255, 230, .3),
+    0 1px 0 rgba(0, 0, 0, .6), 0 3px 8px rgba(0, 0, 0, .4) !important;
+}
+html[data-rfs-style="vault"] :is(.btn_green_steamui, body .btn_green_white_innerfade):hover { color: #fff !important; border-color: #f3dc9c !important; background: linear-gradient(180deg, #46bd72 0%, #268a4c 55%, #1a6639 100%) !important; }
+/* secondary store buttons = carved stone in gold */
+html[data-rfs-style="vault"] :is(.btn_blue_steamui, .btnv6_blue_hoverfade, .btn_grey_steamui, .btnv6_lightblue_blue, .btn_darkblue_white_innerfade, .btnv6_white_transparent, .btn_grey_black, .btn_grey_white_innerfade) {
+  color: #ecdcb6 !important; text-shadow: 0 1px 0 rgba(0, 0, 0, .7) !important;
+  background: linear-gradient(180deg, #3b342c 0%, #2a241e 52%, #1e1a16 100%) !important;
+  border: 1px solid rgba(201, 162, 78, .85) !important; border-radius: 3px !important;
+  box-shadow: inset 0 0 0 2px #17130f, inset 0 0 0 3px rgba(217, 176, 102, .32), inset 0 6px 7px -4px rgba(255, 240, 205, .12), 0 1px 0 rgba(0, 0, 0, .6) !important;
+}
+html[data-rfs-style="vault"] :is(.btn_blue_steamui, .btnv6_blue_hoverfade, .btn_grey_steamui, .btnv6_lightblue_blue, .btn_darkblue_white_innerfade, .btnv6_white_transparent, .btn_grey_black, .btn_grey_white_innerfade):hover {
+  color: #fff4d4 !important; border-color: #ecca7c !important; background: linear-gradient(180deg, #4a4136 0%, #322a22 52%, #241f1a 100%) !important;
+}
+html[data-rfs-style="vault"] :is(.btn_green_steamui, .btn_blue_steamui, .btnv6_blue_hoverfade, .btn_grey_steamui, .btnv6_lightblue_blue, .btn_darkblue_white_innerfade, .btnv6_white_transparent, .btn_grey_black, .btn_grey_white_innerfade, body .btn_green_white_innerfade) > span {
+  background: transparent !important; color: inherit !important; border-radius: 0 !important; text-shadow: inherit !important;
+}
+/* community buttons share the stone look */
+html[data-rfs-style="vault"] body :is(.btn_profile_action, .apphub_sectionTab, .profile_header_actions .btn_profile_action, .market_commodity_buy_button, .pagebtn) {
+  color: #ecdcb6 !important; border-radius: 3px !important;
+  background: linear-gradient(180deg, #3b342c, #2a241e 52%, #1e1a16) !important;
+  border: 1px solid rgba(201, 162, 78, .7) !important; box-shadow: inset 0 0 0 1px #17130f, inset 0 5px 6px -4px rgba(255, 240, 205, .12) !important;
+}
+html[data-rfs-style="vault"] body :is(.apphub_sectionTab.active, .apphub_sectionTab:hover, .pagebtn:hover) { color: #23170a !important; border-color: #f6e2a6 !important; background: linear-gradient(180deg, #f3d891, #c99a45) !important; }
+
+/* ---- forms: recessed wells with a gold rim (the login / checkout fields stay plain and clear) ---- */
+html[data-rfs-style="vault"] body :is(input[type="text"], input[type="password"], input[type="email"], input[type="search"], input[type="number"], input[type="tel"], input:not([type]), textarea, select):not(.rFKwchjD-WU-, .S-0LcpbLAf8-) {
+  color: #f3e8cf !important; background-color: #0e0b08 !important;
+  border: 1px solid rgba(201, 162, 78, .5) !important; border-radius: 3px !important;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, .75) !important;
+}
+html[data-rfs-style="vault"] body :is(input[type="text"], input[type="password"], input[type="email"], input[type="search"], input[type="number"], input[type="tel"], input:not([type]), textarea, select):not(.rFKwchjD-WU-, .S-0LcpbLAf8-):focus {
+  outline: none !important; border-color: #e6c477 !important; box-shadow: inset 0 2px 5px rgba(0, 0, 0, .75), 0 0 0 2px rgba(217, 176, 102, .25) !important;
+}
+html[data-rfs-style="vault"] body :is(input, textarea)::placeholder { color: #8f8169 !important; }
+/* checkboxes on the search filters: a small gold socket */
+html[data-rfs-style="vault"] body .tab_filter_control_checkbox { border-radius: 2px !important; box-shadow: 0 0 0 1px rgba(217, 176, 102, .55) !important; background-color: #0e0b08 !important; }
+html[data-rfs-style="vault"] body .tab_filter_control_include.checked .tab_filter_control_checkbox { background-color: #d9b066 !important; }
+
+/* ---- the login / sign-in box (store, checkout, account when signed out) — a framed parchment-on-leather card ---- */
+html[data-rfs-style="vault"] body :is([class*="newlogindialog_LoginForm"], [class*="login_SideBySide"], [class*="newlogindialog_ModalContainer"], .login_modal, #login_form_container) {
+  border-radius: 4px !important;
+}
+html[data-rfs-style="vault"] body [class*="newlogindialog_HomePageContent"], html[data-rfs-style="vault"] body [class*="newlogindialog_SideBySide"] {
+  padding: 26px !important; border: 1px solid #6e5430 !important; border-radius: 4px !important;
+  background: var(--vt-orns-s), var(--vt-grain), linear-gradient(180deg, #221b14, #141009) !important;
+  box-shadow: inset 0 0 0 1px #0b0806, inset 0 0 0 2px rgba(217, 176, 102, .45), inset 0 0 0 6px #16110c, inset 0 0 0 7px rgba(217, 176, 102, .13), 0 20px 50px rgba(0, 0, 0, .6) !important;
+}
+html[data-rfs-style="vault"] body :is([class*="newlogindialog_SignInText"], [class*="newlogindialog_Title"]) { font-family: var(--rf-heading-font) !important; color: #f0d595 !important; letter-spacing: .04em; }
+html[data-rfs-style="vault"] body :is([class*="newlogindialog_FieldLabel"], [class*="newlogindialog_CheckboxField"]) { color: #d9c69c !important; }
+html[data-rfs-style="vault"] body [class*="newlogindialog_SubmitButton"] {
+  color: #23170a !important; text-shadow: 0 1px 0 rgba(255, 240, 200, .45) !important; border-radius: 3px !important;
+  background: linear-gradient(180deg, #f3d891 0%, #d1a54e 50%, #a8772e 100%) !important; border: 1px solid #f6e2a6 !important;
+  box-shadow: inset 0 0 0 2px #6b4b1c, inset 0 0 0 3px rgba(255, 236, 180, .55), 0 3px 10px rgba(0, 0, 0, .45) !important;
+}
+html[data-rfs-style="vault"] body [class*="newlogindialog_SubmitButton"]:hover { background: linear-gradient(180deg, #fbe6aa 0%, #e0b65e 50%, #b8863c 100%) !important; }
+html[data-rfs-style="vault"] body [class*="newlogindialog_TextField"] input { min-height: 40px !important; font-size: 15px !important; }
+html[data-rfs-style="vault"] body [class*="newlogindialog_QRBox"], html[data-rfs-style="vault"] body [class*="newlogindialog_QR"] canvas { border-radius: 4px !important; }
+html[data-rfs-style="vault"] body :is(body.waitforauth, .waitforauth) h2 { font-family: var(--rf-heading-font) !important; color: #f0d595 !important; }
+
+/* ---- tabs and segmented controls: gold rule under the active one ---- */
+html[data-rfs-style="vault"] body :is(.home_tab_bg_ctn .tabs_menu_ctn .home_tab_button, .tab_content_ctn .tab, .tabbar .tab) {
+  font-family: var(--vt-btn-font) !important; letter-spacing: var(--vt-track) !important; color: #d9c69c !important;
+}
+html[data-rfs-style="vault"] body :is(.home_tab_bg_ctn .tabs_menu_ctn .home_tab_button.active, .tabbar .tab.active) {
+  color: #f6dc8e !important; background: linear-gradient(180deg, rgba(217, 176, 102, .2), rgba(217, 176, 102, .04)) !important; box-shadow: inset 0 -2px 0 #d9b066 !important;
+}
+
+/* ---- the charts: the top three ranks are legendary, epic and rare ---- */
+html[data-rfs-style="vault"] body [class*="weeklytopsellers_RankCell"], html[data-rfs-style="vault"] body ._34h48M_x9S-9Q2FFPX_CcI { font-family: var(--rf-heading-font) !important; color: #e8c779 !important; }
+
+/* ---- community: profile, hub, market, discussions, badges ---- */
+html[data-rfs-style="vault"] body :is(.profile_header_bg, .profile_header_bg_texture) { background-color: transparent !important; }
+html[data-rfs-style="vault"] body .profile_header_bg_texture {
+  border: 1px solid #6e5430 !important; border-radius: 4px !important;
+  background: var(--vt-orns-s), linear-gradient(180deg, rgba(255, 228, 180, .05), transparent 60%), var(--vt-grain), linear-gradient(180deg, #241c15, #15110d) !important;
+  box-shadow: inset 0 0 0 1px #0b0806, inset 0 0 0 2px rgba(217, 176, 102, .45), inset 0 0 0 6px #16110c, inset 0 0 0 7px rgba(217, 176, 102, .13), 0 14px 34px rgba(0, 0, 0, .5) !important;
+}
+html[data-rfs-style="vault"] body :is(.persona_name .actual_persona_name, .profile_header .persona_name) { font-family: var(--rf-heading-font) !important; color: #f6e3a8 !important; text-shadow: 0 2px 0 #000 !important; }
+html[data-rfs-style="vault"] body .profile_private_info { color: #c9b78f !important; font-style: italic; }
+/* the avatar sits in a gold socket */
+html[data-rfs-style="vault"] body .playerAvatar.profile_header_size, html[data-rfs-style="vault"] body .playerAvatarAutoSizeInner {
+  border-radius: 3px !important; box-shadow: 0 0 0 1px #000, 0 0 0 3px #1a140f, 0 0 0 4px #c9a24e, 0 0 18px rgba(255, 190, 90, .25) !important;
+}
+html[data-rfs-style="vault"] body .profile_content { background: transparent !important; }
+html[data-rfs-style="vault"] body .apphub_HomeHeaderContent, html[data-rfs-style="vault"] body .apphub_HeaderTop { background: linear-gradient(180deg, #221a14, #15110d) !important; }
+html[data-rfs-style="vault"] body .apphub_HeaderTop { border-bottom: 1px solid rgba(217, 176, 102, .4) !important; }
+html[data-rfs-style="vault"] body .market_listing_price, html[data-rfs-style="vault"] body .normal_price { color: #f6d885 !important; }
+html[data-rfs-style="vault"] body :is(.forum_topic_reply_count, .market_listing_num_listings_qty) { color: #e8c779 !important; }
+
+/* ---- the footer: dark leather below a gold rule ---- */
+html[data-rfs-style="vault"] body #footer {
+  background: linear-gradient(180deg, rgba(255, 228, 180, .04), transparent 80px), var(--vt-grain), linear-gradient(180deg, #19140f, #0e0b08) !important;
+  border-top: 1px solid rgba(217, 176, 102, .45) !important; box-shadow: inset 0 1px 0 #000, inset 0 2px 0 rgba(217, 176, 102, .12) !important;
+}
+html[data-rfs-style="vault"] body #footer a { color: #d9c69c !important; }
+html[data-rfs-style="vault"] body #footer a:hover { color: #fff0c6 !important; }
+/* the new store footer (hashed): headings in engraved gold */
+html[data-rfs-style="vault"] body :is(.onLSYXBtvEU-) { font-family: var(--vt-btn-font) !important; color: #e2c27e !important; letter-spacing: .12em !important; }
+
+/* ---- whatever webkit.js re-coloured (left-over Steam-blue panels): leather too ---- */
+html[data-rfs-style="vault"] [data-rfs="card"][data-rfs-r], html[data-rfs-style="vault"] [data-rfs="bg2"][data-rfs-r], html[data-rfs-style="vault"] [data-rfs="bg3"][data-rfs-r] {
+  background: linear-gradient(180deg, rgba(255, 236, 200, .04), transparent 70px), linear-gradient(180deg, #1f1913, #15110d) !important;
+  box-shadow: inset 0 0 0 1px rgba(217, 176, 102, .22), 0 6px 16px rgba(0, 0, 0, .3) !important;
+}
+html[data-rfs-style="vault"] [data-rfs="acc"] { background: linear-gradient(180deg, #f3d891, #c99a45) !important; color: #23170a !important; }
+
+/* ---- tags ---- */
+html[data-rfs-style="vault"] .app_tag {
+  color: #e6cf98 !important; background: rgba(217, 176, 102, .08) !important;
+  border: 1px solid rgba(217, 176, 102, .3) !important; border-radius: 2px !important; box-shadow: inset 0 1px 0 rgba(255, 236, 190, .06) !important;
+}
+html[data-rfs-style="vault"] .app_tag:hover { color: #23170a !important; background: linear-gradient(180deg, #f3d891, #c99a45) !important; border-color: #f6e2a6 !important; }
+
+/* ═════════════ our pieces ═════════════ */
+/* — the library filter strip (inside the home design) and the Ctrl+K floating search — */
+html[data-rfs-style="vault"] #rfs-bar:is(.inhome, .float), html[data-rfs-style="vault"] #rfs .rf-dock.rf-merge {
+  border-radius: 5px; border: 1px solid rgba(217, 176, 102, .55);
+  background: linear-gradient(180deg, rgba(255, 228, 180, .05), transparent 45%), var(--vt-grain), linear-gradient(180deg, #241c15, #17120e);
+  box-shadow: inset 0 0 0 3px #15110d, inset 0 0 0 4px rgba(217, 176, 102, .2), 0 8px 22px rgba(0, 0, 0, .45);
+}
+html[data-rfs-style="vault"] #rfs-bar.inhome { padding: 9px 12px; }
+html[data-rfs-style="vault"] #rfs-bar :is(.tb-btn, .tb-seg button) {
+  color: #eadcbc; text-shadow: 0 1px 0 rgba(0, 0, 0, .7); border-radius: 3px;
+  background: linear-gradient(180deg, #38312a, #26211b 55%, #1d1915);
+  border: 1px solid rgba(201, 162, 78, .8);
+  box-shadow: inset 0 0 0 2px #17130f, inset 0 0 0 3px rgba(217, 176, 102, .28), inset 0 5px 6px -4px rgba(255, 240, 205, .12);
+}
+html[data-rfs-style="vault"] #rfs-bar :is(.tb-btn, .tb-seg button):hover { color: #fff3d0; border-color: #e6c477; background: linear-gradient(180deg, #463d33, #2e2720 55%, #221d18); }
+html[data-rfs-style="vault"] #rfs-bar :is(.tb-btn.on, .tb-seg button.on) {
+  color: #f3dc9c; border-color: #e6c477;
+  background: linear-gradient(180deg, rgba(217, 176, 102, .28), rgba(217, 176, 102, .08)), #221c16;
+}
+html[data-rfs-style="vault"] #rfs-bar .tb-search {
+  border-radius: 3px; background: #100c09; border: 1px solid rgba(201, 162, 78, .6);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, .75), 0 1px 0 rgba(255, 230, 180, .05);
+}
+html[data-rfs-style="vault"] #rfs-bar .tb-search:focus-within { border-color: #e6c477; box-shadow: inset 0 2px 5px rgba(0, 0, 0, .75), 0 0 0 2px rgba(217, 176, 102, .2); }
+html[data-rfs-style="vault"] #rfs-bar .tb-q { color: #f1e4c4; }
+html[data-rfs-style="vault"] #rfs-bar .tb-q::placeholder { color: #8f8169; }
+html[data-rfs-style="vault"] #rfs-bar .tb-kbd,
+html[data-rfs-style="vault"] #rfs-bar .pl-foot kbd {
+  color: #2a1c0b; border-radius: 2px; background: linear-gradient(180deg, #efe0bc, #cdb47e); box-shadow: 0 1px 0 #6b5223;
+}
+/* dropdowns + quick results: a leather pouch with a gold double hairline */
+html[data-rfs-style="vault"] #rfs-bar :is(.rf-dd-menu, .tb-results) {
+  border-radius: 4px; border: 1px solid rgba(217, 176, 102, .6);
+  background: var(--vt-grain), linear-gradient(180deg, #221a14, #15110d);
+  box-shadow: inset 0 0 0 2px #120e0b, inset 0 0 0 3px rgba(217, 176, 102, .2), 0 18px 44px rgba(0, 0, 0, .7);
+}
+html[data-rfs-style="vault"] #rfs-bar :is(.rf-dd-menu button, .pl-item) { border: 0; border-inline-start: 2px solid transparent; border-radius: 2px; }
+html[data-rfs-style="vault"] #rfs-bar :is(.rf-dd-menu button:hover, .pl-item:hover) { background: rgba(217, 176, 102, .12); }
+html[data-rfs-style="vault"] #rfs-bar :is(.rf-dd-menu button.on, .pl-item.sel) {
+  color: #f3dc9c; border-inline-start-color: #d9b066;
+  background: linear-gradient(to var(--vt-to, right), rgba(217, 176, 102, .2), rgba(217, 176, 102, .04));
+}
+html[data-rfs-style="vault"] #rfs-bar .pl-sec {
+  font-family: var(--rf-heading-font) !important; font-size: 11.5px; letter-spacing: var(--vt-track); color: #d9b066;
+}
+html[data-rfs-style="vault"] #rfs-bar .pl-tag { color: #8ff0a8; background: rgba(79, 197, 116, .14); border-radius: 2px; }
+html[data-rfs-style="vault"] #rfs-bar .pl-tag.dim { color: #a99e8c; background: rgba(255, 255, 255, .06); }
+html[data-rfs-style="vault"] #rfs-bar .pl-foot { border-top-color: rgba(217, 176, 102, .18); background: rgba(0, 0, 0, .28); }
+
+/* — the CD-case viewer's buttons, the theme picker box, the toast — */
+html[data-rfs-style="vault"] #rfs-viewer .btn {
+  color: #f1e4c4; border: 1px solid #c9a24e; border-radius: 3px;
+  background: linear-gradient(180deg, #3b342c, #26211b 55%, #1d1915);
+  box-shadow: inset 0 0 0 2px #17130f, inset 0 0 0 3px rgba(217, 176, 102, .4), inset 0 6px 7px -4px rgba(255, 240, 205, .12);
+}
+html[data-rfs-style="vault"] #rfs-viewer .btn:hover { border-color: #ecca7c; background: linear-gradient(180deg, #4a4136, #302921 55%, #221d18); }
+html[data-rfs-style="vault"] #rfs-viewer .btn.play {
+  color: #effff3; border: 1px solid #d9b066; background: linear-gradient(180deg, #34a35d, #1f7440 55%, #155530);
+  box-shadow: inset 0 0 0 2px #0f2c18, inset 0 0 0 3px rgba(240, 212, 150, .5), inset 0 6px 7px -4px rgba(220, 255, 230, .3), 0 4px 14px rgba(0, 0, 0, .4);
+}
+html[data-rfs-style="vault"] #rfs-viewer .btn.play.is-running { color: #23170a; border-color: #f6e2a6; background: linear-gradient(180deg, #f3d891, #d1a54e 50%, #a8772e); }
+html[data-rfs-style="vault"] #rfs-viewer .chip { border-radius: 2px; border-color: rgba(217, 176, 102, .35); background: rgba(0, 0, 0, .35); }
+html[data-rfs-style="vault"] #rfs-viewer .stat { border-radius: 3px; border-color: rgba(217, 176, 102, .18); }
+html[data-rfs-style="vault"] #rfs-themes .tp-box {
+  border-radius: 6px; border: 1px solid rgba(217, 176, 102, .6);
+  background: var(--vt-grain), linear-gradient(180deg, #211a14, #14100c);
+  box-shadow: inset 0 0 0 3px #120e0b, inset 0 0 0 4px rgba(217, 176, 102, .22), 0 30px 90px rgba(0, 0, 0, .75);
+}
+html[data-rfs-style="vault"] #rfs-themes .tp-head h2 { font-family: var(--rf-heading-font) !important; letter-spacing: var(--vt-track); color: #f0d595; }
+html[data-rfs-style="vault"] #rfs-themes .tp-card { border-radius: 4px; }
+html[data-rfs-style="vault"] #rfs-themes .tp-close {
+  color: #f1e4c4; border: 1px solid #c9a24e; border-radius: 3px; background: linear-gradient(180deg, #3b342c, #26211b 55%, #1d1915);
+  box-shadow: inset 0 0 0 2px #17130f, inset 0 0 0 3px rgba(217, 176, 102, .4);
+}
+html[data-rfs-style="vault"] #rfs-toast {
+  border-radius: 4px; border: 1px solid rgba(217, 176, 102, .6); background: linear-gradient(180deg, #261e17, #16110d);
+  box-shadow: inset 0 0 0 2px #120e0b, inset 0 0 0 3px rgba(217, 176, 102, .2), 0 12px 30px rgba(0, 0, 0, .6);
+}
+
+/* — store side panels (#rfs-rail / #rfs-data) and the header Quick links menu: leather cards, gold hairlines — */
+html[data-rfs-style="vault"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) section {
+  padding: 12px; border-radius: 4px; border: 1px solid rgba(217, 176, 102, .5);
+  background: linear-gradient(180deg, rgba(255, 228, 180, .05), transparent 38%), var(--vt-grain), linear-gradient(180deg, #221a14, #17120e);
+  box-shadow: inset 0 0 0 3px #15110d, inset 0 0 0 4px rgba(217, 176, 102, .18), 0 8px 20px rgba(0, 0, 0, .45);
+}
+html[data-rfs-style="vault"] #rfs-qmenu section {
+  background: linear-gradient(180deg, rgba(255, 228, 180, .05), transparent 38%), var(--vt-grain), linear-gradient(180deg, #221a14, #17120e) !important;
+}
+html[data-rfs-style="vault"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) h4 {
+  margin: 0 2px 10px; padding-bottom: 7px; font-size: 12.5px; font-weight: 700;
+  font-family: var(--rf-heading-font) !important; letter-spacing: var(--vt-track); color: #f0d595; text-shadow: 0 1px 0 #000;
+  background: linear-gradient(to right, transparent, rgba(217, 176, 102, .7) 20%, rgba(217, 176, 102, .7) 80%, transparent) bottom / 100% 1px no-repeat;
+}
+html[data-rfs-style="vault"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) h4 small { font-family: var(--rf-font-ui) !important; letter-spacing: 0; color: #a99a7e; }
+/* left rail */
+html[data-rfs-style="vault"] #rfs-rail .rr-link,
+html[data-rfs-style="vault"] #rfs-qmenu .ql { border-radius: 2px; border-inline-start: 2px solid transparent; }
+html[data-rfs-style="vault"] #rfs-rail .rr-link:hover,
+html[data-rfs-style="vault"] #rfs-qmenu .ql:hover { background: rgba(217, 176, 102, .12); }
+html[data-rfs-style="vault"] #rfs-rail .rr-link.cur,
+html[data-rfs-style="vault"] #rfs-qmenu .ql.cur {
+  color: #f3dc9c !important; border-inline-start-color: #d9b066;
+  background: linear-gradient(to var(--vt-to, right), rgba(217, 176, 102, .22), rgba(217, 176, 102, .04));
+}
+html[data-rfs-style="vault"] #rfs-rail .rr-app img { border-radius: 3px; border: 1px solid #c9a24e; box-shadow: 0 0 0 3px #15110d, 0 0 0 4px rgba(217, 176, 102, .35); }
+html[data-rfs-style="vault"] #rfs-rail .rr-app b { font-family: var(--rf-heading-font) !important; font-size: 14.5px; color: #f3e6c4; }
+html[data-rfs-style="vault"] #rfs-rail .rr-own { color: #6fe08a; }
+html[data-rfs-style="vault"] #rfs-rail .rr-price { color: #f3d27a; }
+html[data-rfs-style="vault"] #rfs-rail .rr-price i { color: #04210f; border-radius: 2px; background: linear-gradient(180deg, #7fe08f, #3fae5a); }
+html[data-rfs-style="vault"] #rfs-rail .rr-btn {
+  font-family: var(--vt-btn-font) !important; letter-spacing: var(--vt-track); color: #f1e4c4 !important;
+  border-radius: 3px; border: 1px solid rgba(201, 162, 78, .85);
+  background: linear-gradient(180deg, #3b342c, #2a241e 52%, #1e1a16);
+  box-shadow: inset 0 0 0 2px #17130f, inset 0 0 0 3px rgba(217, 176, 102, .35), inset 0 6px 7px -4px rgba(255, 240, 205, .12), 0 1px 0 rgba(0, 0, 0, .6);
+}
+html[data-rfs-style="vault"] #rfs-rail .rr-btn:hover { border-color: #ecca7c; background: linear-gradient(180deg, #4a4136, #322a22 52%, #241f1a); }
+html[data-rfs-style="vault"] #rfs-rail .rr-btn.on { color: #f3dc9c !important; border-color: #ecca7c; }
+html[data-rfs-style="vault"] #rfs-rail .rr-btn.go {
+  color: #effff3 !important; border: 1px solid #d9b066; background: linear-gradient(180deg, #34a35d, #1f7440 55%, #155530);
+  box-shadow: inset 0 0 0 2px #0f2c18, inset 0 0 0 3px rgba(240, 212, 150, .5), inset 0 6px 7px -4px rgba(220, 255, 230, .3), 0 1px 0 rgba(0, 0, 0, .6);
+}
+/* right data panel */
+html[data-rfs-style="vault"] #rfs-data .rd-live b { font-family: var(--rf-heading-font) !important; color: #f3dc9c; text-shadow: 0 1px 0 #000, 0 0 12px rgba(255, 190, 90, .3); }
+html[data-rfs-style="vault"] #rfs-data .rd-dot { background: #5fe08a; }
+html[data-rfs-style="vault"] #rfs-data .rd-row { border-radius: 2px; }
+html[data-rfs-style="vault"] #rfs-data .rd-row:not(.na):hover { background: rgba(217, 176, 102, .07); }
+html[data-rfs-style="vault"] #rfs-data .rd-cc { color: #d8c49a; border-radius: 2px; background: linear-gradient(180deg, #2c251e, #1b1713); border: 1px solid rgba(217, 176, 102, .35); }
+html[data-rfs-style="vault"] #rfs-data .rd-kwd { color: #f1e4c4; }
+html[data-rfs-style="vault"] #rfs-data .rd-tag { border-radius: 2px; }
+html[data-rfs-style="vault"] #rfs-data .rd-diff.lo { color: #6fe08a; }
+html[data-rfs-style="vault"] #rfs-data .rd-diff.hi { color: #ff8f7a; }
+/* your own region = a Rare item (blue frame) */
+html[data-rfs-style="vault"] #rfs-data .rd-row.home { background: rgba(72, 150, 255, .08); box-shadow: inset 0 0 0 1px rgba(72, 150, 255, .6), inset 0 0 12px rgba(72, 150, 255, .14); }
+html[data-rfs-style="vault"] #rfs-data .rd-row.home .rd-cc { color: #04142c; border-color: #a8ccff; background: radial-gradient(circle at 35% 30%, #d6e7ff, #4896ff 50%, #1f5bb0); }
+html[data-rfs-style="vault"] #rfs-data .rd-row.home .rd-tag { color: #9cc6ff; background: rgba(72, 150, 255, .16); }
+/* the cheapest region = a Legendary drop (orange-gold frame and glow) */
+html[data-rfs-style="vault"] #rfs-data .rd-row.best {
+  background: linear-gradient(to var(--vt-to, right), rgba(255, 152, 48, .17), rgba(255, 152, 48, .04));
+  box-shadow: inset 0 0 0 1px rgba(255, 152, 48, .9), inset 0 0 16px rgba(255, 152, 48, .22), 0 0 10px rgba(255, 152, 48, .16);
+}
+html[data-rfs-style="vault"] #rfs-data .rd-row.best .rd-cc { color: #2a1200; border-color: #ffd28a; background: radial-gradient(circle at 35% 30%, #ffe2b5, #ff9830 48%, #a85500); }
+html[data-rfs-style="vault"] #rfs-data .rd-row.best .rd-tag { color: #ffb45c; background: rgba(255, 152, 48, .16); }
+html[data-rfs-style="vault"] #rfs-data .rd-row.best .rd-kwd { color: #ffb45c; }
+html[data-rfs-style="vault"] #rfs-data :is(.rd-fact, .rd-link) {
+  border-radius: 3px; border: 1px solid rgba(217, 176, 102, .2); background: linear-gradient(180deg, rgba(255, 236, 200, .05), rgba(0, 0, 0, .15));
+}
+html[data-rfs-style="vault"] #rfs-data .rd-link:hover { border-color: rgba(217, 176, 102, .55); background: rgba(217, 176, 102, .1); }
+/* header Quick links button: carved stone like the rest */
+html[data-rfs-style="vault"] #rfs-qbtn {
+  color: #f1e4c4; border-radius: 3px; border: 1px solid #c9a24e;
+  background: linear-gradient(180deg, #3b342c, #2a241e 52%, #1e1a16);
+  box-shadow: inset 0 0 0 2px #17130f, inset 0 0 0 3px rgba(217, 176, 102, .4), inset 0 6px 7px -4px rgba(255, 240, 205, .12), 0 1px 0 rgba(0, 0, 0, .6);
+}
+html[data-rfs-style="vault"] #rfs-qbtn:hover { border-color: #ecca7c; background: linear-gradient(180deg, #4a4136, #322a22 52%, #241f1a); }
+
+/* the user box and its footer bar (skin.js) */
+html[data-rfs-style="vault"] { --rf-footer-bg: linear-gradient(180deg, #211a14, #120e0b); --rf-footer-line: 1px solid rgba(217, 176, 102, .45); --rf-user-radius: 3px; --rf-user-bg: linear-gradient(180deg, #2e261e, #17120e); --rf-user-bg-hover: linear-gradient(180deg, #463d33, #221d18); --rf-user-border: 1px solid rgba(217, 176, 102, .6); --rf-user-shadow: inset 0 0 0 2px #15110d; --rf-user-ink: #eadcbc; }

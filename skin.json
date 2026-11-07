@@ -1,8 +1,8 @@
 {
   "name": "Game Shelf — رف الألعاب",
   "author": "Yousef (yousf612-alwazzan)",
-  "description": "Six looks for Steam: Classic 3D wooden shelf, Glass gallery, Neon coverflow, Steam Original, plus SpaceTheme and Material You (bundled community themes, MIT). Store side panels with live players and regional prices, Ctrl+K quick search, Arabic or English interface.",
-  "version": "2.2.0",
+  "description": "Twelve looks for Steam — Classic Shelf, Glass Gallery, Neon Coverflow, Terminal, RPG Vault, Vinyl Records, Corkboard, Retro Arcade, Magazine, Steam Original, plus SpaceTheme and Material You (MIT). Store stats panels, Ctrl+K search, full Arabic or English.",
+  "version": "3.0.0",
   "header_image": "https://raw.githubusercontent.com/SteamClientHomebrew/Millennium/main/assets/header.png",
   "splash_image": "https://raw.githubusercontent.com/SteamClientHomebrew/Millennium/main/assets/header.png",
   "tags": [
@@ -81,6 +81,66 @@
             ],
             "src": "src/styles/material.css"
           }
+        },
+        "Terminal": {
+          "TargetCss": {
+            "affects": [
+              ".*",
+              "https://.*\\.steampowered\\.com(/.*)?",
+              "https://steamcommunity\\.com(/.*)?"
+            ],
+            "src": "src/styles/terminal.css"
+          }
+        },
+        "RPG Vault": {
+          "TargetCss": {
+            "affects": [
+              ".*",
+              "https://.*\\.steampowered\\.com(/.*)?",
+              "https://steamcommunity\\.com(/.*)?"
+            ],
+            "src": "src/styles/vault.css"
+          }
+        },
+        "Vinyl Records": {
+          "TargetCss": {
+            "affects": [
+              ".*",
+              "https://.*\\.steampowered\\.com(/.*)?",
+              "https://steamcommunity\\.com(/.*)?"
+            ],
+            "src": "src/styles/vinyl.css"
+          }
+        },
+        "Corkboard": {
+          "TargetCss": {
+            "affects": [
+              ".*",
+              "https://.*\\.steampowered\\.com(/.*)?",
+              "https://steamcommunity\\.com(/.*)?"
+            ],
+            "src": "src/styles/cork.css"
+          }
+        },
+        "Retro Arcade": {
+          "TargetCss": {
+            "affects": [
+              ".*",
+              "https://.*\\.steampowered\\.com(/.*)?",
+              "https://steamcommunity\\.com(/.*)?"
+            ],
+            "src": "src/styles/arcade.css"
+          }
+        },
+        "Magazine": {
+          "TargetCss": {
+            "affects": [
+              ".*",
+              "https://.*\\.steampowered\\.com(/.*)?",
+              "https://steamcommunity\\.com(/.*)?"
+            ],
+            "src": "src/styles/magazine.css"
+          }
         }
       }
     },
@@ -103,6 +163,33 @@
               ".*"
             ],
             "src": "src/lang/ar.css"
+          }
+        }
+      }
+    },
+    "Family": {
+      "description": "Family mode: hide games not suitable for the family from the store / وضع العائلة",
+      "default": "On",
+      "tab": "General",
+      "values": {
+        "On": {
+          "TargetCss": {
+            "affects": [
+              ".*",
+              "https://.*\\.steampowered\\.com(/.*)?",
+              "https://steamcommunity\\.com(/.*)?"
+            ],
+            "src": "src/css/family-on.css"
+          }
+        },
+        "Off": {
+          "TargetCss": {
+            "affects": [
+              ".*",
+              "https://.*\\.steampowered\\.com(/.*)?",
+              "https://steamcommunity\\.com(/.*)?"
+            ],
+            "src": "src/css/family-off.css"
           }
         }
       }

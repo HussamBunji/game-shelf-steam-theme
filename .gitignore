@@ -7,3 +7,6 @@ __pycache__/
 *.png.tmp
 .DS_Store
 Thumbs.db
+
+# local backups taken before edits (not part of the theme)
+old/

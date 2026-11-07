@@ -1,5 +1,12 @@
+@import url("sheets.css");
 @import url("icons.css");
 @import url("flair.css");
+@import url("../layouts/terminal.preview.css");
+@import url("../layouts/vault.preview.css");
+@import url("../layouts/vinyl.preview.css");
+@import url("../layouts/cork.preview.css");
+@import url("../layouts/arcade.preview.css");
+@import url("../layouts/magazine.preview.css");
 /* ===================================================================
    رف الألعاب — the three non-shelf home designs + home embedding
    =================================================================== */
@@ -307,25 +314,30 @@ html.rfs-home-on:not(.rfs-show-news) [data-rfs-home] > :has([data-rfs-upd]) { di
 #rfs-bar .tb-q { flex: 1; min-width: 0; height: 100%; border: 0; outline: none; background: transparent; color: var(--ink); font: 500 13px var(--font); }
 #rfs-bar .tb-q::placeholder { color: var(--muted); }
 #rfs-bar .tb-kbd { margin: 0 6px; font: 600 10px var(--font); padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,.1); color: var(--muted); }
-#rfs-bar .tb-results {
-  display: none; position: absolute; top: calc(100% + 8px); right: 0; width: min(560px, 80vw); max-height: 72vh;
-  flex-direction: column; border-radius: var(--rf-radius-lg, 12px); overflow: hidden;
-  background: var(--rf-panel, #1b130c); border: 1px solid rgba(var(--acc-rgb), .3); box-shadow: 0 24px 70px rgba(0,0,0,.7);
-}
-#rfs-bar .tb-search.open .tb-results { display: flex; }
-#rfs-bar .pl-list { overflow-y: auto; padding: 6px; }
-#rfs-bar .pl-item { display: flex; align-items: center; gap: 12px; padding: 7px 10px; border-radius: var(--rf-radius, 8px); cursor: pointer; color: var(--ink); }
-#rfs-bar .pl-item.sel, #rfs-bar .pl-item:hover { background: rgba(var(--acc-rgb), .16); }
-#rfs-bar .pl-item img { width: 32px; height: 32px; border-radius: 6px; object-fit: cover; flex: 0 0 auto; background: rgba(255,255,255,.06); }
-#rfs-bar .pl-item .rf-ict.pl-ico { width: 32px; height: 32px; }
-#rfs-bar .pl-item .rf-ict.pl-ico > svg.rf-ic { width: 17px; height: 17px; }
-#rfs-bar .pl-name { flex: 1; min-width: 0; font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-#rfs-bar .pl-meta { font-size: 11.5px; color: var(--muted); white-space: nowrap; }
-#rfs-bar .pl-tag { font-size: 10.5px; padding: 2px 7px; border-radius: 99px; background: rgba(var(--acc-rgb), .15); color: var(--accent); white-space: nowrap; }
-#rfs-bar .pl-tag.dim { background: rgba(255,255,255,.07); color: var(--muted); }
-#rfs-bar .pl-sec { padding: 8px 10px 4px; font-size: 11px; font-weight: 700; color: var(--accent); }
-#rfs-bar .pl-foot { display: flex; gap: 14px; flex-wrap: wrap; padding: 8px 12px; font-size: 11px; color: var(--muted); border-top: 1px solid rgba(255,255,255,.06); background: rgba(0,0,0,.2); }
-#rfs-bar .pl-foot kbd { font: 600 10px var(--font); padding: 1px 5px; border-radius: 4px; background: rgba(255,255,255,.1); color: var(--ink); }
+/* the search filters the design in place — nothing pops up over the page; × clears it */
+#rfs-bar .tb-clear { display: none; flex: 0 0 auto; width: 22px; height: 22px; margin: 0 2px; padding: 0; align-items: center; justify-content: center;
+  border: 0; border-radius: 50%; cursor: pointer; background: rgba(255,255,255,.1); color: var(--muted); }
+#rfs-bar .tb-clear:hover { background: rgba(var(--acc-rgb), .3); color: var(--ink); }
+#rfs-bar .tb-clear > svg.rf-ic { width: 12px; height: 12px; }
+#rfs-bar .tb-search.has-q .tb-clear { display: inline-flex; }
+#rfs-bar .tb-search.has-q .tb-kbd { display: none; }
+/* only what the current design uses: "spines / covers" belongs to the shelf. Genres are one dropdown in every design */
+#rfs-bar:not([data-layout="shelf"]) .tb-view { display: none !important; }
+
+/* a theme's own game panel (layout.open) — over the home design only, Steam's navigation stays above it.
+   Each theme draws everything inside; this is just the frame. */
+#rfs-sheet { position: fixed; z-index: 1150; display: none; overflow: hidden; direction: rtl; font-family: var(--rf-font-ui, 'Segoe UI', sans-serif); color: var(--rf-text, #eee); -webkit-app-region: no-drag; }
+#rfs-sheet.on { display: block; }
+#rfs-sheet *, #rfs-sheet *::before, #rfs-sheet *::after { box-sizing: border-box; -webkit-app-region: no-drag; }
+html[data-rfs-lang="en"] #rfs-sheet { direction: ltr; }
+/* the wired buttons from api.gameActions(g) — a neutral base every theme restyles */
+#rfs-sheet .rf-acts { display: flex; flex-wrap: wrap; gap: 8px; }
+#rfs-sheet .rf-act { display: inline-flex; align-items: center; gap: 7px; height: 36px; padding: 0 16px; cursor: pointer; white-space: nowrap;
+  font: 600 13px var(--rf-font-ui, 'Segoe UI', sans-serif); color: var(--rf-text, #eee); background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.16); border-radius: var(--rf-radius, 6px); }
+#rfs-sheet .rf-act:hover { background: rgba(255,255,255,.16); }
+#rfs-sheet .rf-act.play { color: var(--rf-accent-ink, #111); background: var(--rf-accent, #6cf); border-color: transparent; }
+#rfs-sheet .rf-act > svg.rf-ic { width: 15px; height: 15px; }
 
 /* ═════════════ v4: Neon — carousel on top, the whole library as a grid below ═════════════ */
 #rfs .cf-browse {
@@ -389,17 +401,22 @@ html[data-rfs-native] :is(#rfs-bar, #rfs-themes, #rfs-toast) * { font-family: va
   border: 1px solid rgba(var(--acc-rgb), .14);
 }
 #rfs .rf-dock > #rfs-bar.inhome { margin: 0 0 12px; }
+/* a design that has its own filter chips puts them in the strip's slot (.rf-merge): strip + chips are ONE panel,
+   one filter row — never two bars stacked on top of each other */
+#rfs .rf-dock.rf-merge {
+  position: relative; z-index: 60; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px;
+  margin: 16px 0 16px; padding: 8px 10px; border-radius: var(--rf-radius-lg, 12px);
+  background: color-mix(in srgb, var(--rf-panel, #1b2838) 72%, transparent);
+  border: 1px solid rgba(var(--rf-accent-rgb, 255, 179, 107), .14);
+}
+#rfs .rf-dock.rf-merge > #rfs-bar.inhome {
+  flex: 0 1 auto; margin: 0; padding: 0; background: none; border: 0; border-radius: 0; box-shadow: none; backdrop-filter: none;
+}
+/* the chips take the rest of the row; when that is too narrow they move under the strip, still inside the same panel */
+#rfs .rf-dock.rf-merge > :not(#rfs-bar) { flex: 1 1 520px; min-width: 0; margin: 0; gap: 6px; }
 #rfs-bar.inhome .tb-search { flex: 1 1 280px; width: auto; max-width: 560px; }
 #rfs-bar.inhome .tb-home { flex-wrap: wrap; }
 #rfs-bar.inhome .tb-theme { display: none !important; }
-/* Ctrl+K anywhere else: just the search, floating under the nav row */
-#rfs-bar.float {
-  position: fixed; top: 64px !important; left: 50% !important; right: auto !important; transform: translateX(-50%); z-index: 2000;
-  padding: 10px; border-radius: var(--rf-radius-lg, 12px); background: var(--rf-panel, #16202d);
-  border: 1px solid rgba(var(--acc-rgb), .3); box-shadow: 0 18px 50px rgba(0, 0, 0, .55);
-}
-#rfs-bar.float > :not(.tb-search) { display: none !important; }
-#rfs-bar.float .tb-search { width: min(620px, 80vw); }
 
 /* our windows must never sit inside a window-drag region (Windows swallows clicks there) */
 #rfs-themes, #rfs-themes *, #rfs-viewer, #rfs-viewer *, #rfs-bar, #rfs-bar *, #rfs, #rfs * { -webkit-app-region: no-drag; }
@@ -419,3 +436,20 @@ html[data-rfs-native] :is(#rfs-bar, #rfs-themes, #rfs-toast) * { font-family: va
 
 /* every part of the theme speaks in the style's font pair (Latin + Arabic) */
 #rfs, #rfs-bar, #rfs-viewer, #rfs-themes, #rfs-toast { --font: var(--rf-font-ui, 'Segoe UI', 'Motiva Sans', Tahoma, sans-serif); }
+
+/* ═════════════ Family mode (shelf.js placeFamily) — sits with the user name's buttons, sized like them ═════════════ */
+#rfs-family {
+  position: relative; display: inline-flex !important; align-items: center; justify-content: center; gap: 7px;
+  flex: 0 0 auto !important; width: auto !important; order: 1000 !important; white-space: nowrap; /* last, after the settings gear */
+  height: 32px; min-width: 32px; padding: 0 12px 0 10px; box-sizing: border-box; cursor: pointer; -webkit-app-region: no-drag;
+  font: 600 12.5px var(--rf-font-ui, 'Segoe UI', sans-serif); color: var(--rf-user-ink, var(--rf-text, #e6edf3));
+  background: var(--rf-user-bg, rgba(var(--rf-accent-rgb, 102, 192, 244), .10));
+  border: var(--rf-user-border, 1px solid rgba(var(--rf-accent-rgb, 102, 192, 244), .28)); border-radius: var(--rf-user-radius, var(--rf-radius, 8px));
+}
+#rfs-family:hover { background: var(--rf-user-bg-hover, rgba(var(--rf-accent-rgb, 102, 192, 244), .2)); }
+#rfs-family svg.rf-ic { width: 16px; height: 16px; margin: 0; }
+#rfs-family .dot { width: 8px; height: 8px; border-radius: 50%; background: #6b7280; box-shadow: 0 0 0 2px rgba(0, 0, 0, .35); }
+#rfs-family.on .dot { background: #4ade80; box-shadow: 0 0 6px rgba(74, 222, 128, .8); }
+/* in the title bar there is room for the shield and its light only (the name is in the tooltip) */
+html:is([data-rfs-style="glass"], [data-rfs-style="magazine"], [data-rfs-style="vault"], [data-rfs-style="cork"], [data-rfs-style="neon"], [data-rfs-style="space"], [data-rfs-style="material"], [data-rfs-style="original"]) #rfs-family { padding: 0 8px; }
+html:is([data-rfs-style="glass"], [data-rfs-style="magazine"], [data-rfs-style="vault"], [data-rfs-style="cork"], [data-rfs-style="neon"], [data-rfs-style="space"], [data-rfs-style="material"], [data-rfs-style="original"]) #rfs-family .lbl { display: none; }

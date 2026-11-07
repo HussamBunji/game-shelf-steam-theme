@@ -1,0 +1,1053 @@
+/* ═══ Retro Arcade (الأركيد) — home design CSS (src/layouts/arcade.js) ═══
+   Everything is scoped to #rfs[data-layout="arcade"]. Steam forces --rf-font-ui on every element with !important,
+   so the pixel faces (Press Start 2P / VT323) are set with !important too. Logical properties: Arabic reads RTL. */
+#rfs[data-layout="arcade"] {
+  --ar-red: var(--rf-arc-red, #ff2e4d);
+  --ar-yellow: var(--rf-arc-yellow, #ffd400);
+  --ar-cyan: var(--rf-arc-cyan, #22e4ff);
+  --ar-magenta: var(--rf-arc-magenta, #ff3ddc);
+  --ar-green: var(--rf-arc-green, #3dff6e);
+  --ar-ink: var(--rf-arc-ink, #07061a);
+  --ar-box: var(--rf-arc-box, #0e0b2b);
+  --ar-key: var(--rf-arc-key, #1d1750);
+  --ar-line: var(--rf-arc-line, #2d2670);
+  --ar-dim: #8e8ac0;
+  --ar-dark: #140e00;
+  /* Arabic first: Lalezar (compact, very bold) also draws the Latin words inside Arabic labels, e.g. "Enter" */
+  --ar-pix: 'Lalezar', 'Press Start 2P', 'Pixelify Sans', sans-serif;
+  --ar-crt: 'VT323', 'Kufam', ui-monospace, monospace;
+  /* Arabic sizes: Lalezar / Kufam need more pixels than the very wide pixel font */
+  --ar-s-h: 30px;
+  --ar-s-lbl: 16px;
+  --ar-s-btn: 20px;
+  --ar-s-val: 19px;
+  --ar-s-head: 16px;
+  --ar-s-blink: 21px;
+}
+html[data-rfs-lang="en"] #rfs[data-layout="arcade"] {
+  --ar-pix: 'Press Start 2P', 'Lalezar', 'Pixelify Sans', sans-serif;
+  --ar-s-h: 14px;
+  --ar-s-lbl: 10px;
+  --ar-s-btn: 12px;
+  --ar-s-val: 25px;
+  --ar-s-head: 10px;
+  --ar-s-blink: 11px;
+}
+
+/* ── the cabinet ── */
+#rfs[data-layout="arcade"] .ar {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  padding: 12px 20px 0;
+  color: var(--ink);
+  background:
+    radial-gradient(ellipse 120% 90% at 50% 45%, transparent 60%, rgba(0, 0, 0, .55) 100%),
+    radial-gradient(ellipse 80% 55% at 50% 0%, rgba(59, 91, 255, .16), transparent 70%),
+    radial-gradient(rgba(255, 255, 255, .045) 1px, transparent 1.6px) 0 0 / 22px 22px,
+    var(--ar-ink);
+}
+
+/* ── top bar: SELECT YOUR GAME · CREDITS · HI-SCORE, over a 4-colour marquee stripe ── */
+#rfs[data-layout="arcade"] .ar-top {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 2px 4px 14px;
+}
+#rfs[data-layout="arcade"] .ar-top::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--ar-red) 0 25%, var(--ar-yellow) 25% 50%, var(--ar-cyan) 50% 75%, var(--ar-magenta) 75%);
+}
+#rfs[data-layout="arcade"] .ar-brand { display: flex; align-items: center; gap: 16px; min-width: 0; }
+#rfs[data-layout="arcade"] .ar-h {
+  margin: 0;
+  font: 400 var(--ar-s-h)/1.25 var(--ar-pix) !important;
+  color: var(--ar-yellow);
+  text-shadow: 3px 3px 0 #b3127a;
+  white-space: nowrap;
+}
+html[data-rfs-lang="en"] #rfs[data-layout="arcade"] .ar-h { letter-spacing: .06em; }
+/* a pixel-art joystick (one element; every pixel is a box-shadow) */
+#rfs[data-layout="arcade"] .ar-sprite { position: relative; flex: none; width: 27px; height: 24px; }
+#rfs[data-layout="arcade"] .ar-sprite::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 3px;
+  height: 3px;
+  box-shadow:
+    9px 0 #ff2e4d, 12px 0 #ff2e4d, 15px 0 #ff2e4d,
+    6px 3px #ff2e4d, 9px 3px #ffd0d8, 12px 3px #ff2e4d, 15px 3px #ff2e4d, 18px 3px #ff2e4d,
+    6px 6px #ff2e4d, 9px 6px #ff2e4d, 12px 6px #ff2e4d, 15px 6px #ff2e4d, 18px 6px #b3122f,
+    9px 9px #b3122f, 12px 9px #b3122f, 15px 9px #b3122f,
+    12px 12px #c9c6e8,
+    12px 15px #8e8ac0,
+    3px 18px #3b5bff, 6px 18px #ffd400, 9px 18px #3b5bff, 12px 18px #3b5bff, 15px 18px #3b5bff, 18px 18px #22e4ff, 21px 18px #3b5bff,
+    0 21px #1f2f99, 3px 21px #1f2f99, 6px 21px #1f2f99, 9px 21px #1f2f99, 12px 21px #1f2f99, 15px 21px #1f2f99, 18px 21px #1f2f99, 21px 21px #1f2f99, 24px 21px #1f2f99;
+}
+#rfs[data-layout="arcade"] .ar-scores { display: flex; align-items: flex-end; gap: 28px; flex: none; }
+#rfs[data-layout="arcade"] .ar-score {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  text-align: end;
+}
+#rfs[data-layout="arcade"] .ar-score.hi { cursor: pointer; }
+#rfs[data-layout="arcade"] .ar-score .ar-lbl { font: 400 var(--ar-s-lbl)/1.2 var(--ar-pix) !important; }
+#rfs[data-layout="arcade"] .ar-score.cr .ar-lbl { color: var(--ar-cyan); }
+#rfs[data-layout="arcade"] .ar-score.hi .ar-lbl { color: var(--ar-red); }
+#rfs[data-layout="arcade"] .ar-num { font: 400 32px/.85 var(--ar-crt) !important; color: #fff; letter-spacing: .04em; }
+#rfs[data-layout="arcade"] .ar-num small { margin-inline-start: 5px; font: 400 18px/1 var(--ar-crt) !important; color: var(--ar-dim); }
+#rfs[data-layout="arcade"] .ar-score.hi:hover .ar-num { color: var(--ar-yellow); }
+#rfs[data-layout="arcade"] .ar-score.hi:focus-visible { outline: 2px dashed var(--ar-yellow); outline-offset: 4px; }
+
+/* the filter strip slot: room for the strip's pixel outline */
+/* the search + filters sit on top of the game list they filter (inside the list column) */
+#rfs[data-layout="arcade"] .ar-dock { padding: 10px 10px 4px; }
+#rfs[data-layout="arcade"] .ar-dock > #rfs-bar.inhome { margin: 0; padding: 6px; gap: 6px; }
+#rfs[data-layout="arcade"] .ar-dock > #rfs-bar.inhome .tb-search { flex: 1 1 100%; max-width: none; }
+#rfs[data-layout="arcade"] .ar-dock > #rfs-bar.inhome .tb-home { flex-wrap: wrap; gap: 6px; }
+
+/* ── main: monitor (wide) + high-score list; the grid follows the reading direction ── */
+#rfs[data-layout="arcade"] .ar-main {
+  display: grid;
+  /* list first, screen second: in English the eye starts on the left with the names, the picture answers on the
+     right (the grid follows the reading direction, so Arabic mirrors it) */
+  grid-template-columns: clamp(380px, 36%, 520px) minmax(0, 1fr);
+  gap: 26px;
+  min-height: 0;
+  padding: 14px 4px 10px;
+}
+#rfs[data-layout="arcade"] .ar.narrow .ar-main { grid-template-columns: 320px minmax(0, 1fr); gap: 20px; }
+#rfs[data-layout="arcade"] .ar-side { order: -1; }
+
+/* ── the monitor ── */
+#rfs[data-layout="arcade"] .ar-mon { display: flex; flex-direction: column; gap: 14px; min-width: 0; min-height: 0; }
+/* CRT bezel: plastic with a bevel, a magenta trim and a black outline — stepped corners, all box-shadows */
+#rfs[data-layout="arcade"] .ar-cab {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 150px;
+  margin: 10px;
+  background: #1b1648;
+  box-shadow:
+    inset 4px 4px 0 0 #2e2774, inset -4px -4px 0 0 #0d0a26,
+    0 -4px 0 0 var(--ar-magenta), 0 4px 0 0 var(--ar-magenta), -4px 0 0 0 var(--ar-magenta), 4px 0 0 0 var(--ar-magenta),
+    -4px -4px 0 0 #000, 4px -4px 0 0 #000, -4px 4px 0 0 #000, 4px 4px 0 0 #000,
+    0 -8px 0 0 #000, 0 8px 0 0 #000, -8px 0 0 0 #000, 8px 0 0 0 #000;
+}
+/* the glass: one picture, rounded CRT corners */
+#rfs[data-layout="arcade"] .ar-screen {
+  position: absolute;
+  inset: 18px;
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: 16px / 20px;
+  background: #000;
+  box-shadow: 0 0 0 4px #07061a, 0 0 0 6px #2e2774;
+}
+/* two layers: the small header (on screen in the same frame as the selection) and the hero, which fades in over it */
+#rfs[data-layout="arcade"] :is(.ar-shot, .ar-hero) {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+}
+#rfs[data-layout="arcade"] .ar-hero { opacity: 0; }
+#rfs[data-layout="arcade"] .ar-screen.hi .ar-hero { opacity: 1; transition: opacity .2s steps(3, end); }
+#rfs[data-layout="arcade"] .ar-screen.tall { background: radial-gradient(ellipse at 50% 50%, #251e5e, #07061a 75%); }
+#rfs[data-layout="arcade"] .ar-screen.tall .ar-shot { object-fit: contain; }
+/* tuning (a picture is still on its way — rare: the rows on screen pre-load theirs): the last picture stays, dimmed,
+   over a static pixel snow — never a black frame */
+#rfs[data-layout="arcade"] .ar-screen.tuning {
+  background:
+    linear-gradient(transparent 46%, rgba(34, 228, 255, .08) 46% 54%, transparent 54%),
+    repeating-conic-gradient(#1c1940 0 25%, #0b0a1c 0 50%) 0 0 / 4px 4px;
+}
+#rfs[data-layout="arcade"] .ar-screen.tuning :is(.ar-shot, .ar-hero) { opacity: .55; }
+#rfs[data-layout="arcade"] .ar-screen.empty .ar-shot { visibility: hidden; }
+/* under the logo: a shade so it reads on any picture */
+#rfs[data-layout="arcade"] .ar-screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(to top, rgba(4, 3, 16, .78), transparent 46%);
+}
+/* on top: STATIC scanlines + vignette + a glass glare (one element, never animated) */
+#rfs[data-layout="arcade"] .ar-screen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, .1), transparent 30%),
+    radial-gradient(ellipse 85% 80% at 50% 50%, transparent 56%, rgba(0, 0, 0, .62) 100%),
+    repeating-linear-gradient(to bottom, rgba(0, 0, 0, .3) 0 2px, transparent 2px 4px);
+}
+#rfs[data-layout="arcade"] .ar-logo {
+  position: absolute;
+  z-index: 2;
+  inset-inline-start: 24px;
+  bottom: 20px;
+  display: flex;
+  align-items: flex-end;
+  width: 52%;
+  height: 30%;
+  transition: opacity .18s steps(3, end);
+}
+#rfs[data-layout="arcade"] .ar-logo-img {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: left bottom;
+  filter: drop-shadow(3px 3px 0 rgba(0, 0, 0, .75)); /* a single element — not repeated */
+}
+html:not([data-rfs-lang="en"]) #rfs[data-layout="arcade"] .ar-logo-img { object-position: right bottom; }
+/* the logo belongs to the hero (the small header already has the title painted in) */
+#rfs[data-layout="arcade"] .ar-screen:is(.tuning, :not(.hi)) .ar-logo { opacity: 0; transition: none; }
+/* no picture: TV test bars + NO SIGNAL */
+#rfs[data-layout="arcade"] .ar-nosig {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: none;
+  place-items: center;
+  background: linear-gradient(90deg, #a8a8a8 0 14.28%, #a8a800 0 28.57%, #00a8a8 0 42.85%, #00a800 0 57.14%, #a800a8 0 71.42%, #a80000 0 85.71%, #0000a8 0);
+}
+#rfs[data-layout="arcade"] .ar-screen.empty:not(.tuning) .ar-nosig { display: grid; }
+#rfs[data-layout="arcade"] .ar-nosig span {
+  padding: 10px 16px;
+  font: 400 var(--ar-s-lbl)/1.4 var(--ar-pix) !important;
+  color: #fff;
+  background: #000;
+}
+
+/* ── under the monitor: name, genres, stats, buttons ── */
+#rfs[data-layout="arcade"] .ar-info { flex: none; display: flex; flex-direction: column; gap: 10px; padding-inline: 10px; }
+#rfs[data-layout="arcade"] .ar-tline { display: flex; align-items: baseline; gap: 14px; min-width: 0; }
+#rfs[data-layout="arcade"] .ar-rank { flex: none; font: 400 26px/1 var(--ar-crt) !important; color: var(--ar-cyan); }
+#rfs[data-layout="arcade"] .ar-title {
+  min-width: 0;
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.15;
+  color: #fff;
+  text-transform: uppercase;
+  text-shadow: 2px 2px 0 #000;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#rfs[data-layout="arcade"] .ar-genre {
+  min-height: 1.3em;
+  font-size: 13px;
+  color: var(--ar-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#rfs[data-layout="arcade"] .ar-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+#rfs[data-layout="arcade"] .ar-stat {
+  min-width: 0;
+  padding: 8px 10px 7px;
+  background: #0c0a24;
+  box-shadow: inset 0 0 0 2px var(--ar-line), 3px 3px 0 0 #000;
+}
+#rfs[data-layout="arcade"] .ar-stat .ar-lbl {
+  display: block;
+  font: 400 var(--ar-s-lbl)/1.3 var(--ar-pix) !important;
+  color: var(--c, var(--ar-yellow));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#rfs[data-layout="arcade"] .ar-stat.s1 { --c: var(--ar-yellow); }
+#rfs[data-layout="arcade"] .ar-stat.s2 { --c: var(--ar-cyan); }
+#rfs[data-layout="arcade"] .ar-stat.s3 { --c: var(--ar-magenta); }
+#rfs[data-layout="arcade"] .ar-stat.s4 { --c: var(--ar-green); }
+#rfs[data-layout="arcade"] .ar-val {
+  display: block;
+  margin-top: 5px;
+  font: 400 var(--ar-s-val)/1.05 var(--ar-crt) !important;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#rfs[data-layout="arcade"] .ar-val[data-st="ok"] { color: var(--ar-green); }
+#rfs[data-layout="arcade"] .ar-val[data-st="run"] { color: var(--ar-cyan); }
+#rfs[data-layout="arcade"] .ar-val[data-st="ni"] { color: var(--ar-red); }
+
+/* cabinet buttons: chunky keys with a notched outline, bevel and a hard shadow; pressed = sinks 3px */
+#rfs[data-layout="arcade"] .ar-acts { display: flex; flex-wrap: wrap; gap: 18px; padding: 4px 4px 8px; }
+#rfs[data-layout="arcade"] .ar-btn {
+  --c: var(--ar-key);
+  --c-hi: #2e2794;
+  --bink: #fff;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 42px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 0;
+  cursor: pointer;
+  color: var(--bink);
+  background: var(--c);
+  box-shadow:
+    inset -3px -3px 0 0 rgba(0, 0, 0, .38), inset 3px 3px 0 0 rgba(255, 255, 255, .32),
+    0 -3px 0 0 #000, 0 3px 0 0 #000, -3px 0 0 0 #000, 3px 0 0 0 #000,
+    0 7px 0 0 rgba(0, 0, 0, .55);
+}
+/* (the label span is targeted itself: Steam's global font rule would beat inheritance) */
+#rfs[data-layout="arcade"] :is(.ar-btn, .ar-btn > span) { font: 400 var(--ar-s-btn)/1 var(--ar-pix) !important; }
+#rfs[data-layout="arcade"] .ar-btn:hover { background: var(--c-hi); }
+#rfs[data-layout="arcade"] .ar-btn:active {
+  transform: translateY(3px);
+  box-shadow: inset 3px 3px 0 0 rgba(0, 0, 0, .38), 0 -3px 0 0 #000, 0 3px 0 0 #000, -3px 0 0 0 #000, 3px 0 0 0 #000;
+}
+#rfs[data-layout="arcade"] .ar-btn:focus-visible { outline: 2px dashed var(--ar-yellow); outline-offset: 7px; }
+#rfs[data-layout="arcade"] .ar-btn:disabled { opacity: .45; cursor: default; transform: none; }
+#rfs[data-layout="arcade"] .ar-btn.start { --c: var(--ar-red); --c-hi: #ff5a72; padding: 0 22px; }
+#rfs[data-layout="arcade"] .ar-btn.start.run { --c: #12b347; --c-hi: #22cc58; }
+#rfs[data-layout="arcade"] .ar-btn.info { --c: var(--ar-cyan); --c-hi: #6defff; --bink: #04131a; }
+#rfs[data-layout="arcade"] .ar-btn.store { --c: var(--ar-magenta); --c-hi: #ff70e6; --bink: #fff; }
+#rfs[data-layout="arcade"] .ar-btn > svg.rf-ic { width: 18px; height: 18px; margin: 0; }
+#rfs[data-layout="arcade"] .ar-btn > svg.rf-ic,
+#rfs[data-layout="arcade"] .ar-btn > svg.rf-ic * { stroke: currentColor; filter: none; }
+#rfs[data-layout="arcade"] .ar-btn > svg.rf-ic :is(.f, rect, ellipse, circle:not(.s)) { fill: currentColor; fill-opacity: .25; }
+#rfs[data-layout="arcade"] .ar-btn > svg.rf-ic .s { fill: currentColor; stroke: none; }
+#rfs[data-layout="arcade"] .ar-btn kbd {
+  padding: 2px 6px 1px;
+  font: 400 16px/1 var(--ar-crt) !important;
+  color: inherit;
+  background: rgba(0, 0, 0, .25);
+  box-shadow: inset 0 -2px 0 0 rgba(0, 0, 0, .3);
+}
+
+/* ── the high-score list ── */
+#rfs[data-layout="arcade"] .ar-side {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  margin: 3px;
+  background: #0b0922;
+  box-shadow: inset 0 0 0 3px var(--ar-line), 0 -3px 0 0 #000, 0 3px 0 0 #000, -3px 0 0 0 #000, 3px 0 0 0 #000;
+}
+#rfs[data-layout="arcade"] .ar-lhead {
+  display: grid;
+  grid-template-columns: var(--nw, 36px) minmax(0, 1fr) auto;
+  gap: 10px;
+  margin-block: 10px 4px;
+  margin-inline: 36px 24px; /* lines up with the rows: list padding + arrow gutter / list padding + scrollbar */
+  padding: 4px 12px 9px;
+  color: var(--ar-red);
+  background: repeating-linear-gradient(90deg, var(--ar-line) 0 6px, transparent 6px 10px) left bottom / 100% 2px no-repeat;
+}
+#rfs[data-layout="arcade"] .ar-lhead > span { font: 400 var(--ar-s-head)/1.3 var(--ar-pix) !important; white-space: nowrap; }
+#rfs[data-layout="arcade"] .ar-lhead > :last-child { text-align: end; }
+#rfs[data-layout="arcade"] .ar-list {
+  position: relative; /* rows measure their offsetTop from here */
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-block: 8px;
+  padding-inline: 14px 12px;
+  outline: none;
+  background: #0b0922; /* opaque: lets Chromium scroll the list on the compositor */
+}
+#rfs[data-layout="arcade"] .ar-row {
+  position: relative;
+  flex: none;
+  display: grid;
+  grid-template-columns: var(--nw, 36px) minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  height: 28px;
+  margin-inline-start: 22px; /* the arrow cursor's gutter */
+  padding-inline: 12px;
+  scroll-margin-block: 10px;
+  cursor: pointer;
+  color: var(--ink);
+}
+#rfs[data-layout="arcade"] .ar-row:hover { background: rgba(255, 255, 255, .07); }
+/* rank numbers cycle through the cabinet colours, like an attract-mode score table */
+#rfs[data-layout="arcade"] .ar-row:nth-child(4n+1) { --rk: var(--ar-red); }
+#rfs[data-layout="arcade"] .ar-row:nth-child(4n+2) { --rk: var(--ar-yellow); }
+#rfs[data-layout="arcade"] .ar-row:nth-child(4n+3) { --rk: var(--ar-cyan); }
+#rfs[data-layout="arcade"] .ar-row:nth-child(4n) { --rk: var(--ar-magenta); }
+#rfs[data-layout="arcade"] .ar-n { font: 400 21px/1 var(--ar-crt) !important; color: var(--rk); }
+#rfs[data-layout="arcade"] .ar-name {
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#rfs[data-layout="arcade"] .ar-hrs { font: 400 21px/1 var(--ar-crt) !important; color: #fff; text-align: end; }
+#rfs[data-layout="arcade"] .ar-hrs.z { color: var(--ar-dim); }
+#rfs[data-layout="arcade"] .ar-row.ni .ar-name { color: var(--ar-dim); }
+#rfs[data-layout="arcade"] .ar-row.run .ar-name { color: var(--ar-green); }
+/* the selection: a bright yellow pixel box (notched outline) … */
+#rfs[data-layout="arcade"] .ar-row.sel {
+  background: var(--ar-yellow);
+  color: var(--ar-dark);
+  box-shadow:
+    inset 0 -3px 0 0 rgba(0, 0, 0, .16),
+    0 -3px 0 0 var(--ar-yellow), 0 3px 0 0 var(--ar-yellow), -3px 0 0 0 var(--ar-yellow), 3px 0 0 0 var(--ar-yellow);
+}
+#rfs[data-layout="arcade"] .ar-row.sel :is(.ar-n, .ar-name, .ar-hrs) { color: var(--ar-dark); }
+/* … and a pixel arrow cursor beside it (drawn with box-shadows; mirrored for right-to-left) */
+#rfs[data-layout="arcade"] .ar-row.sel::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  inset-inline-start: -22px;
+  width: 3px;
+  height: 3px;
+  margin-top: -10px;
+  color: var(--ar-yellow);
+  background: currentColor;
+  box-shadow:
+    0 3px, 3px 3px,
+    0 6px, 3px 6px, 6px 6px,
+    0 9px, 3px 9px, 6px 9px, 9px 9px,
+    0 12px, 3px 12px, 6px 12px,
+    0 15px, 3px 15px,
+    0 18px;
+}
+html:not([data-rfs-lang="en"]) #rfs[data-layout="arcade"] .ar-row.sel::before { transform: scaleX(-1); }
+#rfs[data-layout="arcade"] .ar-empty {
+  margin: 40px 12px;
+  text-align: center;
+  font: 400 var(--ar-s-lbl)/1.9 var(--ar-pix) !important;
+  color: var(--ar-dim);
+}
+#rfs[data-layout="arcade"] .ar-count {
+  padding: 6px 16px 9px;
+  font: 400 18px/1 var(--ar-crt) !important;
+  color: var(--ar-dim);
+  text-align: end;
+  border-top: 2px solid var(--ar-line);
+}
+
+/* ── footer: blinking PRESS ENTER + key hints ── */
+#rfs[data-layout="arcade"] .ar-foot {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 11px 6px 13px;
+}
+#rfs[data-layout="arcade"] .ar-foot::before {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 2px;
+  background: repeating-linear-gradient(90deg, var(--ar-line) 0 6px, transparent 6px 10px);
+}
+/* the only animation in this design: one small element blinking its opacity */
+#rfs[data-layout="arcade"] .ar-blink {
+  flex: none;
+  font: 400 var(--ar-s-blink)/1.3 var(--ar-pix) !important;
+  color: var(--ar-yellow);
+  animation: rfs-arcade-blink 1.1s steps(1, end) infinite;
+}
+@keyframes rfs-arcade-blink { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { #rfs[data-layout="arcade"] .ar-blink { animation: none; } }
+#rfs[data-layout="arcade"] .ar-keys {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px 18px;
+  min-width: 0;
+  font-size: 12px;
+  color: var(--ar-dim);
+}
+#rfs[data-layout="arcade"] .ar-keys > span { white-space: nowrap; }
+#rfs[data-layout="arcade"] .ar-keys kbd {
+  display: inline-block;
+  margin-inline-end: 3px;
+  padding: 2px 6px 1px;
+  font: 400 15px/1 var(--ar-crt) !important;
+  color: #fff;
+  background: var(--ar-key);
+  box-shadow: inset 0 -2px 0 0 rgba(0, 0, 0, .45), 0 0 0 1px #000;
+}
+
+/* ── smaller windows: keep everything on screen, never zoom ── */
+#rfs[data-layout="arcade"] .ar.narrow .ar-keys > span:nth-child(n+4) { display: none; }
+#rfs[data-layout="arcade"] .ar.narrow .ar-btn kbd { display: none; }
+#rfs[data-layout="arcade"] .ar.narrow .ar-stats { gap: 8px; }
+#rfs[data-layout="arcade"] .ar.narrow .ar-stat { padding: 7px 8px 6px; }
+#rfs[data-layout="arcade"] .ar.narrow .ar-acts { gap: 14px; }
+#rfs[data-layout="arcade"] .ar.narrow .ar-btn { padding: 0 14px; }
+#rfs[data-layout="arcade"] .ar.short .ar-genre { display: none; }
+#rfs[data-layout="arcade"] .ar.short .ar-info { gap: 8px; }
+#rfs[data-layout="arcade"] .ar.short .ar-cab { min-height: 110px; }
+#rfs[data-layout="arcade"] .ar.short .ar-btn { height: 36px; }
+#rfs[data-layout="arcade"] .ar.tiny .ar-stats { display: none; }
+#rfs[data-layout="arcade"] .ar.tiny .ar-top { padding-bottom: 10px; }
+
+#rfs[data-layout="arcade"] .ar.tiny .ar-mon { gap: 8px; overflow: hidden; } /* never spill into the footer */
+#rfs[data-layout="arcade"] .ar.tiny .ar-cab { min-height: 56px; margin: 9px; }
+#rfs[data-layout="arcade"] .ar.tiny .ar-screen { inset: 12px; }
+#rfs[data-layout="arcade"] .ar.tiny .ar-info { gap: 6px; }
+#rfs[data-layout="arcade"] .ar.tiny .ar-title { font-size: 19px; }
+#rfs[data-layout="arcade"] .ar.tiny .ar-foot { padding-block: 7px 9px; }
+
+/* ═══════════ the GAME INFO screen (layout.open) ═══════════
+   #rfs-sheet lives outside #rfs, so it gets its own copy of the palette. The cabinet: a CRT monitor (the screen powers
+   on after a cartridge drops into the slot) over a control deck with three arcade push-buttons. */
+#rfs-sheet[data-layout="arcade"] {
+  --ar-red: var(--rf-arc-red, #ff2e4d);
+  --ar-yellow: var(--rf-arc-yellow, #ffd400);
+  --ar-cyan: var(--rf-arc-cyan, #22e4ff);
+  --ar-magenta: var(--rf-arc-magenta, #ff3ddc);
+  --ar-green: var(--rf-arc-green, #3dff6e);
+  --ar-blue: var(--rf-arc-blue, #3b5bff);
+  --ar-line: var(--rf-arc-line, #2d2670);
+  --ar-key: var(--rf-arc-key, #1d1750);
+  --ar-dim: #a29fd0;
+  --arv-c0: var(--ar-red);
+  --arv-c1: var(--ar-yellow);
+  --arv-c2: var(--ar-cyan);
+  --arv-c3: var(--ar-magenta);
+  --arv-c4: var(--ar-green);
+  --arv-c5: #8c9bff;
+  --arv-pix: 'Lalezar', 'Press Start 2P', 'Pixelify Sans', sans-serif;
+  --arv-crt: 'VT323', 'Kufam', ui-monospace, monospace;
+  --arv-s-h: 28px;
+  --arv-s-lbl: 17px;
+  --arv-s-k: 17px;
+  --arv-s-rk: 18px;
+  --arv-s-val: 19px;
+  --arv-s-btn: 20px;
+  --arv-s-sh: 19px;
+  --arv-s-mq: 30px;
+}
+html[data-rfs-lang="en"] #rfs-sheet[data-layout="arcade"] {
+  --arv-pix: 'Press Start 2P', 'Lalezar', 'Pixelify Sans', sans-serif;
+  --arv-s-h: 15px;
+  --arv-s-lbl: 10px;
+  --arv-s-k: 10px;
+  --arv-s-rk: 11px;
+  --arv-s-val: 25px;
+  --arv-s-btn: 12px;
+  --arv-s-sh: 11px;
+  --arv-s-mq: 22px;
+}
+#rfs-sheet[data-layout="arcade"] .arv {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  padding: 14px 22px 16px;
+  overflow: hidden;
+  color: #f5f3ff;
+}
+/* the dark arcade hall around the cabinet: a click on it closes the screen */
+#rfs-sheet[data-layout="arcade"] .arv-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 120% 90% at 50% 45%, transparent 55%, rgba(0, 0, 0, .6) 100%),
+    radial-gradient(ellipse 80% 55% at 50% 0%, rgba(255, 61, 220, .14), transparent 70%),
+    radial-gradient(rgba(255, 255, 255, .045) 1px, transparent 1.6px) 0 0 / 22px 22px,
+    #07061a;
+}
+#rfs-sheet[data-layout="arcade"] .arv-cab {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1260px;
+  min-height: 0;
+}
+/* the monitor: plastic bezel with a magenta trim and a stepped black outline (same build as the home monitor) */
+#rfs-sheet[data-layout="arcade"] .arv-mon {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  margin: 8px 8px 0;
+  padding: 14px;
+  background: #1b1648;
+  box-shadow:
+    inset 4px 4px 0 0 #2e2774, inset -4px -4px 0 0 #0d0a26,
+    0 -4px 0 0 var(--ar-magenta), -4px 0 0 0 var(--ar-magenta), 4px 0 0 0 var(--ar-magenta),
+    -4px -4px 0 0 #000, 4px -4px 0 0 #000,
+    0 -8px 0 0 #000, -8px 0 0 0 #000, 8px 0 0 0 #000;
+}
+#rfs-sheet[data-layout="arcade"] .arv-scr {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto minmax(110px, 33%) minmax(0, 1fr);
+  height: 100%;
+  overflow: hidden;
+  isolation: isolate;
+  border-radius: 14px / 18px;
+  background:
+    radial-gradient(ellipse 90% 80% at 50% 60%, rgba(59, 91, 255, .1), transparent 70%),
+    radial-gradient(rgba(255, 255, 255, .035) 1px, transparent 1.6px) 0 0 / 18px 18px,
+    #06051a;
+  box-shadow: 0 0 0 4px #07061a, 0 0 0 6px #2e2774;
+}
+/* the power-on / power-off light (scaled with the screen, so it reads as the bright CRT line) */
+#rfs-sheet[data-layout="arcade"] .arv-flash {
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(ellipse at center, #fff 0 35%, #c8fbff 62%, #22e4ff 100%);
+}
+
+/* ── screen top: BACK · GAME INFO · 1UP #rank ── */
+#rfs-sheet[data-layout="arcade"] .arv-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+  padding: 10px 16px;
+  background: #0b0922;
+  border-bottom: 2px solid #000;
+}
+#rfs-sheet[data-layout="arcade"] .arv-back {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 32px;
+  padding-block: 0;
+  padding-inline: 8px 12px;
+  margin: 3px;
+  border: 0;
+  border-radius: 0;
+  cursor: pointer;
+  color: #f5f3ff;
+  background: var(--ar-key);
+  box-shadow:
+    inset -2px -2px 0 0 rgba(0, 0, 0, .45), inset 2px 2px 0 0 rgba(255, 255, 255, .16),
+    0 -3px 0 0 #000, 0 3px 0 0 #000, -3px 0 0 0 #000, 3px 0 0 0 #000;
+}
+#rfs-sheet[data-layout="arcade"] :is(.arv-back, .arv-back > span) { font: 400 var(--arv-s-lbl)/1 var(--arv-pix) !important; }
+#rfs-sheet[data-layout="arcade"] .arv-back:hover { background: #2e2794; color: var(--ar-yellow); }
+#rfs-sheet[data-layout="arcade"] .arv-back:active { transform: translateY(2px); }
+#rfs-sheet[data-layout="arcade"] .arv-back:focus-visible { outline: 2px dashed var(--ar-yellow); outline-offset: 5px; }
+#rfs-sheet[data-layout="arcade"] .arv-back > svg.rf-ic { width: 16px; height: 16px; }
+#rfs-sheet[data-layout="arcade"] .arv-back > svg.rf-ic,
+#rfs-sheet[data-layout="arcade"] .arv-back > svg.rf-ic * { stroke: currentColor; filter: none; }
+#rfs-sheet[data-layout="arcade"] kbd {
+  display: inline-block;
+  padding: 2px 6px 1px;
+  font: 400 15px/1 var(--arv-crt) !important;
+  color: #fff;
+  background: #2a2370;
+  box-shadow: inset 0 -2px 0 0 rgba(0, 0, 0, .45), 0 0 0 1px #000;
+}
+#rfs-sheet[data-layout="arcade"] .arv-h {
+  margin: 0;
+  font: 400 var(--arv-s-h)/1.3 var(--arv-pix) !important;
+  color: var(--ar-yellow);
+  text-shadow: 3px 3px 0 #b3127a;
+  white-space: nowrap;
+}
+html[data-rfs-lang="en"] #rfs-sheet[data-layout="arcade"] .arv-h { letter-spacing: .08em; }
+/* two pixel diamonds either side of the title */
+#rfs-sheet[data-layout="arcade"] .arv-h::before,
+#rfs-sheet[data-layout="arcade"] .arv-h::after {
+  content: '';
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-inline: 14px;
+  vertical-align: middle;
+  background: var(--ar-cyan);
+  box-shadow: 0 0 0 2px #000;
+  transform: rotate(45deg) translateY(-2px);
+}
+#rfs-sheet[data-layout="arcade"] .arv-h::after { background: var(--ar-magenta); }
+#rfs-sheet[data-layout="arcade"] .arv-1up { justify-self: end; display: inline-flex; align-items: baseline; gap: 12px; white-space: nowrap; }
+#rfs-sheet[data-layout="arcade"] .arv-1up b { font: 400 var(--arv-s-lbl)/1 var(--arv-pix) !important; color: var(--ar-red); animation: rfs-arcade-blink 1.1s steps(1, end) infinite; }
+#rfs-sheet[data-layout="arcade"] .arv-1up span { font: 400 26px/1 var(--arv-crt) !important; color: #fff; }
+
+/* ── the marquee: the game's art lit from behind, its logo in the middle ── */
+#rfs-sheet[data-layout="arcade"] .arv-mq {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+  background: #000;
+  border-bottom: 4px solid;
+  border-image: linear-gradient(90deg, var(--ar-red) 0 25%, var(--ar-yellow) 25% 50%, var(--ar-cyan) 50% 75%, var(--ar-magenta) 75%) 1;
+}
+#rfs-sheet[data-layout="arcade"] .arv-art { position: absolute; inset: 0; }
+#rfs-sheet[data-layout="arcade"] .arv-pic {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 28%;
+}
+#rfs-sheet[data-layout="arcade"] .arv-pic.tall { object-fit: contain; background: radial-gradient(ellipse at 50% 50%, #251e5e, #07061a 75%); }
+#rfs-sheet[data-layout="arcade"] .arv-pic.hi { opacity: 0; }
+#rfs-sheet[data-layout="arcade"] .arv-pic.hi.on { opacity: 1; transition: opacity .25s steps(3, end); }
+#rfs-sheet[data-layout="arcade"] .arv-mq::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(to top, rgba(4, 3, 16, .72), transparent 55%),
+    linear-gradient(rgba(255, 255, 255, .08), transparent 30%);
+}
+#rfs-sheet[data-layout="arcade"] .arv-mq::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 90% at 50% 50%, transparent 58%, rgba(0, 0, 0, .55) 100%),
+    repeating-linear-gradient(to bottom, rgba(0, 0, 0, .26) 0 2px, transparent 2px 4px);
+}
+#rfs-sheet[data-layout="arcade"] .arv-logo {
+  position: absolute;
+  z-index: 2;
+  inset: 14% 22% 12%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#rfs-sheet[data-layout="arcade"] .arv-logo-img {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(4px 4px 0 rgba(0, 0, 0, .8)); /* one element, not repeated */
+}
+#rfs-sheet[data-layout="arcade"] .arv-mqname { display: none; }
+#rfs-sheet[data-layout="arcade"] .arv-logo.named .arv-mqname {
+  display: block;
+  max-width: 100%;
+  font: 400 var(--arv-s-mq)/1.35 var(--arv-pix) !important;
+  color: var(--ar-yellow);
+  text-align: center;
+  text-transform: uppercase;
+  text-shadow: 4px 4px 0 #b3127a, -2px -2px 0 #000;
+  overflow-wrap: anywhere;
+}
+
+/* ── under the marquee: name + score table | story ── */
+#rfs-sheet[data-layout="arcade"] .arv-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(0, .88fr);
+  gap: 26px;
+  min-height: 0;
+  padding: 16px 24px 18px;
+}
+#rfs-sheet[data-layout="arcade"] .arv-main { display: flex; flex-direction: column; gap: 10px; min-width: 0; min-height: 0; overflow: hidden; }
+#rfs-sheet[data-layout="arcade"] .arv-nline { display: flex; align-items: center; gap: 14px; min-width: 0; }
+#rfs-sheet[data-layout="arcade"] .arv-name {
+  min-width: 0;
+  margin: 0;
+  font-size: 25px;
+  font-weight: 700;
+  line-height: 1.15;
+  color: #fff;
+  text-transform: uppercase;
+  text-shadow: 2px 2px 0 #000, 4px 4px 0 rgba(179, 18, 122, .7);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#rfs-sheet[data-layout="arcade"] .arv-st {
+  flex: none;
+  padding: 5px 8px 4px;
+  font: 400 var(--arv-s-lbl)/1.2 var(--arv-pix) !important;
+  color: var(--c, var(--ar-green));
+  box-shadow: inset 0 0 0 2px var(--c, var(--ar-green));
+  white-space: nowrap;
+}
+#rfs-sheet[data-layout="arcade"] .arv-st[data-st="ni"] { --c: var(--ar-red); }
+#rfs-sheet[data-layout="arcade"] .arv-st[data-st="run"] { --c: var(--ar-cyan); }
+#rfs-sheet[data-layout="arcade"] .arv-tags { display: flex; flex-wrap: wrap; gap: 8px; max-height: 28px; overflow: hidden; }
+#rfs-sheet[data-layout="arcade"] .arv-tags span {
+  padding: 4px 9px 3px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ar-cyan);
+  background: #110e2e;
+  box-shadow: inset 0 0 0 2px var(--ar-line);
+  white-space: nowrap;
+}
+/* the score table: RANK · RECORD · SCORE, a dotted leader between label and value */
+#rfs-sheet[data-layout="arcade"] .arv-tbl { display: flex; flex-direction: column; min-height: 0; margin-top: 4px; }
+#rfs-sheet[data-layout="arcade"] :is(.arv-th, .arv-tr) {
+  display: grid;
+  grid-template-columns: 78px auto minmax(24px, 1fr) minmax(0, max-content);
+  align-items: center;
+  gap: 12px;
+}
+#rfs-sheet[data-layout="arcade"] .arv-th {
+  padding: 2px 10px 9px;
+  margin-bottom: 4px;
+  background: repeating-linear-gradient(90deg, var(--ar-line) 0 6px, transparent 6px 10px) left bottom / 100% 2px no-repeat;
+}
+#rfs-sheet[data-layout="arcade"] .arv-th > span { font: 400 var(--arv-s-lbl)/1.3 var(--arv-pix) !important; color: var(--ar-red); white-space: nowrap; }
+#rfs-sheet[data-layout="arcade"] .arv-th > :nth-child(2) { grid-column: 2 / 4; }
+#rfs-sheet[data-layout="arcade"] .arv-th > :last-child { text-align: end; }
+#rfs-sheet[data-layout="arcade"] .arv-tr { min-height: 36px; padding: 3px 10px; }
+#rfs-sheet[data-layout="arcade"] .arv-tr:nth-child(odd) { background: rgba(255, 255, 255, .03); }
+#rfs-sheet[data-layout="arcade"] .arv-rk { font: 400 var(--arv-s-rk)/1 var(--arv-pix) !important; color: var(--c); white-space: nowrap; }
+#rfs-sheet[data-layout="arcade"] .arv-k { font: 400 var(--arv-s-k)/1.2 var(--arv-pix) !important; color: #c9c6ee; white-space: nowrap; }
+#rfs-sheet[data-layout="arcade"] .arv-dots {
+  align-self: end;
+  height: 3px;
+  margin-bottom: 8px;
+  background: radial-gradient(circle, var(--c) 1.2px, transparent 1.6px) 0 0 / 8px 3px repeat-x;
+  opacity: .55;
+}
+#rfs-sheet[data-layout="arcade"] .arv-v {
+  min-width: 0;
+  font: 400 var(--arv-s-val)/1.1 var(--arv-crt) !important;
+  font-style: normal;
+  color: #fff;
+  text-align: end;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* the attract-mode line under the table: blinks like the cabinet's PRESS START (one small element) */
+#rfs-sheet[data-layout="arcade"] .arv-press { margin-top: auto; padding: 12px 10px 2px; }
+#rfs-sheet[data-layout="arcade"] .arv-press span {
+  display: inline-block;
+  font: 400 var(--arv-s-lbl)/1.3 var(--arv-pix) !important;
+  color: var(--ar-yellow);
+  animation: rfs-arcade-blink 1.1s steps(1, end) infinite;
+}
+/* the story: a framed text panel, the description in the plain UI font so it reads easily */
+#rfs-sheet[data-layout="arcade"] .arv-story {
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  max-height: calc(100% - 6px);
+  margin: 3px;
+  padding: 14px 18px 16px;
+  background: #0c0a24;
+  box-shadow: inset 0 0 0 2px var(--ar-line), 0 -3px 0 0 #000, 0 3px 0 0 #000, -3px 0 0 0 #000, 3px 0 0 0 #000;
+}
+#rfs-sheet[data-layout="arcade"] .arv-sh {
+  margin: 0 0 10px;
+  padding-bottom: 8px;
+  font: 400 var(--arv-s-sh)/1.4 var(--arv-pix) !important;
+  color: var(--ar-magenta);
+  background: repeating-linear-gradient(90deg, var(--ar-magenta) 0 4px, transparent 4px 8px) left bottom / 100% 2px no-repeat;
+}
+#rfs-sheet[data-layout="arcade"] .arv-desc {
+  min-height: 0;
+  margin: 0;
+  overflow-y: auto;
+  font-size: 15px;
+  line-height: 1.65;
+  color: #e4e1ff;
+}
+#rfs-sheet[data-layout="arcade"] .arv-desc.none { color: var(--ar-dim); }
+
+/* ── the control deck: joystick, three arcade push-buttons, the cartridge slot, key hints ── */
+#rfs-sheet[data-layout="arcade"] .arv-deck {
+  position: relative;
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  margin: 8px 8px 0;
+  padding-block: 14px;
+  padding-inline: 18px 22px;
+  background: linear-gradient(#231c62, #15103e);
+  box-shadow:
+    inset 0 4px 0 0 #3a3196, inset 0 -4px 0 0 #0d0a26,
+    0 4px 0 0 #000, -4px 0 0 0 #000, 4px 0 0 0 #000, 0 -4px 0 0 #000,
+    0 10px 0 0 rgba(0, 0, 0, .45);
+}
+/* the cartridge slot on the seam between monitor and deck */
+#rfs-sheet[data-layout="arcade"] .arv-slot {
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  z-index: 2;
+  width: 150px;
+  height: 10px;
+  margin-left: -75px;
+  background: #000;
+  box-shadow: inset 0 0 0 2px #000;
+}
+#rfs-sheet[data-layout="arcade"] .arv-slot::before {
+  content: '';
+  position: absolute;
+  inset: 3px 6px;
+  background: repeating-linear-gradient(90deg, #3a3196 0 4px, transparent 4px 8px);
+  opacity: .6;
+}
+/* the joystick, drawn pixel by pixel (one element, box-shadows) */
+#rfs-sheet[data-layout="arcade"] .arv-stick { position: relative; flex: none; width: 36px; height: 32px; }
+#rfs-sheet[data-layout="arcade"] .arv-stick::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 4px;
+  height: 4px;
+  box-shadow:
+    12px 0 #ff2e4d, 16px 0 #ff2e4d, 20px 0 #ff2e4d,
+    8px 4px #ff2e4d, 12px 4px #ffd0d8, 16px 4px #ff2e4d, 20px 4px #ff2e4d, 24px 4px #ff2e4d,
+    8px 8px #ff2e4d, 12px 8px #ff2e4d, 16px 8px #ff2e4d, 20px 8px #ff2e4d, 24px 8px #b3122f,
+    12px 12px #b3122f, 16px 12px #b3122f, 20px 12px #b3122f,
+    16px 16px #c9c6e8, 16px 20px #8e8ac0,
+    4px 24px #3b5bff, 8px 24px #ffd400, 12px 24px #3b5bff, 16px 24px #3b5bff, 20px 24px #3b5bff, 24px 24px #22e4ff, 28px 24px #3b5bff,
+    0 28px #1f2f99, 4px 28px #1f2f99, 8px 28px #1f2f99, 12px 28px #1f2f99, 16px 28px #1f2f99, 20px 28px #1f2f99, 24px 28px #1f2f99, 28px 28px #1f2f99, 32px 28px #1f2f99;
+}
+#rfs-sheet[data-layout="arcade"] .rf-acts { display: flex; flex-wrap: nowrap; gap: 16px; min-width: 0; }
+/* each action is a round arcade push-button (a pixel circle: top + darker base) on a dark plate, the label beside it */
+#rfs-sheet[data-layout="arcade"] .rf-act {
+  --c: var(--ar-cyan);
+  --c-hi: #8ff3ff;
+  --c-lo: #0b7d8f;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 52px;
+  padding-block: 0;
+  padding-inline: 62px 18px;
+  margin: 3px;
+  border: 0;
+  border-radius: 0;
+  cursor: pointer;
+  color: #f5f3ff;
+  background: #100d2c;
+  box-shadow: inset 0 0 0 2px var(--ar-line), 0 -3px 0 0 #000, 0 3px 0 0 #000, -3px 0 0 0 #000, 3px 0 0 0 #000;
+  font: 400 var(--arv-s-btn)/1 var(--arv-pix) !important;
+  text-transform: uppercase;
+}
+#rfs-sheet[data-layout="arcade"] .rf-act.play { --c: var(--ar-red); --c-hi: #ff7a8e; --c-lo: #8a0f22; }
+#rfs-sheet[data-layout="arcade"] .rf-act.play.is-running { --c: var(--ar-green); --c-hi: #9dffb6; --c-lo: #0d7a32; }
+#rfs-sheet[data-layout="arcade"] .rf-act[data-act="store"] { --c: var(--ar-magenta); --c-hi: #ff8cee; --c-lo: #8c157a; }
+#rfs-sheet[data-layout="arcade"] .rf-act::before,
+#rfs-sheet[data-layout="arcade"] .rf-act::after {
+  content: '';
+  position: absolute;
+  inset-inline-start: 12px;
+  width: 40px;
+  height: 40px;
+  clip-path: polygon(33.3% 0, 66.7% 0, 66.7% 8.3%, 83.3% 8.3%, 83.3% 16.7%, 91.7% 16.7%, 91.7% 33.3%, 100% 33.3%, 100% 66.7%, 91.7% 66.7%, 91.7% 83.3%, 83.3% 83.3%, 83.3% 91.7%, 66.7% 91.7%, 66.7% 100%, 33.3% 100%, 33.3% 91.7%, 16.7% 91.7%, 16.7% 83.3%, 8.3% 83.3%, 8.3% 66.7%, 0 66.7%, 0 33.3%, 8.3% 33.3%, 8.3% 16.7%, 16.7% 16.7%, 16.7% 8.3%, 33.3% 8.3%);
+}
+#rfs-sheet[data-layout="arcade"] .rf-act::after { top: 8px; z-index: 0; background: var(--c-lo); }   /* the button's side */
+#rfs-sheet[data-layout="arcade"] .rf-act::before {                                                   /* its top */
+  top: 3px;
+  z-index: 1;
+  background: radial-gradient(circle at 34% 30%, rgba(255, 255, 255, .55) 0 14%, transparent 15%), var(--c);
+}
+#rfs-sheet[data-layout="arcade"] .rf-act > svg.rf-ic {
+  position: absolute;
+  z-index: 2;
+  inset-inline-start: 23px;
+  top: 14px;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+}
+#rfs-sheet[data-layout="arcade"] .rf-act > svg.rf-ic,
+#rfs-sheet[data-layout="arcade"] .rf-act > svg.rf-ic * { stroke: #0a0820; filter: none; }
+#rfs-sheet[data-layout="arcade"] .rf-act > svg.rf-ic :is(.f, rect, ellipse, circle:not(.s)) { fill: #0a0820; fill-opacity: .25; }
+#rfs-sheet[data-layout="arcade"] .rf-act > svg.rf-ic .s { fill: #0a0820; stroke: none; }
+#rfs-sheet[data-layout="arcade"] .rf-act:hover { color: var(--c); box-shadow: inset 0 0 0 2px var(--c), 0 -3px 0 0 #000, 0 3px 0 0 #000, -3px 0 0 0 #000, 3px 0 0 0 #000; }
+#rfs-sheet[data-layout="arcade"] .rf-act:hover::before { background: radial-gradient(circle at 34% 30%, rgba(255, 255, 255, .65) 0 14%, transparent 15%), var(--c-hi); }
+/* pressed: the top sinks onto its base */
+#rfs-sheet[data-layout="arcade"] .rf-act:active::before { top: 7px; }
+#rfs-sheet[data-layout="arcade"] .rf-act:active > svg.rf-ic { top: 18px; }
+#rfs-sheet[data-layout="arcade"] .rf-act:focus-visible { outline: 2px dashed var(--ar-yellow); outline-offset: 6px; }
+#rfs-sheet[data-layout="arcade"] .arv-hint {
+  margin-inline-start: auto;
+  font-size: 12px;
+  color: var(--ar-dim);
+  white-space: nowrap;
+}
+#rfs-sheet[data-layout="arcade"] .arv-hint kbd { margin-inline-end: 2px; }
+
+/* the cartridge that drops into the slot (only during the entrance) */
+#rfs-sheet[data-layout="arcade"] .arv-cart {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 5;
+  display: none;
+  width: 136px;
+  height: 92px;
+  pointer-events: none;
+  transform-origin: 50% 50%;
+  background:
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, .3) 0 4px, transparent 4px 8px) 10px 4px / calc(100% - 20px) 8px no-repeat,
+    linear-gradient(#c3c0da, #85829f);
+  box-shadow: inset -4px -4px 0 0 rgba(0, 0, 0, .3), inset 4px 4px 0 0 rgba(255, 255, 255, .4), 0 0 0 3px #000, 6px 6px 0 3px rgba(0, 0, 0, .45);
+}
+#rfs-sheet[data-layout="arcade"] .arv-cart-lbl {
+  position: absolute;
+  inset: 18px 12px 14px;
+  background: #1d1750 center / cover no-repeat;
+  box-shadow: 0 0 0 2px #2d2670, 0 0 0 4px #000;
+}
+
+/* smaller windows: tighter, never zoomed */
+@media (max-height: 820px) {
+  #rfs-sheet[data-layout="arcade"] .arv-scr { grid-template-rows: auto minmax(90px, 28%) minmax(0, 1fr); }
+  #rfs-sheet[data-layout="arcade"] .arv-body { padding-block: 12px 14px; }
+  #rfs-sheet[data-layout="arcade"] .arv-tr { min-height: 31px; }
+  #rfs-sheet[data-layout="arcade"] .arv-tags { display: none; }
+  #rfs-sheet[data-layout="arcade"] .rf-act { height: 46px; }
+  #rfs-sheet[data-layout="arcade"] .rf-act::before { top: 1px; }
+  #rfs-sheet[data-layout="arcade"] .rf-act::after { top: 5px; }
+  #rfs-sheet[data-layout="arcade"] .rf-act > svg.rf-ic { top: 12px; }
+  #rfs-sheet[data-layout="arcade"] .arv-deck { padding-block: 10px; }
+}
+@media (max-width: 1180px) {
+  #rfs-sheet[data-layout="arcade"] .arv-body { grid-template-columns: minmax(0, 1fr) minmax(0, .8fr); gap: 18px; padding-inline: 18px; }
+  #rfs-sheet[data-layout="arcade"] :is(.arv-hint, .arv-stick) { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { #rfs-sheet[data-layout="arcade"] :is(.arv-1up b, .arv-press span) { animation: none; } }

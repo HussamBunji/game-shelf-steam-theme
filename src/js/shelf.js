@@ -197,6 +197,7 @@
     search: '<circle cx="11" cy="11" r="7"/><path d="M16.5 16.5 21 21"/>',
     library: '<path class="f" d="M4 19V5a1 1 0 0 1 1-1h3v16H5a1 1 0 0 1-1-1Z"/><path d="M8 4h4v16H8"/><path class="f" d="m14.6 5.2 3.4-.9 3 14.6-3.4.9Z"/>',
     sort: '<path d="M7 20V4M3 8l4-4 4 4"/><path d="M17 4v16M13 16l4 4 4-4"/>',
+    shield: '<path class="f" d="M12 3 4.5 6v5.5c0 4.6 3.2 8.2 7.5 9.5 4.3-1.3 7.5-4.9 7.5-9.5V6Z"/><path d="m8.5 12 2.4 2.4 4.6-4.8"/>',
     tag: '<path class="f" d="M3 12V4a1 1 0 0 1 1-1h8l9 9-9 9Z"/><circle class="s" cx="7.5" cy="7.5" r="1.5"/>',
     spines: '<path class="f" d="M5 4h3v16H5zM10 4h3v16h-3z"/><path class="f" d="m15.5 5 2.8-.8 3.2 15-2.8.8Z"/>',
     grid: '<rect x="4" y="4" width="6.5" height="6.5" rx="1.2"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.2"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.2"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.2"/>',
@@ -299,12 +300,19 @@
   if (!SORTS[state.sort]) state.sort = 'recent';
   const FEATURE = { recent: T('آخر ما لعبت', 'Recently played'), playtime: T('الأكثر لعبًا', 'Most played'), size: T('الأكبر حجمًا', 'Largest') };
   const STYLES = [
-    { value: 'Classic Shelf', layout: 'shelf', name: T('الرف الكلاسيكي', 'Classic Shelf'), desc: T('رف خشب ثلاثي الأبعاد — تتمشى بين الرفوف والعلب تنفتح مثل CD', 'A 3D wooden bookcase — walk along the shelves and open each case like a CD') },
-    { value: 'Neon Coverflow', layout: 'coverflow', name: T('نيون كوفر فلو', 'Neon Coverflow'), desc: T('دوّار ثلاثي الأبعاد بانعكاسات وإضاءة نيون', 'A 3D carousel with reflections and neon lighting') },
-    { value: 'Glass Gallery', layout: 'gallery', name: T('المعرض الزجاجي', 'Glass Gallery'), desc: T('لوحة عملية: كمّل اللعب + كروت زجاجية + فلاتر', 'A practical dashboard: continue playing, glass cards and filters') },
-    { value: 'Steam Original', layout: 'original', name: T('ستيم الأصلي', 'Steam Original'), desc: T('ستيم مثل ما هو بدون أي تعديل — يبقى زر الثيمات ولوحة الأرقام بالمتجر', 'Steam exactly as Valve ships it — only the Themes button and the store stats panel stay') },
-    { value: 'SpaceTheme', layout: 'space', name: 'SpaceTheme', desc: T('ثيم المجتمع المشهور (SpaceTheme، رخصة MIT) — داكن ومرتب، مع لوحات الأرقام والأيقونات حقتنا', 'The popular community theme (SpaceTheme, MIT) — dark and modular, plus our stats panels and icons') },
-    { value: 'Material You', layout: 'material', name: 'Material You', desc: T('تصميم Material 3 من Google (Material Theme، رخصة MIT) — أسطح ناعمة وزوايا دائرية', 'Google\'s Material 3 design (Material Theme, MIT) — soft tonal surfaces and round corners') },
+    { value: 'Classic Shelf', sid: 'classic', layout: 'shelf', name: T('الرف الكلاسيكي', 'Classic Shelf'), desc: T('رف خشب ثلاثي الأبعاد — تتمشى بين الرفوف والعلب تنفتح مثل CD', 'A 3D wooden bookcase — walk along the shelves and open each case like a CD') },
+    { value: 'Neon Coverflow', sid: 'neon', layout: 'coverflow', name: T('نيون كوفر فلو', 'Neon Coverflow'), desc: T('دوّار ثلاثي الأبعاد بانعكاسات وإضاءة نيون', 'A 3D carousel with reflections and neon lighting') },
+    { value: 'Glass Gallery', sid: 'glass', layout: 'gallery', name: T('المعرض الزجاجي', 'Glass Gallery'), desc: T('لوحة عملية: كمّل اللعب + كروت زجاجية + فلاتر', 'A practical dashboard: continue playing, glass cards and filters') },
+    { value: 'Steam Original', sid: 'original', layout: 'original', name: T('ستيم الأصلي', 'Steam Original'), desc: T('ستيم مثل ما هو بدون أي تعديل — يبقى زر الثيمات ولوحة الأرقام بالمتجر', 'Steam exactly as Valve ships it — only the Themes button and the store stats panel stay') },
+    { value: 'SpaceTheme', sid: 'space', layout: 'space', name: 'SpaceTheme', desc: T('ثيم المجتمع المشهور (SpaceTheme، رخصة MIT) — داكن ومرتب، مع لوحات الأرقام والأيقونات حقتنا', 'The popular community theme (SpaceTheme, MIT) — dark and modular, plus our stats panels and icons') },
+    { value: 'Material You', sid: 'material', layout: 'material', name: 'Material You', desc: T('تصميم Material 3 من Google (Material Theme، رخصة MIT) — أسطح ناعمة وزوايا دائرية', 'Google\'s Material 3 design (Material Theme, MIT) — soft tonal surfaces and round corners') },
+    // plug-in themes (src/layouts/<id>.js + src/styles/<id>.css)
+    { value: 'Terminal', sid: 'terminal', layout: 'terminal', name: T('الطرفية', 'Terminal'), desc: T('مكتبتك كجدول أوامر بالأسود والأخضر — تتنقل بالأسهم وتفتح بـ Enter', 'Your library as a green-on-black command table — arrow keys to move, Enter to open') },
+    { value: 'RPG Vault', sid: 'vault', layout: 'vault', name: T('خزنة المغامر', 'Adventurer\'s Vault'), desc: T('ألعابك أغراض في حقيبة — إطار كل لعبة حسب ساعاتك: عادي، نادر، أسطوري', 'Your games as inventory loot — each frame shows its rarity by your hours played') },
+    { value: 'Vinyl Records', sid: 'vinyl', layout: 'vinyl', name: T('متجر الأسطوانات', 'Vinyl Records'), desc: T('جو السبعينات: أغلفة أسطوانات ومشغّل "يشتغل الحين" لآخر لعبة', '70s record store: album sleeves and a "Now Playing" turntable for your last game') },
+    { value: 'Corkboard', sid: 'cork', layout: 'cork', name: T('لوحة الذكريات', 'Corkboard'), desc: T('صور بولارويد مثبّتة على لوح فلين، مقسّمة حسب الوقت', 'Polaroids pinned to a cork board, grouped by when you played') },
+    { value: 'Retro Arcade', sid: 'arcade', layout: 'arcade', name: T('الأركيد', 'Retro Arcade'), desc: T('شاشة "اختر لعبتك" مثل آلات الأركيد — قائمة بالأسهم وصورة كبيرة', 'A "Select your game" arcade screen — arrow-key list and a big preview') },
+    { value: 'Magazine', sid: 'magazine', layout: 'magazine', name: T('المجلة', 'Magazine'), desc: T('غلاف مجلة: آخر لعبة قصة الغلاف، والباقي أعمدة وقوائم بأرقام كبيرة', 'An editorial magazine: your last game is the cover story, the rest are columns and charts') },
   ];
   function visibleGames() {
     const q = state.query.trim().toLowerCase();
@@ -337,20 +345,33 @@
       if (!g.images.capsule.length) g.images.capsule = SteamAPI.capsules(ov);
       return g;
     },
-    queue: [], active: 0,
+    /* details (hero, logo, header, size …) load 6 at a time. Newest request first: the game you just pointed at or
+       scrolled to jumps the line — first-come-first-served made a hovered game wait behind every row scrolled past
+       (over a minute with 900 games). Each request gets 5 s at most: Steam never answers for some apps, and those
+       used to hold a slot forever — 6 of them and no picture loaded again. Requests nobody waits for any more
+       (rows long scrolled past) are dropped; they come back if the row is shown again. */
+    queue: [], active: 0, QMAX: 120,
     ensureDetails(g) {
       if (g.detailed) return Promise.resolve(g);
-      if (g._p) return g._p;
-      g._p = new Promise(resolve => { this.queue.push({ g, resolve }); this.pump(); });
+      if (g._p) {
+        const i = this.queue.findIndex(q => q.g === g);
+        if (i >= 0 && i !== this.queue.length - 1) this.queue.push(this.queue.splice(i, 1)[0]); // asked again → to the front
+        return g._p;
+      }
+      g._p = new Promise(resolve => {
+        this.queue.push({ g, resolve });
+        while (this.queue.length > this.QMAX) { const old = this.queue.shift(); old.g._p = null; old.resolve(old.g); }
+        this.pump();
+      });
       return g._p;
     },
     pump() {
       while (this.active < 6 && this.queue.length) {
-        const { g, resolve } = this.queue.shift();
+        const { g, resolve } = this.queue.pop();
         this.active++;
         (async () => {
           try {
-            await SteamAPI.requestDetails(g.appid);
+            await Promise.race([SteamAPI.requestDetails(g.appid), new Promise(r => setTimeout(r, 5000))]);
             const d = SteamAPI.details(g.appid);
             const img = SteamAPI.images(g.ov);
             g.images.hero = img.hero; g.images.logo = img.logo; g.images.header = img.header;
@@ -458,19 +479,17 @@
   const tip = $('.rf-tip', root);
   const toastEl = div(); toastEl.id = 'rfs-toast';
 
-  /* ONE toolbar for everything, in Steam's top navigation row (next to Store / Library / Community).
-     It holds the only search box: it filters the home design AND Steam's left game list,
-     and drops down quick results from the whole library + commands. */
+  /* ONE filter strip, right above the games of the home design. It holds the ONLY search box on the home page:
+     typing filters the design's games in place (no pop-up results). Steam's own left game list is hidden while
+     the design is on screen, so there is one list and one search. */
   const bar = div(); bar.id = 'rfs-bar';
   const SORT_NAMES = { recent: T('آخر لعب', 'Last played'), name: T('الاسم', 'Name'), playtime: T('الأكثر لعبًا', 'Most played'), size: T('الحجم', 'Size') };
   bar.innerHTML = `
     <div class="tb-search">
       <span class="tb-ico">${ic('search')}</span>
-      <input class="tb-q" type="text" placeholder="${T('ابحث في ألعابك أو اكتب أمر…', 'Search your games or type a command…')}" spellcheck="false" autocomplete="off">
+      <input class="tb-q" type="text" placeholder="${T('ابحث في ألعابك…', 'Search your games…')}" title="${T('Enter يفتح أول لعبة · Ctrl+Enter يشغّلها · Esc يمسح', 'Enter opens the first game · Ctrl+Enter plays it · Esc clears')}" spellcheck="false" autocomplete="off">
+      <button class="tb-clear" title="${T('مسح البحث (Esc)', 'Clear search (Esc)')}">${ic('x')}</button>
       <kbd class="tb-kbd">Ctrl K</kbd>
-      <div class="tb-results"><div class="pl-list"></div>
-        <div class="pl-foot"><span><kbd>Enter</kbd> ${T('صفحة اللعبة', 'Game page')}</span><span><kbd>Ctrl</kbd>+<kbd>Enter</kbd> ${T('تشغيل / تثبيت', 'Play / Install')}</span><span><kbd>↑</kbd><kbd>↓</kbd> ${T('تنقل', 'Navigate')}</span><span><kbd>Esc</kbd> ${T('مسح', 'Clear')}</span></div>
-      </div>
     </div>
     <div class="tb-home">
       <div class="rf-dd tb-src"><button class="tb-btn rf-dd-btn" title="${T('أي ألعاب تطلع في الصفحة الرئيسية', 'Which games show on the home page')}">${ic('library')}<span class="tb-src-name">${T('كل ألعابي', 'All games')}</span>${ic('chevD', 'dd')}</button><div class="rf-dd-menu"></div></div>
@@ -497,6 +516,9 @@
         <div class="disc"><div class="disc-art"></div></div></div>
       <div class="lid"><div class="lid-out"></div><div class="lid-in"><div class="info-bg"></div><div class="info"></div></div></div>
     </div></div></div></div></div>`;
+  /* plug-in themes open a game in their OWN way (a record on a turntable, a cartridge, a magazine spread …):
+     the layout's open(g, sheet, src) fills this panel, which sits over the home design (docs/THEME-KIT.md) */
+  const sheet = div(); sheet.id = 'rfs-sheet';
 
   const picker = div(); picker.id = 'rfs-themes';
   picker.innerHTML = `
@@ -509,7 +531,7 @@
       </div>
       <div class="tp-grid">
         ${STYLES.map(s => `
-          <button class="tp-card" data-value="${esc(s.value)}" data-layout="${s.layout}">
+          <button class="tp-card" data-value="${esc(s.value)}" data-layout="${s.layout}" data-sid="${s.sid}">
             <div class="tp-prev tp-${s.layout}">${previewArt(s.layout)}</div>
             <div class="tp-meta"><b>${esc(s.name)}</b><span>${esc(s.desc)}</span></div>
             <i class="tp-cur">${ic('check')}${T('الحالي', 'Current')}</i>
@@ -523,11 +545,12 @@
     if (layout === 'gallery') return '<i class="pv-hero"></i>' + Array.from({ length: 8 }, (_, i) => `<i class="pv-tile" style="--i:${i}"></i>`).join('');
     if (layout === 'space') return '<i class="pv-xside"></i><i class="pv-xhero"></i>' + Array.from({ length: 5 }, (_, i) => `<i class="pv-xcard" style="--i:${i}"></i>`).join('');
     if (layout === 'material') return '<i class="pv-mbar"></i><i class="pv-mhero"></i>' + Array.from({ length: 3 }, (_, i) => `<i class="pv-mchip" style="--i:${i}"></i>`).join('') + Array.from({ length: 4 }, (_, i) => `<i class="pv-mcard" style="--i:${i}"></i>`).join('');
-    return '<i class="pv-snav"></i><i class="pv-slist"></i><i class="pv-shero"></i>' + Array.from({ length: 6 }, (_, i) => `<i class="pv-scap" style="--i:${i}"></i>`).join('');
+    if (layout === 'original') return '<i class="pv-snav"></i><i class="pv-slist"></i><i class="pv-shero"></i>' + Array.from({ length: 6 }, (_, i) => `<i class="pv-scap" style="--i:${i}"></i>`).join('');
+    return '<i class="pv-a"></i><i class="pv-b"></i><i class="pv-c"></i>' + Array.from({ length: 12 }, (_, i) => `<i class="pv-i" style="--i:${i}"></i>`).join('');
   }
 
   function mount() {
-    for (const el of [toastEl, viewer, picker, bar]) if (!el.isConnected) document.body.appendChild(el);
+    for (const el of [toastEl, viewer, sheet, picker, bar]) if (!el.isConnected) document.body.appendChild(el);
     iconDefs();
   }
 
@@ -711,7 +734,7 @@
           <div class="cf-meta"></div>
           <div class="cf-actions">
             <button class="cf-btn play" data-act="play">${ic('play')}${T('تشغيل', 'Play')}</button>
-            <button class="cf-btn" data-act="open">${ic('disc')}${T('افتح العلبة', 'Open case')}</button>
+            <button class="cf-btn" data-act="open">${ic('info')}${T('التفاصيل', 'Details')}</button>
             <button class="cf-btn" data-act="details">${T('صفحة اللعبة', 'Game page')}</button>
           </div>
         </div>
@@ -720,7 +743,7 @@
       this.el = el; this.track = $('.cf-track', el); this.nodes = new Map(); this.bgFlip = false;
       if (!games.length) this.track.innerHTML = `<div class="rf-empty">${T('ما لقيت شي يطابق بحثك', 'Nothing matches your search')}</div>`;
       // full library grid (same browsing comfort as the Glass Gallery)
-      const gridHead = div('cf-grid-head', `<b>${T('كل الألعاب', 'All games')}</b><span>${fmtGames(games.length)} — ${T('اضغط أي لعبة تطلع في الدوّار', 'click any game to bring it to the carousel')}</span>`);
+      const gridHead = div('cf-grid-head', `<b>${T('كل الألعاب', 'All games')}</b><span>${fmtGames(games.length)} — ${T('اضغط أي لعبة تنفتح على طول', 'click any game to open it')}</span>`);
       const grid = div('cf-grid');
       const frag = document.createDocumentFragment();
       games.forEach((g, i) => {
@@ -734,10 +757,12 @@
       wrap.append(el, gridHead, grid);
       stage.replaceChildren(wrap);
       this.grid = grid;
+      // one click opens the game right here (no trip up to the carousel first); the carousel follows quietly
       grid.addEventListener('click', e => {
         const c = e.target.closest('.nf-card'); if (!c) return;
-        this.go(+c.dataset.i);
-        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const i = +c.dataset.i;
+        this.go(i, true);
+        openGame(this.games[i], { el: $('.nf-art', c), slot: c, isSpine: false });
       });
       $('.cf-browse', el).addEventListener('click', () => gridHead.scrollIntoView({ behavior: 'smooth', block: 'start' }));
       this.update(true);
@@ -826,7 +851,8 @@
         const bgs = this.el.querySelectorAll('.cf-bg-img');
         this.bgFlip = !this.bgFlip;
         const on = bgs[this.bgFlip ? 1 : 0], off = bgs[this.bgFlip ? 0 : 1];
-        on.style.backgroundImage = cssUrl(first(g.images.hero) || first(g.images.header) || first(g.images.capsule));
+        // the backdrop is blurred 30 px anyway: the small header image looks the same and shows at once (no 1920 px hero)
+        on.style.backgroundImage = cssUrl(first(g.images.header) || first(g.images.capsule) || first(g.images.hero));
         on.style.opacity = '1'; off.style.opacity = '0';
       };
       fill();
@@ -836,17 +862,85 @@
       const it = this.track && this.track.querySelector(`.cf-item[data-appid="${appid}"] .cf-cover`);
       return it ? { el: it, slot: it.parentElement, isSpine: false } : null;
     },
+    /** an element's box if it is on screen (inside the panel area), else null */
+    seen(el, sheet) {
+      if (!el || !el.isConnected) return null;
+      const r = el.getBoundingClientRect(), S = sheet.getBoundingClientRect();
+      return r.width > 4 && r.bottom > S.top && r.top < S.bottom && r.right > S.left && r.left < S.right ? r : null;
+    },
+    /** the game opens like a neon sign: the cover flies forward out of the carousel, then the sign's tubes flicker on
+        (styles: src/css/sheets.css, #rfs-sheet[data-layout="coverflow"]) */
+    async open(g, sheet, src) {
+      const run = SteamAPI.runningIds().has(g.appid), facts = gameFacts(g), desc = gameDesc(g);
+      const i = this.games ? this.games.indexOf(g) : -1;
+      const st = run ? ['run', T('شغّالة الحين', 'Running now')] : g.installed ? ['in', T('مثبتة وجاهزة', 'Installed')] : ['out', T('غير مثبتة', 'Not installed')];
+      sheet.innerHTML = `
+        <div class="ns-scrim"></div>
+        <button class="ns-x" data-close title="${T('إغلاق (Esc)', 'Close (Esc)')}">${ic('x')}</button>
+        <div class="ns-view"><div class="ns-stage" role="dialog" aria-label="${esc(g.name)}">
+          <div class="ns-art"></div>
+          <div class="ns-sign">
+            <i class="ns-plate"></i><i class="ns-frame c"></i><i class="ns-frame m"></i>
+            <div class="ns-kicker"><span class="ns-dot ${st[0]}"></span><span>${st[1]}</span>${i >= 0 ? `<span class="ns-no">${NUM.format(i + 1)} / ${NUM.format(this.games.length)}</span>` : ''}</div>
+            <h2 class="ns-title${g.name.length > 24 ? ' long' : ''}" dir="auto">${esc(g.name)}</h2>
+            ${g.genres.length ? `<div class="ns-tags">${g.genres.slice(0, 5).map(t => `<span dir="auto">${esc(t)}</span>`).join('')}</div>` : ''}
+            <dl class="ns-facts">${facts.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd dir="auto" title="${esc(v)}">${esc(v)}</dd></div>`).join('')}</dl>
+            ${desc ? `<p class="ns-desc" dir="auto">${esc(desc)}</p>` : ''}
+          </div>
+        </div></div>`;
+      const art = $('.ns-art', sheet), sign = $('.ns-sign', sheet);
+      art.style.backgroundImage = cssUrl(first(g.images.capsule) || first(g.images.header));
+      sign.append(gameActions(g));
+      this.from = src && src.el;
+      sfx('swish');
+      const r = this.seen(this.from, sheet), A = art.getBoundingClientRect();
+      const ease = 'cubic-bezier(.2,.85,.25,1)';
+      const anims = [$('.ns-scrim', sheet).animate([{ opacity: 0 }, { opacity: 1 }], { duration: 240, easing: 'ease-out' })];
+      // 1. the card flies forward (FLIP from the carousel cover / grid card into its place, a small lift at the end)
+      anims.push(r
+        ? art.animate([{ transform: `translate(${r.left - A.left}px, ${r.top - A.top}px) scale(${r.width / A.width}, ${r.height / A.height})` },
+          { transform: 'translate(0, -10px) scale(1.035)', offset: .72 }, { transform: 'none' }], { duration: 560, easing: ease })
+        : art.animate([{ opacity: 0, transform: 'translateY(34px) scale(.9)' }, { opacity: 1, transform: 'none' }], { duration: 460, easing: ease }));
+      // 2. the sign lights up: plate fades in, the cyan and magenta tubes flicker on, then the title
+      const FLICK = [{ opacity: 0 }, { opacity: .9, offset: .1 }, { opacity: .12, offset: .18 }, { opacity: 1, offset: .3 }, { opacity: .3, offset: .38 }, { opacity: 1, offset: .52 }, { opacity: .75, offset: .7 }, { opacity: 1 }];
+      anims.push($('.ns-plate', sheet).animate([{ opacity: 0 }, { opacity: 1 }], { duration: 260, delay: 60, fill: 'backwards' }));
+      anims.push($('.ns-frame.c', sheet).animate(FLICK, { duration: 440, delay: 90, fill: 'backwards' }));
+      anims.push($('.ns-frame.m', sheet).animate(FLICK, { duration: 400, delay: 170, fill: 'backwards' }));
+      anims.push($('.ns-title', sheet).animate(FLICK, { duration: 380, delay: 220, fill: 'backwards' }));
+      [...sign.querySelectorAll(':scope > :not(i):not(.ns-title)'), $('.ns-x', sheet)].forEach((e, k) => anims.push(
+        e.animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }], { duration: 240, delay: 190 + k * 28, easing: 'ease-out', fill: 'backwards' })));
+      await Promise.all(anims.map(a => a.finished)).catch(() => {});
+    },
+    async close(sheet, g) {
+      const art = $('.ns-art', sheet), sign = $('.ns-sign', sheet);
+      if (!art || !sign) return;
+      sfx('close');
+      const fwd = { fill: 'forwards' };
+      const anims = [
+        $('.ns-scrim', sheet).animate([{ opacity: 1 }, { opacity: 0 }], { ...fwd, duration: 340, easing: 'ease-in' }),
+        // the tubes flicker off
+        sign.animate([{ opacity: 1 }, { opacity: .2, offset: .25 }, { opacity: .75, offset: .4 }, { opacity: 0 }], { ...fwd, duration: 240 }),
+        $('.ns-x', sheet).animate([{ opacity: 1 }, { opacity: 0 }], { ...fwd, duration: 160 }),
+      ];
+      // the cover flies back to where it came from (or to the carousel), else it sinks away
+      const s = this.source(g.appid);
+      const r = this.seen(this.from, sheet) || this.seen(s && s.el, sheet), A = art.getBoundingClientRect();
+      anims.push(r
+        ? art.animate([{ transform: 'none' }, { transform: `translate(${r.left - A.left}px, ${r.top - A.top}px) scale(${r.width / A.width}, ${r.height / A.height})` }], { ...fwd, duration: 330, easing: 'cubic-bezier(.45,0,.2,1)' })
+        : art.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(24px) scale(.92)' }], { ...fwd, duration: 260, easing: 'ease-in' }));
+      await Promise.all(anims.map(a => a.finished)).catch(() => {});
+      this.from = null;
+    },
   };
 
   /* ---------- 3c. glass gallery (dashboard) ---------- */
   const GalleryLayout = {
     fixedHeight: false,
-    dockInside: true, // the filter strip goes into [data-rfs-dock], right above the chips and the grid
+    dockInside: true, // the filter strip goes into [data-rfs-dock]: search, source, sort and genres in one row
+    kb: -1, // keyboard cursor (index into this.games), -1 = none yet
     render(games) {
+      this.games = games; this.kb = -1; this.hov = null; this.hovR = null;
       const recent = [...state.games].sort(SORTS.recent)[0];
-      const genreCount = new Map();
-      state.games.forEach(g => g.genres.forEach(t => genreCount.set(t, (genreCount.get(t) || 0) + 1)));
-      const genres = [...genreCount.entries()].sort((a, b) => b[1] - a[1]).slice(0, 10).map(x => x[0]);
       const running = SteamAPI.runningIds();
       const el = div('gl');
       el.innerHTML = `
@@ -858,16 +952,12 @@
               <div class="gl-hero-meta"><span>${ic('clock')}${esc(fmtPlaytime(recent.playtimeMin))}</span><span>${ic('calendar')}${esc(fmtAgo(recent.lastPlayed))}</span>${recent.playtime2wksMin ? `<span>${ic('fire')}${esc(fmtPlaytime(recent.playtime2wksMin))} ${T('آخر أسبوعين', 'past 2 weeks')}</span>` : ''}</div>
               <div class="gl-hero-actions">
                 <button class="gl-btn play" data-act="play">${running.has(recent.appid) ? ic('pulse') + T('شغّالة الحين', 'Running now') : recent.installed ? ic('play') + T('كمّل اللعب', 'Continue playing') : ic('download') + T('تثبيت', 'Install')}</button>
-                <button class="gl-btn" data-act="open">${ic('disc')}${T('التفاصيل', 'Details')}</button>
+                <button class="gl-btn" data-act="open">${ic('info')}${T('التفاصيل', 'Details')}</button>
                 <button class="gl-btn" data-act="details">${T('صفحة اللعبة', 'Game page')}</button>
               </div>
             </div>
           </div>` : ''}
-        <div class="rf-dock" data-rfs-dock></div>
-        <div class="gl-chips">
-          <button class="gl-chip${state.genre ? '' : ' on'}" data-genre="">${T('الكل', 'All')} <b>${NUM.format(state.games.length)}</b></button>
-          ${genres.map(t => `<button class="gl-chip${state.genre === t ? ' on' : ''}" data-genre="${esc(t)}" dir="auto">${esc(t)} <b>${NUM.format(genreCount.get(t))}</b></button>`).join('')}
-        </div>
+        <div class="rf-dock rf-merge" data-rfs-dock></div>
         <div class="gl-grid"></div>`;
       if (recent) {
         const paintHero = g => {
@@ -877,11 +967,13 @@
         };
         paintHero(recent);
         Data.ensureDetails(recent).then(paintHero);
-        $('.gl-hero-actions', el).addEventListener('click', e => {
-          const b = e.target.closest('[data-act]'); if (!b) return;
-          if (b.dataset.act === 'play') launch(recent);
-          else if (b.dataset.act === 'open') openGame(recent, { el: $('.gl-hero-logo', el), isSpine: false });
-          else SteamAPI.openDetails(recent.appid);
+        // the whole banner opens the game (its glass panel grows out of the banner); its buttons do their own thing
+        const hero = $('.gl-hero', el);
+        hero.addEventListener('click', e => {
+          const b = e.target.closest('[data-act]');
+          if (b && b.dataset.act === 'play') launch(recent);
+          else if (b && b.dataset.act === 'details') SteamAPI.openDetails(recent.appid);
+          else openGame(recent, { el: hero, slot: hero, isSpine: false });
         });
       }
       const grid = $('.gl-grid', el);
@@ -899,34 +991,188 @@
       });
       grid.append(frag);
       stage.replaceChildren(el);
-      $('.gl-chips', el).addEventListener('click', e => {
-        const b = e.target.closest('.gl-chip'); if (!b) return;
-        state.genre = b.dataset.genre; sfx('tick'); render();
-      });
+      this.grid = grid;
       grid.addEventListener('click', e => {
         const c = e.target.closest('.gl-card'); if (!c) return;
         const g = byId(c.dataset.appid);
         if (e.target.closest('.gl-quick')) { launch(g); return; }
+        this.setKb(this.games.indexOf(g), false); // the arrow keys carry on from the game you clicked
         openGame(g, this.source(g.appid));
       });
+      // highlight is pure CSS :hover (instant); the light spot follows the cursor once per frame, with the card's box
+      // read once per card (reading it on every move after a style write forced a layout each time)
       grid.addEventListener('pointermove', e => {
         const c = e.target.closest('.gl-card');
-        if (c !== this.hov) { if (this.hov) { this.hov.style.removeProperty('--tx'); this.hov.style.removeProperty('--ty'); } this.hov = c; if (c) sfx('tick'); }
+        if (c !== this.hov) {
+          if (this.hov) { this.hov.style.removeProperty('--tx'); this.hov.style.removeProperty('--ty'); }
+          this.hov = c; this.hovR = null;
+          if (c) sfx('tick');
+        }
         if (!c) return;
-        const r = c.getBoundingClientRect();
-        c.style.setProperty('--tx', clamp(((e.clientX - r.left) / r.width) * 2 - 1).toFixed(3));
-        c.style.setProperty('--ty', clamp(((e.clientY - r.top) / r.height) * 2 - 1).toFixed(3));
+        this.px = e.clientX; this.py = e.clientY;
+        if (!this.raf) this.raf = requestAnimationFrame(() => {
+          this.raf = 0;
+          const h = this.hov; if (!h) return;
+          const r = this.hovR || (this.hovR = h.getBoundingClientRect());
+          h.style.setProperty('--tx', clamp(((this.px - r.left) / r.width) * 2 - 1).toFixed(3));
+          h.style.setProperty('--ty', clamp(((this.py - r.top) / r.height) * 2 - 1).toFixed(3));
+        });
       });
       grid.addEventListener('pointerleave', () => { if (this.hov) { this.hov.style.removeProperty('--tx'); this.hov.style.removeProperty('--ty'); this.hov = null; } });
+    },
+    /** arrow keys walk the cards (reading direction follows the language), Enter opens the one under the cursor */
+    key(e) {
+      const n = this.games ? this.games.length : 0;
+      if (!n || !this.grid || !this.grid.isConnected) return false;
+      if (e.key === 'Enter') {
+        const c = this.grid.querySelector('.gl-card.kb'); // only a cursor you can see
+        const g = c && byId(c.dataset.appid);
+        if (!g) return false;
+        openGame(g, this.source(g.appid));
+        return true;
+      }
+      const cols = Math.max(1, getComputedStyle(this.grid).gridTemplateColumns.split(' ').length);
+      const d = { [LTR ? 'ArrowRight' : 'ArrowLeft']: 1, [LTR ? 'ArrowLeft' : 'ArrowRight']: -1, ArrowDown: cols, ArrowUp: -cols }[e.key];
+      if (!d) return false;
+      let i;
+      if (this.kb < 0) {
+        // start on the first card that is on screen, not at the top of the list
+        const cards = this.grid.children;
+        i = 0;
+        for (let k = 0; k < cards.length; k++) { if (cards[k].getBoundingClientRect().top >= 40) { i = k; break; } }
+      } else {
+        const j = this.kb + d;
+        i = j < 0 ? this.kb : Math.min(n - 1, j);
+      }
+      this.setKb(i, true);
+      sfx('tick');
+      return true;
+    },
+    setKb(i, show) {
+      const old = this.grid && this.grid.querySelector('.gl-card.kb');
+      if (old) old.classList.remove('kb');
+      this.kb = i;
+      if (!show || i < 0) return;
+      const c = this.grid.children[i];
+      if (c) { c.classList.add('kb'); c.scrollIntoView({ block: 'nearest' }); }
     },
     source(appid) {
       const c = stage.querySelector(`.gl-card[data-appid="${appid}"] .gl-art`);
       return c ? { el: c, slot: c.parentElement, isSpine: false } : null;
     },
+    /** an element's box if it is on screen (inside the panel area), else null */
+    seen(el, sheet) {
+      if (!el || !el.isConnected) return null;
+      const r = el.getBoundingClientRect(), S = sheet.getBoundingClientRect();
+      return r.width > 4 && r.bottom > S.top && r.top < S.bottom && r.right > S.left && r.left < S.right ? r : null;
+    },
+    /** clip-path that shows only the part of the panel P lying over the box r (slid inside P when r is outside it) */
+    clipAt(P, r) {
+      const w = Math.min(r.width, P.width), h = Math.min(r.height, P.height);
+      const x = Math.max(P.left, Math.min(P.right - w, r.left)), y = Math.max(P.top, Math.min(P.bottom - h, r.top));
+      const t = y - P.top, l = x - P.left;
+      return `inset(${t.toFixed(1)}px ${(P.width - l - w).toFixed(1)}px ${(P.height - t - h).toFixed(1)}px ${l.toFixed(1)}px round 14px)`;
+    },
+    flip: (C, r) => `translate(${r.left - C.left}px, ${r.top - C.top}px) scale(${r.width / C.width}, ${r.height / C.height})`,
+    /** the game opens in a frosted-glass panel that grows out of the clicked card: the glass widens from the card's
+        box while the cover glides into its place (styles: src/css/sheets.css, #rfs-sheet[data-layout="gallery"]) */
+    async open(g, sheet, src) {
+      const run = SteamAPI.runningIds().has(g.appid), facts = gameFacts(g), desc = gameDesc(g);
+      const FI = { [T('وقت اللعب', 'Play time')]: 'hourglass', [T('آخر مرة لعبت', 'Last played')]: 'clock', [T('آخر أسبوعين', 'Past 2 weeks')]: 'fire',
+        [T('الحجم', 'Size')]: 'drive', [T('المطوّر', 'Developer')]: 'users', [T('الإصدار', 'Released')]: 'calendar' };
+      const st = run ? ['run', T('شغّالة الحين', 'Running now')] : g.installed ? ['in', T('مثبتة وجاهزة', 'Installed')] : ['out', T('غير مثبتة', 'Not installed')];
+      const hasLogo = g.images.logo.length > 0;
+      sheet.innerHTML = `
+        <div class="gs-scrim"></div>
+        <div class="gs-view">
+          <article class="gs-panel${hasLogo ? ' has-logo' : ''}" role="dialog" aria-label="${esc(g.name)}">
+            <div class="gs-shadow"></div>
+            <div class="gs-glass"><div class="gs-hero"></div></div>
+            <button class="gs-x" data-close title="${T('إغلاق (Esc)', 'Close (Esc)')}">${ic('x')}</button>
+            <div class="gs-body">
+              <div class="gs-cover"></div>
+              <div class="gs-main">
+                ${hasLogo ? '<div class="gs-logo"></div>' : ''}
+                <div class="gs-state ${st[0]}"><i></i>${st[1]}</div>
+                <h2 class="gs-name" dir="auto">${esc(g.name)}</h2>
+                ${g.genres.length ? `<div class="gs-chips">${g.genres.slice(0, 6).map(t => `<span dir="auto">${esc(t)}</span>`).join('')}</div>` : ''}
+                ${desc ? `<p class="gs-desc" dir="auto">${esc(desc)}</p>` : ''}
+              </div>
+            </div>
+            <dl class="gs-facts">${facts.map(([k, v]) => `<div class="gs-fact">${icT(FI[k] || 'info')}<dt>${esc(k)}</dt><dd dir="auto" title="${esc(v)}">${esc(v)}</dd></div>`).join('')}</dl>
+          </article>
+        </div>`;
+      const panel = $('.gs-panel', sheet), glass = $('.gs-glass', sheet), cover = $('.gs-cover', sheet), main = $('.gs-main', sheet);
+      // hero art on top, the small header right under it: something shows at once and the hero covers it when loaded
+      $('.gs-hero', sheet).style.backgroundImage = [first(g.images.hero), first(g.images.header), first(g.images.capsule)].filter(Boolean).map(cssUrl).join(', ') || 'none';
+      cover.style.backgroundImage = cssUrl(first(g.images.capsule) || first(g.images.header));
+      if (hasLogo) $('.gs-logo', sheet).append(imgWithFallback(g.images.logo, '', im => im.remove()));
+      main.append(gameActions(g));
+      this.from = src && src.el;
+      sfx('swish');
+      const ease = 'cubic-bezier(.2,.8,.2,1)';
+      const r = this.seen(this.from, sheet), P = panel.getBoundingClientRect();
+      const anims = [$('.gs-scrim', sheet).animate([{ opacity: 0 }, { opacity: 1 }], { duration: 280, easing: 'ease-out' }),
+        $('.gs-shadow', sheet).animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300, delay: 220, fill: 'backwards' })];
+      if (r) {
+        anims.push(glass.animate([{ clipPath: this.clipAt(P, r), opacity: .7 }, { clipPath: `inset(0px 0px 0px 0px round 22px)`, opacity: 1 }], { duration: 540, easing: ease }));
+        // a portrait card glides into the cover slot; from the wide banner the cover just fades in
+        if (Math.abs(r.width / r.height - 2 / 3) < .12) anims.push(cover.animate([{ transform: this.flip(cover.getBoundingClientRect(), r) }, { transform: 'none' }], { duration: 540, easing: ease }));
+        else anims.push(cover.animate([{ opacity: 0, transform: 'translateY(16px)' }, { opacity: 1, transform: 'none' }], { duration: 320, delay: 160, easing: 'ease-out', fill: 'backwards' }));
+      } else {
+        anims.push(panel.animate([{ opacity: 0, transform: 'translateY(28px) scale(.97)' }, { opacity: 1, transform: 'none' }], { duration: 440, easing: ease }));
+      }
+      [...main.children, $('.gs-facts', sheet), $('.gs-x', sheet)].forEach((e, k) => anims.push(
+        e.animate([{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'none' }], { duration: 260, delay: 140 + k * 28, easing: 'ease-out', fill: 'backwards' })));
+      await Promise.all(anims.map(a => a.finished)).catch(() => {});
+    },
+    async close(sheet, g) {
+      const panel = $('.gs-panel', sheet);
+      if (!panel) return;
+      sfx('close');
+      const glass = $('.gs-glass', sheet), cover = $('.gs-cover', sheet);
+      const fwd = { fill: 'forwards' }, ease = 'cubic-bezier(.45,0,.2,1)';
+      const s = this.source(g.appid);
+      const r = this.seen(this.from, sheet) || this.seen(s && s.el, sheet), P = panel.getBoundingClientRect();
+      const anims = [
+        $('.gs-scrim', sheet).animate([{ opacity: 1 }, { opacity: 0 }], { ...fwd, duration: 330, easing: 'ease-in' }),
+        $('.gs-shadow', sheet).animate([{ opacity: 1 }, { opacity: 0 }], { ...fwd, duration: 140 }),
+        ...[$('.gs-x', sheet), $('.gs-main', sheet), $('.gs-facts', sheet)].map(e => e.animate([{ opacity: 1 }, { opacity: 0 }], { ...fwd, duration: 140 })),
+      ];
+      if (r) {
+        // the glass shrinks back into the card and the cover lands on it
+        anims.push(glass.animate([{ clipPath: 'inset(0px 0px 0px 0px round 22px)', opacity: 1 }, { opacity: 1, offset: .55 }, { clipPath: this.clipAt(P, r), opacity: 0 }], { ...fwd, duration: 330, easing: ease }));
+        if (Math.abs(r.width / r.height - 2 / 3) < .12) anims.push(cover.animate([{ transform: 'none' }, { transform: this.flip(cover.getBoundingClientRect(), r) }], { ...fwd, duration: 330, easing: ease }));
+        else anims.push(cover.animate([{ opacity: 1 }, { opacity: 0 }], { ...fwd, duration: 160 }));
+      } else {
+        anims.push(panel.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(20px) scale(.97)' }], { ...fwd, duration: 280, easing: 'ease-in' }));
+      }
+      await Promise.all(anims.map(a => a.finished)).catch(() => {});
+      this.from = null;
+    },
   };
 
   const LAYOUTS = { shelf: ShelfLayout, coverflow: CoverflowLayout, gallery: GalleryLayout };
-  const L = () => LAYOUTS[state.layout] || ShelfLayout;
+  /* ---- plug-in home designs: each newer theme ships its own layout as src/layouts/<id>.js + .css, loaded only when
+     that theme is chosen. A module calls window.__rfsLayoutApi.register(id, layout) — see docs/THEME-KIT.md. */
+  const EXT = {};
+  const extLoading = {};
+  const themeBase = (() => {
+    const me = document.querySelector('script[src*="/src/js/shelf.js"]');
+    return me ? me.src.replace(/src\/js\/shelf\.js.*$/, '') : 'https://millennium.host/v1/themes/rf-shelf/';
+  })();
+  function loadLayout(id) {
+    if (EXT[id] || extLoading[id] || !/^[a-z0-9-]+$/.test(id)) return;
+    extLoading[id] = true;
+    const css = document.createElement('link');
+    css.rel = 'stylesheet'; css.href = themeBase + 'src/layouts/' + id + '.css'; css.dataset.rfsLayout = id;
+    document.head.appendChild(css);
+    const s = document.createElement('script');
+    s.src = themeBase + 'src/layouts/' + id + '.js';
+    s.onerror = () => LOG('layout module missing:', id);
+    document.head.appendChild(s);
+  }
+  const L = () => LAYOUTS[state.layout] || EXT[state.layout] || ShelfLayout;
 
   /* ---- render */
   function render() {
@@ -947,10 +1193,10 @@
   /** the filter strip (search · source · sort · view …) lives inside the home design, right above the games */
   function dockBar() {
     const slot = stage.querySelector('[data-rfs-dock]');
-    if (slot) { if (bar.parentElement !== slot) slot.appendChild(bar); }
+    // first in its slot: a design may put its own chips in the same slot (.rf-merge) → strip + chips = one filter row
+    if (slot) { if (slot.firstElementChild !== bar) slot.prepend(bar); }
     else if (bar.parentElement !== root || bar.nextElementSibling !== stage) root.insertBefore(bar, stage);
-    bar.classList.add('inhome');
-    bar.classList.remove('float');
+    bar.classList.toggle('inhome', true);
   }
   /** moving / re-rendering the strip must not kick the cursor out of the search box */
   function keepSearchFocus() {
@@ -968,11 +1214,14 @@
     bar.querySelectorAll('.tb-sort .rf-dd-menu button').forEach(b => b.classList.toggle('on', b.dataset.v === state.sort));
     bar.querySelectorAll('.tb-view button').forEach(b => b.classList.toggle('on', b.dataset.v === state.view));
     $('.tb-view', bar).style.display = state.layout === 'shelf' ? '' : 'none';
-    $('.tb-genre', bar).style.display = state.layout === 'gallery' ? 'none' : ''; // the gallery has its own chips
+    $('.tb-genre', bar).style.display = ''; // genres are one dropdown button in every design (the gallery's chip row took a whole line)
     $('.tb-genre-name', bar).textContent = state.genre || T('كل الأنواع', 'All genres');
     $('.tb-genre .rf-dd-btn', bar).classList.toggle('on', !!state.genre);
     $('.tb-snd', bar).innerHTML = state.sound ? ic('volume') : ic('mute');
     $('.tb-news', bar).classList.toggle('on', state.news);
+    // the strip only shows what the current design uses (no "spines / covers" outside the shelf, no genre menu
+    // where the design already has genre chips) — layouts.css
+    if (bar.dataset.layout !== state.layout) bar.dataset.layout = state.layout;
   }
 
   /* ---- toolbar controls */
@@ -1026,7 +1275,6 @@
   });
   const onDocClick = e => {
     dds.forEach(d => { if (!d.contains(e.target)) d.classList.remove('open'); });
-    if (!e.target.closest('.tb-search')) Search.closeResults();
   };
   document.addEventListener('click', onDocClick);
   function setEnabled(on) { state.enabled = on; store.set('enabled', on ? '1' : '0'); sfx('tick'); tick(true); }
@@ -1043,6 +1291,31 @@
     J = { jh, jw, jt };
     viewer.style.setProperty('--jh', jh + 'px'); viewer.style.setProperty('--jw', jw + 'px'); viewer.style.setProperty('--jt', jt + 'px');
   }
+  /** [label, value] pairs for a game's details (play time, last played, size, developer, release) */
+  function gameFacts(g) {
+    const stats = [[T('وقت اللعب', 'Play time'), fmtPlaytime(g.playtimeMin)], [T('آخر مرة لعبت', 'Last played'), fmtAgo(g.lastPlayed)]];
+    if (g.playtime2wksMin) stats.push([T('آخر أسبوعين', 'Past 2 weeks'), fmtPlaytime(g.playtime2wksMin)]);
+    stats.push([T('الحجم', 'Size'), g.installed ? `${fmtSize(g.sizeOnDisk)}${g.drive ? ` · ${g.drive}` : ''}` : T('غير مثبتة', 'Not installed')], [T('المطوّر', 'Developer'), (g.developers || []).join(T('، ', ', ')) || '—'], [T('الإصدار', 'Released'), g.releaseDate || '—']);
+    return stats;
+  }
+  const gameDesc = g => g.description || SteamAPI.description(g.appid) || '';
+  /** Play / Game page / Store buttons, already wired. Plug-in themes style them (.rf-acts button[data-act]). */
+  function gameActions(g) {
+    const box = div('rf-acts');
+    const running = SteamAPI.runningIds().has(g.appid);
+    box.innerHTML = `
+      <button class="rf-act play${running ? ' is-running' : ''}" data-act="play">${running ? ic('pulse') + T('شغّالة الحين', 'Running now') : g.installed ? ic('play') + T('تشغيل', 'Play') : ic('download') + T('تثبيت', 'Install')}</button>
+      <button class="rf-act" data-act="details">${ic('info')}${T('صفحة اللعبة', 'Game page')}</button>
+      <button class="rf-act" data-act="store">${ic('cart')}${T('المتجر', 'Store')}</button>`;
+    box.addEventListener('click', e => {
+      const b = e.target.closest('[data-act]'); if (!b) return;
+      e.stopPropagation();
+      if (b.dataset.act === 'play') launch(g);
+      else if (b.dataset.act === 'details') { sfx('tick'); closeViewer(true).then(() => SteamAPI.openDetails(g.appid)); }
+      else { sfx('tick'); try { SteamAPI.steamUrl('steam://store/' + g.appid); } catch (err) { toast(T('ما قدرت أفتح المتجر', 'Couldn\'t open the Store')); } }
+    });
+    return box;
+  }
   function fillJewel(g) {
     ShelfLayout.paintCase(jewel, g);
     const sp = ShelfLayout.spineArt(g); ShelfLayout.paintSpine(sp, g);
@@ -1051,10 +1324,8 @@
     discArt.replaceChildren();
     if (g.images.logo.length) discArt.append(imgWithFallback(g.images.logo, 'disc-logo', im => im.remove()));
     const running = SteamAPI.runningIds().has(g.appid);
-    const stats = [[T('وقت اللعب', 'Play time'), fmtPlaytime(g.playtimeMin)], [T('آخر مرة لعبت', 'Last played'), fmtAgo(g.lastPlayed)]];
-    if (g.playtime2wksMin) stats.push([T('آخر أسبوعين', 'Past 2 weeks'), fmtPlaytime(g.playtime2wksMin)]);
-    stats.push([T('الحجم', 'Size'), g.installed ? `${fmtSize(g.sizeOnDisk)}${g.drive ? ` · ${g.drive}` : ''}` : T('غير مثبتة', 'Not installed')], [T('المطوّر', 'Developer'), (g.developers || []).join(T('، ', ', ')) || '—'], [T('الإصدار', 'Released'), g.releaseDate || '—']);
-    const desc = g.description || SteamAPI.description(g.appid);
+    const stats = gameFacts(g);
+    const desc = gameDesc(g);
     info.innerHTML = [
       '<div class="info-logo-wrap" style="display:flex;justify-content:center"></div>',
       `<h2 class="info-name" dir="auto">${esc(g.name)}</h2>`,
@@ -1085,8 +1356,39 @@
     if (src.isSpine) return `translate3d(${cx}px, ${cy}px, ${-s * J.jw / 2}px) scale3d(${s}, ${s}, ${s}) rotateY(90deg)`;
     return `translate3d(${cx}px, ${cy}px, ${-s * J.jt / 2}px) scale3d(${s}, ${s}, ${s})`;
   }
+  /** the themed panel covers the home design only — Steam's own navigation stays usable above it */
+  function placeSheet() {
+    const p = (root.isConnected && root.classList.contains('on') && SteamAPI.rightPanel()) || null;
+    const r = p ? p.getBoundingClientRect() : { left: 0, top: 0, width: innerWidth, height: innerHeight };
+    setStyles(sheet, { left: Math.round(r.left) + 'px', top: Math.round(r.top) + 'px', width: Math.round(r.width) + 'px', height: Math.round(r.height) + 'px' });
+  }
+  async function openSheet(lay, g, src) {
+    busy = true;
+    current = { g, appid: String(g.appid), sheet: true };
+    hideTip();
+    await Promise.race([Data.ensureDetails(g), wait(700)]);
+    sheet.dataset.layout = state.layout;
+    sheet.replaceChildren();
+    placeSheet();
+    sheet.classList.add('on');
+    try { await lay.open(g, sheet, src || null); } catch (err) { LOG('layout open failed', err); }
+    busy = false;
+  }
+  async function closeSheet(fast) {
+    busy = true;
+    const lay = L();
+    try { if (!fast && typeof lay.close === 'function') await Promise.race([lay.close(sheet, current.g), wait(1500)]); } catch (err) { LOG('layout close failed', err); }
+    sheet.classList.remove('on');
+    sheet.replaceChildren();
+    current = null; busy = false;
+  }
+  // a click on the panel's own background (outside the theme's content) or on [data-close] closes it
+  sheet.addEventListener('click', e => { if (current && current.sheet && (e.target === sheet || e.target.closest('[data-close]'))) closeViewer(); });
+  window.addEventListener('resize', () => { if (current && current.sheet) placeSheet(); });
   async function openGame(g, src) {
     if (!g || busy || current) return;
+    const lay = L();
+    if (typeof lay.open === 'function') return openSheet(lay, g, src);
     busy = true;
     current = { g, appid: String(g.appid) };
     hideTip(); sizeJewel();
@@ -1105,6 +1407,7 @@
   }
   async function closeViewer(fast) {
     if (!current || busy) return;
+    if (current.sheet) return closeSheet(fast);
     busy = true;
     viewer.classList.remove('open');
     if (!fast) { await wait(160); sfx('close'); await wait(880); }
@@ -1137,12 +1440,10 @@
   viewer.addEventListener('pointermove', onViewerMove);
 
   /* =================================================================
-     5. Search — the ONE search box (toolbar). Ctrl+K focuses it.
-        • filters the home design live
-        • mirrors into Steam's left game list (its own box is hidden)
-        • drops down quick results from the whole library + commands
+     5. Search — the ONE search box (filter strip of the home page). Ctrl+K focuses it.
+        It filters the home design in place; nothing pops up over the page.
      ================================================================= */
-  /* panels of ours (theme picker, search results) must be visible on store pages too */
+  /* panels of ours (theme picker) must be visible on store pages too */
   const Overlay = {
     open: new Set(), hidBrowser: false,
     push(name) {
@@ -1155,128 +1456,57 @@
     },
   };
   const Search = {
-    input: $('.tb-q', bar), list: $('.tb-results .pl-list', bar), box: $('.tb-search', bar), items: [], sel: 0, owned: [],
-    // "words" holds Arabic AND English keywords (and both names), so a command is found in either language
-    commands: [
-      { ico: 'home', name: T('رف الألعاب (الصفحة الرئيسية)', 'Game Shelf (home page)'), words: 'home shelf game shelf library رف الألعاب رئيسية الصفحة الرئيسية مكتبة', run: () => SteamAPI.navigate('/library/home') },
-      { ico: 'palette', name: T('تغيير تصميم الثيم', 'Change theme design'), words: 'theme style design look skin ثيم ستايل تصميم شكل تغيير', run: () => Themes.open() },
-      { ico: 'globe', name: T('غيّر اللغة إلى English', 'Switch language to العربية'), words: 'language lang english arabic switch لغة اللغة عربي العربية انجليزي إنجليزي الإنجليزية English العربية', run: () => Lang.toggle() },
-      { ico: 'cart', name: T('المتجر', 'Store'), words: 'store shop buy متجر المتجر شراء', run: () => SteamAPI.steamUrl('steam://store') },
-      { ico: 'star', name: T('قائمة الأمنيات', 'Wishlist'), words: 'wishlist wish list امنيات أمنيات قائمة الأمنيات', run: () => SteamAPI.steamUrl('steam://openurl/https://store.steampowered.com/wishlist/') },
-      { ico: 'download', name: T('التنزيلات', 'Downloads'), words: 'downloads download updates تنزيل التنزيلات تحميل تحديثات', run: () => SteamAPI.steamUrl('steam://open/downloads') },
-      { ico: 'users', name: T('الأصدقاء والدردشة', 'Friends & Chat'), words: 'friends chat اصدقاء أصدقاء الأصدقاء دردشة الدردشة', run: () => SteamAPI.steamUrl('steam://open/friends') },
-      { ico: 'image', name: T('لقطات الشاشة', 'Screenshots'), words: 'screenshots screenshot images photos صور لقطات لقطات الشاشة', run: () => SteamAPI.steamUrl('steam://open/screenshots') },
-      { ico: 'sliders', name: T('إعدادات ستيم', 'Steam Settings'), words: 'settings steam settings preferences options اعدادات إعدادات إعدادات ستيم', run: () => SteamAPI.steamUrl('steam://open/settings') },
-      { ico: 'refresh', name: T('تحديث بيانات الرف', 'Refresh shelf data'), words: 'refresh reload update تحديث بيانات الرف', run: () => { Data.load(); render(); toast(T('تم تحديث الرف', 'Shelf refreshed')); } },
-    ],
+    input: $('.tb-q', bar), box: $('.tb-search', bar), pendingFocus: false,
+    /** Ctrl+K: the box on the home page is the only search — from anywhere else, go home and focus it */
     focus() {
-      if (!bar.classList.contains('inhome') || !bar.classList.contains('on')) { bar.classList.add('float', 'on'); }
-      this.input.focus(); this.input.select(); this.openResults();
+      if (bar.classList.contains('inhome') && bar.classList.contains('on') && root.classList.contains('on')) {
+        this.input.focus({ preventScroll: true }); this.input.select(); return;
+      }
+      this.pendingFocus = true;
+      SteamAPI.navigate('/library/home');
+      tick(true);
     },
-    openResults() {
-      if (!SteamAPI.ready()) return;
-      try { this.owned = SteamAPI.sources()[0].apps(); } catch (e) { this.owned = []; }
-      this.box.classList.add('open');
-      Overlay.push('search');
-      this.search(this.input.value);
+    /** called by tick once the strip is on screen again */
+    focusIfPending() {
+      if (!this.pendingFocus || !bar.classList.contains('inhome') || !root.classList.contains('on')) return;
+      this.pendingFocus = false;
+      this.input.focus({ preventScroll: true }); this.input.select();
     },
-    closeResults() {
-      bar.classList.remove('float');
-      if (!this.box.classList.contains('open')) return;
-      this.box.classList.remove('open'); Overlay.pop('search');
-    },
-    isOpen() { return this.box.classList.contains('open'); },
-    /** typed text → filter the design + Steam's own list */
+    /** typed text → filter the home design in place */
     apply(q) {
       clearTimeout(this._t);
+      this.box.classList.toggle('has-q', !!q);
       this._t = setTimeout(() => {
+        if (state.query === q) return;
         state.query = q; CoverflowLayout.cur = 0;
         if (root.classList.contains('on')) render();
-        this.mirror(q);
-      }, 140);
+      }, 90);
     },
-    steamInput() {
-      const left = SteamAPI.el('LeftListSizableContainer');
-      return left ? left.querySelector('input.DialogInput, input[type="text"]') : null;
-    },
-    mirror(q) {
-      const inp = this.steamInput();
-      if (!inp || inp.value === q) return;
-      try {
-        const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
-        set.call(inp, q);
-        inp.dispatchEvent(new Event('input', { bubbles: true }));
-      } catch (e) { /* Steam's list just won't follow */ }
-    },
-    clear() { this.input.value = ''; this.apply(''); this.closeResults(); this.input.blur(); },
-    score(name, q) {
-      const n = name.toLowerCase();
-      if (n === q) return 100;
-      if (n.startsWith(q)) return 80;
-      if (n.split(/[\s:\-–—]+/).some(w => w.startsWith(q))) return 60;
-      if (n.includes(q)) return 40;
-      let i = 0; for (const ch of n) if (ch === q[i]) i++;
-      return i === q.length ? 10 : 0;
-    },
-    search(q) {
-      q = q.trim().toLowerCase();
-      const out = [];
-      const cmds = this.commands.filter(c => !q || (c.name + ' ' + c.words).toLowerCase().includes(q));
-      let games;
-      if (!q) {
-        games = [...this.owned].sort((a, b) => (b.rt_last_time_played || 0) - (a.rt_last_time_played || 0)).slice(0, 8);
-        if (games.length) out.push({ sec: T('آخر ما لعبت', 'Recently played') });
-      } else {
-        let scored = this.owned.map(o => [o, this.score(o.display_name || '', q)]).filter(x => x[1] > 0);
-        if (scored.some(x => x[1] > 10)) scored = scored.filter(x => x[1] > 10);
-        games = scored.sort((a, b) => b[1] - a[1] || (b[0].rt_last_time_played || 0) - (a[0].rt_last_time_played || 0)).slice(0, 30).map(x => x[0]);
-        if (games.length) out.push({ sec: T(`ألعاب (${NUM.format(games.length)})`, `Games (${NUM.format(games.length)})`) });
-      }
-      games.forEach(o => out.push({ game: o }));
-      if (cmds.length) { out.push({ sec: T('أوامر', 'Commands') }); cmds.forEach(c => out.push({ cmd: c })); }
-      this.items = out;
-      this.sel = out.findIndex(x => !x.sec);
-      this.draw();
-    },
-    draw() {
-      this.list.innerHTML = this.items.map((x, i) => {
-        if (x.sec) return `<div class="pl-sec">${esc(x.sec)}</div>`;
-        if (x.cmd) return `<div class="pl-item${i === this.sel ? ' sel' : ''}" data-i="${i}">${icT(x.cmd.ico, 'pl-ico')}<span class="pl-name">${esc(x.cmd.name)}</span></div>`;
-        const o = x.game, inst = !!o.installed, icon = SteamAPI.icon(o);
-        return `<div class="pl-item${i === this.sel ? ' sel' : ''}" data-i="${i}">
-          ${icon ? `<img src="${esc(icon)}" alt="">` : icT('gamepad', 'pl-ico')}
-          <span class="pl-name" dir="auto">${esc(o.display_name)}</span>
-          <span class="pl-meta">${esc(fmtPlaytime(o.minutes_playtime_forever))}</span>
-          <span class="pl-tag${inst ? '' : ' dim'}">${inst ? T('مثبتة', 'Installed') : T('غير مثبتة', 'Not installed')}</span></div>`;
-      }).join('') || `<div class="pl-sec">${T('ما لقيت شي', 'No results')}</div>`;
-      const s = this.list.querySelector('.sel'); if (s) s.scrollIntoView({ block: 'nearest' });
-    },
-    move(d) {
-      if (!this.items.length) return;
-      let i = this.sel;
-      do { i = (i + d + this.items.length) % this.items.length; } while (this.items[i].sec && i !== this.sel);
-      this.sel = i; this.draw();
-    },
-    exec(i, play) {
-      const x = this.items[i]; if (!x || x.sec) return;
-      this.closeResults();
-      if (x.cmd) { x.cmd.run(); return; }
-      const o = x.game;
-      if (play) { try { SteamAPI.run(o); toast(o.installed ? T(`جاري تشغيل ${o.display_name}…`, `Launching ${o.display_name}…`) : T(`يفتح تثبيت ${o.display_name}…`, `Opening install for ${o.display_name}…`)); } catch (e) { toast(T('ما قدرت أشغّلها', 'Couldn\'t launch it')); } }
-      else SteamAPI.openDetails(o.appid);
+    clear() { this.input.value = ''; this.apply(''); },
+    /** Enter → open the first game the filter left (Ctrl+Enter plays it) */
+    exec(play) {
+      clearTimeout(this._t);
+      if (state.query !== this.input.value) { state.query = this.input.value; CoverflowLayout.cur = 0; render(); }
+      const g = visibleGames()[0];
+      if (!g) { toast(T('ما لقيت لعبة بهالاسم', 'No game matches that')); return; }
+      if (play) { launch(g); return; }
+      this.input.blur();
+      openGame(g, L().source(g.appid));
     },
   };
   const Palette = Search; // old name kept for dev helpers
-  Search.input.addEventListener('focus', () => Search.openResults());
-  Search.input.addEventListener('input', () => { Search.openResults(); Search.apply(Search.input.value); });
+  Search.input.addEventListener('input', () => Search.apply(Search.input.value));
   Search.input.addEventListener('keydown', e => {
     e.stopPropagation();
-    if (e.key === 'ArrowDown') { e.preventDefault(); Search.openResults(); Search.move(1); }
-    else if (e.key === 'ArrowUp') { e.preventDefault(); Search.move(-1); }
-    else if (e.key === 'Enter') { e.preventDefault(); Search.exec(Search.sel, e.ctrlKey || e.shiftKey); }
-    else if (e.key === 'Escape') { e.preventDefault(); Search.clear(); }
+    if (e.key === 'Enter') { e.preventDefault(); Search.exec(e.ctrlKey || e.shiftKey); }
+    else if (e.key === 'Escape') { e.preventDefault(); if (Search.input.value) Search.clear(); else Search.input.blur(); }
+    else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      // arrows leave the box and move through the games of the design
+      e.preventDefault(); Search.input.blur();
+      if (!current && L().key) L().key(e);
+    }
   });
-  Search.list.addEventListener('click', e => { const it = e.target.closest('.pl-item'); if (it) Search.exec(+it.dataset.i, e.ctrlKey); });
+  $('.tb-clear', bar).addEventListener('click', e => { e.stopPropagation(); Search.clear(); Search.input.focus({ preventScroll: true }); });
 
   /* =================================================================
      6. Themes — picker (switches the Millennium "Style" condition)
@@ -1294,23 +1524,61 @@
       toast(T('ستيم ما رد — جرّب مرة ثانية', 'Steam did not respond — please try again'), 5000);
     }, 8000);
   }
-  const curLayout = () => themeVar('--rf-style-id', '') || (state.original ? 'original' : state.layout);
+  const curStyle = () => themeVar('--rf-style-id', '') || (state.original ? 'original' : ({ shelf: 'classic', coverflow: 'neon', gallery: 'glass' })[state.layout] || state.layout);
   const Themes = {
     open() {
-      picker.querySelectorAll('.tp-card').forEach(c => c.classList.toggle('cur', c.dataset.layout === curLayout()));
-      Search.closeResults();
+      picker.querySelectorAll('.tp-card').forEach(c => c.classList.toggle('cur', c.dataset.sid === curStyle()));
       picker.classList.add('on');
       Overlay.push('themes');
       sfx('tick');
     },
     close() { if (!picker.classList.contains('on')) return; picker.classList.remove('on'); picker.classList.remove('busy'); Overlay.pop('themes'); },
     isOpen() { return picker.classList.contains('on'); },
+    /** Switch WITHOUT reloading Steam when both styles sit on the same community base (SpaceTheme: every style but
+        Material You and Steam Original). A reload rebuilds all of Steam's data (900+ games) before the window even
+        comes back — 15-30 s. Here the style sheet Millennium injected is swapped in every open Steam window, the
+        choice is saved for the next start, and the home design follows within a frame. */
+    async live(st) {
+      const base = sid => sid === 'material' ? 'material' : sid === 'original' ? 'none' : 'space';
+      if (!st || base(st.sid) !== 'space' || base(curStyle()) !== 'space') return false;
+      const set = SteamAPI.ffi('Core_ChangeCondition');
+      if (!set) return false;
+      const docs = [document];
+      try {
+        const c = SteamAPI.ctx(), pm = c && c.g_PopupManager;
+        for (const p of pm ? pm.GetPopups() : []) { const d = p.m_popup && p.m_popup.document; if (d && !docs.includes(d)) docs.push(d); }
+      } catch (e) { /* popups keep their style until the next start */ }
+      const mine = document.querySelector('link[href*="/src/styles/"]');
+      if (!mine) return false;
+      const href = mine.href.replace(/\/src\/styles\/[^/?#]+\.css/, `/src/styles/${st.sid}.css`);
+      const r = await set(await SteamAPI.themeNative(), st.value, 'Style'); // remembered for the next start
+      if (r && r.success === false) return false;
+      try { localStorage.setItem('rfs.style', st.sid); } catch (e) { /* the store reads it */ }
+      const swaps = docs.map(d => new Promise(done => {
+        const old = d.querySelector('link[href*="/src/styles/"]');
+        if (!old) { done(); return; }
+        const nl = d.createElement('link');
+        nl.rel = 'stylesheet'; nl.href = href; nl.id = old.id;
+        // the old sheet goes only once the new one is in: no unstyled frame in between
+        const fin = () => { for (const l of d.querySelectorAll('link[href*="/src/styles/"]')) if (l !== nl) l.remove(); try { const w = d.defaultView; if (w && w.__rfsSkin && w.__rfsSkin.restyle) w.__rfsSkin.restyle(); } catch (e) { /* ignore */ } done(); };
+        nl.onload = fin; nl.onerror = fin;
+        old.after(nl);
+        setTimeout(fin, 4000);
+      }));
+      await Promise.race([swaps[0], new Promise(r => setTimeout(r, 4000))]);
+      lastLayoutCheck = 0; placement.key = ''; tick(true);
+      picker.classList.remove('busy'); clearTimeout(busyT);
+      this.close();
+      toast(T(`صار الثيم «${st.name}»`, `Theme is now “${st.name}”`), 2500);
+      return true;
+    },
     async apply(value) {
       const st = STYLES.find(s => s.value === value);
-      if (st && st.layout === curLayout()) { this.close(); return; }
+      if (st && st.sid === curStyle()) { this.close(); return; }
       pickerBusy();
       const nm = st ? st.name : value;
       toast(T(`جاري تطبيق «${nm}»… ستيم بيعيد تحميل الواجهة`, `Applying “${nm}”… Steam will reload its interface`), 6000);
+      try { if (await this.live(st)) return; } catch (e) { LOG('live switch failed, reloading', e); }
       try { await SteamAPI.setStyle(value); }
       catch (e) {
         picker.classList.remove('busy');
@@ -1453,7 +1721,56 @@
   /** only write a style when it really changes — every write is a DOM change, and the community theme's page-wide
       :has() rules re-check the whole page on each one (this alone cost ~1.5 s of style work per 4 s of scrolling) */
   function setStyles(el, props) { for (const k in props) if (el.style[k] !== props[k]) el.style[k] = props[k]; }
+  /** while the home design is on screen it is the ONLY game list, and our strip the only search and filter row:
+      Steam's own left list (a second copy of every game, its search box, its filter funnel) goes. Anywhere else it comes back. */
+  let leftHidden = [];
+  function hideLeftFilters(inHome) {
+    const want = [];
+    if (inHome) {
+      // one list: the home design already shows every game, so Steam's whole left game list (with its search,
+      // filters and the drag divider next to it) steps aside and the design gets the full width — the same
+      // two elements Material You's own "hide left sidebar" option hides. Game pages keep Steam's list.
+      const left = SteamAPI.el('LeftListSizableContainer');
+      if (left) want.push(left);
+      const dvSel = SteamAPI.sel('LibraryWindowDivider');
+      const dv = dvSel && left && left.parentElement && [...left.parentElement.children].find(c => c.matches(dvSel));
+      if (dv) want.push(dv);
+    }
+    for (const el of leftHidden) if (!want.includes(el)) el.removeAttribute('data-rfs-hide');
+    for (const el of want) if (!el.hasAttribute('data-rfs-hide')) el.setAttribute('data-rfs-hide', '');
+    leftHidden = want;
+  }
   let navCheckAt = 0, navOk = false;
+  /* ---- Family mode: a button that lives with the user name (footer or title bar, as the style puts it) and hides
+     games not suitable for the family from the store. Saved as the theme condition "Family" (skin.json) — the store
+     page reads it (webkit.js, within 3 s) and it survives restarts. */
+  const famBtn = document.createElement('div');
+  famBtn.id = 'rfs-family'; famBtn.setAttribute('role', 'button'); famBtn.tabIndex = 0;
+  let famOn = themeVar('--rf-family', 'on') !== 'off', famKey = '';
+  function paintFamily() {
+    const key = LANG + famOn;
+    if (famKey === key) return;
+    famKey = key;
+    famBtn.classList.toggle('on', famOn);
+    famBtn.innerHTML = `${ic('shield')}<span class="lbl">${T('وضع العائلة', 'Family mode')}</span><i class="dot"></i>`;
+    famBtn.title = famOn ? T('وضع العائلة شغّال: الألعاب غير المناسبة للعائلة مخفية من المتجر. اضغط لإطفائه', 'Family mode is on: games not suitable for the family are hidden from the store. Click to turn it off')
+      : T('وضع العائلة مطفأ. اضغط لإخفاء الألعاب غير المناسبة للعائلة من المتجر', 'Family mode is off. Click to hide games not suitable for the family from the store');
+  }
+  async function toggleFamily() {
+    famOn = !famOn; paintFamily(); sfx('tick');
+    toast(famOn ? T('وضع العائلة شغّال', 'Family mode on') : T('وضع العائلة مطفأ', 'Family mode off'), 2200);
+    try { const set = SteamAPI.ffi('Core_ChangeCondition'); if (set) await set(await SteamAPI.themeNative(), famOn ? 'On' : 'Off', 'Family'); }
+    catch (e) { LOG('family mode not saved', e); }
+  }
+  famBtn.addEventListener('click', e => { e.stopPropagation(); toggleFamily(); });
+  famBtn.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleFamily(); } });
+  function placeFamily() {
+    const tb = SteamAPI.titleControls();
+    if (!tb) return;
+    const box = tb.querySelector('.userpanel-buttoncontainer') || tb;
+    if (famBtn.parentElement !== box) box.appendChild(famBtn);
+    paintFamily();
+  }
   function placeBar(onHome, panel) {
     // the nav row rarely changes: re-place THEMES once a second (or at once if Steam re-rendered the row)
     const nowT = Date.now();
@@ -1464,14 +1781,7 @@
     bar.classList.toggle('shelf-off', !!panel && !state.enabled);
     bar.classList.toggle('original', !!state.original);
     const inHome = !!onHome && !!panel && state.enabled && !state.original;
-    // Steam's own left-list search box is replaced by the strip's search while the home design is on screen
-    const sin = Search.steamInput();
-    const siSel = SteamAPI.sel('SearchInput');
-    const box = sin && ((siSel && sin.closest(siSel)) || sin.closest('.DialogInput_Wrapper') || sin.parentElement);
-    if (box) {
-      if (!inHome) box.removeAttribute('data-rfs-hide');
-      else if (!box.hasAttribute('data-rfs-hide')) box.setAttribute('data-rfs-hide', '');
-    }
+    hideLeftFilters(inHome);
     if (inHome) {
       if (!bar.classList.contains('inhome') || !root.contains(bar)) { if (root.classList.contains('on')) dockBar(); }
       if (root.contains(bar)) {
@@ -1483,7 +1793,6 @@
     }
     if (root.contains(bar)) { document.body.appendChild(bar); }
     bar.classList.toggle('inhome', false);
-    if (bar.classList.contains('float')) { setStyles(bar, { top: '', right: '', left: '', maxWidth: '' }); return; }
     // home page with the design switched off: only "restore shelf" — in the nav row, clear of the window buttons
     if (!(onHome && panel && !state.enabled && !state.original)) { bar.classList.toggle('on', false); return; }
     const nav = SteamAPI.el('SuperNavBar') || SteamAPI.el('SuperNav');
@@ -1509,19 +1818,25 @@
       const orig = lay === 'original'; // "Steam Original": leave Steam's home exactly as it is
       if (orig !== !!state.original) { state.original = orig; placement.key = ''; }
       document.documentElement.toggleAttribute('data-rfs-native', orig); // stock Steam / community theme is in charge
-      if (LAYOUTS[lay] && lay !== state.layout) { state.layout = lay; placement.key = ''; }
+      if (lay !== state.layout && lay !== 'original') {
+        if (LAYOUTS[lay] || EXT[lay]) { state.layout = lay; placement.key = ''; }
+        else loadLayout(lay); // a plug-in theme: its module registers itself, then the next tick switches to it
+      }
       // language changed behind our back (Millennium settings) → reload the UI once in the new language
       const lang = normLang(themeVar('--rf-lang', ''));
       if (lang && lang !== LANG) Lang.follow(lang);
     }
     const panel = SteamAPI.isLibraryHome() ? SteamAPI.rightPanel() : null;
-    const show = !!panel && state.enabled && !state.original;
+    const want = themeVar('--rf-layout', 'shelf');
+    const ready = state.original || want === state.layout || !(want in EXT || extLoading[want]); // don't flash another design while a plug-in loads
+    const show = !!panel && state.enabled && !state.original && ready;
     document.documentElement.classList.toggle('rfs-home-on', show);
     // the community theme's styling for Steam's own home is costly (page-wide :has() checks on every change) and
     // pointless while our design covers that page — switch it off then, back on for Steam's own home
     for (const l of document.querySelectorAll('link[data-rfs-part="home"]')) { const m = show ? 'not all' : ''; if (l.media !== m) l.media = m; }
     document.documentElement.classList.toggle('rfs-show-news', state.news);
     placeBar(SteamAPI.isLibraryHome(), panel);
+    placeFamily();
     if (panel && show) {
       const pr = panel.getBoundingClientRect();
       const key = [Math.round(pr.width), Math.round(pr.height), state.layout, state.news].join(',');
@@ -1539,12 +1854,39 @@
       render();
     } else if (!show && root.classList.contains('on')) {
       root.classList.remove('on'); hideTip();
+      if (current && current.sheet) closeViewer(true); // a theme's own game panel leaves with the home page
     }
+    if (show) Search.focusIfPending();
     if (show && loaded && now - lastSigCheck > 5000 && !current) {
       lastSigCheck = now;
       if (Data.sig() !== state.sig) { Data.load(); render(); }
     }
   }
+  /* ---- plug-in layout API (docs/THEME-KIT.md). Everything a home design needs, nothing it could break. */
+  window.__rfsLayoutApi = {
+    version: 1,
+    register(id, layout) {
+      if (!id || !layout || typeof layout.render !== 'function') return;
+      EXT[id] = layout;
+      LOG('layout registered:', id);
+      if (themeVar('--rf-layout', '') === id) { lastLayoutCheck = 0; placement.key = ''; tick(true); }
+    },
+    // where things are
+    root, stage, state, get layoutId() { return state.layout; },
+    // text + formatting (Arabic / English)
+    T, get LANG() { return LANG; }, get LTR() { return LTR; }, NUM, fmtPlaytime, fmtAgo, fmtSize,
+    // DOM helpers
+    esc, div, $, clamp, rand, first, cssUrl, absUrl, ic, icT, imgWithFallback,
+    // games
+    visibleGames, byId, Data, SORTS, lazy, running: () => SteamAPI.runningIds(),
+    // actions
+    openGame, launch, openDetails: appid => SteamAPI.openDetails(appid), rerender: () => render(),
+    // a theme's own game panel (layout.open(g, sheet, src) / layout.close(sheet, g)): facts, text and wired buttons
+    gameFacts, gameDesc, gameActions, closeGame: () => closeViewer(), get openId() { return current ? current.appid : null; },
+    openStore: appid => SteamAPI.steamUrl('steam://store/' + appid), steamUrl: url => SteamAPI.steamUrl(url),
+    showTip, hideTip, sfx, toast,
+  };
+
   /* ---- Arabic for the whole Steam client. Steam ships no Arabic interface, so when the theme language is Arabic we
      replace Steam's own interface strings (LocalizationManager tokens, in SharedJSContext) with our translation in
      src/lang/steam-ar.js. Steam re-renders with them; strings we haven't translated simply stay English. */

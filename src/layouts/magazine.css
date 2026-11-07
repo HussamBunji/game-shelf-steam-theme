@@ -1,0 +1,511 @@
+/* ===================================================================
+   Magazine (المجلة) — library home design (src/layouts/magazine.js)
+   Masthead · cover story · "In this issue" columns · the big number · charts · A–Z index,
+   and the FEATURE SPREAD a game opens into (#rfs-sheet[data-layout="magazine"]).
+   Colours and fonts come from src/styles/magazine.css. Scoped to #rfs[data-layout="magazine"].
+   Written with logical properties: right-to-left in Arabic, left-to-right in English.
+   Hover is instant: highlights change with :hover and no transition.
+   =================================================================== */
+#rfs[data-layout="magazine"], #rfs-sheet[data-layout="magazine"] {
+  --mg-cream: var(--rf-text, #efe6d6);
+  --mg-dim: var(--rf-text-dim, #a89f91);
+  --mg-red: var(--rf-accent, #e63b2e);
+  --mg-red-hi: #f05a48;
+  --mg-paper: var(--rf-bg, #131313);
+  --mg-sheet: #161616;
+  --mg-rule: rgba(239, 230, 214, .13);
+  --mg-rule-2: rgba(239, 230, 214, .3);
+  --mg-display: var(--rf-heading-font, 'Playfair Display', Georgia, serif);
+}
+#rfs[data-layout="magazine"] .mg { max-width: 1400px; margin: 0 auto; padding: 12px 32px 56px; color: var(--mg-cream); }
+
+/* resets (zero extra specificity, so every rule below wins; the docked filter strip is left alone) */
+#rfs[data-layout="magazine"] :where(.mg) :is(h1, h2, h3, h4, h5, p, blockquote, figure, figcaption) { margin: 0; padding: 0; font-weight: inherit; }
+#rfs[data-layout="magazine"] :where(.mg-play, .mg-more, .mg-btn, .mg-ch, .mg-rc, .mg-ix, .mg-jump button) {
+  appearance: none; margin: 0; padding: 0; border: 0; border-radius: 0; background: none; color: inherit;
+  font: inherit; text-align: start; cursor: pointer;
+}
+/* the display face (Playfair Display + El Messiri). !important: the theme's font rule for every element is !important too */
+#rfs[data-layout="magazine"] :is(.mg-title, .mg-ear b, .mg-cover-h, .mg-deck, .mg-fig b, .mg-hd h2, .mg-special h2, .mg-art-t, .mg-sec-h small,
+  .mg-pull-n, .mg-pull p, .mg-ch b, .mg-ch span, .mg-stat b, .mg-ix-l, .mg-jump button, .mg-empty) {
+  font-family: var(--mg-display) !important;
+}
+/* names and Steam's descriptions keep their own reading order (dir="auto") but line up with the interface:
+   an English title in the Arabic layout still sits on the right */
+#rfs[data-layout="magazine"] .mg [dir="auto"] { text-align: right; }
+html[data-rfs-lang="en"] #rfs[data-layout="magazine"] .mg [dir="auto"] { text-align: left; }
+
+/* ───────────── 1. masthead: dateline · ear | NAMEPLATE | ear · double rule ───────────── */
+#rfs[data-layout="magazine"] .mg-mast-line {
+  display: flex; align-items: center; justify-content: space-between; gap: 18px;
+  padding: 6px 0; border-bottom: 1px solid var(--mg-rule);
+  font-size: 11px; font-weight: 600; line-height: 1.4; color: var(--mg-dim);
+}
+#rfs[data-layout="magazine"] .mg-mast-line b { font-weight: 700; color: var(--mg-red-hi); white-space: nowrap; }
+#rfs[data-layout="magazine"] .mg-plate {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 28px; padding: 14px 0 12px;
+}
+#rfs[data-layout="magazine"] .mg-title {
+  font-size: clamp(36px, 3.7vw, 54px); font-weight: 900; line-height: 1; color: var(--mg-cream); text-align: center; white-space: nowrap;
+}
+/* ears: small framed notes either side of the nameplate */
+#rfs[data-layout="magazine"] .mg-ear {
+  justify-self: start; display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: baseline; column-gap: 10px;
+  min-width: 0; max-width: 260px; padding: 7px 0 7px 0; border-top: 1px solid var(--mg-rule-2); border-bottom: 1px solid var(--mg-rule-2);
+}
+#rfs[data-layout="magazine"] .mg-ear.end { justify-self: end; }
+#rfs[data-layout="magazine"] .mg-ear small { grid-column: 1 / -1; margin-bottom: 3px; font-size: 10px; font-weight: 700; color: var(--mg-red-hi); }
+#rfs[data-layout="magazine"] .mg-ear b { font-size: 24px; font-weight: 900; line-height: 1; color: var(--mg-cream); font-variant-numeric: lining-nums; }
+#rfs[data-layout="magazine"] .mg-ear b.nm { grid-column: 1 / -1; font-size: 16px; font-weight: 800; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#rfs[data-layout="magazine"] .mg-ear span { min-width: 0; font-size: 11.5px; font-weight: 600; color: var(--mg-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#rfs[data-layout="magazine"] .mg-ear.end span { grid-column: 1 / -1; margin-top: 3px; }
+#rfs[data-layout="magazine"] .mg-mast-rule { height: 6px; border-top: 3px solid var(--mg-cream); border-bottom: 1px solid var(--mg-cream); }
+#rfs[data-layout="magazine"] .mg-narrow .mg-tag { display: none; }
+#rfs[data-layout="magazine"] .mg-narrow .mg-plate { grid-template-columns: minmax(0, 1fr); }
+#rfs[data-layout="magazine"] .mg-narrow .mg-ear { display: none; }
+
+/* ───────────── shared pieces ───────────── */
+/* red kicker with a square bullet: "COVER STORY · RPG" */
+#rfs[data-layout="magazine"] .mg-kick { display: inline-flex; align-items: center; gap: 9px; font-size: 11.5px; font-weight: 700; color: var(--mg-red-hi); }
+#rfs[data-layout="magazine"] .mg-kick::before { content: ''; flex: none; width: 8px; height: 8px; background: var(--mg-red); }
+#rfs[data-layout="magazine"] .mg-kick span { font-weight: 600; color: var(--mg-dim); }
+#rfs[data-layout="magazine"] .mg-kick span::before { content: '\00B7'; margin-inline-end: 9px; color: var(--mg-dim); }
+/* section headings: thick cream rule, big display title, small caps note */
+#rfs[data-layout="magazine"] .mg-hd {
+  display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 16px;
+  margin-bottom: 20px; padding-top: 10px; border-top: 3px solid var(--mg-cream);
+}
+#rfs[data-layout="magazine"] .mg-hd h2 { font-size: 27px; font-weight: 800; line-height: 1.15; color: var(--mg-cream); }
+#rfs[data-layout="magazine"] .mg-hd > span { font-size: 11.5px; font-weight: 600; color: var(--mg-dim); }
+#rfs[data-layout="magazine"] .mg-none { margin: 4px 0 0; font-size: 13px; color: var(--mg-dim); }
+/* buttons: flat squares; cream paper for the main action, hairline ghosts for the rest; red rule on hover */
+#rfs[data-layout="magazine"] .mg-btn {
+  display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 16px; white-space: nowrap;
+  font-size: 13px; font-weight: 700; color: var(--mg-cream); background: transparent;
+  box-shadow: inset 0 0 0 1px var(--mg-rule-2);
+}
+#rfs[data-layout="magazine"] .mg-btn:is(:hover, :focus-visible) {
+  outline: none; color: #fff; background: rgba(239, 230, 214, .05); box-shadow: inset 0 0 0 1px rgba(239, 230, 214, .55), inset 0 -2px 0 var(--mg-red);
+}
+#rfs[data-layout="magazine"] .mg-btn.play { color: #121212; background: var(--mg-cream); box-shadow: none; }
+#rfs[data-layout="magazine"] .mg-btn.play:is(:hover, :focus-visible) { color: #121212; background: #fff; box-shadow: inset 0 -3px 0 var(--mg-red); }
+#rfs[data-layout="magazine"] .mg-btn.play.live { color: #fff5ea; background: var(--mg-red); }
+#rfs[data-layout="magazine"] .mg-btn.play.live:is(:hover, :focus-visible) { background: #f04a3d; box-shadow: inset 0 -3px 0 #fff5ea; }
+#rfs[data-layout="magazine"] .mg-btn svg.rf-ic { width: 15px; height: 15px; margin: 0; }
+
+/* ───────────── special issue banner (genre filter) ───────────── */
+#rfs[data-layout="magazine"] .mg-special { display: flex; align-items: center; flex-wrap: wrap; gap: 10px 18px; margin: -6px 0 22px; }
+#rfs[data-layout="magazine"] .mg-special h2 { font-size: 28px; font-weight: 800; line-height: 1.15; color: var(--mg-cream); }
+#rfs[data-layout="magazine"] .mg-back { margin-inline-start: auto; height: 32px; padding: 0 13px; font-size: 12.5px; }
+
+/* ───────────── 2. cover story: photo + caption | column rule | headline, deck, figures, actions ───────────── */
+#rfs[data-layout="magazine"] .mg-cover {
+  display: grid; grid-template-columns: minmax(0, 1.62fr) minmax(320px, 1fr); margin-bottom: 40px;
+}
+#rfs[data-layout="magazine"] .mg-cover-fig { min-width: 0; padding-inline-end: 30px; }
+#rfs[data-layout="magazine"] .mg-cover-img {
+  position: relative; aspect-ratio: 96 / 41; min-height: 300px; cursor: pointer;
+  background: var(--hero, none) center 30% / cover no-repeat, #1d1c1b;
+}
+#rfs[data-layout="magazine"] .mg-cover-img::after { content: ''; position: absolute; inset: auto 0 0 0; height: 3px; background: var(--mg-red); }
+#rfs[data-layout="magazine"] .mg-cover-fig figcaption {
+  display: flex; align-items: center; gap: 8px; margin-top: 8px;
+  font-size: 11.5px; line-height: 1.4; color: var(--mg-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+#rfs[data-layout="magazine"] .mg-cover-fig figcaption::before { content: ''; flex: none; width: 6px; height: 6px; background: var(--mg-red); }
+#rfs[data-layout="magazine"] .mg-cover-txt {
+  display: flex; flex-direction: column; align-items: stretch; min-width: 0;
+  padding-inline-start: 30px; border-inline-start: 1px solid var(--mg-rule);
+}
+#rfs[data-layout="magazine"] .mg-cover-txt .mg-kick { align-self: flex-start; padding-top: 2px; }
+#rfs[data-layout="magazine"] .mg-cover-h {
+  margin: 14px 0 12px; font-size: clamp(32px, 3vw, 48px); font-weight: 900; line-height: 1.04; color: var(--mg-cream); cursor: pointer;
+  overflow-wrap: anywhere; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden;
+}
+#rfs[data-layout="magazine"] .mg-cover-h:hover { text-decoration: underline; text-decoration-color: var(--mg-red); text-decoration-thickness: 3px; text-underline-offset: 5px; }
+#rfs[data-layout="magazine"] .mg-deck {
+  margin-bottom: 14px; font-size: 16px; line-height: 1.55; color: rgba(239, 230, 214, .84);
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden;
+}
+#rfs[data-layout="magazine"] .mg-by {
+  align-self: stretch; padding: 9px 0; border-top: 1px solid var(--mg-rule);
+  font-size: 11.5px; font-weight: 600; line-height: 1.5; color: var(--mg-dim);
+}
+/* three figures in the display face, hairline column rules between them */
+#rfs[data-layout="magazine"] .mg-figs {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-bottom: 18px;
+  border-top: 1px solid var(--mg-rule-2); border-bottom: 1px solid var(--mg-rule-2);
+}
+#rfs[data-layout="magazine"] .mg-fig { min-width: 0; padding: 10px 12px 9px; border-inline-start: 1px solid var(--mg-rule); }
+#rfs[data-layout="magazine"] .mg-fig:first-child { padding-inline-start: 0; border-inline-start: 0; }
+#rfs[data-layout="magazine"] .mg-fig b {
+  display: block; font-size: 19px; font-weight: 800; line-height: 1.15; color: var(--mg-cream);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-variant-numeric: lining-nums;
+}
+#rfs[data-layout="magazine"] .mg-fig span { display: block; margin-top: 4px; font-size: 10.5px; font-weight: 600; color: var(--mg-dim); }
+#rfs[data-layout="magazine"] .mg-acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; }
+#rfs[data-layout="magazine"] .mg-mid .mg-figs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+#rfs[data-layout="magazine"] .mg-mid .mg-fig:nth-child(3) { display: none; }
+#rfs[data-layout="magazine"] .mg-narrow .mg-cover { grid-template-columns: minmax(0, 1fr); }
+#rfs[data-layout="magazine"] .mg-narrow .mg-cover-fig { padding-inline-end: 0; }
+#rfs[data-layout="magazine"] .mg-narrow .mg-cover-img { min-height: 240px; }
+#rfs[data-layout="magazine"] .mg-narrow .mg-cover-txt { padding-inline-start: 0; padding-top: 18px; border-inline-start: 0; }
+#rfs[data-layout="magazine"] .mg-narrow .mg-figs { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+#rfs[data-layout="magazine"] .mg-narrow .mg-fig:nth-child(3) { display: block; }
+
+/* ───────────── 3. in this issue: equal section columns, hairline column rules in the gaps ───────────── */
+#rfs[data-layout="magazine"] .mg-issue { margin-bottom: 40px; }
+#rfs[data-layout="magazine"] .mg-cols { display: grid; grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr)); gap: 30px 44px; }
+#rfs[data-layout="magazine"] .mg-sec { position: relative; min-width: 0; }
+#rfs[data-layout="magazine"] .mg-sec + .mg-sec::before {
+  content: ''; position: absolute; top: 0; bottom: 0; inset-inline-start: -22px; border-inline-start: 1px solid var(--mg-rule);
+}
+#rfs[data-layout="magazine"] .mg-tiny .mg-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 36px; }
+#rfs[data-layout="magazine"] .mg-tiny .mg-sec + .mg-sec::before { inset-inline-start: -18px; }
+#rfs[data-layout="magazine"] .mg-tiny .mg-sec:nth-child(2n+1)::before { display: none; }
+/* section head: a short red rule, the department name, the count in the display face */
+#rfs[data-layout="magazine"] .mg-sec-h {
+  display: flex; align-items: baseline; gap: 8px; margin-bottom: 14px; padding: 7px 0 7px; border-top: 2px solid var(--mg-red); border-bottom: 1px solid var(--mg-rule);
+  font-size: 11.5px; font-weight: 700; line-height: 1.3; color: var(--mg-cream);
+}
+#rfs[data-layout="magazine"] .mg-sec-h span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#rfs[data-layout="magazine"] .mg-sec-h small { margin-inline-start: auto; font-size: 15px; font-weight: 800; color: var(--mg-red-hi); font-variant-numeric: lining-nums; }
+/* compact article: small header image beside the title + standfirst */
+#rfs[data-layout="magazine"] .mg-art {
+  position: relative; display: grid; grid-template-columns: 92px minmax(0, 1fr); grid-template-rows: auto auto; column-gap: 12px;
+  align-content: start; padding: 10px 0; border-bottom: 1px solid var(--mg-rule); cursor: pointer; outline: none;
+}
+#rfs[data-layout="magazine"] .mg-art:last-of-type { border-bottom: 0; }
+#rfs[data-layout="magazine"] .mg-art .art {
+  position: relative; grid-row: span 2; width: 92px; aspect-ratio: 460 / 215;
+  background: var(--img, none) center / cover no-repeat, #1f1e1d;
+}
+#rfs[data-layout="magazine"] .mg-art .art.cap { background-position: center 22%; }
+#rfs[data-layout="magazine"] .mg-art-t {
+  align-self: end; font-size: 15px; font-weight: 700; line-height: 1.22; color: var(--mg-cream);
+  overflow-wrap: anywhere; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;
+}
+#rfs[data-layout="magazine"] .mg-art-s { align-self: start; margin-top: 3px; font-size: 12px; line-height: 1.4; color: var(--mg-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* lead article: the column's first story gets the full-width picture */
+#rfs[data-layout="magazine"] .mg-art.lead { display: block; padding: 0 0 14px; border-bottom: 1px solid var(--mg-rule-2); }
+#rfs[data-layout="magazine"] .mg-art.lead .art { width: 100%; margin-bottom: 11px; }
+#rfs[data-layout="magazine"] .mg-art.lead .mg-art-t { font-size: 20px; font-weight: 800; line-height: 1.18; }
+#rfs[data-layout="magazine"] .mg-art.lead .mg-art-s { margin-top: 6px; font-size: 12.5px; white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+/* quick play: a small square on the picture */
+#rfs[data-layout="magazine"] .mg-play {
+  position: absolute; z-index: 1; top: 16px; inset-inline-start: 6px; display: grid; place-items: center; width: 26px; height: 26px;
+  color: var(--mg-cream); background: rgba(18, 18, 18, .9); box-shadow: inset 0 0 0 1px var(--mg-rule-2); opacity: 0;
+}
+#rfs[data-layout="magazine"] .mg-art.lead .mg-play { top: 10px; inset-inline-start: auto; inset-inline-end: 10px; width: 32px; height: 32px; }
+#rfs[data-layout="magazine"] .mg-art:is(:hover, :focus-within) .mg-play { opacity: 1; }
+#rfs[data-layout="magazine"] .mg-play:hover { color: #121212; background: var(--mg-cream); box-shadow: inset 0 -2px 0 var(--mg-red); }
+#rfs[data-layout="magazine"] .mg-play svg.rf-ic { width: 13px; height: 13px; margin: 0; }
+/* states (no transitions: hover answers at once) */
+#rfs[data-layout="magazine"] .mg-art:hover .mg-art-t { text-decoration: underline; text-decoration-color: var(--mg-red); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+#rfs[data-layout="magazine"] .mg-art:hover .art { box-shadow: inset 0 -3px 0 var(--mg-red); }
+#rfs[data-layout="magazine"] .mg-art:focus-visible { outline: 2px solid var(--mg-red); outline-offset: 4px; }
+#rfs[data-layout="magazine"] .mg-art.ni .art { opacity: .6; }
+#rfs[data-layout="magazine"] .mg-art.ni:hover .art { opacity: 1; }
+#rfs[data-layout="magazine"] .mg-art.run .art { box-shadow: inset 0 0 0 2px var(--mg-red); }
+#rfs[data-layout="magazine"] .mg-art.run .art::after {
+  content: attr(data-badge); position: absolute; top: 0; inset-inline-start: 0; padding: 2px 6px;
+  font-size: 10px; font-weight: 700; line-height: 1.4; color: #fff5ea; background: var(--mg-red);
+}
+#rfs[data-layout="magazine"] .mg-art.taken .art { opacity: .2; }
+/* "+ N more" → filters the home by that genre */
+#rfs[data-layout="magazine"] .mg-more { display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; font-size: 12.5px; font-weight: 700; color: var(--mg-cream); }
+#rfs[data-layout="magazine"] .mg-more:is(:hover, :focus-visible) { outline: none; color: var(--mg-red-hi); text-decoration: underline; text-underline-offset: 3px; }
+#rfs[data-layout="magazine"] .mg-more svg.rf-ic { width: 13px; height: 13px; margin: 0; }
+
+/* ───────────── the big number (one huge red figure, its sentence beside it) ───────────── */
+#rfs[data-layout="magazine"] .mg-pull {
+  display: flex; align-items: center; justify-content: center; gap: 26px; margin: 0 0 42px; padding: 22px 0 20px;
+  border-top: 3px solid var(--mg-cream); border-bottom: 1px solid var(--mg-rule-2);
+}
+#rfs[data-layout="magazine"] .mg-pull-n {
+  flex: none; font-size: 88px; font-weight: 900; line-height: .85; color: var(--mg-red); font-variant-numeric: lining-nums; letter-spacing: -.01em;
+}
+#rfs[data-layout="magazine"] .mg-pull > div { min-width: 0; max-width: 720px; padding-inline-start: 26px; border-inline-start: 1px solid var(--mg-rule-2); }
+#rfs[data-layout="magazine"] .mg-pull p { font-size: 24px; font-weight: 600; line-height: 1.35; color: var(--mg-cream); }
+#rfs[data-layout="magazine"] .mg-pull cite { display: block; margin-top: 8px; font-size: 11px; font-style: normal; font-weight: 700; color: var(--mg-red-hi); }
+#rfs[data-layout="magazine"] .mg-tiny .mg-pull-n { font-size: 64px; }
+#rfs[data-layout="magazine"] .mg-tiny .mg-pull p { font-size: 19px; }
+
+/* ───────────── 4. the charts ───────────── */
+#rfs[data-layout="magazine"] .mg-charts { margin-bottom: 44px; }
+#rfs[data-layout="magazine"] .mg-ch-grid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(250px, 1fr); gap: 0 30px; align-items: start; }
+#rfs[data-layout="magazine"] .mg-side { padding-inline-start: 30px; border-inline-start: 1px solid var(--mg-rule); }
+#rfs[data-layout="magazine"] .mg-narrow .mg-ch-grid { grid-template-columns: minmax(0, 1fr); row-gap: 28px; }
+#rfs[data-layout="magazine"] .mg-narrow .mg-side { padding-inline-start: 0; border-inline-start: 0; }
+#rfs[data-layout="magazine"] .mg-top {
+  display: grid; grid-auto-flow: column; grid-template-rows: repeat(var(--r, 5), auto);
+  grid-template-columns: repeat(var(--c, 2), minmax(0, 1fr)); column-gap: 30px;
+}
+#rfs[data-layout="magazine"] .mg-ch {
+  position: relative; display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; align-items: baseline; column-gap: 12px;
+  width: 100%; padding: 11px 0 10px; border-bottom: 1px solid var(--mg-rule); color: var(--mg-cream);
+}
+#rfs[data-layout="magazine"] .mg-ch b { font-size: 34px; font-weight: 900; line-height: .95; color: rgba(239, 230, 214, .38); font-variant-numeric: lining-nums tabular-nums; }
+#rfs[data-layout="magazine"] .mg-ch:nth-child(-n+3) b { color: var(--mg-red); }
+#rfs[data-layout="magazine"] .mg-ch span { min-width: 0; font-size: 16.5px; font-weight: 700; line-height: 1.25; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#rfs[data-layout="magazine"] .mg-ch i { font-size: 12.5px; font-style: normal; font-weight: 600; color: var(--mg-dim); white-space: nowrap; font-variant-numeric: tabular-nums; }
+/* the share of hours, drawn into the row's own hairline */
+#rfs[data-layout="magazine"] .mg-ch::after {
+  content: ''; position: absolute; bottom: -1px; inset-inline-start: 0; width: calc(var(--p, 0) * 100%); height: 2px; background: var(--mg-red); opacity: .75;
+}
+#rfs[data-layout="magazine"] .mg-ch:hover { background: rgba(239, 230, 214, .03); }
+#rfs[data-layout="magazine"] .mg-ch:hover b { color: var(--mg-red-hi); }
+#rfs[data-layout="magazine"] .mg-ch:hover span,
+#rfs[data-layout="magazine"] .mg-rc:hover span { color: #fff; text-decoration: underline; text-decoration-color: var(--mg-red); text-underline-offset: 3px; }
+#rfs[data-layout="magazine"] :is(.mg-ch, .mg-rc):focus-visible { outline: 2px solid var(--mg-red); outline-offset: 2px; }
+#rfs[data-layout="magazine"] :is(.mg-ch, .mg-rc).taken { opacity: .45; }
+/* side column: recently added + by the numbers */
+#rfs[data-layout="magazine"] .mg-side { display: flex; flex-direction: column; gap: 26px; min-width: 0; }
+#rfs[data-layout="magazine"] .mg-box h4 {
+  margin-bottom: 2px; padding: 7px 0; border-top: 2px solid var(--mg-red); border-bottom: 1px solid var(--mg-rule);
+  font-size: 11px; font-weight: 700; color: var(--mg-cream);
+}
+#rfs[data-layout="magazine"] .mg-rc {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: 10px;
+  width: 100%; padding: 7px 0; border-bottom: 1px solid var(--mg-rule); color: var(--mg-cream);
+}
+#rfs[data-layout="magazine"] .mg-rc span { font-size: 13.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#rfs[data-layout="magazine"] .mg-rc i { font-size: 12px; font-style: normal; color: var(--mg-dim); white-space: nowrap; }
+#rfs[data-layout="magazine"] .mg-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+#rfs[data-layout="magazine"] .mg-stat { padding: 12px 0 10px; border-bottom: 1px solid var(--mg-rule); }
+#rfs[data-layout="magazine"] .mg-stat:nth-child(2n) { padding-inline-start: 16px; border-inline-start: 1px solid var(--mg-rule); }
+#rfs[data-layout="magazine"] .mg-stat b { display: block; font-size: 30px; font-weight: 900; line-height: 1; color: var(--mg-cream); font-variant-numeric: lining-nums; }
+#rfs[data-layout="magazine"] .mg-stat span { display: block; margin-top: 5px; font-size: 11px; font-weight: 600; color: var(--mg-dim); }
+
+/* ───────────── search results spread ───────────── */
+#rfs[data-layout="magazine"] .mg-results { margin-bottom: 36px; }
+#rfs[data-layout="magazine"] .mg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); column-gap: 30px; }
+#rfs[data-layout="magazine"] .mg-grid .mg-art:last-of-type { border-bottom: 1px solid var(--mg-rule); }
+#rfs[data-layout="magazine"] .mg-results .mg-none { margin-top: 14px; }
+#rfs[data-layout="magazine"] .mg-empty {
+  max-width: 520px; margin: 40px auto 60px; padding: 22px 0; text-align: center;
+  border-top: 3px solid var(--mg-cream); border-bottom: 1px solid var(--mg-rule-2);
+  font-size: 19px; font-weight: 600; color: var(--mg-cream);
+}
+
+/* ───────────── 5. index: every game, A–Z, newspaper columns ───────────── */
+#rfs[data-layout="magazine"] .mg-index { margin-bottom: 10px; }
+/* the letter bar stays on screen while you scroll through the index */
+#rfs[data-layout="magazine"] .mg-jump {
+  position: sticky; top: 0; z-index: 3; display: flex; flex-wrap: wrap; margin: 0 0 16px; padding: 6px 0;
+  background: var(--mg-paper); border-bottom: 1px solid var(--mg-rule);
+}
+#rfs[data-layout="magazine"] .mg-jump button {
+  min-width: 27px; height: 28px; padding: 0 4px; text-align: center; font-size: 15px; font-weight: 700; color: var(--mg-cream);
+}
+#rfs[data-layout="magazine"] .mg-jump button:not(:disabled):is(:hover, :focus-visible) { outline: none; color: var(--mg-red-hi); box-shadow: inset 0 -2px 0 var(--mg-red); }
+#rfs[data-layout="magazine"] .mg-jump button:disabled { color: rgba(239, 230, 214, .22); cursor: default; }
+#rfs[data-layout="magazine"] .mg-ix-cols { column-width: 210px; column-gap: 32px; column-rule: 1px solid var(--mg-rule); }
+#rfs[data-layout="magazine"] .mg-ix-l {
+  break-after: avoid; break-inside: avoid; scroll-margin-top: 54px;
+  margin: 16px 0 6px; padding-bottom: 3px; border-bottom: 1px solid var(--mg-rule-2);
+  font-size: 24px; font-weight: 900; line-height: 1.1; color: var(--mg-red);
+}
+#rfs[data-layout="magazine"] .mg-ix-l:first-child { margin-top: 0; }
+/* one element per game: name · dotted leader · hours (the leader and hours are its ::before / ::after) */
+#rfs[data-layout="magazine"] .mg-ix {
+  display: flex; align-items: baseline; width: 100%; padding: 3px 0; break-inside: avoid;
+  font-size: 13.5px; line-height: 1.35; color: var(--mg-cream); overflow-wrap: anywhere;
+}
+#rfs[data-layout="magazine"] .mg-ix::before {
+  content: ''; order: 1; flex: 1 1 12px; min-width: 12px; margin: 0 6px; border-bottom: 1px dotted rgba(239, 230, 214, .25);
+}
+#rfs[data-layout="magazine"] .mg-ix::after {
+  content: attr(data-h); order: 2; flex: none; font-size: 12px; color: var(--mg-dim); white-space: nowrap; font-variant-numeric: tabular-nums;
+}
+#rfs[data-layout="magazine"] .mg-ix.ni { color: rgba(239, 230, 214, .66); }
+#rfs[data-layout="magazine"] .mg-ix:hover { color: #fff; }
+#rfs[data-layout="magazine"] .mg-ix:hover::before { border-bottom-color: var(--mg-red); }
+#rfs[data-layout="magazine"] .mg-ix:focus-visible { outline: 1px solid var(--mg-red); outline-offset: 2px; }
+#rfs[data-layout="magazine"] .mg-ix.taken { opacity: .4; }
+
+/* ───────────── English: small caps labels get their tracking (never on Arabic — it breaks the joins) ───────────── */
+html[data-rfs-lang="en"] #rfs[data-layout="magazine"] .mg-title { text-transform: uppercase; letter-spacing: .06em; }
+html[data-rfs-lang="en"] #rfs[data-layout="magazine"] .mg-mast-line { text-transform: uppercase; letter-spacing: .12em; }
+html[data-rfs-lang="en"] #rfs[data-layout="magazine"] :is(.mg-kick, .mg-sec-h, .mg-box h4, .mg-pull cite, .mg-ear small) { text-transform: uppercase; letter-spacing: .15em; }
+html[data-rfs-lang="en"] #rfs[data-layout="magazine"] :is(.mg-by, .mg-hd > span, .mg-stat span, .mg-fig span) { text-transform: uppercase; letter-spacing: .1em; }
+html[data-rfs-lang="en"] #rfs[data-layout="magazine"] :is(.mg-btn, .mg-more) { text-transform: uppercase; letter-spacing: .08em; font-size: 12px; }
+html[data-rfs-lang="en"] #rfs[data-layout="magazine"] :is(.mg-deck, .mg-pull p, .mg-cover-fig figcaption) { font-style: italic; }
+
+/* ═════════════════════════════════════════════════════════════════════
+   THE FEATURE SPREAD — a game opened as two magazine pages.
+   One wide picture runs across both pages; under it, cream paper with ink type:
+   page A (start side) — kicker, headline, standfirst with a drop cap, byline, folio
+   page B (end side)   — "filed under", the fact file, three editorial call-outs, folio; it turns over from the fold.
+   ═════════════════════════════════════════════════════════════════════ */
+#rfs-sheet[data-layout="magazine"] {
+  --sp-paper: #ebe3d2; --sp-paper-2: #e2d8c4; --sp-ink: #1a1816; --sp-ink-2: #5b544a; --sp-red: #b8301f;
+  --sp-rule: rgba(26, 24, 22, .16); --sp-rule-2: rgba(26, 24, 22, .4);
+}
+#rfs-sheet[data-layout="magazine"].on { display: grid; place-items: center; box-sizing: border-box; padding: 26px 30px; }
+#rfs-sheet[data-layout="magazine"] :is(h2, h4, p, dl, dt, dd) { margin: 0; padding: 0; }
+#rfs-sheet[data-layout="magazine"] .mg-sp-dim { position: absolute; inset: 0; background: rgba(9, 9, 9, .9); cursor: pointer; }
+#rfs-sheet[data-layout="magazine"] .mg-sp {
+  position: relative; z-index: 1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  width: min(1200px, 100%); height: min(760px, 100%); outline: none;
+  --band: clamp(170px, 38%, 320px);
+  box-shadow: 0 28px 70px rgba(0, 0, 0, .65), 0 0 0 1px rgba(0, 0, 0, .5);
+}
+/* the fold: a soft shadow down the middle of the spread */
+#rfs-sheet[data-layout="magazine"] .mg-sp::after {
+  content: ''; position: absolute; z-index: 3; top: 0; bottom: 0; left: 50%; width: 64px; margin-left: -32px; pointer-events: none;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, .16) 44%, rgba(0, 0, 0, .3) 50%, rgba(0, 0, 0, .16) 56%, rgba(0, 0, 0, 0));
+}
+#rfs-sheet[data-layout="magazine"] .mg-pg {
+  position: relative; display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow: hidden;
+  background: var(--sp-paper); color: var(--sp-ink);
+}
+#rfs-sheet[data-layout="magazine"] .mg-pg.a { background: linear-gradient(90deg, var(--sp-paper) 82%, var(--sp-paper-2)); }
+#rfs-sheet[data-layout="magazine"] .mg-pg.b { background: linear-gradient(90deg, var(--sp-paper-2), var(--sp-paper) 18%); }
+html:not([data-rfs-lang="en"]) #rfs-sheet[data-layout="magazine"] .mg-pg.a { background: linear-gradient(270deg, var(--sp-paper) 82%, var(--sp-paper-2)); }
+html:not([data-rfs-lang="en"]) #rfs-sheet[data-layout="magazine"] .mg-pg.b { background: linear-gradient(270deg, var(--sp-paper-2), var(--sp-paper) 18%); }
+/* page B turns on its fold edge: the left edge in English, the right edge in Arabic */
+#rfs-sheet[data-layout="magazine"] .mg-pg.b { transform-origin: right center; }
+html[data-rfs-lang="en"] #rfs-sheet[data-layout="magazine"] .mg-pg.b { transform-origin: left center; }
+#rfs-sheet[data-layout="magazine"] .mg-shade {
+  position: absolute; inset: 0; z-index: 4; pointer-events: none; opacity: 0;
+  background: linear-gradient(270deg, rgba(0, 0, 0, .55), rgba(0, 0, 0, .15));
+}
+html[data-rfs-lang="en"] #rfs-sheet[data-layout="magazine"] .mg-shade { background: linear-gradient(90deg, rgba(0, 0, 0, .55), rgba(0, 0, 0, .15)); }
+
+/* the picture: one element per page, twice the page's width, so the two halves line up across the fold.
+   The physically left page shows the left half in both languages (the picture is never mirrored). */
+#rfs-sheet[data-layout="magazine"] .mg-band { position: relative; flex: none; height: var(--band); overflow: hidden; background: #1c1b1a; }
+#rfs-sheet[data-layout="magazine"] .mg-band-img {
+  position: absolute; top: 0; bottom: 0; width: 200%;
+  background: var(--hero, none) center 32% / cover no-repeat, var(--head, none) center / cover no-repeat, #1c1b1a;
+}
+html[data-rfs-lang="en"] #rfs-sheet[data-layout="magazine"] .mg-pg.a .mg-band-img { left: 0; }
+html[data-rfs-lang="en"] #rfs-sheet[data-layout="magazine"] .mg-pg.b .mg-band-img { left: -100%; }
+html:not([data-rfs-lang="en"]) #rfs-sheet[data-layout="magazine"] .mg-pg.a .mg-band-img { left: -100%; }
+html:not([data-rfs-lang="en"]) #rfs-sheet[data-layout="magazine"] .mg-pg.b .mg-band-img { left: 0; }
+#rfs-sheet[data-layout="magazine"] .mg-band::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(0deg, rgba(10, 9, 8, .55), rgba(10, 9, 8, 0) 48%); box-shadow: inset 0 -3px 0 var(--mg-red);
+}
+#rfs-sheet[data-layout="magazine"] .mg-sp-logo {
+  position: absolute; z-index: 1; bottom: 18px; inset-inline-start: 30px; max-width: 64%; max-height: 52%; object-fit: contain;
+  object-position: left bottom; filter: drop-shadow(0 2px 10px rgba(0, 0, 0, .7));
+}
+html:not([data-rfs-lang="en"]) #rfs-sheet[data-layout="magazine"] .mg-sp-logo { object-position: right bottom; }
+#rfs-sheet[data-layout="magazine"] .mg-sp:not(.hero) .mg-sp-logo { display: none; }
+
+/* page bodies */
+#rfs-sheet[data-layout="magazine"] .mg-pg-body { flex: 1 1 auto; min-height: 0; overflow: auto; padding: 22px 36px 8px; scrollbar-width: thin; }
+#rfs-sheet[data-layout="magazine"] .mg-sp-kick {
+  display: flex; align-items: center; gap: 9px; font-size: 11px; font-weight: 700; color: var(--sp-red);
+}
+#rfs-sheet[data-layout="magazine"] .mg-sp-kick::before { content: ''; flex: none; width: 8px; height: 8px; background: var(--sp-red); }
+#rfs-sheet[data-layout="magazine"] .mg-sp-kick span { font-weight: 600; color: var(--sp-ink-2); }
+#rfs-sheet[data-layout="magazine"] .mg-sp-kick span::before { content: '\00B7'; margin-inline-end: 9px; }
+#rfs-sheet[data-layout="magazine"] .mg-sp-h {
+  margin: 10px 0 0; font-family: var(--mg-display) !important; font-size: clamp(30px, 2.9vw, 44px); font-weight: 900; line-height: 1.04;
+  color: var(--sp-ink); overflow-wrap: anywhere; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden;
+}
+#rfs-sheet[data-layout="magazine"] .mg-sp-h::after { content: ''; display: block; width: 46px; height: 3px; margin-top: 14px; background: var(--sp-red); }
+#rfs-sheet[data-layout="magazine"] [dir="auto"] { text-align: right; }
+html[data-rfs-lang="en"] #rfs-sheet[data-layout="magazine"] [dir="auto"] { text-align: left; }
+#rfs-sheet[data-layout="magazine"] .mg-sp-dek {
+  margin-top: 14px; font-family: var(--mg-display) !important; font-size: 16.5px; font-weight: 400; line-height: 1.6; color: #2c2925;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 7; overflow: hidden;
+}
+html[data-rfs-lang="en"] #rfs-sheet[data-layout="magazine"] .mg-sp-dek::first-letter {
+  float: left; margin: 5px 9px 0 0; font-size: 3.4em; font-weight: 900; line-height: .78; color: var(--sp-red);
+}
+#rfs-sheet[data-layout="magazine"] .mg-sp-by {
+  margin-top: 14px; padding-top: 9px; border-top: 1px solid var(--sp-rule);
+  font-size: 11.5px; font-weight: 700; line-height: 1.5; color: var(--sp-ink-2);
+}
+/* the foot of page A: the hours as one big red numeral */
+#rfs-sheet[data-layout="magazine"] .mg-pg.a .mg-pg-body { display: flex; flex-direction: column; }
+#rfs-sheet[data-layout="magazine"] .mg-sp-num {
+  display: flex; align-items: center; gap: 16px; margin-top: auto; padding: 18px 0 6px;
+}
+#rfs-sheet[data-layout="magazine"] .mg-sp-num b {
+  flex: none; font-family: var(--mg-display) !important; font-size: 76px; font-weight: 900; line-height: .82; color: var(--sp-red);
+  font-variant-numeric: lining-nums; letter-spacing: -.01em;
+}
+#rfs-sheet[data-layout="magazine"] .mg-sp-num span {
+  padding-inline-start: 16px; border-inline-start: 1px solid var(--sp-rule-2);
+  font-family: var(--mg-display) !important; font-size: 19px; font-weight: 700; line-height: 1.2; color: var(--sp-ink);
+}
+#rfs-sheet[data-layout="magazine"] .mg-sp-num i {
+  display: block; margin-top: 5px; font-family: var(--rf-font-ui) !important; font-size: 11.5px; font-style: normal; font-weight: 600; color: var(--sp-ink-2);
+}
+@media (max-height: 760px) { #rfs-sheet[data-layout="magazine"] .mg-sp-num b { font-size: 56px; } }
+/* folios: page number + running footer */
+#rfs-sheet[data-layout="magazine"] .mg-folio {
+  flex: none; display: flex; align-items: baseline; gap: 12px; margin: 0 36px; padding: 9px 0 13px; border-top: 1px solid var(--sp-rule);
+  font-size: 10.5px; font-weight: 700; color: var(--sp-ink-2);
+}
+#rfs-sheet[data-layout="magazine"] .mg-folio.end { flex-direction: row-reverse; }
+#rfs-sheet[data-layout="magazine"] .mg-folio b { font-family: var(--mg-display) !important; font-size: 14px; font-weight: 900; color: var(--sp-ink); font-variant-numeric: lining-nums; }
+/* page B: filed under */
+#rfs-sheet[data-layout="magazine"] .mg-filed { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; margin-bottom: 14px; font-size: 12.5px; color: var(--sp-ink); }
+#rfs-sheet[data-layout="magazine"] .mg-filed b { font-size: 10.5px; font-weight: 700; color: var(--sp-red); }
+#rfs-sheet[data-layout="magazine"] .mg-filed span { font-weight: 600; }
+#rfs-sheet[data-layout="magazine"] .mg-filed i { font-style: normal; color: var(--sp-ink-2); }
+/* the fact file: a boxed sidebar, thick ink rule on top, two columns of hairline rows */
+#rfs-sheet[data-layout="magazine"] .mg-facts { padding: 0 16px 4px; background: rgba(26, 24, 22, .045); border-top: 4px solid var(--sp-ink); }
+#rfs-sheet[data-layout="magazine"] :is(.mg-facts, .mg-cta) h4 {
+  padding: 9px 0 8px; font-size: 11px; font-weight: 700; color: var(--sp-red); border-bottom: 1px solid var(--sp-rule-2);
+}
+#rfs-sheet[data-layout="magazine"] .mg-facts dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 18px; }
+#rfs-sheet[data-layout="magazine"] .mg-facts dl > div { min-width: 0; padding: 8px 0 7px; border-bottom: 1px solid var(--sp-rule); }
+#rfs-sheet[data-layout="magazine"] .mg-facts dl > div:nth-last-child(-n+2) { border-bottom: 0; }
+#rfs-sheet[data-layout="magazine"] .mg-facts dt { font-size: 10.5px; font-weight: 700; color: var(--sp-ink-2); }
+#rfs-sheet[data-layout="magazine"] .mg-facts dd {
+  margin-top: 2px; font-family: var(--mg-display) !important; font-size: 16px; font-weight: 700; line-height: 1.25; color: var(--sp-ink);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-variant-numeric: lining-nums;
+}
+/* call-outs: three framed "turn to" boxes — Play in solid ink, the others outlined; an arrow at the end of each */
+#rfs-sheet[data-layout="magazine"] .mg-cta { margin-top: 18px; }
+#rfs-sheet[data-layout="magazine"] .mg-cta h4 { border-bottom: 0; padding-bottom: 6px; }
+#rfs-sheet[data-layout="magazine"] .mg-cta .rf-acts { display: grid; grid-template-columns: 1.25fr 1fr 1fr; gap: 10px; }
+#rfs-sheet[data-layout="magazine"] .mg-cta .rf-act {
+  position: relative; justify-content: flex-start; gap: 9px; height: 50px; padding: 0 30px 0 14px; padding-inline: 14px 30px; min-width: 0;
+  border: 0; border-radius: 0; background: transparent; color: var(--sp-ink); box-shadow: inset 0 0 0 1px var(--sp-rule-2), inset 0 3px 0 var(--sp-ink);
+  font-size: 13px; font-weight: 700; overflow: hidden; text-overflow: ellipsis;
+}
+#rfs-sheet[data-layout="magazine"] .mg-cta .rf-act::after {
+  content: ''; position: absolute; top: 50%; inset-inline-end: 14px; width: 7px; height: 7px; margin-top: -4px;
+  border-top: 2px solid currentColor; border-inline-end: 2px solid currentColor; transform: rotate(45deg);
+}
+html:not([data-rfs-lang="en"]) #rfs-sheet[data-layout="magazine"] .mg-cta .rf-act::after { transform: rotate(-45deg); }
+#rfs-sheet[data-layout="magazine"] .mg-cta .rf-act:is(:hover, :focus-visible) {
+  outline: none; background: rgba(26, 24, 22, .07); color: var(--sp-ink); box-shadow: inset 0 0 0 1px var(--sp-ink), inset 0 3px 0 var(--sp-red);
+}
+#rfs-sheet[data-layout="magazine"] .mg-cta .rf-act.play { color: var(--sp-paper); background: var(--sp-ink); box-shadow: inset 0 3px 0 var(--sp-red); }
+#rfs-sheet[data-layout="magazine"] .mg-cta .rf-act.play:is(:hover, :focus-visible) { color: #fff; background: #000; box-shadow: inset 0 3px 0 var(--sp-red), 0 0 0 2px rgba(184, 48, 31, .35); }
+#rfs-sheet[data-layout="magazine"] .mg-cta .rf-act.play.is-running { color: #fff5ea; background: var(--sp-red); box-shadow: inset 0 3px 0 var(--sp-ink); }
+#rfs-sheet[data-layout="magazine"] .mg-cta .rf-act > svg.rf-ic { flex: none; width: 15px; height: 15px; margin: 0; }
+#rfs-sheet[data-layout="magazine"] .mg-cta .rf-act.play > svg.rf-ic { color: var(--sp-paper); }
+#rfs-sheet[data-layout="magazine"] .mg-cta .rf-act:not(.play) > svg.rf-ic { color: var(--sp-red); }
+/* close: a square ink tab on the picture's outer corner */
+#rfs-sheet[data-layout="magazine"] .mg-sp-x {
+  position: absolute; z-index: 5; top: 14px; inset-inline-end: 14px; display: grid; place-items: center; width: 34px; height: 34px; padding: 0;
+  border: 0; border-radius: 0; cursor: pointer; color: var(--mg-cream); background: rgba(14, 14, 14, .82); box-shadow: inset 0 0 0 1px rgba(239, 230, 214, .3);
+}
+#rfs-sheet[data-layout="magazine"] .mg-sp-x:is(:hover, :focus-visible) { outline: none; color: #121212; background: var(--mg-cream); box-shadow: inset 0 -3px 0 var(--mg-red); }
+#rfs-sheet[data-layout="magazine"] .mg-sp-x svg.rf-ic { width: 16px; height: 16px; margin: 0; }
+html[data-rfs-lang="en"] #rfs-sheet[data-layout="magazine"] :is(.mg-sp-kick, .mg-sp-by, .mg-folio span, .mg-filed b, .mg-facts h4, .mg-cta h4, .mg-facts dt, .mg-sp-num i) { text-transform: uppercase; letter-spacing: .13em; }
+html[data-rfs-lang="en"] #rfs-sheet[data-layout="magazine"] .mg-cta .rf-act { text-transform: uppercase; letter-spacing: .08em; font-size: 12px; }
+html[data-rfs-lang="en"] #rfs-sheet[data-layout="magazine"] .mg-sp-dek { font-style: italic; }
+html[data-rfs-lang="en"] #rfs-sheet[data-layout="magazine"] .mg-sp-dek::first-letter { font-style: normal; }
+/* a short or narrow panel: the picture gets smaller and the call-outs stack */
+@media (max-height: 700px) {
+  #rfs-sheet[data-layout="magazine"] .mg-sp { --band: clamp(140px, 30%, 220px); }
+  #rfs-sheet[data-layout="magazine"] .mg-sp-dek { -webkit-line-clamp: 4; }
+}
+@media (max-width: 1000px) {
+  #rfs-sheet[data-layout="magazine"] .mg-pg-body { padding-inline: 24px; }
+  #rfs-sheet[data-layout="magazine"] .mg-folio { margin-inline: 24px; }
+  #rfs-sheet[data-layout="magazine"] .mg-cta .rf-acts { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+  #rfs-sheet[data-layout="magazine"] .mg-cta .rf-act { height: 42px; }
+  #rfs-sheet[data-layout="magazine"] .mg-facts dl { grid-template-columns: minmax(0, 1fr); }
+}

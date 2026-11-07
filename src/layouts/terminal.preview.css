@@ -1,0 +1,107 @@
+/* ═══ Terminal (الطرفية) — THEMES picker card (150px tall) ═══
+   A black mini terminal: title bar with square dots, the prompt with a cursor block, the filter strip,
+   green table rows with one inverse-video selection, the info pane and a status line. Plain CSS shapes only.
+   --a / --b are the reading-start / reading-end sides, so the miniature mirrors in Arabic like the real design
+   (the prompt line stays left-to-right, as in the real one). */
+#rfs-themes .tp-terminal {
+  --a: right; --b: left;
+  background: #06090a;
+}
+html[data-rfs-lang="en"] #rfs-themes .tp-terminal { --a: left; --b: right; }
+
+/* window: frame, title band (dots + title + totals), filter strip, rules, status band */
+#rfs-themes .tp-terminal .pv-a {
+  inset: 6px; border: 1px solid rgba(57, 255, 136, .32);
+  background:
+    linear-gradient(#ffb000, #ffb000) var(--a) 6px top 4px / 4px 4px,
+    linear-gradient(#39ff88, #39ff88) var(--a) 13px top 4px / 4px 4px,
+    linear-gradient(rgba(57, 255, 136, .4), rgba(57, 255, 136, .4)) var(--a) 20px top 4px / 4px 4px,
+    linear-gradient(rgba(182, 240, 201, .5), rgba(182, 240, 201, .5)) 50% 5px / 54px 2px,
+    linear-gradient(rgba(95, 148, 116, .7), rgba(95, 148, 116, .7)) var(--b) 6px top 5px / 34px 2px,
+    linear-gradient(rgba(57, 255, 136, .22), rgba(57, 255, 136, .22)) 0 12px / 100% 1px,
+    linear-gradient(#0c1311, #0c1311) 0 0 / 100% 12px,
+    linear-gradient(rgba(57, 255, 136, .3), rgba(57, 255, 136, .3)) var(--a) 6px top 25px / 38% 6px,
+    linear-gradient(rgba(57, 255, 136, .16), rgba(57, 255, 136, .16)) var(--a) calc(38% + 10px) top 25px / 16% 6px,
+    linear-gradient(rgba(57, 255, 136, .16), rgba(57, 255, 136, .16)) var(--a) calc(54% + 14px) top 25px / 12% 6px,
+    linear-gradient(rgba(255, 176, 0, .28), rgba(255, 176, 0, .28)) var(--a) calc(66% + 18px) top 25px / 12% 6px,
+    linear-gradient(rgba(57, 255, 136, .2), rgba(57, 255, 136, .2)) 0 36px / 100% 1px,
+    linear-gradient(#39ff88, #39ff88) var(--a) 0 bottom 0 / 18px 8px,
+    linear-gradient(rgba(255, 176, 0, .75), rgba(255, 176, 0, .75)) var(--b) 6px bottom 3px / 16px 2px,
+    linear-gradient(#0c1311, #0c1311) 0 100% / 100% 8px,
+    #080d0c;
+  background-repeat: no-repeat;
+}
+
+/* the prompt: user@steam (green) :~$ ls games --sort=recent (amber value) + blinking cursor block */
+#rfs-themes .tp-terminal .pv-b {
+  left: 13px; top: 24px; width: 126px; height: 4px;
+  background:
+    linear-gradient(#39ff88, #39ff88) 0 0 / 26px 4px,
+    linear-gradient(#ffb000, #ffb000) 29px 0 / 6px 4px,
+    linear-gradient(#eafff1, #eafff1) 39px 0 / 10px 4px,
+    linear-gradient(rgba(182, 240, 201, .55), rgba(182, 240, 201, .55)) 52px 0 / 20px 4px,
+    linear-gradient(rgba(95, 148, 116, .9), rgba(95, 148, 116, .9)) 75px 0 / 18px 4px,
+    linear-gradient(rgba(255, 176, 0, .8), rgba(255, 176, 0, .8)) 93px 0 / 22px 4px;
+  background-repeat: no-repeat;
+}
+#rfs-themes .tp-terminal .pv-b::after {
+  content: ''; position: absolute; left: 119px; top: -1px; width: 4px; height: 6px; background: #39ff88;
+  animation: tm-pv-blink 1.06s steps(1, end) infinite;
+}
+@keyframes tm-pv-blink { 50% { opacity: 0; } }
+
+/* info pane: cat line, framed picture, name, key: value lines, [ PLAY ] [ DETAILS ] */
+#rfs-themes .tp-terminal .pv-c {
+  inset-inline-end: 7px; top: 44px; bottom: 15px; width: 32%;
+  border-inline-start: 1px solid rgba(57, 255, 136, .22);
+  background:
+    linear-gradient(rgba(95, 148, 116, .8), rgba(95, 148, 116, .8)) var(--a) 6px top 3px / 46% 2px,
+    linear-gradient(135deg, rgba(57, 255, 136, .6), rgba(57, 255, 136, .12) 75%) var(--a) 6px top 9px / calc(100% - 12px) 25px,
+    linear-gradient(#39ff88, #39ff88) var(--a) 6px top 39px / 52% 3px,
+    linear-gradient(rgba(95, 148, 116, .85), rgba(95, 148, 116, .85)) var(--a) 6px top 47px / 14px 2px,
+    linear-gradient(rgba(182, 240, 201, .55), rgba(182, 240, 201, .55)) var(--a) 24px top 47px / 34% 2px,
+    linear-gradient(rgba(95, 148, 116, .85), rgba(95, 148, 116, .85)) var(--a) 6px top 52px / 14px 2px,
+    linear-gradient(rgba(182, 240, 201, .55), rgba(182, 240, 201, .55)) var(--a) 24px top 52px / 26% 2px,
+    linear-gradient(rgba(95, 148, 116, .85), rgba(95, 148, 116, .85)) var(--a) 6px top 57px / 14px 2px,
+    linear-gradient(#39ff88, #39ff88) var(--a) 24px top 57px / 12% 2px,
+    linear-gradient(rgba(95, 148, 116, .85), rgba(95, 148, 116, .85)) var(--a) 6px top 62px / 14px 2px,
+    linear-gradient(rgba(255, 176, 0, .7), rgba(255, 176, 0, .7)) var(--a) 24px top 62px / 30% 2px,
+    linear-gradient(#39ff88, #39ff88) var(--a) 6px bottom 5px / 30% 7px,
+    linear-gradient(rgba(57, 255, 136, .3), rgba(57, 255, 136, .3)) var(--a) calc(30% + 10px) bottom 5px / 28% 7px;
+  background-repeat: no-repeat;
+}
+
+/* table: row 0 is the sticky header, row 3 the inverse-video selection; status square + name + three figures */
+#rfs-themes .tp-terminal .pv-i {
+  --w: 44%; --st: #39ff88;
+  inset-inline-start: 10px; width: calc(66% - 16px); top: calc(45px + var(--i) * 7px); height: 5px;
+  background:
+    linear-gradient(var(--st), var(--st)) var(--a) 2px top 1px / 3px 3px,
+    linear-gradient(rgba(182, 240, 201, .6), rgba(182, 240, 201, .6)) var(--a) 9px top 1.5px / var(--w) 2px,
+    linear-gradient(rgba(182, 240, 201, .42), rgba(182, 240, 201, .42)) var(--b) 44px top 1.5px / 10px 2px,
+    linear-gradient(rgba(182, 240, 201, .42), rgba(182, 240, 201, .42)) var(--b) 24px top 1.5px / 14px 2px,
+    linear-gradient(rgba(95, 148, 116, .85), rgba(95, 148, 116, .85)) var(--b) 2px top 1.5px / 16px 2px;
+  background-repeat: no-repeat;
+}
+#rfs-themes .tp-terminal .pv-i:nth-child(3n) { --w: 30%; }
+#rfs-themes .tp-terminal .pv-i:nth-child(3n+1) { --w: 52%; }
+#rfs-themes .tp-terminal .pv-i:nth-child(4n+2) { --st: rgba(57, 255, 136, .3); --w: 38%; }
+#rfs-themes .tp-terminal .pv-i[style*="--i:0"] {
+  background:
+    linear-gradient(rgba(255, 176, 0, .75), rgba(255, 176, 0, .75)) var(--a) 9px top 1px / 14% 2px,
+    linear-gradient(rgba(255, 176, 0, .75), rgba(255, 176, 0, .75)) var(--b) 44px top 1px / 10px 2px,
+    linear-gradient(rgba(255, 176, 0, .75), rgba(255, 176, 0, .75)) var(--b) 24px top 1px / 14px 2px,
+    linear-gradient(#39ff88, #39ff88) var(--b) 2px top 1px / 16px 2px,
+    linear-gradient(rgba(57, 255, 136, .25), rgba(57, 255, 136, .25)) 0 100% / 100% 1px;
+  background-repeat: no-repeat;
+}
+#rfs-themes .tp-terminal .pv-i[style*="--i:3"] {
+  background:
+    linear-gradient(#03140a, #03140a) var(--a) 2px top 1px / 3px 3px,
+    linear-gradient(rgba(3, 20, 10, .85), rgba(3, 20, 10, .85)) var(--a) 9px top 1.5px / 40% 2px,
+    linear-gradient(rgba(3, 20, 10, .7), rgba(3, 20, 10, .7)) var(--b) 44px top 1.5px / 10px 2px,
+    linear-gradient(rgba(3, 20, 10, .7), rgba(3, 20, 10, .7)) var(--b) 24px top 1.5px / 14px 2px,
+    linear-gradient(rgba(3, 20, 10, .7), rgba(3, 20, 10, .7)) var(--b) 2px top 1.5px / 16px 2px,
+    #39ff88;
+  background-repeat: no-repeat;
+}

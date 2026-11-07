@@ -1,0 +1,849 @@
+/* ═══ Theme 10 — لوحة الذكريات (Corkboard) ═══
+   Home: polaroids pinned to a warm cork board, one sticky-note board per group.  Chrome: dark felt wall, paper
+   labels for buttons, kraft tabs, washi tape and push pins, handwritten headings. */
+:root {
+  /* fonts: a clean UI pair + a handwritten display pair (Latin first, Arabic second — each script picks its own).
+     Aref Ruqaa is the plain (single-colour) Ruqaa face: Ruqaa is everyday Arabic handwriting. Loaded by skin.js / webkit.js */
+  --rf-font-ui: 'Nunito', 'Tajawal', 'Segoe UI', sans-serif;
+  --rf-font-gf: "family=Nunito:wght@400;600;700;800&family=Tajawal:wght@400;500;700;800&family=Caveat:wght@500;600;700&family=Aref+Ruqaa:wght@400;700";
+  --rf-heading-font: 'Caveat', 'Aref Ruqaa', 'Segoe Print', 'Tajawal', 'Segoe UI', sans-serif;  /* offline: Windows' own handwriting face */
+
+  /* layout base: SpaceTheme (MIT, src/vendor/space) — its sidebar, search, centred store/library;
+     this style supplies the colours below, its own fonts, home design (src/layouts/cork.js), icons and paper chrome */
+  --rf-vendor: space;
+  --rf-vendor-skip: options/fonts/, options/general/alwaysShowSidebar;
+  --rf-style-id: cork;
+  --rf-layout: cork;
+
+  /* icons: coral-to-mustard pen strokes; icon tiles are glossy red push-pin heads with a cream symbol */
+  --rf-ic-1: #ff9b7e;
+  --rf-ic-2: #f4c35a;
+  --rf-ic-fill: rgba(255, 155, 126, .16);
+  --rf-ic-sw: 1.8;
+  --rf-ic-glow: none;
+  --rf-ict-bg: radial-gradient(circle at 34% 28%, #ffd6c8 0 7%, #f87a5f 32%, #d94a33 68%, #9c2c1b 100%);
+  --rf-ict-border: 1px solid rgba(110, 28, 14, .55);
+  --rf-ict-radius: 50%;
+  --rf-ict-shadow: inset 0 -2px 3px rgba(110, 24, 10, .45), inset 0 1px 1px rgba(255, 255, 255, .45), 0 2px 3px rgba(20, 10, 4, .45);
+  --rf-ict-shadow-hi: inset 0 -2px 3px rgba(110, 24, 10, .45), inset 0 1px 1px rgba(255, 255, 255, .5), 0 0 0 2px rgba(255, 226, 122, .75), 0 3px 6px rgba(20, 10, 4, .5);
+  --rf-ict-1: #fffaf0;
+  --rf-ict-2: #ffe4d4;
+  --rf-ict-fill: rgba(255, 255, 255, .22);
+  --rf-ict-glow: none;
+
+  --rf-bg: #1b1916;
+  --rf-bg-img: radial-gradient(ellipse 70% 45% at 50% 0%, rgba(232, 196, 140, .07), transparent 70%);
+  --rf-panel: #24211d;
+  --rf-panel-2: #2d2924;
+  --rf-panel-3: #38332c;
+  --rf-border: rgba(232, 211, 173, .14);
+  --rf-text: #f5efe4;
+  --rf-text-dim: #b9ad9b;
+  --rf-accent: #ff8a6b;
+  --rf-accent-2: #f4c35a;
+  --rf-accent-rgb: 255, 138, 107;
+  --rf-accent-ink: #2b0f07;
+  --rf-play-1: #8fd17f;
+  --rf-play-2: #4f9e48;
+  --rf-play-ink: #0f2a0b;
+  --rf-glow: 255, 170, 120;
+
+  /* chrome shape: paper has small, crisp corners */
+  --rf-radius: 4px;
+  --rf-radius-lg: 6px;
+  --rf-topbar: linear-gradient(#2a2620, #1f1c18);
+  --rf-topbar-line: rgba(232, 211, 173, .22);
+  --rf-sidebar: #1f1c18;
+  --rf-card: rgba(251, 246, 234, .05);
+  --rf-card-border: 1px solid rgba(232, 211, 173, .14);
+  --rf-card-hover-shadow: 0 12px 26px rgba(0, 0, 0, .45), 0 0 0 1px rgba(255, 138, 107, .4);
+  --rf-heading-case: none;
+  --rf-heading-spacing: 0;
+  --rf-blur: 0px;
+
+  --rf-led-rgb: 255, 214, 150;
+  --rf-plate-1: #fbf6ea;
+  --rf-plate-2: #e8d3ad;
+  --rf-plate-ink: #3a2c1c;
+
+  /* craft materials (paper, kraft, ink) shared by the rules below */
+  --ck-paper: #fffdf7;
+  --ck-paper-2: #f3e9d6;
+  --ck-kraft: #e8d3ad;
+  --ck-ink: #3a2c1c;
+  --ck-ink-dim: #7d6a52;
+  --ck-pen: #2f3b6e;
+  --ck-red: #d9472f;
+  --ck-note: #ffe27a;
+  --ck-edge: rgba(96, 64, 32, .28);
+}
+
+/* SpaceTheme's colour slots, filled with this style's palette (warm felt greys, coral push-pin accent).
+   :root:root outranks SpaceTheme's own root.css, which loads after this file. */
+:root:root {
+  --st-accent-1: 255, 138, 107;
+  --st-accent-2: 255, 178, 150;
+  --st-background: 24, 22, 19;
+  --st-color-1: 31, 28, 24;
+  --st-color-2: 46, 42, 36;
+  --st-color-3: 36, 33, 29;
+  --st-color-4: 41, 37, 32;
+  --st-color-5: 70, 62, 52;
+  --st-color-6: 60, 54, 45;
+  --st-border-radius: 4px;
+  --st-green: 79, 158, 72;
+  --st-green-hover: 98, 178, 88;
+  --st-blue: 90, 128, 190;
+  --st-blue-hover: 110, 148, 210;
+}
+
+/* ═════════════ Steam windows (stable class names only) ═════════════ */
+/* buttons are paper labels: cream card, ink text, a thicker bottom edge and a small shadow */
+html[data-rfs-style="cork"] .DialogButton {
+  color: var(--ck-ink) !important;
+  background: linear-gradient(#fffbf2, #f0e4cc) !important;
+  border: 1px solid var(--ck-edge) !important;
+  border-bottom-color: rgba(96, 64, 32, .5) !important;
+  border-radius: 3px !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .7), 0 2px 5px rgba(0, 0, 0, .3) !important;
+  text-shadow: none !important;
+  font-weight: 700 !important;
+  transition: transform .12s ease-out, background .12s, box-shadow .12s !important;
+}
+html[data-rfs-style="cork"] .DialogButton:not(:disabled):hover,
+html[data-rfs-style="cork"] .DialogButton.gpfocus {
+  background: linear-gradient(#fffdf8, #fff0c4) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .8), 0 5px 10px rgba(0, 0, 0, .34) !important;
+  transform: translateY(-1px) rotate(-.5deg);
+}
+html[data-rfs-style="cork"] .DialogButton:not(:disabled):active {
+  transform: translateY(1px);
+  box-shadow: inset 0 1px 2px rgba(96, 64, 32, .25), 0 1px 2px rgba(0, 0, 0, .3) !important;
+}
+html[data-rfs-style="cork"] .DialogButton:disabled { opacity: .5; }
+/* the main action is a red label (push-pin red); "Green" stays a leaf-green label */
+html[data-rfs-style="cork"] .DialogButton.Primary {
+  color: #fff !important;
+  background: linear-gradient(#ff8c6e, #dc533a) !important;
+  border-color: rgba(120, 30, 14, .55) !important;
+  text-shadow: 0 1px 0 rgba(110, 26, 10, .35) !important;
+}
+html[data-rfs-style="cork"] .DialogButton.Primary:not(:disabled):hover { background: linear-gradient(#ff9d84, #e6604a) !important; }
+html[data-rfs-style="cork"] .DialogButton.Green {
+  color: #fff !important;
+  background: linear-gradient(#86c978, #4b9a45) !important;
+  border-color: rgba(30, 70, 24, .55) !important;
+  text-shadow: 0 1px 0 rgba(20, 60, 16, .35) !important;
+}
+html[data-rfs-style="cork"] .DialogButton.Green:not(:disabled):hover { background: linear-gradient(#98d68a, #57a950) !important; }
+/* inputs + dropdowns stay dark (Steam's text is light) with kraft-paper edges and a coral focus */
+html[data-rfs-style="cork"] .DialogInput {
+  border-radius: 3px !important;
+  border: 1px solid rgba(232, 211, 173, .22) !important;
+  background-color: rgba(0, 0, 0, .26) !important;
+}
+html[data-rfs-style="cork"] .DialogInput:focus {
+  border-color: rgba(255, 138, 107, .75) !important;
+  box-shadow: 0 0 0 3px rgba(255, 138, 107, .16) !important;
+}
+html[data-rfs-style="cork"] .DialogDropDown {
+  border-radius: 3px !important;
+  background: rgba(232, 211, 173, .08) !important;
+  border: 1px solid rgba(232, 211, 173, .22) !important;
+  border-bottom-color: rgba(232, 211, 173, .34) !important;
+}
+html[data-rfs-style="cork"] .DialogDropDown:hover { background: rgba(232, 211, 173, .15) !important; }
+html[data-rfs-style="cork"] .DialogCheckbox { border-radius: 3px !important; }
+/* highlighter-pen selection, cork-coloured scrollbars */
+html[data-rfs-style="cork"] ::selection { background: rgba(255, 222, 102, .9); color: #2b2116; }
+html[data-rfs-style="cork"] ::-webkit-scrollbar { width: 11px; height: 11px; }
+html[data-rfs-style="cork"] ::-webkit-scrollbar-track { background: transparent; }
+html[data-rfs-style="cork"] ::-webkit-scrollbar-thumb {
+  background: #8c6c48; border: 3px solid transparent; border-radius: 6px; background-clip: padding-box;
+}
+html[data-rfs-style="cork"] ::-webkit-scrollbar-thumb:hover { background: #b58b5d; background-clip: padding-box; }
+
+/* ═════════════ Store, community and help pages ═════════════
+   The same cork board as the library home: the page is cork, text lives on clean paper cards (cream, ink, a strip of
+   washi tape at two corners), lists are paper strips that get a highlighter band on hover, media-heavy areas sit on dark
+   felt pinned to the board, and section headings are written by hand. Prices hang on paper tags with a red sale
+   sticker. Body text, prices and forms stay in the plain UI font, dark ink on light paper.
+   Everything is scoped, because the store pages carry every style at once. Steam's React pages use hashed class
+   names; those rules are marked "hashed" (checked with tools/webshot.mjs). */
+
+/* ---- the board: SpaceTheme paints the page on one fixed body::before layer (no repaint on scroll) ---- */
+html[data-rfs-style="cork"] body::before {
+  background:
+    radial-gradient(circle at 20% 30%, rgba(70, 40, 15, .3) 0 1.1px, transparent 1.9px) 0 0 / 23px 19px,
+    radial-gradient(circle at 72% 64%, rgba(70, 40, 15, .24) 0 .8px, transparent 1.5px) 0 0 / 17px 29px,
+    radial-gradient(circle at 46% 82%, rgba(255, 236, 205, .24) 0 .9px, transparent 1.7px) 0 0 / 31px 13px,
+    radial-gradient(circle at 86% 14%, rgba(255, 236, 205, .18) 0 .7px, transparent 1.4px) 0 0 / 11px 37px,
+    radial-gradient(ellipse 3px 2px at 32% 70%, rgba(104, 64, 28, .34), transparent) 0 0 / 41px 47px,
+    radial-gradient(ellipse at 50% 50%, rgba(128, 84, 42, .22), transparent 62%) 0 0 / 163px 121px,
+    radial-gradient(ellipse at 50% 50%, rgba(214, 170, 120, .16), transparent 60%) 70px 40px / 211px 173px,
+    linear-gradient(90deg, rgba(48, 26, 8, .4), transparent 9%, transparent 91%, rgba(48, 26, 8, .4)),
+    linear-gradient(180deg, rgba(255, 224, 176, .16), transparent 40%, rgba(48, 26, 8, .18)),
+    #b4875a !important;
+}
+/* full-page layers some pages paint over it (navy hubs, login wait, sale pages keep their own art on top) */
+html[data-rfs-style="cork"] :is(.login_client_waitforauth, .react_landing_background, .SaleBackground, .SaleBackgroundCtn, .home_page_body_ctn,
+  .game_page_background, .page_content_ctn, .apphub_background, .profile_page:not(.has_profile_background), .QiZCPwhEAvE-, .yDJ1-6CIoOA-, .apphub_HomeHeaderContent) {
+  background-color: transparent !important;
+}
+html[data-rfs-style="cork"] .game_page_background.game { background-image: none !important; }
+/* the board's wooden frame: the footer */
+html[data-rfs-style="cork"] #footer {
+  background:
+    repeating-linear-gradient(90deg, rgba(60, 34, 12, .16) 0 2px, transparent 2px 9px, rgba(255, 220, 170, .05) 9px 11px, transparent 11px 23px),
+    linear-gradient(180deg, #8b6036, #6e4a28 30%, #5a3b1f) !important;
+  border-top: 1px solid #2e1d0d !important;
+  box-shadow: inset 0 1px 0 rgba(255, 226, 180, .35), inset 0 6px 10px -6px rgba(255, 226, 180, .25), 0 -10px 18px -10px rgba(30, 15, 4, .7) !important;
+}
+html[data-rfs-style="cork"] #footer :is(h3, .rule) { color: #fff1d6 !important; border-color: rgba(255, 226, 180, .25) !important; }
+html[data-rfs-style="cork"] #footer :is(a, span, p, div) { color: #f3e1c1 !important; }
+html[data-rfs-style="cork"] #footer a:hover { color: #fff !important; text-decoration: underline wavy rgba(255, 226, 122, .8) !important; }
+
+/* ---- the store's top bar: a long strip of paper pinned at both ends (hashed: the React store menu) ---- */
+html[data-rfs-style="cork"] :is(.XLbP8xOkCYw-, .WCG-2-OYepA-, .StoreMenuLoadingPlaceholder .PlaceholderInner, .store_nav_area .store_nav_bg, #store_nav_area .store_nav_bg) {
+  background:
+    radial-gradient(circle at 6px 6px, rgba(255, 255, 255, .85) 0 1.1px, transparent 2px),
+    radial-gradient(circle at 7px 7px, #f0654b 0 3.4px, #a32d1c 4.6px, rgba(40, 20, 6, .3) 5.2px, transparent 6.4px),
+    radial-gradient(circle at calc(100% - 8px) 6px, rgba(255, 255, 255, .85) 0 1.1px, transparent 2px),
+    radial-gradient(circle at calc(100% - 7px) 7px, #f5bd3a 0 3.4px, #a77610 4.6px, rgba(40, 20, 6, .3) 5.2px, transparent 6.4px),
+    linear-gradient(180deg, #fffdf7, #f4ecdc) !important;
+  border: 1px solid rgba(96, 64, 32, .3) !important; border-radius: 2px !important;
+  box-shadow: 0 10px 16px -9px rgba(30, 15, 4, .75), 0 1px 2px rgba(30, 15, 4, .3) !important;
+}
+html[data-rfs-style="cork"] :is(.XLbP8xOkCYw-, .WCG-2-OYepA-) :is(a, span, div, button):not(form *, [id^="searchSuggestions"] *) {
+  color: #33251a !important; text-shadow: none !important;
+}
+html[data-rfs-style="cork"] :is(.XLbP8xOkCYw-, .WCG-2-OYepA-) :is(a, span, div, button):not(form *, [id^="searchSuggestions"] *):hover { color: var(--ck-red) !important; }
+html[data-rfs-style="cork"] :is(.XLbP8xOkCYw-, .WCG-2-OYepA-) svg:not(#rfs-qbtn svg) { color: #5a4632 !important; fill: currentColor; }
+/* its search: white paper with a ruled writing line */
+html[data-rfs-style="cork"] :is(.XLbP8xOkCYw-, .WCG-2-OYepA-) form,
+html[data-rfs-style="cork"] :is(.store_nav .searchbox, #store_search .searchbox) {
+  background: linear-gradient(transparent calc(100% - 5px), rgba(47, 59, 110, .22) calc(100% - 5px) calc(100% - 4px), transparent calc(100% - 4px)), #fff !important;
+  border: 1px solid rgba(96, 64, 32, .3) !important; border-radius: 2px !important; box-shadow: inset 0 1px 2px rgba(96, 64, 32, .12) !important;
+}
+html[data-rfs-style="cork"] :is(.XLbP8xOkCYw-, .WCG-2-OYepA-) form input,
+html[data-rfs-style="cork"] #store_nav_search_term { color: #2b2116 !important; background: transparent !important; font-weight: 600 !important; }
+html[data-rfs-style="cork"] :is(.XLbP8xOkCYw-, .WCG-2-OYepA-) form input::placeholder,
+html[data-rfs-style="cork"] #store_nav_search_term::placeholder { color: #8a7660 !important; font-style: italic; }
+html[data-rfs-style="cork"] :is(.XLbP8xOkCYw-, .WCG-2-OYepA-) form :is(button, svg, a) { color: #5a4632 !important; background: transparent !important; }
+html[data-rfs-style="cork"] :is(.XLbP8xOkCYw-, .WCG-2-OYepA-) + div,
+html[data-rfs-style="cork"] :is(.hjG2apu1gQc-, .rGuH1gD4ryg-) { background: transparent !important; }
+/* old store nav tabs (pages that still carry them) */
+html[data-rfs-style="cork"] .store_nav .tab :is(span, a) { color: #33251a !important; text-shadow: none !important; font-weight: 700 !important; }
+html[data-rfs-style="cork"] .store_nav .tab:is(:hover, .focus) { background: rgba(255, 222, 102, .5) !important; }
+html[data-rfs-style="cork"] .store_nav .tab:is(:hover, .focus) :is(span, a) { color: var(--ck-red) !important; }
+/* search suggestions: an index card dropping out of the strip */
+html[data-rfs-style="cork"] [id^="searchSuggestions"] {
+  background: #fffdf7 !important; border: 1px solid rgba(96, 64, 32, .3) !important; border-radius: 2px !important;
+  box-shadow: 0 18px 30px -12px rgba(30, 15, 4, .75), 0 2px 4px rgba(30, 15, 4, .25) !important;
+}
+html[data-rfs-style="cork"] [id^="searchSuggestions"] * { color: #2b2116 !important; text-shadow: none !important; }
+html[data-rfs-style="cork"] [id^="searchSuggestions"] :is(a, span) { background-color: transparent !important; }
+html[data-rfs-style="cork"] [id^="searchSuggestions"] a:is(:hover, :focus, .focus) {
+  background: linear-gradient(transparent 10%, rgba(255, 222, 102, .6) 10% 90%, transparent 90%) !important;
+}
+
+/* ---- headings: written on the board with a felt-tip pen (used for section titles only) ---- */
+html[data-rfs-style="cork"] :is(.home_page_content > h2, .home_section_title, h2.pageheader, .page_header_ctn .pageheader, #game_area_reviews > h2,
+  #game_area_description > h2:not(.bb_tag), .game_area_dlc_section > h2, .game_purchase_options_editions_header_title, .SaleSectionHeader,
+  .ContentHubTitle, .market_title_text, .apphub_sectionTitle, .rightbox_content_header, .help_header, .badges_sheet_header, .profile_customization_header,
+  .discussions_header, .large_title, .tab_preview .tab_title, .home_title_ctn .home_title, .search_page .page_header_ctn .pagesubheader, .early_access_announcements h2,
+  .DiscountsAndEventsReady .tW10-at9cMc-) {
+  font-family: var(--rf-heading-font) !important; font-weight: 700 !important; letter-spacing: 0 !important; text-transform: none !important;
+  color: #2a1a0b !important; text-shadow: 0 1px 0 rgba(255, 238, 210, .35) !important;
+}
+html[data-rfs-style="cork"] :is(.home_page_content > h2, .home_section_title, h2.pageheader, .page_header_ctn .pageheader, .SaleSectionHeader, .ContentHubTitle,
+  .market_title_text, .apphub_sectionTitle, .large_title, .home_title_ctn .home_title, .search_page .page_header_ctn .pagesubheader, .DiscountsAndEventsReady .tW10-at9cMc-) {
+  font-size: 30px !important; line-height: 1.15 !important;
+}
+html[data-rfs-style="cork"] :is(#game_area_reviews > h2, #game_area_description > h2:not(.bb_tag), .game_area_dlc_section > h2, .game_purchase_options_editions_header_title,
+  .rightbox_content_header, .help_header, .badges_sheet_header, .profile_customization_header, .discussions_header, .early_access_announcements h2) {
+  font-size: 25px !important; line-height: 1.15 !important; background: none !important; border: 0 !important;
+}
+/* the game's name on its page: big, in blue ballpoint, underlined with a red pen */
+html[data-rfs-style="cork"] .apphub_AppName {
+  font-family: var(--rf-heading-font) !important; font-size: 40px !important; font-weight: 700 !important; line-height: 1.15 !important;
+  color: #1f2a5c !important; text-shadow: 0 1px 0 rgba(255, 238, 210, .4) !important;
+  padding-bottom: 6px !important;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 250 10' preserveAspectRatio='none'%3E%3Cpath d='M2 5C50 2.5 95 6.5 140 4S215 3 248 4.6' fill='none' stroke='%23c8432e' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E") 0 100% / min(260px, 100%) 9px no-repeat !important;
+}
+
+/* ---- paper cards: the text blocks of every page ---- */
+html[data-rfs-style="cork"] body :where(
+  .game_background_glow .rightcol, .game_meta_data > .block, .game_meta_data > .responsive_apppage_details_right, .game_meta_data > .responsive_apppage_details_left,
+  .game_area_purchase_game, .game_page_autocollapse_ctn, .game_area_description, .sys_req, .review_box, .user_reviews_summary_bar,
+  .reviews_info_ctn, .review_ctn > .user_reviews_header, .glance_ctn_responsive_left, .apphub_StoreInfoHeader,
+  .home_page_body_ctn .tab_preview, .home_page_body_ctn .tabs_menu_ctn, .home_page_body_ctn .q6mo6TFfdDs-,
+  .search_page .searchbar, .search_results_filtered_warning, .rightcol.small > .block, .search_page .page_header_ctn .searchtag,
+  .market_content_block, .market_search_sidebar_contents, .market_home_listing_table, .market_listing_table, #market_search .market_search_sidebar_contents,
+  .forum_list_right, .rightbox, .discussions_home .forum_list, .forum_topics, .help_login_nag, .help_page_content, .help_wizard_page,
+  .error_ctn, .error_bg, .profile_customization, .profile_leftcol > div, .profile_rightcol > div:not(.profile_in_game, .profile_ban_status), .badge_row, .profile_xp_block,
+  .account_settings_container, .accountData, .youraccount_page .block, .TVsiH2tTSD8-, ._982gncrqNug-, .i1XZFikuzME-, [class*="newlogindialog_LoginForm"]
+) {
+  background:
+    linear-gradient(135deg, transparent 9px, rgba(240, 192, 76, .7) 9px 21px, transparent 21px) 0 0 / 30px 30px no-repeat,
+    linear-gradient(225deg, transparent 9px, rgba(138, 186, 230, .7) 9px 21px, transparent 21px) 100% 0 / 30px 30px no-repeat,
+    linear-gradient(180deg, #fffdf8, #f8f1e3) !important;
+  color: #2b2116 !important;
+  border: 1px solid rgba(96, 64, 32, .24) !important; border-radius: 2px !important;
+  box-shadow: 0 10px 18px -10px rgba(30, 15, 4, .75), 0 1px 2px rgba(30, 15, 4, .3) !important;
+}
+/* everything written on them is dark ink (links in blue ballpoint, signal colours below) */
+html[data-rfs-style="cork"] body :where(
+  .game_background_glow .rightcol, .game_meta_data > .block, .game_meta_data > .responsive_apppage_details_right, .game_meta_data > .responsive_apppage_details_left,
+  .game_area_purchase_game, .game_page_autocollapse_ctn, .game_area_description, .sys_req, .review_box, .user_reviews_summary_bar,
+  .reviews_info_ctn, .review_ctn > .user_reviews_header, .glance_ctn_responsive_left, .apphub_StoreInfoHeader,
+  .home_page_body_ctn .tab_preview, .home_page_body_ctn .tabs_menu_ctn, .home_page_body_ctn .q6mo6TFfdDs-,
+  .search_page .searchbar, .search_results_filtered_warning, .rightcol.small > .block, .search_page .page_header_ctn .searchtag,
+  .market_content_block, .market_search_sidebar_contents, .market_home_listing_table, .market_listing_table,
+  .forum_list_right, .rightbox, .discussions_home .forum_list, .forum_topics, .help_login_nag, .help_page_content, .help_wizard_page,
+  .error_ctn, .error_bg, .profile_customization, .profile_leftcol > div, .profile_rightcol > div:not(.profile_in_game, .profile_ban_status), .badge_row, .profile_xp_block,
+  .account_settings_container, .accountData, .youraccount_page .block, .TVsiH2tTSD8-, ._982gncrqNug-, .i1XZFikuzME-, [class*="newlogindialog_LoginForm"],
+  .tab_row_item, .tab_item, .search_result_row, .game_area_dlc_row, .market_listing_row, .market_recent_listing_row, .forum_topic, .wishlist_row, .help_wizard_button,
+  .apphub_Card .apphub_CardContentMain, .apphub_CardContentAuthorBlock, .discussion_search_result
+) :not(svg, svg *, img, video, [class*="btn"], [class*="btn"] *, .DialogButton, .DialogButton *, .discount_block, .discount_block *) {
+  color: #2b2116 !important; text-shadow: none !important;
+}
+/* inner layers of the cards stay clear so the paper shows through */
+html[data-rfs-style="cork"] :is(.rightcol.small > .block, .game_meta_data .block) :is(.block_content, .block_content_inner, .block),
+html[data-rfs-style="cork"] :is(.game_background_glow .rightcol, .game_meta_data) :is(.glance_ctn, .glance_ctn_responsive_left, .DRM_notice, .user_reviews_summary_row, .details_block),
+html[data-rfs-style="cork"] .game_area_purchase_game :is(.game_area_purchase_platform, .game_purchase_action_bg) {
+  background: transparent !important; box-shadow: none !important; border-color: transparent !important;
+}
+html[data-rfs-style="cork"] .game_page_autocollapse_fade { background: linear-gradient(180deg, rgba(248, 241, 227, 0), #f8f1e3 85%) !important; }
+html[data-rfs-style="cork"] .game_page_autocollapse_readmore { background: transparent !important; }
+html[data-rfs-style="cork"] .game_page_autocollapse_ctn .game_page_autocollapse_ctn,
+html[data-rfs-style="cork"] .game_page_autocollapse_ctn .game_area_description,
+html[data-rfs-style="cork"] .game_page_autocollapse_ctn .sys_req { background: transparent !important; border: 0 !important; box-shadow: none !important; }
+/* links and quiet text on paper */
+html[data-rfs-style="cork"] body :where(.game_background_glow .rightcol, .game_meta_data, .game_area_purchase_game, .game_area_description, .game_page_autocollapse_ctn, .sys_req,
+  .review_box, .reviews_info_ctn, .search_page .searchbar, .rightcol.small, .market_content_block, .market_search_sidebar_contents, .market_listing_table,
+  .market_home_listing_table, .forum_list_right, .rightbox, .forum_topics, .help_page_content, .help_wizard_page, .help_login_nag, .profile_customization,
+  .profile_leftcol, .profile_rightcol, .badge_row, .account_settings_container, .accountData, .error_ctn, .tab_preview, .q6mo6TFfdDs-, ._982gncrqNug-, .i1XZFikuzME-) a:not([class*="btn"], .app_tag, .DialogButton) {
+  color: #2c5aa0 !important;
+}
+html[data-rfs-style="cork"] body :where(.game_background_glow .rightcol, .game_meta_data, .game_area_description, .game_page_autocollapse_ctn, .review_box, .rightcol.small, .market_content_block,
+  .forum_topics, .help_page_content, .help_wizard_page, .profile_customization, .badge_row, .account_settings_container, .error_ctn) a:not([class*="btn"], .app_tag, .DialogButton):hover {
+  color: var(--ck-red) !important;
+}
+html[data-rfs-style="cork"] body :where(.game_meta_data, .game_background_glow .rightcol, .review_box, .market_listing_table, .search_result_row, .tab_row_item, .forum_topic) :is(.subtitle, .column, .dev_row .subtitle, .release_date .subtitle, .hours, .postedDate, .date, .market_listing_game_name, .forum_topic_op, .tab_item_details, .search_released, .tab_item_top_tags, .reviewcount, .responsive_reviewdesc, .responsive_reviewdesc_short) {
+  color: #6b5a45 !important;
+}
+/* signal colours, darkened so they read on paper */
+html[data-rfs-style="cork"] body .game_review_summary.positive { color: #2f7d32 !important; }
+html[data-rfs-style="cork"] body .game_review_summary.mixed { color: #a0620a !important; }
+html[data-rfs-style="cork"] body .game_review_summary:is(.negative, .not_enough_reviews) { color: #b3361f !important; }
+html[data-rfs-style="cork"] body :is(.game_area_description, .game_page_autocollapse_ctn) :is(h1, h2.bb_tag, h3, strong, b) { color: #1f2a5c !important; }
+html[data-rfs-style="cork"] :is(.game_area_description, .game_page_autocollapse_ctn) img { border-radius: 2px; }
+/* the short description at the top of a game page: a little bigger, like a note under the photo */
+html[data-rfs-style="cork"] .game_description_snippet { font-size: 14.5px !important; line-height: 1.55 !important; }
+html[data-rfs-style="cork"] .game_background_glow .rightcol .game_header_image_ctn img { box-shadow: 0 0 0 5px #fff, 0 6px 10px -2px rgba(30, 15, 4, .5) !important; }
+
+/* ---- repeated rows: paper strips; hover draws a highlighter band (no images, no filters: there can be hundreds) ---- */
+html[data-rfs-style="cork"] :is(.tab_row_item, .tab_item, .search_result_row, .game_area_dlc_row, .market_listing_row, .market_recent_listing_row, .forum_topic,
+  .wishlist_row, .help_wizard_button, .discussion_search_result) {
+  background: linear-gradient(180deg, #fffdf8, #f6eedd) !important;
+  border: 1px solid rgba(96, 64, 32, .2) !important; border-bottom-color: rgba(96, 64, 32, .34) !important; border-radius: 2px !important;
+  box-shadow: 0 3px 6px -3px rgba(30, 15, 4, .55) !important;
+  transition: background-color .1s, box-shadow .1s !important;
+}
+html[data-rfs-style="cork"] :is(.tab_row_item, .tab_item, .search_result_row, .game_area_dlc_row, .market_listing_row, .market_recent_listing_row, .forum_topic,
+  .wishlist_row, .help_wizard_button, .discussion_search_result):is(:hover, .focus) {
+  background: linear-gradient(transparent 8%, rgba(255, 222, 102, .55) 8% 92%, transparent 92%), linear-gradient(180deg, #fffdf8, #f6eedd) !important;
+  box-shadow: 0 6px 12px -5px rgba(30, 15, 4, .6), inset 3px 0 0 var(--ck-red) !important;
+}
+html[data-rfs-style="cork"][data-rfs-lang="ar"] :is(.tab_row_item, .tab_item, .search_result_row, .game_area_dlc_row, .market_listing_row, .market_recent_listing_row, .forum_topic,
+  .wishlist_row, .help_wizard_button, .discussion_search_result):is(:hover, .focus) {
+  box-shadow: 0 6px 12px -5px rgba(30, 15, 4, .6), inset -3px 0 0 var(--ck-red) !important;
+}
+html[data-rfs-style="cork"] body :is(.tab_item_name, .search_name .title, .market_listing_item_name, .game_area_dlc_name, .tab_item_title, .forum_topic_name) {
+  color: #1f2a5c !important; font-weight: 700 !important;
+}
+/* their capsule art: a white photo border */
+html[data-rfs-style="cork"] :is(.tab_row_item, .tab_item, .search_result_row) :is(.tab_item_cap img, .search_capsule img, .tab_item_cap_img) {
+  box-shadow: 0 0 0 3px #fff, 0 2px 4px rgba(30, 15, 4, .4) !important;
+}
+html[data-rfs-style="cork"] .tab_preview .tab_screenshots_ctn > div,
+html[data-rfs-style="cork"] .tab_preview :is(.screenshot, img) { box-shadow: 0 0 0 4px #fff, 0 3px 6px rgba(30, 15, 4, .4) !important; border-radius: 1px !important; }
+
+/* ---- media areas (screenshots, trailers, carousels): dark felt pinned to the board, art untouched ---- */
+html[data-rfs-style="cork"] :is(.leftcol .highlight_ctn .highlight_overflow, .home_page_body_ctn .carousel_container .carousel_items, .tab_preview_container .tab_preview_video) {
+  background-color: #2a2119 !important;
+}
+html[data-rfs-style="cork"] .leftcol .highlight_ctn .highlight_overflow {
+  border: 1px solid rgba(20, 10, 4, .6) !important; border-radius: 2px !important;
+  box-shadow: inset 0 0 0 6px #3a2d22, 0 10px 18px -10px rgba(30, 15, 4, .8) !important;
+}
+html[data-rfs-style="cork"] .home_page_body_ctn .store_main_capsule,
+html[data-rfs-style="cork"] .home_page_body_ctn .carousel_items .store_capsule {
+  box-shadow: 0 0 0 4px #fffdf8, 0 10px 18px -8px rgba(30, 15, 4, .75) !important; border-radius: 1px !important;
+}
+html[data-rfs-style="cork"] .home_page_body_ctn .store_main_capsule .info { background: linear-gradient(180deg, #34281d, #241b13) !important; }
+html[data-rfs-style="cork"] .home_page_body_ctn .store_main_capsule .info :is(.app_name, .app_name *) { font-family: var(--rf-heading-font) !important; font-size: 28px !important; color: #fff6e2 !important; }
+/* carousel dots: little push pins */
+html[data-rfs-style="cork"] .carousel_thumbs > div,
+html[data-rfs-style="cork"] .carousel_container .carousel_thumbs > div { background: rgba(60, 35, 12, .45) !important; border-radius: 50% !important; }
+html[data-rfs-style="cork"] .carousel_container .carousel_thumbs > div.focus { background: radial-gradient(circle at 35% 30%, #ffd6c8 0 1.5px, #f0654b 3px, #a32d1c 100%) !important; }
+html[data-rfs-style="cork"] .carousel_container :is(.arrow, .arrow > div) { background-color: rgba(42, 33, 25, .82) !important; border-radius: 2px !important; }
+
+/* ---- store home details ---- */
+html[data-rfs-style="cork"] body .home_title_ctn .home_section_subtitle { color: #4a3520 !important; font-weight: 700 !important; text-shadow: 0 1px 0 rgba(255, 238, 210, .3) !important; }
+/* capsule shelves (discounts, tag rows): dark felt pinned to the board, the capsules on it untouched */
+html[data-rfs-style="cork"] .home_page_body_ctn :is(.home_discount_games_ctn, .carousel__slider) {
+  background: #2a2119 !important; border-radius: 2px !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 230, 190, .06), 0 10px 18px -10px rgba(30, 15, 4, .8) !important;
+}
+/* the discovery-queue tiles carry their names over the art: keep those light */
+html[data-rfs-style="cork"] body .q6mo6TFfdDs- .tyZYjXnErOU- * { color: #fff !important; text-shadow: 0 1px 3px rgba(0, 0, 0, .85) !important; }
+
+/* ---- game page details ---- */
+html[data-rfs-style="cork"] .queue_actions_ctn > p {
+  display: inline-block; padding: 5px 10px !important; color: #2b2116 !important;
+  background: linear-gradient(180deg, #fffdf8, #f6eedd); border: 1px solid rgba(96, 64, 32, .24); border-radius: 2px;
+  box-shadow: 0 5px 9px -5px rgba(30, 15, 4, .65);
+}
+html[data-rfs-style="cork"] .queue_actions_ctn > p a { color: #2c5aa0 !important; font-weight: 700 !important; }
+/* the feature list (Single-player, Achievements …): kraft rows; Steam's white icons sit on a dark kraft square */
+html[data-rfs-style="cork"] body .game_area_details_specs_ctn { background: rgba(232, 211, 173, .45) !important; border-radius: 2px !important; }
+html[data-rfs-style="cork"] body .game_area_details_specs_ctn:hover { background: rgba(255, 222, 102, .6) !important; }
+html[data-rfs-style="cork"] body .game_area_details_specs_ctn .icon { background: #6b5139 !important; border-radius: 2px !important; }
+html[data-rfs-style="cork"] body .game_area_details_specs_ctn .label { color: #2b2116 !important; }
+/* React info blocks in the sidebar (age rating …): a light kraft panel (hashed) */
+html[data-rfs-style="cork"] body .game_meta_data .Bj8vGJI7AGo- { background: rgba(232, 211, 173, .35) !important; }
+/* text cards that come without any padding of their own */
+html[data-rfs-style="cork"] body :is(.game_page_autocollapse_ctn, .game_area_description:not(.game_page_autocollapse_ctn *), .sys_req:not(.game_page_autocollapse_ctn *)) {
+  box-sizing: border-box !important; padding: 12px 16px !important;
+}
+
+/* "View all" / "See all updates" beside the announcements (hashed): kraft labels */
+html[data-rfs-style="cork"] body .early_access_announcements h2 a {
+  padding: 2px 10px !important; color: #f6ead2 !important; background: linear-gradient(#6b5139, #564030) !important; border: 0 !important; border-radius: 3px !important;
+  font-family: var(--rf-font-ui) !important; font-size: 13px !important; font-weight: 700 !important; text-shadow: none !important;
+}
+html[data-rfs-style="cork"] body .early_access_announcements .NelD3I3LNkY- :is(a, button) {
+  color: #2b2116 !important; background: linear-gradient(#fffbf2, #f0e4cc) !important; border: 1px solid rgba(96, 64, 32, .35) !important; border-radius: 3px !important;
+}
+
+/* ---- search: the sort menu is paper too ---- */
+html[data-rfs-style="cork"] body .search_page .dselect_container :is(button, .trigger) {
+  color: #2b2116 !important; background: #fffefb !important; border: 1px solid rgba(96, 64, 32, .38) !important; border-radius: 2px !important;
+}
+html[data-rfs-style="cork"] body .search_page #sort_by_droplist { background: #fffdf7 !important; border: 1px solid rgba(96, 64, 32, .3) !important; box-shadow: 0 12px 22px -10px rgba(30, 15, 4, .7) !important; }
+html[data-rfs-style="cork"] body .search_page #sort_by_droplist a { color: #2b2116 !important; }
+html[data-rfs-style="cork"] body .search_page #sort_by_droplist a:is(:hover, .highlighted_selection) { background: rgba(255, 222, 102, .6) !important; }
+html[data-rfs-style="cork"] body .search_page .page_header_ctn :is(#termsnone, .searchtag) { color: #2b2116 !important; }
+
+/* ---- buttons ---- */
+/* buy / play: a leaf-green label */
+html[data-rfs-style="cork"] :is(.btn_green_steamui, .btn_green_white_innerfade, .btnv6_green_white_innerfade, .item_market_action_button_green, .btn_addtocart > a) {
+  color: #fff !important;
+  background: linear-gradient(#7cc56e, #45953f) !important;
+  border: 1px solid rgba(30, 70, 24, .55) !important; border-radius: 3px !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .35), 0 2px 4px rgba(0, 0, 0, .3) !important;
+  text-shadow: 0 1px 0 rgba(20, 60, 16, .45) !important;
+  transition: transform .12s ease-out, background .12s !important;
+}
+html[data-rfs-style="cork"] :is(.btn_green_steamui, .btn_green_white_innerfade, .btnv6_green_white_innerfade, .item_market_action_button_green, .btn_addtocart > a):hover {
+  background: linear-gradient(#8fd17f, #52a64b) !important; transform: translateY(-1px) rotate(-.5deg);
+}
+/* everything else: stitched kraft cardboard (keeps Steam's white button icons readable) */
+html[data-rfs-style="cork"] :is(.btn_blue_steamui, .btnv6_blue_hoverfade, .btnv6_white_transparent, .btn_grey_steamui, .btnv6_grey_black, .btn_grey_black,
+  .btn_darkblue_white_innerfade, .btnv6_blue_blue_innerfade, .btn_grey_white_innerfade, .btn_profile_action, .pagebtn, .help_site_button, .btn_medium.btnv6_lightblue_blue) {
+  color: #f6ead2 !important;
+  background: linear-gradient(#6b5139, #564030) !important;
+  border: 1px solid rgba(20, 10, 4, .5) !important; border-radius: 3px !important;
+  box-shadow: inset 0 1px 0 rgba(255, 230, 190, .18), 0 2px 4px rgba(0, 0, 0, .3) !important;
+  text-shadow: none !important;
+  outline: 1px dashed rgba(246, 234, 210, .32); outline-offset: -4px;
+}
+html[data-rfs-style="cork"] :is(.btn_blue_steamui, .btnv6_blue_hoverfade, .btnv6_white_transparent, .btn_grey_steamui, .btnv6_grey_black, .btn_grey_black,
+  .btn_darkblue_white_innerfade, .btnv6_blue_blue_innerfade, .btn_grey_white_innerfade, .btn_profile_action, .pagebtn, .help_site_button, .btn_medium.btnv6_lightblue_blue):hover {
+  color: #fff !important; background: linear-gradient(#7d6045, #66503a) !important;
+}
+html[data-rfs-style="cork"] :is(.btn_green_steamui, .btn_green_white_innerfade, .btnv6_green_white_innerfade, .item_market_action_button_green, .btn_blue_steamui, .btnv6_blue_hoverfade,
+  .btnv6_white_transparent, .btn_grey_steamui, .btnv6_grey_black, .btn_grey_black, .btn_darkblue_white_innerfade, .btnv6_blue_blue_innerfade, .btn_grey_white_innerfade,
+  .btn_profile_action, .btn_medium.btnv6_lightblue_blue) > span {
+  background: transparent !important; color: inherit !important; text-shadow: inherit !important; border-radius: 0 !important;
+}
+/* React pages: Steam's dialog buttons are paper labels (the Steam-window rule above); the main action is the red label */
+html[data-rfs-style="cork"] #StoreTemplate button[class*="WPxeXV5lR1E"],
+html[data-rfs-style="cork"] .btn_login_nag_left {
+  color: #fff !important; text-shadow: 0 1px 0 rgba(110, 26, 10, .35) !important;
+  background: linear-gradient(#ff8c6e, #dc533a) !important; border: 1px solid rgba(120, 30, 14, .55) !important; border-radius: 3px !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .35), 0 2px 5px rgba(0, 0, 0, .3) !important;
+}
+html[data-rfs-style="cork"] #StoreTemplate button[class*="WPxeXV5lR1E"]:hover,
+html[data-rfs-style="cork"] .btn_login_nag_left:hover { background: linear-gradient(#ff9d84, #e6604a) !important; }
+html[data-rfs-style="cork"] .btn_login_nag_left > span { background: transparent !important; color: inherit !important; }
+
+/* ---- forms: white paper with a kraft edge; the focus is a coral pen ring ---- */
+html[data-rfs-style="cork"] :is(body.responsive_page, body.v6, #StoreTemplate, #CommunityTemplate) :is(input:is([type="text"], [type="search"], [type="password"], [type="email"], [type="number"], [type="tel"], :not([type])), textarea, select, .gray_bevel, .DialogInput):not(.XLbP8xOkCYw- *, .WCG-2-OYepA- *) {
+  color: #2b2116 !important; background-color: #fffefb !important;
+  border: 1px solid rgba(96, 64, 32, .38) !important; border-radius: 2px !important;
+  box-shadow: inset 0 1px 2px rgba(96, 64, 32, .14) !important;
+}
+html[data-rfs-style="cork"] :is(body.responsive_page, body.v6, #StoreTemplate, #CommunityTemplate) :is(input, textarea, select, .DialogInput):not(.XLbP8xOkCYw- *, .WCG-2-OYepA- *):focus {
+  border-color: rgba(200, 67, 46, .75) !important; outline: none !important;
+  box-shadow: 0 0 0 3px rgba(200, 67, 46, .16) !important;
+}
+html[data-rfs-style="cork"] :is(body.responsive_page, body.v6, #StoreTemplate, #CommunityTemplate) :is(input, textarea)::placeholder { color: #8a7660 !important; }
+
+/* ---- prices: a paper price tag with a red sale sticker ---- */
+html[data-rfs-style="cork"] body :is(.discount_block, ._6QzykeEsckc-, .StoreSalePriceWidgetContainer) {
+  color: #2b2116 !important;
+  background: linear-gradient(180deg, #fffdf6, #f5ead2) !important;
+  border: 1px solid rgba(96, 64, 32, .3) !important; border-radius: 2px !important;
+  box-shadow: 0 2px 4px rgba(30, 15, 4, .35) !important;
+}
+html[data-rfs-style="cork"] body :is(.discount_block .discount_pct, .game_description_column .discount_pct, .discount_pct, .StoreSaleDiscountBox, ._6QzykeEsckc- .hPiY1A-1izA-) {
+  color: #fff !important; background: var(--ck-red) !important; font-weight: 800 !important; border-radius: 2px !important;
+  outline: 1px dashed rgba(255, 255, 255, .55); outline-offset: -3px; text-shadow: none !important;
+}
+html[data-rfs-style="cork"] body :is(.discount_block .discount_prices, .discount_prices) { background: transparent !important; }
+html[data-rfs-style="cork"] body :is(.discount_final_price, .discount_block .discount_prices .discount_final_price, .game_purchase_price, .game_purchase_action .price,
+  .StoreSalePriceWidgetContainer > div:not(.StoreSaleDiscountBox) > div:last-child, .market_table_value .normal_price, .normal_price, .sale_price, .search_price) {
+  color: #2b2116 !important; font-weight: 800 !important; background-color: transparent !important;
+}
+html[data-rfs-style="cork"] body :is(.discount_original_price, .StoreSalePriceWidgetContainer.Discounted > div:not(.StoreSaleDiscountBox) > div:first-child:not(:last-child)) {
+  color: #8a7660 !important;
+}
+html[data-rfs-style="cork"] .game_purchase_action_bg { border-radius: 2px !important; }
+html[data-rfs-style="cork"] .game_purchase_action_bg .game_purchase_price {
+  padding-inline: 10px !important; background: linear-gradient(180deg, #fffdf6, #f5ead2) !important;
+  border: 1px solid rgba(96, 64, 32, .3) !important; border-radius: 2px !important; box-shadow: 0 2px 4px rgba(30, 15, 4, .3) !important;
+}
+
+/* ---- tags: little kraft luggage labels with a punched hole ---- */
+html[data-rfs-style="cork"] :is(.app_tag, .top_tag, .WidgetTag) {
+  color: #4a3520 !important; background: #e8d3ad !important; border: 0 !important; border-radius: 2px !important;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, .3) !important;
+}
+html[data-rfs-style="cork"] .app_tag::before {
+  content: ''; display: inline-block; width: 5px; height: 5px; margin-inline-end: 5px; vertical-align: middle;
+  border-radius: 50%; background: rgba(74, 53, 32, .45);
+}
+html[data-rfs-style="cork"] :is(.app_tag, .WidgetTag):hover { color: #2b2116 !important; background: var(--ck-note) !important; }
+html[data-rfs-style="cork"] body .tab_item_top_tags span { color: #6b5a45 !important; }
+
+/* ---- store home: the tab strip is a row of kraft index tabs ---- */
+html[data-rfs-style="cork"] .home_page_body_ctn .home_tabs_row .tab_content,
+html[data-rfs-style="cork"] .home_page_body_ctn .home_tab_button {
+  color: #3d2a17 !important; font-weight: 800 !important;
+  background: linear-gradient(#f2e0be, #e3cb9f) !important; border: 1px solid rgba(80, 50, 20, .3) !important; border-radius: 2px !important;
+}
+html[data-rfs-style="cork"] .home_page_body_ctn :is(.home_tab.active .tab_content, .home_tab_button.active) {
+  color: #2b2116 !important; background: linear-gradient(#fff6d6, #ffe68a) !important; box-shadow: inset 0 -2px 0 var(--ck-red) !important;
+}
+
+/* ---- community: tabs, profile, hub cards, market, workshop, discussions, badges ---- */
+html[data-rfs-style="cork"] :is(.apphub_sectionTab, .group_tab, .market_tab_well_tab, .workshop_browse_menu_area .tab) {
+  color: #3d2a17 !important; font-weight: 800 !important;
+  background: linear-gradient(#f2e0be, #e3cb9f) !important; border: 1px solid rgba(80, 50, 20, .32) !important; border-radius: 2px 2px 0 0 !important;
+}
+html[data-rfs-style="cork"] :is(.apphub_sectionTab, .group_tab, .market_tab_well_tab) :is(span, div) { color: inherit !important; background: transparent !important; }
+html[data-rfs-style="cork"] :is(.apphub_sectionTab.active, .group_tab.active, .market_tab_well_tab_active) {
+  color: #2b2116 !important; background: linear-gradient(#fff6d6, #ffe68a) !important; box-shadow: inset 0 -2px 0 var(--ck-red) !important;
+}
+html[data-rfs-style="cork"] .apphub_Card {
+  background: linear-gradient(170deg, #fffdf8, #f5eee1) !important; border: 1px solid rgba(96, 64, 32, .2) !important; border-radius: 2px !important;
+  padding: 7px 7px 0 !important; box-shadow: 0 8px 14px -8px rgba(30, 15, 4, .7) !important;
+}
+html[data-rfs-style="cork"] .apphub_Card :is(.apphub_CardContentMain, .apphub_CardContentAuthorBlock, .apphub_CardContentNewsTitle) { background: transparent !important; }
+html[data-rfs-style="cork"] .apphub_HeaderBottom { background: linear-gradient(180deg, rgba(42, 33, 25, .78), rgba(42, 33, 25, .9)) !important; }
+html[data-rfs-style="cork"] .profile_header_bg_texture { border-radius: 2px !important; box-shadow: 0 12px 20px -10px rgba(30, 15, 4, .8) !important; }
+html[data-rfs-style="cork"] .playerAvatar :is(img, picture) { box-shadow: 0 0 0 4px #fff, 0 4px 8px rgba(30, 15, 4, .5) !important; }
+html[data-rfs-style="cork"] :is(.market_home_listing_table, .market_listing_table) .market_listing_table_header { color: #6b5a45 !important; background: transparent !important; border-color: rgba(96, 64, 32, .25) !important; }
+html[data-rfs-style="cork"] .apphub_sectionTab { padding: 3px 9px !important; margin-inline-end: 4px !important; }
+html[data-rfs-style="cork"] body .apphub_Content :is(.apphub_SectionFilterLabel, .apphub_ContentHeader, .apphub_Content > div:not([class]) > span) { color: #2a1a0b !important; }
+/* market: the header, the beta notice and the sidebar (search, game list) */
+html[data-rfs-style="cork"] body .market_header_text { color: #2a1a0b !important; text-shadow: none !important; }
+html[data-rfs-style="cork"] body .market_header_text :not(.market_title_text) { color: #4a3520 !important; font-weight: 700 !important; }
+html[data-rfs-style="cork"] body #BG_bottom > div:first-child:not([id]) {
+  color: #2b2116 !important; background: linear-gradient(180deg, #fff3b8, #ffe27a) !important; border-radius: 2px !important;
+  box-shadow: 0 8px 14px -8px rgba(30, 15, 4, .7) !important;
+}
+html[data-rfs-style="cork"] body #BG_bottom > div:first-child:not([id]) a { color: #2c5aa0 !important; font-weight: 700 !important; }
+html[data-rfs-style="cork"] body :is(.market_header_bg, .market_tab_well_tabs, .market_search_box_container) { background: transparent !important; }
+html[data-rfs-style="cork"] body .market_listing_table_message { color: #2b2116 !important; background: rgba(232, 211, 173, .4) !important; }
+html[data-rfs-style="cork"] body .market_search_advanced_button {
+  color: #f6ead2 !important; background: linear-gradient(#6b5139, #564030) !important; border-radius: 3px !important;
+}
+html[data-rfs-style="cork"] body .market_search_advanced_button * { color: #f6ead2 !important; }
+html[data-rfs-style="cork"] body .market_search_sidebar_contents .game_button {
+  background: linear-gradient(180deg, #fffdf8, #f2e8d4) !important; border: 1px solid rgba(96, 64, 32, .2) !important; border-radius: 2px !important;
+}
+html[data-rfs-style="cork"] body .market_search_sidebar_contents .game_button:hover { background: rgba(255, 222, 102, .6) !important; }
+html[data-rfs-style="cork"] body .market_search_sidebar_contents .game_button * { color: #2b2116 !important; }
+/* discussions: the welcome note, the forum list, the tabs */
+html[data-rfs-style="cork"] body .discussions_page .group_content {
+  padding: 12px 16px !important; color: #2b2116 !important;
+  background: linear-gradient(180deg, #fffdf8, #f8f1e3) !important; border: 1px solid rgba(96, 64, 32, .24) !important; border-radius: 2px !important;
+  box-shadow: 0 10px 18px -10px rgba(30, 15, 4, .75), 0 1px 2px rgba(30, 15, 4, .3) !important;
+}
+html[data-rfs-style="cork"] body .discussions_page .group_content :not(input, button, svg, img) { color: #2b2116 !important; }
+html[data-rfs-style="cork"] body .discussions_page .group_content b { color: #1f2a5c !important; }
+html[data-rfs-style="cork"] body .discussions_page .discussion_primary_header {
+  font-family: var(--rf-heading-font) !important; font-size: 28px !important; font-weight: 700 !important; color: #2a1a0b !important; text-shadow: 0 1px 0 rgba(255, 238, 210, .35) !important;
+}
+html[data-rfs-style="cork"] body .discussions_page .forum_list_left :is(.forum_list_header, .discussions_forumlist_header, .forumlist_header) { color: #3d2a17 !important; }
+html[data-rfs-style="cork"] body .discussions_forum_row {
+  background: linear-gradient(180deg, #fffdf8, #f6eedd) !important; border: 1px solid rgba(96, 64, 32, .2) !important; border-radius: 2px !important;
+  box-shadow: 0 3px 6px -3px rgba(30, 15, 4, .55) !important;
+}
+html[data-rfs-style="cork"] body .discussions_forum_row:hover { background: linear-gradient(transparent 8%, rgba(255, 222, 102, .55) 8% 92%, transparent 92%), #fffdf8 !important; }
+html[data-rfs-style="cork"] body .discussions_forum_row * { color: #2b2116 !important; }
+html[data-rfs-style="cork"] body .discussions_forum_row :is(.forum_topic_lastpost, .discussions_forumlist_lastpost, .discussions_forumlist_count, [class*="count"]) { color: #6b5a45 !important; }
+html[data-rfs-style="cork"] body .recent_game_discussion { background: rgba(232, 211, 173, .32) !important; border-radius: 2px !important; }
+html[data-rfs-style="cork"] body .recent_game_discussion:hover { background: rgba(255, 222, 102, .55) !important; }
+html[data-rfs-style="cork"] body .discussions_header .group_tab { font-size: 15px !important; }
+html[data-rfs-style="cork"] body .discussions_header .group_tab * { font-family: var(--rf-font-ui) !important; font-size: 15px !important; line-height: 1.6 !important; }
+/* workshop (React, hashed): the hub's dark sections become solid felt so their light text stays readable on the board */
+html[data-rfs-style="cork"] body :is(.AMZQjRYGsXQ-) { background: transparent !important; }
+html[data-rfs-style="cork"] body :is(.eDVdMzW4Ol4-, .bt37JYoalu8-, .EnFuoPFRUQw-.OCw7CSOMK40-, .wHzCuUaejBg-.mf7w3VKqQl0-) {
+  background: #2a2119 !important; border-radius: 2px !important; box-shadow: 0 10px 18px -10px rgba(30, 15, 4, .8) !important;
+}
+
+/* ---- help site ---- */
+html[data-rfs-style="cork"] body :is(.help_intro_text, .help_section_text) {
+  color: #2a1a0b !important; font-weight: 700 !important; text-shadow: 0 1px 0 rgba(255, 238, 210, .3) !important;
+}
+html[data-rfs-style="cork"] body .help_intro_text { font-family: var(--rf-heading-font) !important; font-size: 24px !important; }
+html[data-rfs-style="cork"] body .breadcrumbs, html[data-rfs-style="cork"] body .breadcrumbs a { color: #3d2a17 !important; }
+html[data-rfs-style="cork"] body .help_wizard_button { font-weight: 600 !important; }
+/* the "please wait, signing you in" screen and Steam's login form: a paper card in the middle of the board */
+html[data-rfs-style="cork"] .login_client_waitforauth > * { color: #2a1a0b !important; text-shadow: 0 1px 0 rgba(255, 238, 210, .3) !important; }
+html[data-rfs-style="cork"] [class*="newlogindialog_LoginForm"] { padding: 22px 24px !important; }
+html[data-rfs-style="cork"] [class*="newlogindialog_"]:is([class*="Label"], [class*="FormLabel"], [class*="SignInText"]) { color: #3d2a17 !important; }
+html[data-rfs-style="cork"] [class*="newlogindialog_TextInput"] { color: #2b2116 !important; background: #fffefb !important; border: 1px solid rgba(96, 64, 32, .38) !important; border-radius: 2px !important; }
+html[data-rfs-style="cork"] [class*="newlogindialog_SubmitButton"] {
+  color: #fff !important; background: linear-gradient(#ff8c6e, #dc533a) !important; border: 1px solid rgba(120, 30, 14, .55) !important; border-radius: 3px !important;
+}
+
+/* ═════════════ our pieces ═════════════ */
+/* ---- library filter strip (docked on the home board, or floating with Ctrl+K): a paper strip pinned at both ends ---- */
+html[data-rfs-style="cork"] #rfs-bar:is(.inhome, .float) {
+  --ink: var(--ck-ink); --muted: #85725a; --accent: var(--ck-red); --acc-rgb: 200, 67, 46;
+  --ck-pencil: #5a4632;
+  padding: 10px 14px;
+  background: linear-gradient(180deg, #fffdf7, #f6efdf);
+  border: 1px solid rgba(96, 64, 32, .22);
+  border-radius: 3px;
+  box-shadow: 0 10px 16px -9px rgba(40, 20, 5, .65), 0 1px 2px rgba(40, 20, 5, .25);
+}
+html[data-rfs-style="cork"] #rfs-bar.inhome::before,
+html[data-rfs-style="cork"] #rfs-bar.inhome::after {
+  content: ''; position: absolute; top: -6px; width: 15px; height: 15px; border-radius: 50%; pointer-events: none;
+  background:
+    radial-gradient(circle at 35% 30%, rgba(255, 255, 255, .85) 0 2px, transparent 3.5px),
+    radial-gradient(circle at 50% 45%, var(--pin, #f0654b) 0 50%, var(--pin-d, #a32d1c) 100%);
+  box-shadow: 1px 2px 2px rgba(0, 0, 0, .35);
+}
+html[data-rfs-style="cork"] #rfs-bar.inhome::before { inset-inline-start: 18px; }
+html[data-rfs-style="cork"] #rfs-bar.inhome::after { inset-inline-end: 18px; --pin: #f5bd3a; --pin-d: #a77610; }
+/* buttons: small paper labels; the active one is marked with highlighter */
+html[data-rfs-style="cork"] #rfs-bar:is(.inhome, .float) .tb-seg { gap: 4px; }
+html[data-rfs-style="cork"] #rfs-bar:is(.inhome, .float) :is(.tb-btn, .tb-seg button) {
+  color: var(--ck-ink); font-weight: 700;
+  background: linear-gradient(#fffaf0, #efe3cc);
+  border: 1px solid var(--ck-edge); border-bottom-color: rgba(96, 64, 32, .44);
+  border-radius: 3px;
+  transition: background .12s, transform .12s ease-out;
+}
+html[data-rfs-style="cork"] #rfs-bar:is(.inhome, .float) :is(.tb-btn, .tb-seg button):hover {
+  background: linear-gradient(#fffdf8, #fff0c2); transform: translateY(-1px);
+}
+html[data-rfs-style="cork"] #rfs-bar:is(.inhome, .float) :is(.tb-btn.on, .tb-seg button.on) {
+  color: #2b2116; background: #ffe68a; border-color: rgba(176, 128, 20, .5);
+}
+/* the search: white paper with a ruled writing line */
+html[data-rfs-style="cork"] #rfs-bar:is(.inhome, .float) .tb-search {
+  background: linear-gradient(transparent calc(100% - 5px), rgba(47, 59, 110, .2) calc(100% - 5px) calc(100% - 4px), transparent calc(100% - 4px)), #fff;
+  border: 1px solid rgba(96, 64, 32, .25); border-radius: 3px;
+}
+html[data-rfs-style="cork"] #rfs-bar:is(.inhome, .float) .tb-search:focus-within {
+  border-color: rgba(200, 67, 46, .6); box-shadow: 0 0 0 3px rgba(200, 67, 46, .14);
+}
+html[data-rfs-style="cork"] #rfs-bar:is(.inhome, .float) .tb-q { color: #2b2116; font-weight: 600; }
+html[data-rfs-style="cork"] #rfs-bar:is(.inhome, .float) :is(.tb-kbd, .pl-foot kbd) {
+  color: #5a4632; background: #f6ecd8; border: 1px solid var(--ck-edge); border-bottom-width: 2px;
+}
+/* icons on paper are drawn in pencil (tiles keep their push-pin look, solid buttons keep their ink colour) */
+html[data-rfs-style="cork"] #rfs-bar:is(.inhome, .float) :not(.rf-ict, .play, .go, .tb-theme) > svg.rf-ic { stroke: var(--ck-pencil); }
+html[data-rfs-style="cork"] #rfs-bar:is(.inhome, .float) :not(.rf-ict, .play, .go, .tb-theme) > svg.rf-ic .s { fill: var(--ck-pencil); }
+html[data-rfs-style="cork"] #rfs-bar:is(.inhome, .float) :not(.rf-ict, .play, .go, .tb-theme) > svg.rf-ic :is(.f, rect, ellipse, circle:not(.s)) { fill: rgba(200, 67, 46, .14); }
+html[data-rfs-style="cork"] #rfs-bar:is(.inhome, .float) :is(.tb-btn.on, .tb-seg button.on) > svg.rf-ic { stroke: var(--ck-red); }
+/* dropdowns + search results: a paper card; hover draws a highlighter band */
+html[data-rfs-style="cork"] #rfs-bar:is(.inhome, .float) :is(.rf-dd-menu, .tb-results) {
+  background: #fffaf0;
+  border: 1px solid rgba(96, 64, 32, .25); border-radius: 3px;
+  box-shadow: 0 18px 34px -12px rgba(40, 20, 5, .65), 0 2px 4px rgba(40, 20, 5, .2);
+}
+html[data-rfs-style="cork"] #rfs-bar:is(.inhome, .float) :is(.rf-dd-menu button, .pl-item) { border-radius: 2px; }
+html[data-rfs-style="cork"] #rfs-bar:is(.inhome, .float) :is(.rf-dd-menu button:hover, .pl-item:hover, .pl-item.sel) {
+  background: linear-gradient(transparent 14%, rgba(255, 222, 102, .6) 14% 86%, transparent 86%);
+}
+html[data-rfs-style="cork"] #rfs-bar:is(.inhome, .float) .rf-dd-menu button.on { color: #b23a26; background: rgba(255, 222, 102, .32); }
+html[data-rfs-style="cork"] #rfs-bar:is(.inhome, .float) .pl-sec {
+  font-family: var(--rf-heading-font) !important; font-size: 19px; font-weight: 700; color: var(--ck-pen);
+}
+html[data-rfs-style="cork"] #rfs-bar:is(.inhome, .float) .pl-item img { border: 2px solid #fff; border-radius: 2px; box-shadow: 0 1px 3px rgba(40, 20, 5, .35); }
+html[data-rfs-style="cork"] #rfs-bar:is(.inhome, .float) .pl-tag { color: #5a4430; background: var(--ck-kraft); border-radius: 2px; }
+html[data-rfs-style="cork"] #rfs-bar:is(.inhome, .float) .pl-tag.dim { color: #85725a; background: rgba(96, 64, 32, .08); }
+html[data-rfs-style="cork"] #rfs-bar:is(.inhome, .float) .pl-foot { background: #f6eedd; border-top: 1px dashed rgba(96, 64, 32, .3); }
+
+/* ---- toast: a sticky note ---- */
+html[data-rfs-style="cork"] #rfs-toast {
+  color: var(--ck-ink); background: var(--ck-note); border: 0; border-radius: 2px; padding: 7px 20px 6px;
+  font-family: var(--rf-heading-font) !important; font-size: 21px; font-weight: 700;
+  box-shadow: 0 14px 20px -10px rgba(0, 0, 0, .7), 0 1px 2px rgba(0, 0, 0, .3);
+}
+
+/* ---- the THEMES picker: a framed cork board, each theme a polaroid ---- */
+html[data-rfs-style="cork"] #rfs-themes .tp-box {
+  --ink: #2e1f12; --muted: #3d2a17;
+  color: #2e1f12;
+  background:
+    radial-gradient(circle at 30% 40%, rgba(74, 44, 18, .3) 0 1px, transparent 1.7px) 0 0 / 13px 11px,
+    radial-gradient(circle at 65% 70%, rgba(255, 238, 208, .2) 0 .9px, transparent 1.5px) 0 0 / 9px 13px,
+    radial-gradient(circle at 50% 50%, rgba(92, 56, 24, .22) 0 1.6px, transparent 2.5px) 0 0 / 29px 23px,
+    #b4875a;
+  border: 10px solid #caa676; border-radius: 4px;
+  box-shadow: inset 0 0 0 1px rgba(60, 35, 10, .35), 0 30px 90px rgba(0, 0, 0, .7);
+}
+html[data-rfs-style="cork"] #rfs-themes .tp-head h2 { font-family: var(--rf-heading-font) !important; font-size: 32px; color: #2e1f12; }
+html[data-rfs-style="cork"] #rfs-themes .tp-head h2 > svg.rf-ic { stroke: #2e1f12; }
+html[data-rfs-style="cork"] #rfs-themes .tp-head p { color: #3d2a17; font-weight: 600; }
+html[data-rfs-style="cork"] #rfs-themes .tp-lang { background: var(--ck-paper); border: 1px solid var(--ck-edge); border-radius: 3px; }
+html[data-rfs-style="cork"] #rfs-themes .tp-lang > svg.rf-ic { stroke: #5a4632; }
+html[data-rfs-style="cork"] #rfs-themes .tp-lang button { color: #5a4632; border-radius: 2px; }
+html[data-rfs-style="cork"] #rfs-themes .tp-lang button:hover { color: #2b2116; background: rgba(255, 222, 102, .45); }
+html[data-rfs-style="cork"] #rfs-themes .tp-lang button.on { color: #fff; background: var(--ck-red); }
+html[data-rfs-style="cork"] #rfs-themes .tp-card {
+  --ink: var(--ck-ink); --muted: var(--ck-ink-dim);
+  padding: 8px 8px 0; color: var(--ck-ink);
+  background: linear-gradient(170deg, #fffdf8, #f5eee1); border: 0; border-radius: 2px;
+  box-shadow: 0 2px 4px rgba(40, 20, 5, .35);
+  transform: rotate(-.7deg);
+}
+html[data-rfs-style="cork"] #rfs-themes .tp-card:nth-child(even) { transform: rotate(.6deg); }
+html[data-rfs-style="cork"] #rfs-themes .tp-card:nth-child(3n) { transform: rotate(-.3deg); }
+html[data-rfs-style="cork"] #rfs-themes .tp-card:hover { transform: translateY(-4px) rotate(0deg); box-shadow: 0 16px 28px -8px rgba(40, 20, 5, .6); }
+html[data-rfs-style="cork"] #rfs-themes .tp-card.cur { outline: 3px solid var(--ck-red); outline-offset: 3px; }
+html[data-rfs-style="cork"] #rfs-themes .tp-meta b { font-family: var(--rf-heading-font) !important; font-size: 22px; color: var(--ck-pen); }
+html[data-rfs-style="cork"] #rfs-themes .tp-close {
+  color: var(--ck-ink); font-weight: 700;
+  background: linear-gradient(#fffbf2, #f0e4cc); border: 1px solid var(--ck-edge); border-bottom-color: rgba(96, 64, 32, .5); border-radius: 3px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, .3);
+}
+html[data-rfs-style="cork"] #rfs-themes .tp-close:hover { background: linear-gradient(#fffdf8, #fff0c4); }
+
+/* ---- store side panels + Quick links: paper notes pinned beside the store column, handwritten headings ---- */
+html[data-rfs-style="cork"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) {
+  --rf-text: var(--ck-ink); --rf-text-dim: var(--ck-ink-dim);
+  --rf-accent: #c8432e; --rf-accent-rgb: 200, 67, 46; --rf-accent-ink: #fff;
+  --rf-play-1: #3d8f39; --rf-play-2: #2f7a2c; --rf-play-ink: #fff;
+}
+html[data-rfs-style="cork"] :is(#rfs-rail, #rfs-data) { padding: 10px 6px 6px; }
+html[data-rfs-style="cork"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) section {
+  position: relative; margin-bottom: 16px; padding: 15px 12px 10px; color: var(--ck-ink);
+  background: linear-gradient(180deg, #fffdf7, #f6efdf) !important;
+  border: 1px solid rgba(96, 64, 32, .2) !important;
+  border-radius: 2px !important;
+  box-shadow: 0 8px 14px -7px rgba(0, 0, 0, .6), 0 1px 2px rgba(0, 0, 0, .25) !important;
+}
+html[data-rfs-style="cork"] #rfs-qmenu section { margin: 0; }
+html[data-rfs-style="cork"] :is(#rfs-rail, #rfs-data) section:nth-child(odd) { transform: rotate(-.5deg); }
+html[data-rfs-style="cork"] :is(#rfs-rail, #rfs-data) section:nth-child(even) { transform: rotate(.45deg); }
+/* one push pin per note, cycling red / mustard / teal */
+html[data-rfs-style="cork"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) section::before {
+  content: ''; position: absolute; top: -6px; left: 50%; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%; pointer-events: none;
+  background:
+    radial-gradient(circle at 35% 30%, rgba(255, 255, 255, .85) 0 2px, transparent 3.5px),
+    radial-gradient(circle at 50% 45%, var(--pin, #f0654b) 0 50%, var(--pin-d, #a32d1c) 100%);
+  box-shadow: 1px 2px 2px rgba(0, 0, 0, .35);
+}
+html[data-rfs-style="cork"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) section:nth-child(3n+2)::before { --pin: #f5bd3a; --pin-d: #a77610; }
+html[data-rfs-style="cork"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) section:nth-child(3n)::before { --pin: #4cb39b; --pin-d: #23705f; }
+html[data-rfs-style="cork"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) h4 {
+  margin: 0 2px 8px; color: var(--ck-pen); letter-spacing: 0; text-transform: none;
+  font-family: var(--rf-heading-font) !important; font-size: 21px; font-weight: 700; line-height: 1.15;
+}
+html[data-rfs-style="cork"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) h4 small {
+  font-family: var(--rf-font-ui) !important; font-size: 11px; font-weight: 600; color: var(--ck-ink-dim);
+}
+/* icons on paper are drawn in pencil (pin-head tiles and solid buttons keep their own colours) */
+html[data-rfs-style="cork"] :is(#rfs-rail, #rfs-data, #rfs-qmenu, #rfs-qbtn) :not(.rf-ict, .go, .rf-mono) > svg.rf-ic,
+html[data-rfs-style="cork"] #rfs-qbtn > svg.rf-ic { stroke: #5a4632; }
+html[data-rfs-style="cork"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) :not(.rf-ict, .go, .rf-mono) > svg.rf-ic .s,
+html[data-rfs-style="cork"] #rfs-qbtn > svg.rf-ic .s { fill: #5a4632; }
+html[data-rfs-style="cork"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) h4 > svg.rf-ic { stroke: var(--ck-pen); }
+/* left rail: the game as a mini polaroid, kraft-label buttons, highlighter on the links */
+html[data-rfs-style="cork"] #rfs-rail .rr-app img {
+  border: 5px solid #fff; border-bottom-width: 16px; border-radius: 1px;
+  box-shadow: 0 2px 4px rgba(40, 20, 5, .35); transform: rotate(-1.4deg);
+}
+html[data-rfs-style="cork"] #rfs-rail .rr-app b {
+  font-family: var(--rf-heading-font) !important; font-size: 22px; line-height: 1.1; color: var(--ck-pen);
+}
+html[data-rfs-style="cork"] #rfs-rail .rr-price i { color: #fff; background: var(--ck-red); border-radius: 2px; }
+html[data-rfs-style="cork"] #rfs-rail .rr-btn {
+  color: var(--ck-ink) !important;
+  background: linear-gradient(#fbf1dc, #ebdabb);
+  border: 1px solid var(--ck-edge); border-bottom-color: rgba(96, 64, 32, .46); border-radius: 3px;
+  transition: background .12s, transform .12s ease-out;
+}
+html[data-rfs-style="cork"] #rfs-rail .rr-btn:hover { background: linear-gradient(#fffbea, #ffe89a); transform: translateY(-1px); }
+html[data-rfs-style="cork"] #rfs-rail .rr-btn.go {
+  color: #fff !important; background: linear-gradient(#5fae55, #3d8f39);
+  border: 1px solid rgba(30, 70, 24, .55); text-shadow: 0 1px 0 rgba(20, 60, 16, .35);
+}
+html[data-rfs-style="cork"] #rfs-rail .rr-btn.go:hover { background: linear-gradient(#6dbd62, #46a041); }
+html[data-rfs-style="cork"] #rfs-rail .rr-btn.on { color: #b23a26 !important; background: #fff1c2; border-color: rgba(176, 128, 20, .5); }
+html[data-rfs-style="cork"] :is(#rfs-rail .rr-link, #rfs-qmenu .ql) { border-radius: 2px; }
+html[data-rfs-style="cork"] :is(#rfs-rail .rr-link, #rfs-qmenu .ql):hover {
+  background: linear-gradient(transparent 16%, rgba(255, 222, 102, .55) 16% 84%, transparent 84%);
+}
+html[data-rfs-style="cork"] :is(#rfs-rail .rr-link, #rfs-qmenu .ql).cur {
+  background: linear-gradient(transparent 16%, rgba(255, 222, 102, .8) 16% 84%, transparent 84%);
+}
+/* right data panel: handwritten player count, stamped country codes, highlighted rows, index-card facts */
+html[data-rfs-style="cork"] #rfs-data .rd-live b {
+  font-family: var(--rf-heading-font) !important; font-size: 32px; font-weight: 700; color: var(--ck-pen);
+}
+html[data-rfs-style="cork"] #rfs-data .rd-cc {
+  color: #5a4430; background: transparent; border: 1px dashed rgba(90, 60, 30, .45); border-radius: 2px;
+}
+html[data-rfs-style="cork"] #rfs-data .rd-row.home {
+  background: linear-gradient(transparent 8%, rgba(255, 222, 102, .55) 8% 92%, transparent 92%); box-shadow: none;
+}
+html[data-rfs-style="cork"] #rfs-data .rd-row.home .rd-cc { color: #fff; background: var(--ck-red); border: 1px solid var(--ck-red); }
+html[data-rfs-style="cork"] #rfs-data .rd-row.best {
+  background: linear-gradient(transparent 8%, rgba(150, 214, 128, .5) 8% 92%, transparent 92%); box-shadow: none;
+}
+html[data-rfs-style="cork"] #rfs-data .rd-row.best .rd-cc { color: #fff; background: #3d8f39; border: 1px solid #3d8f39; }
+html[data-rfs-style="cork"] #rfs-data .rd-row.best .rd-tag { color: #2f7a2c; background: rgba(61, 143, 57, .16); }
+html[data-rfs-style="cork"] #rfs-data .rd-diff.hi { color: #c43d2c; }
+html[data-rfs-style="cork"] #rfs-data .rd-tag { color: #b23a26; background: rgba(200, 67, 46, .12); border-radius: 2px; }
+html[data-rfs-style="cork"] #rfs-data :is(.rd-fact, .rd-link) {
+  background: #fff; border: 1px solid rgba(96, 64, 32, .16); border-radius: 2px;
+}
+html[data-rfs-style="cork"] #rfs-data .rd-link:hover { background: #fff6cf; border-color: rgba(176, 128, 20, .45); }
+html[data-rfs-style="cork"] #rfs-data .rd-skel {
+  background: linear-gradient(90deg, rgba(96, 64, 32, .06), rgba(96, 64, 32, .15), rgba(96, 64, 32, .06));
+  background-size: 200% 100%;
+}
+/* header Quick links button: a paper label */
+html[data-rfs-style="cork"] #rfs-qbtn {
+  color: var(--ck-ink);
+  background: linear-gradient(#fffbf2, #efe3cb);
+  border: 1px solid rgba(96, 64, 32, .32); border-bottom-color: rgba(96, 64, 32, .5); border-radius: 3px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .3);
+}
+html[data-rfs-style="cork"] #rfs-qbtn:hover { background: linear-gradient(#fffdf6, #ffe89a); }
+
+/* the user box and its footer bar (skin.js) */
+html[data-rfs-style="cork"] { --rf-footer-bg: #5a3d24; --rf-footer-line: 3px solid #7a5434; --rf-user-radius: 2px; --rf-user-bg: #f7f0e1; --rf-user-bg-hover: #fff8e8; --rf-user-border: 0; --rf-user-shadow: 0 2px 5px rgba(0, 0, 0, .45); --rf-user-ink: #3a2a1a; }

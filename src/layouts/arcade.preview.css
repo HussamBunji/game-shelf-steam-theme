@@ -1,0 +1,148 @@
+/* ═══ Retro Arcade (الأركيد) — THEMES picker card: a tiny "select your game" screen ═══
+   pv-a = top bar (title, scores, marquee stripe) · pv-b = the CRT monitor · pv-c = stats + START/INFO/STORE + PRESS ENTER
+   pv-i × 12 = the high-score list, row 3 selected with the arrow cursor. Plain CSS shapes, no images. */
+#rfs-themes .tp-arcade {
+  --dx: -1;            /* Arabic: copies made with box-shadow run leftwards */
+  --dir: to left;      /* Arabic: rows read right-to-left */
+  background:
+    radial-gradient(rgba(255, 255, 255, .07) 1px, transparent 1.4px) 0 0 / 10px 10px,
+    linear-gradient(#0b0922, #07061a);
+}
+html[data-rfs-lang="en"] #rfs-themes .tp-arcade { --dx: 1; --dir: to right; }
+/* the list panel behind the rows */
+#rfs-themes .tp-arcade::before {
+  content: '';
+  position: absolute;
+  inset-inline-end: 7px;
+  top: 27px;
+  bottom: 9px;
+  width: calc(36% + 10px);
+  background: #0b0922;
+  box-shadow: inset 0 0 0 2px #2d2670, 0 0 0 1px #000;
+}
+/* static CRT scanlines over the whole card */
+#rfs-themes .tp-arcade::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: repeating-linear-gradient(rgba(0, 0, 0, .26) 0 1px, transparent 1px 3px);
+}
+
+/* top bar + 4-colour marquee stripe */
+#rfs-themes .tp-arcade .pv-a {
+  inset-inline: 8px;
+  top: 6px;
+  height: 15px;
+  background: linear-gradient(90deg, #ff2e4d 0 25%, #ffd400 0 50%, #22e4ff 0 75%, #ff3ddc 0) left bottom / 100% 2px no-repeat;
+}
+#rfs-themes .tp-arcade .pv-a::before {   /* SELECT YOUR GAME */
+  content: '';
+  position: absolute;
+  inset-inline-start: 0;
+  top: 2px;
+  width: 64px;
+  height: 6px;
+  background: #ffd400;
+  box-shadow: calc(var(--dx) * 2px) 2px 0 #b3127a;
+}
+#rfs-themes .tp-arcade .pv-a::after {    /* CREDITS · HI-SCORE */
+  content: '';
+  position: absolute;
+  inset-inline-end: 0;
+  top: 2px;
+  width: 20px;
+  height: 6px;
+  background: #ff2e4d;
+  box-shadow: calc(var(--dx) * -28px) 0 0 #22e4ff;
+}
+
+/* the CRT monitor: a "hero" sunset behind scanlines, rounded glass in a stepped magenta + black bezel */
+#rfs-themes .tp-arcade .pv-b {
+  inset-inline-start: 15px;
+  top: 34px;
+  width: 44%;
+  height: 64px;
+  border-radius: 6px / 8px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, .14), transparent 32%),
+    radial-gradient(ellipse 85% 80% at 50% 50%, transparent 55%, rgba(0, 0, 0, .6)),
+    repeating-linear-gradient(rgba(0, 0, 0, .3) 0 1px, transparent 1px 3px),
+    linear-gradient(175deg, #ff3ddc 0%, #ff8a3d 36%, #3b5bff 72%, #120e3a 100%);
+  box-shadow:
+    0 0 0 4px #1b1648,
+    0 -6px 0 0 #ff3ddc, 0 6px 0 0 #ff3ddc, -6px 0 0 0 #ff3ddc, 6px 0 0 0 #ff3ddc,
+    0 -8px 0 0 #000, 0 8px 0 0 #000, -8px 0 0 0 #000, 8px 0 0 0 #000;
+}
+#rfs-themes .tp-arcade .pv-b::before {   /* the game's logo on the screen */
+  content: '';
+  position: absolute;
+  inset-inline-start: 7px;
+  bottom: 7px;
+  width: 38%;
+  height: 8px;
+  background: #fff;
+  box-shadow: calc(var(--dx) * 2px) 2px 0 rgba(0, 0, 0, .7);
+}
+
+/* under the monitor: four stat boxes, then the START / INFO / STORE keys, then PRESS ENTER */
+#rfs-themes .tp-arcade .pv-c {
+  inset-inline-start: 9px;
+  top: 117px;
+  width: 22px;
+  height: 9px;
+  background: #ff2e4d;
+  box-shadow:
+    0 0 0 1px #000,
+    calc(var(--dx) * 28px) 0 0 #22e4ff, calc(var(--dx) * 28px) 0 0 1px #000,
+    calc(var(--dx) * 56px) 0 0 #ff3ddc, calc(var(--dx) * 56px) 0 0 1px #000;
+}
+#rfs-themes .tp-arcade .pv-c::before {   /* stats */
+  content: '';
+  position: absolute;
+  inset-inline-start: 0;
+  top: -11px;
+  width: 88px;
+  height: 6px;
+  background:
+    linear-gradient(90deg, #ffd400 0 19%, transparent 19% 27%, #22e4ff 27% 46%, transparent 46% 54%, #ff3ddc 54% 73%, transparent 73% 81%, #3dff6e 81%);
+}
+#rfs-themes .tp-arcade .pv-c::after {    /* PRESS ENTER TO START */
+  content: '';
+  position: absolute;
+  inset-inline-start: 0;
+  top: 18px;
+  width: 58px;
+  height: 4px;
+  background: #ffd400;
+}
+
+/* the high-score list: rank (cycling colours) · name · hours */
+#rfs-themes .tp-arcade .pv-i {
+  --c: #ff2e4d;
+  inset-inline-end: 13px;
+  top: calc(33px + var(--i) * 9px);
+  width: calc(36% - 6px);
+  height: 5px;
+  background: linear-gradient(var(--dir), var(--c) 0 14%, transparent 14% 21%, rgba(240, 238, 255, .62) 21% 66%, transparent 66% 80%, rgba(240, 238, 255, .88) 80%);
+}
+#rfs-themes .tp-arcade .pv-i:nth-of-type(4n+1) { --c: #ffd400; }
+#rfs-themes .tp-arcade .pv-i:nth-of-type(4n+2) { --c: #22e4ff; }
+#rfs-themes .tp-arcade .pv-i:nth-of-type(4n+3) { --c: #ff3ddc; }
+/* the selected row: a yellow pixel box + the arrow cursor beside it */
+#rfs-themes .tp-arcade .pv-i[style*="--i:3"] {
+  z-index: 2;
+  background:
+    linear-gradient(var(--dir), #140e00 0 14%, transparent 14% 21%, rgba(20, 14, 0, .8) 21% 66%, transparent 66% 80%, #140e00 80%) 0 50% / 100% 3px no-repeat,
+    #ffd400;
+  box-shadow: 0 -2px 0 0 #ffd400, 0 2px 0 0 #ffd400, -2px 0 0 0 #ffd400, 2px 0 0 0 #ffd400;
+}
+#rfs-themes .tp-arcade .pv-i[style*="--i:3"]::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  inset-inline-start: -10px;
+  border-block: 4px solid transparent;
+  border-inline-start: 5px solid #ffd400;
+}

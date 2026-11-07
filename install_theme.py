@@ -64,7 +64,7 @@ def set_active_theme(root: Path, name: str):
     if name == THEME_ID:
         # keep the user's choices, but drop values that no longer exist (e.g. the removed "Ebony Museum")
         cond = themes.setdefault("conditions", {}).setdefault(THEME_ID, {})
-        if cond.get("Style") not in ("Classic Shelf", "Glass Gallery", "Neon Coverflow", "Steam Original", "SpaceTheme", "Material You"):
+        if cond.get("Style") not in ("Classic Shelf", "Glass Gallery", "Neon Coverflow", "Steam Original", "SpaceTheme", "Material You", "Terminal", "RPG Vault", "Vinyl Records", "Corkboard", "Retro Arcade", "Magazine"):
             cond["Style"] = "Classic Shelf"
         if cond.get("Language") not in ("Arabic", "English"):
             cond["Language"] = "English"

@@ -8,7 +8,7 @@
   /* layout base: SpaceTheme (MIT, src/vendor/space) — its sidebar, search, centred store/library;
      this style supplies the colours below, its own font, home design, icons and flair.css touches */
   --rf-vendor: space;
-  --rf-vendor-skip: options/fonts/;
+  --rf-vendor-skip: options/fonts/, options/general/alwaysShowSidebar;
   --rf-style-id: glass;
 
   /* icons: frosted glass tiles, sky blue to violet */
@@ -64,6 +64,14 @@
   --rf-plate-1: #e8f3fb;
   --rf-plate-2: #9fb8cc;
   --rf-plate-ink: #13253a;
+
+  /* web-page materials (store, community, help) */
+  --gl-pane: linear-gradient(160deg, rgba(255, 255, 255, .095), rgba(255, 255, 255, .035) 55%, rgba(162, 140, 255, .05)), rgba(15, 27, 46, .66);
+  --gl-row: linear-gradient(160deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .025)), rgba(13, 23, 40, .55);
+  --gl-chip: linear-gradient(180deg, rgba(255, 255, 255, .16), rgba(255, 255, 255, .06));
+  --gl-sky: linear-gradient(135deg, #a6e4ff 0%, #7cc6ff 48%, #b5a6ff 100%);
+  --gl-mint: linear-gradient(135deg, #8ff5c4 0%, #43d39f 55%, #2fb7b0 100%);
+  --gl-to: right;   /* "start → end" for gradients (left in Arabic) */
 }
 
 /* SpaceTheme's colour slots, filled with this style's palette (Steam navy, sky-blue accent).
@@ -78,5 +86,287 @@
   --st-color-4: 23, 36, 54;
   --st-color-5: 44, 64, 92;
   --st-color-6: 38, 56, 82;
+  --st-green: 52, 196, 140;
+  --st-green-hover: 70, 214, 158;
+  --st-blue: 104, 184, 255;          /* SpaceTheme uses it mostly for link text: a readable sky blue */
+  --st-blue-hover: 140, 204, 255;
   --st-border-radius: 14px;
 }
+
+html[data-rfs-style="glass"][data-rfs-lang="ar"] { --gl-to: left; }
+
+/* ═════════════════════════════ store + community + help pages ═════════════════════════════
+   A gallery of frosted glass: the page is a deep night-blue with soft pools of sky, violet and teal light, panels are
+   panes of frosted glass (light rim on top, airy radii), buttons are glowing pills, headings are crisp ice-white
+   gradients, prices sit in clear glass capsules. Panels stay dense enough to read on any art; only single surfaces
+   that float over content get a real blur. Everything is scoped, because the store pages carry every style at once. */
+
+/* ---- the page: SpaceTheme paints it on one fixed body::before layer, so the light pools stay put while panes slide over them ---- */
+html[data-rfs-style="glass"] body::before {
+  background:
+    radial-gradient(ellipse 52% 46% at 10% 6%, rgba(56, 142, 232, .36), transparent 70%),
+    radial-gradient(ellipse 44% 42% at 90% 14%, rgba(132, 96, 255, .3), transparent 70%),
+    radial-gradient(ellipse 58% 48% at 72% 96%, rgba(28, 172, 196, .22), transparent 70%),
+    radial-gradient(ellipse 46% 44% at 4% 88%, rgba(96, 72, 226, .2), transparent 70%),
+    linear-gradient(180deg, #0b1629, #091222 60%, #0b1427) !important;
+}
+html[data-rfs-style="glass"] :is(.login_client_waitforauth, .react_landing_background, .SaleBackground, .SaleBackgroundCtn, .home_page_body_ctn, .game_page_background, .page_content_ctn, .apphub_background, .profile_page:not(.has_profile_background)) {
+  background-color: transparent !important;
+}
+html[data-rfs-style="glass"] :is(.QiZCPwhEAvE-, .yDJ1-6CIoOA-) { background: transparent !important; }
+
+/* ---- the store's top bar: one frosted pane (the only blurred surface of the page) ---- */
+html[data-rfs-style="glass"] :is(._-6WU-qJBwUo- .XLbP8xOkCYw-, .dm2SGcwBwj4- .WCG-2-OYepA-, .Panel:has(> .Panel > div > div > form input), .StoreMenuLoadingPlaceholder .PlaceholderInner) {
+  background: linear-gradient(180deg, rgba(255, 255, 255, .13), rgba(255, 255, 255, .04)), rgba(14, 26, 45, .58) !important;
+  border: 1px solid rgba(255, 255, 255, .15) !important; border-top-color: rgba(255, 255, 255, .3) !important; border-radius: 18px !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14), 0 14px 36px rgba(0, 0, 0, .32), 0 0 0 1px rgba(102, 192, 244, .05) !important;
+  backdrop-filter: blur(16px) saturate(1.35);
+}
+html[data-rfs-style="glass"] :is(.XLbP8xOkCYw-, .WCG-2-OYepA-) :is(._2U8ldyeSqVI-, .EYF1OQwj3TE-) { color: #e9f3ff !important; font-weight: 600 !important; }
+html[data-rfs-style="glass"] :is(.XLbP8xOkCYw-, .WCG-2-OYepA-) :is(._2U8ldyeSqVI-, .EYF1OQwj3TE-):hover { color: #9fdcff !important; }
+html[data-rfs-style="glass"] :is(.XLbP8xOkCYw-, .WCG-2-OYepA-) form {
+  background: rgba(4, 10, 20, .55) !important; border: 1px solid rgba(160, 210, 255, .26) !important; border-radius: 999px !important;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, .35) !important;
+}
+html[data-rfs-style="glass"] :is(.XLbP8xOkCYw-, .WCG-2-OYepA-) form:focus-within { border-color: rgba(150, 215, 255, .7) !important; box-shadow: 0 0 0 3px rgba(102, 192, 244, .2) !important; }
+html[data-rfs-style="glass"] :is(.XLbP8xOkCYw-, .WCG-2-OYepA-) form input { color: #f2f8ff !important; }
+html[data-rfs-style="glass"] :is(.XLbP8xOkCYw-, .WCG-2-OYepA-) form input::placeholder { color: #8fa6c0 !important; }
+/* search suggestions float over the capsules: frosted, nearly opaque */
+html[data-rfs-style="glass"] [id^="searchSuggestions"] {
+  background: linear-gradient(160deg, rgba(255, 255, 255, .1), rgba(255, 255, 255, .03)), rgba(12, 22, 38, .9) !important;
+  border: 1px solid rgba(255, 255, 255, .16) !important; border-radius: 18px !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14), 0 20px 50px rgba(0, 0, 0, .5) !important; backdrop-filter: blur(18px) saturate(1.3);
+}
+html[data-rfs-style="glass"] :is(.store_nav_area, #store_nav_area) .store_nav_bg {
+  background: linear-gradient(180deg, rgba(255, 255, 255, .12), rgba(255, 255, 255, .04)), rgba(14, 26, 45, .6) !important;
+  border: 1px solid rgba(255, 255, 255, .15) !important; border-radius: 18px !important; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14), 0 14px 36px rgba(0, 0, 0, .32) !important;
+}
+html[data-rfs-style="glass"] .store_nav .tab > span { color: #e9f3ff !important; }
+html[data-rfs-style="glass"] :is(.store_nav .tab:hover, .store_nav .tab.focus) { background: rgba(255, 255, 255, .1) !important; border-radius: 12px !important; }
+html[data-rfs-style="glass"] .store_nav .searchbox { background: rgba(4, 10, 20, .55) !important; border: 1px solid rgba(160, 210, 255, .26) !important; border-radius: 999px !important; }
+html[data-rfs-style="glass"] #store_nav_search_term { color: #f2f8ff !important; }
+
+/* ---- headings: crisp ice-white gradient lettering, no rules — the glass does the framing ---- */
+html[data-rfs-style="glass"] :is(.home_section_title, .home_title, h2.discussion_primary_header, .home_page_content > h2, h2.pageheader, .page_header_ctn .pagesubheader, #game_area_reviews > h2,
+  #game_area_description > h2:not(.bb_tag), .game_area_description > h2:not(.bb_tag), .game_area_dlc_section > h2, .game_purchase_options_editions_header_title,
+  .block_header, .block_title, .SaleSectionHeader, .ContentHubTitle, #StoreTemplate h1, .market_title_text, .profile_customization_header,
+  .discussions_header, .rightbox_content_header, .large_title, .help_header, .apphub_sectionTitle, .badges_sheet_header, .pageheader, #payment_header, .game_page_background h2:not(.bb_tag, .title)) {
+  font-family: var(--rf-font-ui) !important; font-weight: 800 !important; letter-spacing: -.01em !important; text-transform: none !important; text-shadow: none !important;
+  background: linear-gradient(100deg, #ffffff 0%, #d9efff 45%, #c9bcff 100%) !important;
+  color: transparent !important; -webkit-background-clip: text !important; background-clip: text !important;
+  border: 0 !important;
+}
+html[data-rfs-style="glass"] .apphub_AppName {
+  font-family: var(--rf-font-ui) !important; font-weight: 800 !important; letter-spacing: -.015em !important; text-shadow: 0 0 28px rgba(102, 192, 244, .35) !important; color: #fff !important;
+}
+/* Steam's blue rule image under the editions header: a soft light line that fades out */
+html[data-rfs-style="glass"] .game_purchase_options_editions_header {
+  background: linear-gradient(to var(--gl-to), rgba(170, 220, 255, .55), rgba(170, 220, 255, .12) 50%, transparent 90%) 0 100% / 100% 1px no-repeat !important;
+}
+
+/* ---- big panels: frosted panes with a light rim on top and airy radii ---- */
+html[data-rfs-style="glass"] :is(.block.game_media_and_summary_ctn, .rightcol .block:not(.game_media_and_summary_ctn), .responsive_apppage_details_right.block,
+  .steam_curators_block, .search_page .searchbar, #additional_search_options .block, .game_area_purchase_game, .apphub_StoreInfoHeader,
+  .market_content_block, .forum_list_right, .rightbox, .help_login_nag, .error_bg, .profile_customization, .profile_header_bg_texture,
+  .checkout .payment_info_form_area, .checkout_content_box, .checkout_review_cart_area, .account_setting_block, .accountBox, .youraccount_page .account_table_ctn, .home_discount_games_ctn, .-IN79XL9SlI-) {
+  background: var(--gl-pane) !important;
+  border: 1px solid rgba(255, 255, 255, .11) !important; border-top-color: rgba(255, 255, 255, .26) !important; border-radius: 20px !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), 0 18px 44px rgba(0, 0, 0, .28) !important;
+}
+html[data-rfs-style="glass"] :is(#additional_search_options .block .block_content, .rightcol .block .block_content, .glance_ctn) { background: transparent !important; }
+html[data-rfs-style="glass"] .game_area_purchase_game h2.title { color: #fff !important; font-weight: 800 !important; }
+html[data-rfs-style="glass"] .game_purchase_action_bg {
+  background: rgba(255, 255, 255, .07) !important; border: 1px solid rgba(255, 255, 255, .14) !important; border-radius: 999px !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .12) !important;
+}
+html[data-rfs-style="glass"] :is(.game_purchase_price, .game_purchase_action .price) { color: #fff !important; background: transparent !important; font-weight: 800 !important; }
+
+/* ---- repeated rows: clear glass strips (no blur — there can be hundreds) ---- */
+html[data-rfs-style="glass"] :is(.tab_item, .tab_row_item, .search_page #search_result_container .search_result_row, .market_listing_row, .market_recent_listing_row,
+  .discussions_forum_row, .recent_game_discussion, .forum_topic, .badge_row, .game_area_dlc_row, .help_wizard_button, .wishlist_row, .apphub_Card,
+  .market_search_game_button_group .game_button, .cL3tfa-JDBE-) {
+  background: var(--gl-row) !important;
+  border: 1px solid rgba(255, 255, 255, .08) !important; border-top-color: rgba(255, 255, 255, .16) !important; border-radius: 14px !important;
+  box-shadow: none !important; transition: background-color .15s, border-color .15s, box-shadow .15s !important;
+}
+html[data-rfs-style="glass"] :is(.tab_item, .tab_row_item, .search_page #search_result_container .search_result_row, .market_listing_row, .market_recent_listing_row,
+  .discussions_forum_row, .recent_game_discussion, .forum_topic, .badge_row, .game_area_dlc_row, .help_wizard_button, .wishlist_row, .apphub_Card,
+  .market_search_game_button_group .game_button, .cL3tfa-JDBE-):hover {
+  background: linear-gradient(160deg, rgba(150, 215, 255, .16), rgba(162, 140, 255, .08)), rgba(16, 30, 52, .6) !important;
+  border-color: rgba(170, 220, 255, .38) !important; box-shadow: 0 10px 28px rgba(0, 0, 0, .28), 0 0 0 1px rgba(102, 192, 244, .12) !important;
+}
+html[data-rfs-style="glass"] :is(.tab_item_name, .search_name .title, .market_listing_item_name, .discussions_forumlist_forumname, .game_area_dlc_name, .tab_item_title, .game_button_game_name) { color: #f2f8ff !important; }
+
+/* ---- capsule rows float: a soft pool of light under each carousel instead of a shelf ---- */
+html[data-rfs-style="glass"] :is(.carousel_container .carousel_items, .SaleSectionCarousel .SliderBody) { box-shadow: 0 34px 46px -30px rgba(102, 192, 244, .45) !important; }
+
+/* ---- buttons: glowing pills. Buy = mint light, main step = sky light, the rest = frosted glass ---- */
+html[data-rfs-style="glass"] :is(.btn_green_steamui, .btn_green_white_innerfade, .btnv6_green_white_innerfade, .item_market_action_button_green) {
+  color: #03261a !important; text-shadow: none !important; font-weight: 700 !important;
+  background: var(--gl-mint) !important; border: 1px solid rgba(220, 255, 238, .6) !important; border-radius: 999px !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .6), 0 6px 18px rgba(64, 220, 160, .32) !important;
+}
+html[data-rfs-style="glass"] :is(.btn_green_steamui, .btn_green_white_innerfade, .btnv6_green_white_innerfade, .item_market_action_button_green):hover {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .7), 0 0 0 3px rgba(80, 230, 170, .22), 0 8px 26px rgba(64, 220, 160, .5) !important;
+}
+html[data-rfs-style="glass"] :is(.btn_blue_steamui, .btnv6_blue_hoverfade, .btnv6_white_transparent, .btn_grey_steamui, .btnv6_grey_black, .btn_grey_black,
+  .btn_darkblue_white_innerfade, .btnv6_blue_blue_innerfade, .btn_grey_white_innerfade, .btn_profile_action, .pagebtn, .help_site_button, .FollowButton, .znS2DqGQQHM-, .PwGZnF9BFA8-) {
+  color: #eef6ff !important; text-shadow: none !important;
+  background: var(--gl-chip) !important; border: 1px solid rgba(255, 255, 255, .22) !important; border-top-color: rgba(255, 255, 255, .36) !important;
+  border-radius: 999px !important; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .16), 0 4px 14px rgba(0, 0, 0, .2) !important;
+}
+html[data-rfs-style="glass"] :is(.btn_blue_steamui, .btnv6_blue_hoverfade, .btnv6_white_transparent, .btn_grey_steamui, .btnv6_grey_black, .btn_grey_black,
+  .btn_darkblue_white_innerfade, .btnv6_blue_blue_innerfade, .btn_grey_white_innerfade, .btn_profile_action, .pagebtn, .help_site_button, .FollowButton, .znS2DqGQQHM-, .PwGZnF9BFA8-):hover {
+  color: #fff !important; background: linear-gradient(180deg, rgba(150, 215, 255, .32), rgba(102, 192, 244, .16)) !important; border-color: rgba(170, 225, 255, .65) !important;
+  box-shadow: 0 0 0 3px rgba(102, 192, 244, .16), 0 6px 20px rgba(102, 192, 244, .3) !important;
+}
+html[data-rfs-style="glass"] .PwGZnF9BFA8- { border-radius: 14px !important; }
+html[data-rfs-style="glass"] :is(.btn_green_steamui, .btn_green_white_innerfade, .btnv6_green_white_innerfade, .btn_blue_steamui, .btnv6_blue_hoverfade, .btnv6_white_transparent,
+  .btn_grey_steamui, .btnv6_grey_black, .btn_grey_black, .btn_darkblue_white_innerfade, .btnv6_blue_blue_innerfade, .btn_grey_white_innerfade, .btn_profile_action) > span {
+  background: transparent !important; color: inherit !important; border-radius: 999px !important; text-shadow: none !important;
+}
+html[data-rfs-style="glass"] :is(body.responsive_page, body.v6, #StoreTemplate) .DialogButton {
+  color: #eef6ff !important; text-shadow: none !important; background: var(--gl-chip) !important;
+  border: 1px solid rgba(255, 255, 255, .22) !important; border-top-color: rgba(255, 255, 255, .36) !important; border-radius: 999px !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .16) !important;
+}
+html[data-rfs-style="glass"] :is(body.responsive_page, body.v6, #StoreTemplate) .DialogButton:not(:disabled):hover { background: rgba(102, 192, 244, .26) !important; border-color: rgba(170, 225, 255, .65) !important; }
+html[data-rfs-style="glass"] :is(body.responsive_page, body.v6, #StoreTemplate) :is(.DialogButton.Primary, .DialogButton.Green),
+html[data-rfs-style="glass"] #StoreTemplate button[class*="WPxeXV5lR1E"],
+html[data-rfs-style="glass"] :is(.btn_login_nag_left, .rmgCh57vTjU-, .QSC5IqjmQXQ-) {
+  color: #04192a !important; text-shadow: none !important; font-weight: 700 !important;
+  background: var(--gl-sky) !important; border: 1px solid rgba(230, 245, 255, .7) !important; border-radius: 999px !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .65), 0 6px 20px rgba(102, 192, 244, .35) !important;
+}
+html[data-rfs-style="glass"] :is(body.responsive_page, body.v6, #StoreTemplate) :is(.DialogButton.Primary, .DialogButton.Green):not(:disabled):hover,
+html[data-rfs-style="glass"] #StoreTemplate button[class*="WPxeXV5lR1E"]:hover,
+html[data-rfs-style="glass"] :is(.btn_login_nag_left, .rmgCh57vTjU-, .QSC5IqjmQXQ-):hover { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .7), 0 0 0 3px rgba(150, 215, 255, .25), 0 8px 26px rgba(102, 192, 244, .5) !important; }
+html[data-rfs-style="glass"] .btn_login_nag_left > span { background: transparent !important; color: inherit !important; }
+
+/* ---- forms: clear dark glass fields, a sky glow on focus ---- */
+html[data-rfs-style="glass"] :is(body.responsive_page, body.v6, #StoreTemplate) :is(input:is([type="text"], [type="search"], [type="password"], [type="email"], [type="number"], [type="tel"], :not([type])), textarea, select, .DialogInput, .gray_bevel):not(.XLbP8xOkCYw- *, .WCG-2-OYepA- *) {
+  color: #f2f8ff !important; background-color: rgba(4, 10, 20, .55) !important;
+  border: 1px solid rgba(160, 210, 255, .24) !important; border-radius: 12px !important; box-shadow: inset 0 1px 3px rgba(0, 0, 0, .3) !important;
+}
+html[data-rfs-style="glass"] :is(body.responsive_page, body.v6, #StoreTemplate) :is(input, textarea, select, .DialogInput):focus {
+  border-color: rgba(150, 215, 255, .75) !important; outline: none !important; box-shadow: 0 0 0 3px rgba(102, 192, 244, .22) !important;
+}
+html[data-rfs-style="glass"] :is(body.responsive_page, body.v6, #StoreTemplate) :is(input, textarea)::placeholder { color: #8399b3 !important; }
+
+/* ---- prices: clear glass capsules; the discount is a mint pill ---- */
+html[data-rfs-style="glass"] body :is(.discount_block, .StoreSalePriceWidgetContainer) {
+  background: rgba(8, 16, 30, .72) !important; border-radius: 12px !important;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .14), inset 0 1px 0 rgba(255, 255, 255, .12) !important;
+}
+html[data-rfs-style="glass"] body :is(.discount_block .discount_pct, .game_description_column .discount_pct, .discount_pct, .StoreSaleDiscountBox,
+  .StoreSalePriceWidgetContainer > :nth-last-child(2):not(.StoreSalePrepurchaseLabel), .hPiY1A-1izA-, .nw-DtQ670Sc-) {
+  color: #03261a !important; background: var(--gl-mint) !important; font-weight: 800 !important; border-radius: 9px !important; text-shadow: none !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .55) !important;
+}
+html[data-rfs-style="glass"] body .StoreSalePriceWidgetContainer > :nth-last-child(2):not(.StoreSalePrepurchaseLabel) * { color: inherit !important; background: transparent !important; }
+html[data-rfs-style="glass"] body :is(.discount_block .discount_prices .discount_final_price, .game_description_column .discount_final_price, .discount_final_price,
+  .StoreSalePriceWidgetContainer > div:not(.StoreSaleDiscountBox) > div:last-child, .market_table_value .normal_price, .normal_price, .sale_price) { color: #ffffff !important; }
+html[data-rfs-style="glass"] body .discount_block.no_discount .discount_prices .discount_final_price { color: #ffffff !important; }
+html[data-rfs-style="glass"] body :is(.discount_original_price, .StoreSalePriceWidgetContainer.Discounted > div:not(.StoreSaleDiscountBox) > div:first-child:not(:last-child)) { color: #94a9c2 !important; }
+html[data-rfs-style="glass"] body .cQ79XIQ7w-Y- { color: #fff !important; background: rgba(8, 16, 30, .72) !important; }
+
+/* ---- tags: frosted pills ---- */
+html[data-rfs-style="glass"] :is(.app_tag, .WidgetTag) {
+  color: #d2e9ff !important; background: rgba(255, 255, 255, .08) !important;
+  border: 1px solid rgba(255, 255, 255, .14) !important; border-radius: 999px !important; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08) !important;
+}
+html[data-rfs-style="glass"] :is(.app_tag, .WidgetTag):hover { color: #04192a !important; background: var(--gl-sky) !important; border-color: transparent !important; }
+html[data-rfs-style="glass"] body .game_review_summary.positive { color: #6fe3b0 !important; }
+
+/* ---- Steam's leftover blues re-tuned to the glass palette ---- */
+html[data-rfs-style="glass"] :is(h2.bb_tag, .bb_h2, .bb_h3, .help_intro_text, .help_section_text, .game_area_details_specs_ctn .label, .market_search_sidebar_section_tip_small, .FollowBtnText) { color: #9fd8ff !important; }
+html[data-rfs-style="glass"] .game_page_autocollapse_readmore { background: linear-gradient(180deg, rgba(10, 18, 34, 0), rgba(10, 18, 34, .96) 72%) !important; color: #9fd8ff !important; }
+html[data-rfs-style="glass"] .store_main_capsule .info {
+  background: linear-gradient(160deg, rgba(255, 255, 255, .1), rgba(255, 255, 255, .03)), rgba(12, 22, 40, .82) !important; box-shadow: inset 1px 0 0 rgba(255, 255, 255, .16) !important;
+}
+html[data-rfs-style="glass"] #marketBetaNoteCtn { background: rgba(102, 192, 244, .1) !important; border: 1px solid rgba(160, 210, 255, .3) !important; border-radius: 16px !important; }
+html[data-rfs-style="glass"] :is(.apphub_HeaderBottomBG, .group_content.bottomless, .apphub_CardAnnouncementBG) { background-image: none !important; }
+html[data-rfs-style="glass"] .discussionSearchTextContainer { background: rgba(4, 10, 20, .55) !important; border: 1px solid rgba(160, 210, 255, .24) !important; border-radius: 999px !important; }
+html[data-rfs-style="glass"] .-IN79XL9SlI- { border-radius: 0 20px 20px 0 !important; }
+html[data-rfs-style="glass"] .yY5kIMMmcbU- { background: rgba(102, 192, 244, .18) !important; border-radius: 12px !important; }
+html[data-rfs-style="glass"] :is(.market_search_game_button_group .game_button_contents, .market_search_sidebar_search_box, .market_search_box_container) { background: transparent !important; }
+html[data-rfs-style="glass"] :is(.market_tab_well_tab_active, .apphub_sectionTab.active, .group_tab.active):not(#rfs-x) { color: #04192a !important; }
+html[data-rfs-style="glass"] .game_area_details_specs_ctn { background: rgba(255, 255, 255, .045) !important; border-radius: 10px !important; }
+html[data-rfs-style="glass"] .game_area_details_specs_ctn:hover { background: rgba(102, 192, 244, .14) !important; }
+html[data-rfs-style="glass"] .DRM_notice { color: #dcecff !important; background: rgba(255, 255, 255, .06) !important; border: 1px solid rgba(255, 255, 255, .14) !important; border-radius: 12px !important; }
+html[data-rfs-style="glass"] .carousel__slider { background: var(--gl-pane) !important; border-radius: 20px !important; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1) !important; }
+html[data-rfs-style="glass"] .PwGZnF9BFA8- :is(input, .DialogInput, div) { border: 0 !important; box-shadow: none !important; background: transparent !important; }
+/* Points Shop (React, hashed classes under the stable #points_shop_root — re-check after a Steam update) */
+html[data-rfs-style="glass"] #points_shop_root .GRnRr6m2Ebs- { background-color: transparent !important; }
+html[data-rfs-style="glass"] #points_shop_root :is(.yu4-si75KQE-, .d7He2hxHNDQ-) {
+  background: var(--gl-pane) !important; border: 1px solid rgba(255, 255, 255, .11) !important; border-top-color: rgba(255, 255, 255, .26) !important; border-radius: 20px !important;
+}
+html[data-rfs-style="glass"] #points_shop_root .iC89KZRmD3g- { color: #9fd8ff !important; }
+
+/* ---- community tabs: glass pills; the active one is lit ---- */
+html[data-rfs-style="glass"] :is(.apphub_sectionTab, .group_tab, .market_tab_well_tab) {
+  color: #dcecff !important; border-radius: 999px !important; background: rgba(255, 255, 255, .07) !important; border: 1px solid rgba(255, 255, 255, .14) !important;
+}
+html[data-rfs-style="glass"] :is(.apphub_sectionTab.active, .group_tab.active, .market_tab_well_tab_active) { background: var(--gl-sky) !important; border-color: transparent !important; }
+html[data-rfs-style="glass"] :is(.apphub_sectionTab.active, .group_tab.active, .market_tab_well_tab_active) * { color: #04192a !important; }
+html[data-rfs-style="glass"] :is(.market_tab_well_tab_active, .market_tab_well_tab_inactive) .market_tab_well_tab_contents { background: transparent !important; color: inherit !important; }
+html[data-rfs-style="glass"] :is(.market_home_listing_table, .market_search_sidebar_contents, .market_listing_table) { background: transparent !important; }
+html[data-rfs-style="glass"] .apphub_HeaderBottom { background: linear-gradient(180deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .02)), rgba(10, 18, 34, .6) !important; border-radius: 0 0 18px 18px !important; }
+
+/* ---- footer: a wide frosted base with a light rim ---- */
+html[data-rfs-style="glass"] #footer {
+  background: linear-gradient(180deg, rgba(255, 255, 255, .07), rgba(255, 255, 255, .015)), rgba(9, 16, 30, .78) !important;
+  border-top: 1px solid rgba(255, 255, 255, .2) !important; box-shadow: 0 -12px 40px rgba(0, 0, 0, .25) !important;
+}
+html[data-rfs-style="glass"] #footer a { color: #9fd3ff !important; }
+html[data-rfs-style="glass"] #footer a:hover { color: #fff !important; }
+html[data-rfs-style="glass"] #footer h3 { color: #fff !important; }
+
+/* ═════════════ our pieces ═════════════ */
+/* the one filter row (search · source · sort + genre chips): frosted glass that is dense enough to read on any art —
+   the only blurred surface on the page (the ~900 cards stay unblurred, see layouts.css "performance") */
+html[data-rfs-style="glass"] #rfs .rf-dock.rf-merge {
+  background: linear-gradient(180deg, rgba(255, 255, 255, .07), rgba(255, 255, 255, .02)), rgba(12, 21, 34, .82);
+  border: 1px solid rgba(160, 210, 255, .2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), 0 10px 30px rgba(0, 0, 0, .35);
+  backdrop-filter: blur(18px) saturate(1.4);
+}
+html[data-rfs-style="glass"] #rfs-bar .tb-search { background: rgba(4, 10, 18, .6); border-color: rgba(160, 210, 255, .28); }
+html[data-rfs-style="glass"] #rfs-bar :is(.tb-btn, .tb-seg button) { background: rgba(255, 255, 255, .07); border-color: rgba(160, 210, 255, .2); }
+html[data-rfs-style="glass"] #rfs-bar :is(.tb-btn, .tb-seg button):hover { background: rgba(102, 192, 244, .2); }
+html[data-rfs-style="glass"] #rfs .rf-merge .gl-chip { color: #c4d4e6; background: rgba(255, 255, 255, .07); border: 1px solid rgba(160, 210, 255, .16); }
+html[data-rfs-style="glass"] #rfs .rf-merge .gl-chip:hover { color: #fff; background: rgba(102, 192, 244, .18); }
+html[data-rfs-style="glass"] #rfs .rf-merge .gl-chip.on { color: var(--rf-accent-ink); background: var(--rf-accent); border-color: transparent; }
+/* menus and quick results open over the cards: nearly opaque, so their text never mixes with the art behind */
+html[data-rfs-style="glass"] #rfs-bar :is(.rf-dd-menu, .tb-results) { background: rgba(11, 19, 31, .97); border-color: rgba(160, 210, 255, .24); }
+/* Ctrl+K anywhere else: the floating search gets the same frosted panel */
+html[data-rfs-style="glass"] #rfs-bar.float { background: rgba(12, 21, 34, .9); backdrop-filter: blur(18px) saturate(1.4); }
+
+/* store side panels + Quick links: frosted panes with a light rim, pill buttons, glowing numbers */
+html[data-rfs-style="glass"] body :is(#rfs-rail, #rfs-data, #rfs-qmenu) section {
+  background: linear-gradient(160deg, rgba(255, 255, 255, .11), rgba(255, 255, 255, .03) 55%, rgba(162, 140, 255, .06)), rgba(14, 25, 43, .94) !important;
+  border: 1px solid rgba(255, 255, 255, .12); border-top-color: rgba(255, 255, 255, .28); border-radius: 20px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1), 0 16px 40px rgba(0, 0, 0, .35);
+}
+html[data-rfs-style="glass"] body :is(#rfs-rail, #rfs-data, #rfs-qmenu) h4 { color: #bfe6ff; letter-spacing: .06em; }
+html[data-rfs-style="glass"] body #rfs-rail .rr-app img { border-radius: 14px; box-shadow: 0 0 0 1px rgba(255, 255, 255, .16), 0 10px 24px rgba(0, 0, 0, .35); }
+html[data-rfs-style="glass"] body #rfs-rail .rr-btn { border-radius: 999px; }
+html[data-rfs-style="glass"] body #rfs-rail .rr-btn:not(.go) { background: var(--gl-chip); border: 1px solid rgba(255, 255, 255, .2); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14); }
+html[data-rfs-style="glass"] body #rfs-rail .rr-btn:not(.go):hover { background: rgba(102, 192, 244, .26); border-color: rgba(170, 225, 255, .6); }
+html[data-rfs-style="glass"] body #rfs-rail .rr-btn.go { color: #03261a !important; background: var(--gl-mint); border: 1px solid rgba(220, 255, 238, .6); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .6), 0 6px 16px rgba(64, 220, 160, .3); }
+html[data-rfs-style="glass"] body #rfs-rail .rr-price i, html[data-rfs-style="glass"] body #rfs-data .rd-tag { color: #03261a; background: var(--gl-mint); border-radius: 999px; }
+html[data-rfs-style="glass"] body :is(#rfs-rail .rr-link, #rfs-qmenu .ql, #rfs-data .rd-row) { border-radius: 12px; }
+html[data-rfs-style="glass"] body :is(#rfs-rail .rr-link, #rfs-qmenu .ql):hover { background: rgba(255, 255, 255, .08); }
+html[data-rfs-style="glass"] body #rfs-data .rd-live b { color: #fff; text-shadow: 0 0 22px rgba(102, 192, 244, .55); }
+html[data-rfs-style="glass"] body #rfs-data :is(.rd-fact, .rd-link) { background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .09); border-radius: 14px; }
+html[data-rfs-style="glass"] body #rfs-data .rd-link:hover { background: rgba(102, 192, 244, .16); border-color: rgba(170, 225, 255, .45); }
+html[data-rfs-style="glass"] body #rfs-data .rd-cc { border-radius: 999px; background: rgba(255, 255, 255, .08); border-color: rgba(255, 255, 255, .14); }
+html[data-rfs-style="glass"] body #rfs-data .rd-row.home { background: rgba(102, 192, 244, .12); box-shadow: inset 0 0 0 1px rgba(150, 215, 255, .4); }
+html[data-rfs-style="glass"] body #rfs-qbtn {
+  color: #eef6ff; border-radius: 999px; background: var(--gl-chip); border: 1px solid rgba(255, 255, 255, .22); border-top-color: rgba(255, 255, 255, .38);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .16), 0 4px 14px rgba(0, 0, 0, .25);
+}
+html[data-rfs-style="glass"] body #rfs-qbtn:hover { background: rgba(102, 192, 244, .28); border-color: rgba(170, 225, 255, .65); box-shadow: 0 0 0 3px rgba(102, 192, 244, .16); }
+
+/* the user box and its footer bar (skin.js) */
+html[data-rfs-style="glass"] { --rf-footer-bg: rgba(12, 21, 34, .92); --rf-footer-line: 1px solid rgba(160, 210, 255, .2); --rf-user-radius: 99px; --rf-user-bg: rgba(255, 255, 255, .08); --rf-user-bg-hover: rgba(102, 192, 244, .2); --rf-user-border: 1px solid rgba(160, 210, 255, .25); }
