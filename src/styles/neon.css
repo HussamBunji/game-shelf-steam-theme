@@ -171,7 +171,7 @@ html[data-rfs-style="neon"] .apphub_AppName {
 /* ---- big panels: near-black, hairline cyan frame, magenta/cyan corner brackets ---- */
 html[data-rfs-style="neon"] :is(.block.game_media_and_summary_ctn, .rightcol .block:not(.game_media_and_summary_ctn), .responsive_apppage_details_right.block,
   .steam_curators_block, .search_page .searchbar, #additional_search_options .block, .game_area_purchase_game, .apphub_StoreInfoHeader,
-  .market_content_block, .forum_list_right, .rightbox, .help_login_nag, .error_bg, .profile_customization, .profile_header_bg_texture,
+  .market_content_block, .forum_list_right, .rightbox, .help_login_nag, .error_bg, .profile_customization, .profile_header_bg_texture:not(body.has_profile_background *),
   .checkout .payment_info_form_area, .checkout_content_box, .checkout_review_cart_area, .account_setting_block, .accountBox, .youraccount_page .account_table_ctn, .home_discount_games_ctn, .-IN79XL9SlI-) {
   background: var(--ne-brackets), var(--ne-panel) !important;
   border: 1px solid rgba(62, 240, 255, .28) !important; border-radius: 2px !important;
@@ -360,3 +360,19 @@ html[data-rfs-style="neon"] body #rfs-qbtn:hover { color: #fff; border-color: #3
 
 /* the user box and its footer bar (skin.js) */
 html[data-rfs-style="neon"] { --rf-footer-bg: #07040f; --rf-footer-line: 1px solid rgba(62, 240, 255, .45); --rf-user-radius: 99px; --rf-user-shadow: 0 0 12px rgba(var(--rf-glow), .35); }
+
+/* ─────────────── wishlist · profile · friends pages (the shared layer is in src/css/webkit.css; this style's tokens) ─────────────── */
+/* sharp dark frames with a cyan hairline and a faint glow; caps headings in cyan */
+:root {
+  --rfp-card: #0d0b1e;
+  --rfp-card-hover: #15122c;
+  --rfp-card-edge: inset 0 0 0 1px rgba(62, 240, 255, .24), 0 0 16px rgba(62, 240, 255, .07);
+  --rfp-card-shadow: 0 10px 26px rgba(0, 0, 0, .5);
+  --rfp-radius: 4px;
+  --rfp-head-case: uppercase;
+  --rfp-head-track: .12em;
+  --rfp-head-ink: #3ef0ff;
+  --rfp-head-rule: 1px solid rgba(62, 240, 255, .3);
+  --rfp-glass: rgba(11, 9, 24, .84);
+}
+html[data-rfs-lang="ar"][data-rfs-style="neon"] { --rfp-head-track: 0; }

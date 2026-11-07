@@ -272,6 +272,40 @@
   inject();
   { const v = n => getComputedStyle(document.documentElement).getPropertyValue(n); [0, 300, 1500, 5000].forEach(ms => setTimeout(() => applyFonts(v), ms)); }
   restyleHooks.push(() => applyFonts(n => getComputedStyle(document.documentElement).getPropertyValue(n)));
+  /* every Steam window follows a theme switch on its own: the live switch (shelf.js Themes.live) reaches the main
+     window and its popups, but separate windows — the friends list, chats — kept the old style until Steam restarted.
+     Here each window compares Millennium's saved Style with the style sheet it was given, when it gains focus or
+     becomes visible (and every few seconds while visible), and swaps the sheet if they differ. */
+  (function followStyle() {
+    if (!/steamloopback\.host$/.test(location.host)) return;
+    const STYLE_IDS = { 'Classic Shelf': 'classic', 'Neon Coverflow': 'neon', 'Glass Gallery': 'glass', 'Steam Original': 'original', 'SpaceTheme': 'space', 'Material You': 'material', 'Terminal': 'terminal', 'RPG Vault': 'vault', 'Vinyl Records': 'vinyl', 'Corkboard': 'cork', 'Retro Arcade': 'arcade', 'Magazine': 'magazine', 'Cupertino Dark': 'cupertino', 'Cyberpunk': 'cyberpunk', 'Shelter OS': 'shelter' };
+    const api = ctx.MILLENNIUM_API;
+    if (!api || !api.ffi) return;
+    let busy = false;
+    async function check() {
+      if (busy || document.hidden) return;
+      const link = document.querySelector('link[href*="/src/styles/"]');
+      if (!link) return;
+      busy = true;
+      try {
+        let cfg = await api.ffi('core', 'Core_GetBackendConfig')();
+        if (typeof cfg === 'string') cfg = JSON.parse(cfg);
+        const th = cfg && cfg.themes;
+        const c = th && th.conditions && th.conditions[th.activeTheme || 'rf-shelf'];
+        const sid = c && STYLE_IDS[c.Style];
+        if (sid && !link.href.includes(`/src/styles/${sid}.css`)) {
+          const nl = document.createElement('link');
+          nl.rel = 'stylesheet'; nl.id = link.id; nl.href = link.href.replace(/\/src\/styles\/[^/?#]+\.css/, `/src/styles/${sid}.css`);
+          nl.onload = () => { document.querySelectorAll('link[href*="/src/styles/"]').forEach(l => { if (l !== nl) l.remove(); }); restyleHooks.forEach(f => { try { f(); } catch (e) { /* keep going */ } }); };
+          link.after(nl);
+        }
+      } catch (e) { /* Millennium not ready */ }
+      busy = false;
+    }
+    addEventListener('focus', check);
+    document.addEventListener('visibilitychange', check);
+    setInterval(check, 4000);
+  })();
   window.__rfsSkin = { rules: rules.length, missing: [...new Set(missing)], restyle: () => restyleHooks.forEach(f => { try { f(); } catch (e) { /* keep going */ } }) };
 
   /* ---- bundled community themes (src/vendor: SpaceTheme, Material — both MIT, see their LICENSE files) ----
@@ -308,6 +342,12 @@
     }
     function check() {
       if (!document.head) return;
+      // friends list + chat windows: our shared layer over SpaceTheme's (src/css/friends.css; it skips Original / Material / Shelter)
+      if (!document.getElementById('rfs-friends-css') && document.querySelector('.friendsui-container')) {
+        const l = document.createElement('link');
+        l.rel = 'stylesheet'; l.id = 'rfs-friends-css'; l.href = BASE + 'src/css/friends.css';
+        document.head.appendChild(l);
+      }
       const cs = getComputedStyle(document.documentElement);
       let v = cs.getPropertyValue('--rf-vendor').trim();
       if (v === 'none') v = '';

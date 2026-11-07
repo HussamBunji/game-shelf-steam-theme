@@ -189,7 +189,7 @@ html[data-rfs-style="classic"] .apphub_AppName {
 /* ---- big panels: planks of grained walnut with a lit top edge ---- */
 html[data-rfs-style="classic"] :is(.block.game_media_and_summary_ctn, .rightcol .block:not(.game_media_and_summary_ctn), .responsive_apppage_details_right.block,
   .steam_curators_block, .search_page .searchbar, #additional_search_options .block, .game_area_purchase_game, .apphub_StoreInfoHeader,
-  .market_content_block, .forum_list_right, .rightbox, .help_login_nag, .error_bg, .profile_customization, .profile_header_bg_texture,
+  .market_content_block, .forum_list_right, .rightbox, .help_login_nag, .error_bg, .profile_customization, .profile_header_bg_texture:not(body.has_profile_background *),
   .checkout .payment_info_form_area, .checkout_content_box, .checkout_review_cart_area, .account_setting_block, .accountBox, .youraccount_page .account_table_ctn) {
   background: var(--cl-wood) !important;
   border: 1px solid #0f0904 !important; border-radius: 7px !important;
@@ -393,7 +393,7 @@ html[data-rfs-style="classic"] :is(.market_tab_well_tab_active, .apphub_sectionT
 html[data-rfs-style="classic"] :is(.market_home_listing_table, .market_search_sidebar_contents, .market_listing_table) { background: transparent !important; }
 html[data-rfs-style="classic"] .apphub_HeaderBottom { background: linear-gradient(180deg, rgba(0, 0, 0, .25), rgba(0, 0, 0, .45)) !important; box-shadow: inset 0 -2px 0 rgba(214, 172, 98, .6) !important; }
 html[data-rfs-style="classic"] .apphub_CardContentGuideTitle { background: #1b1109 !important; }
-html[data-rfs-style="classic"] .profile_header_bg_texture { border-radius: 0 0 7px 7px !important; }
+html[data-rfs-style="classic"] .profile_header_bg_texture:not(body.has_profile_background *) { border-radius: 0 0 7px 7px !important; }
 
 /* ═════════════ our pieces ═════════════ */
 /* store side panels + Quick links: walnut cabinets with brass nameplates and a brass screw in each top corner */
@@ -451,3 +451,17 @@ html[data-rfs-style="classic"] body #rfs-qbtn:hover { background: var(--cl-brass
 
 /* the user box and its footer bar (skin.js) */
 html[data-rfs-style="classic"] { --rf-footer-bg: linear-gradient(180deg, #3a2414, #22140a); --rf-footer-line: 2px solid #8a5a2b; --rf-user-radius: 4px; --rf-user-bg: linear-gradient(180deg, #f2d59e, #c69c58); --rf-user-bg-hover: linear-gradient(180deg, #f8e2b4, #d4ab68); --rf-user-border: 0; --rf-user-ink: #3a2410; --rf-user-shadow: inset 0 1px 0 rgba(255, 255, 255, .5), 0 1px 3px rgba(0, 0, 0, .5); }
+
+/* ─────────────── wishlist · profile · friends pages (the shared layer is in src/css/webkit.css; this style's tokens) ─────────────── */
+/* walnut cards with a lit top edge and a brass rule under headings */
+:root {
+  --rfp-card: linear-gradient(180deg, #2a1d12, #1c140c);
+  --rfp-card-hover: linear-gradient(180deg, #34241a, #22180f);
+  --rfp-card-edge: inset 0 1px 0 rgba(255, 220, 170, .09), inset 0 0 0 1px rgba(255, 196, 140, .14);
+  --rfp-card-shadow: 0 12px 28px rgba(0, 0, 0, .5);
+  --rfp-radius: 10px;
+  --rfp-head-rule: 1px solid rgba(255, 179, 107, .35);
+  --rfp-head-ink: #ffd9a8;
+  --rfp-glass: rgba(27, 19, 12, .84);
+  --rfp-field: #150e08;
+}

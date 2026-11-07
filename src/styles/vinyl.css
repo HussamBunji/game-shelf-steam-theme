@@ -596,3 +596,22 @@ html[data-rfs-style="vinyl"] #rfs-qbtn svg.rf-ic .s { fill: #6b2e12; }
 
 /* the user box and its footer bar (skin.js) */
 html[data-rfs-style="vinyl"] { --rf-footer-bg: #1d120c; --rf-footer-line: 2px solid rgba(255, 140, 50, .55); --rf-user-radius: 99px; --rf-user-bg: rgba(255, 170, 80, .12); --rf-user-bg-hover: rgba(255, 170, 80, .24); --rf-user-border: 1px solid rgba(255, 170, 80, .45); }
+
+/* ─────────────── wishlist · profile · friends pages (the shared layer is in src/css/webkit.css; this style's tokens) ─────────────── */
+/* record-store sleeves: warm walnut cards, the orange / red / mustard stripe under the art and the headings */
+:root {
+  --rfp-card: linear-gradient(180deg, #2d1f14, #22170f);
+  --rfp-card-hover: linear-gradient(180deg, #382618, #291b11);
+  --rfp-card-edge: inset 0 0 0 1px rgba(240, 205, 150, .14);
+  --rfp-card-shadow: 0 14px 30px rgba(0, 0, 0, .45);
+  --rfp-radius: 16px;
+  --rfp-head-rule: 3px solid #e8742a;
+  --rfp-glass: rgba(36, 24, 16, .86);
+  --rfp-field: #1a110a;
+  --rfp-chip-radius: 99px;
+}
+html[data-rfs-page="wishlist"][data-rfs-style="vinyl"][data-rfs-wlview="cards"] [data-rfs-wl="art"] { position: relative; }
+html[data-rfs-page="wishlist"][data-rfs-style="vinyl"][data-rfs-wlview="cards"] [data-rfs-wl="art"]::after {
+  content: ''; position: absolute; inset-inline: 0; bottom: 0; height: 4px; pointer-events: none;
+  background: linear-gradient(90deg, #e8742a 0 33.3%, #c9452f 33.3% 66.6%, #e3b23c 66.6%);
+}

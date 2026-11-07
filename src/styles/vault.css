@@ -254,7 +254,7 @@ html[data-rfs-style="vault"] body :is(
   #game_highlights .rightcol, .glance_ctn_responsive_right, .game_area_play_stats, .review_box, .game_area_dlc_section .game_area_dlc_list,
   .search_result_row, #additional_search_options .search_collapse_block,
   .search_page .searchbar, .home_tab_bg_ctn .tabs_menu_ctn, .home_tabs_columns .tab_row_item, .home_tabs_columns #tab_preview_container .tab_preview,
-  .home_content .home_content_item, .block.responsive_apppage_reviewblock, .apphub_Card, .profile_customization, .profile_content .profile_leftcol .profile_customization,
+  .home_content .home_content_item, .block.responsive_apppage_reviewblock, .apphub_Card, .profile_customization, .profile_content:not(body.has_profile_background *) .profile_leftcol .profile_customization,
   .market_home_listing_table, .market_listing_row.market_recent_listing_row, #myMarketTabs, .market_search_sidebar_contents, .market_content_block,
   .forum_topic, .rightbox, .badge_row, .badges_sheet, .profile_xp_block, .help_featured_topic, .help_content_box
 ) {
@@ -406,8 +406,8 @@ html[data-rfs-style="vault"] body :is(.home_tab_bg_ctn .tabs_menu_ctn .home_tab_
 html[data-rfs-style="vault"] body [class*="weeklytopsellers_RankCell"], html[data-rfs-style="vault"] body ._34h48M_x9S-9Q2FFPX_CcI { font-family: var(--rf-heading-font) !important; color: #e8c779 !important; }
 
 /* ---- community: profile, hub, market, discussions, badges ---- */
-html[data-rfs-style="vault"] body :is(.profile_header_bg, .profile_header_bg_texture) { background-color: transparent !important; }
-html[data-rfs-style="vault"] body .profile_header_bg_texture {
+html[data-rfs-style="vault"] body :is(.profile_header_bg:not(body.has_profile_background *), .profile_header_bg_texture:not(body.has_profile_background *)) { background-color: transparent !important; }
+html[data-rfs-style="vault"] body .profile_header_bg_texture:not(body.has_profile_background *) {
   border: 1px solid #6e5430 !important; border-radius: 4px !important;
   background: var(--vt-orns-s), linear-gradient(180deg, rgba(255, 228, 180, .05), transparent 60%), var(--vt-grain), linear-gradient(180deg, #241c15, #15110d) !important;
   box-shadow: inset 0 0 0 1px #0b0806, inset 0 0 0 2px rgba(217, 176, 102, .45), inset 0 0 0 6px #16110c, inset 0 0 0 7px rgba(217, 176, 102, .13), 0 14px 34px rgba(0, 0, 0, .5) !important;
@@ -418,7 +418,7 @@ html[data-rfs-style="vault"] body .profile_private_info { color: #c9b78f !import
 html[data-rfs-style="vault"] body .playerAvatar.profile_header_size, html[data-rfs-style="vault"] body .playerAvatarAutoSizeInner {
   border-radius: 3px !important; box-shadow: 0 0 0 1px #000, 0 0 0 3px #1a140f, 0 0 0 4px #c9a24e, 0 0 18px rgba(255, 190, 90, .25) !important;
 }
-html[data-rfs-style="vault"] body .profile_content { background: transparent !important; }
+html[data-rfs-style="vault"] body .profile_content:not(body.has_profile_background *) { background: transparent !important; }
 html[data-rfs-style="vault"] body .apphub_HomeHeaderContent, html[data-rfs-style="vault"] body .apphub_HeaderTop { background: linear-gradient(180deg, #221a14, #15110d) !important; }
 html[data-rfs-style="vault"] body .apphub_HeaderTop { border-bottom: 1px solid rgba(217, 176, 102, .4) !important; }
 html[data-rfs-style="vault"] body .market_listing_price, html[data-rfs-style="vault"] body .normal_price { color: #f6d885 !important; }
@@ -605,3 +605,17 @@ html[data-rfs-style="vault"] #rfs-qbtn:hover { border-color: #ecca7c; background
 
 /* the user box and its footer bar (skin.js) */
 html[data-rfs-style="vault"] { --rf-footer-bg: linear-gradient(180deg, #211a14, #120e0b); --rf-footer-line: 1px solid rgba(217, 176, 102, .45); --rf-user-radius: 3px; --rf-user-bg: linear-gradient(180deg, #2e261e, #17120e); --rf-user-bg-hover: linear-gradient(180deg, #463d33, #221d18); --rf-user-border: 1px solid rgba(217, 176, 102, .6); --rf-user-shadow: inset 0 0 0 2px #15110d; --rf-user-ink: #eadcbc; }
+
+/* ─────────────── wishlist · profile · friends pages (the shared layer is in src/css/webkit.css; this style's tokens) ─────────────── */
+/* carved panels: a gold double hairline, Cinzel headings in pale gold */
+:root {
+  --rfp-card: linear-gradient(180deg, #231c16, #18130f);
+  --rfp-card-hover: linear-gradient(180deg, #2c231b, #1d1712);
+  --rfp-card-edge: inset 0 0 0 1px rgba(217, 176, 102, .34), inset 0 0 0 3px #18130f, inset 0 0 0 4px rgba(217, 176, 102, .14);
+  --rfp-card-shadow: 0 12px 26px rgba(0, 0, 0, .55);
+  --rfp-radius: 6px;
+  --rfp-head-ink: #f0d590;
+  --rfp-head-rule: 1px solid rgba(217, 176, 102, .32);
+  --rfp-glass: rgba(26, 21, 17, .86);
+  --rfp-field: #120e0b;
+}

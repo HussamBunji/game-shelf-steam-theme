@@ -355,3 +355,279 @@ html.rfs-safe [data-rfs-adult] { display: none !important; }
    edge (home.css .next:dir(rtl) / .prev:dir(rtl)) — the left preview landed ~400 px inside the main one. Anchoring
    the previews to the left edge gives the same 40 px gaps as the English store. */
 html[dir="rtl"] .carousel_wide_mode .carousel_container .store_main_capsule:is(.next, .prev) { inset-inline-start: auto !important; left: 0 !important; right: auto !important; }
+
+/* ═════════════════════ WISHLIST · PROFILE · FRIENDS PAGES — the shared layer (2026-11) ═════════════════════
+   Every themed style (not Steam Original, Material You or Shelter OS) dresses these pages from its own tokens.
+   The selectors sit in :where() (zero specificity), so a style's own rules for the same Steam classes always win;
+   a style tunes the look with these optional tokens (default in brackets):
+     --rfp-card [--rf-panel]            card / panel fill             --rfp-card-hover [--rf-panel-2]
+     --rfp-card-edge [1px --rf-border]  edge (a box-shadow)           --rfp-card-shadow [a soft drop]
+     --rfp-radius [--rf-radius-lg]      card corners                  --rfp-field [--rf-panel]   text fields
+     --rfp-head-font / -case / -track / -ink                          section headings
+     --rfp-head-rule [1px --rf-border]  the line under a heading      --rfp-link [--rf-accent]   links
+     --rfp-chip / --rfp-chip-ink / --rfp-chip-edge / --rfp-chip-radius   tags (when the style has no .app_tag rule)
+     --rfp-glass [the card at 84 %]     profile showcases over the owner's own background art
+     --rfp-wl-body [156px]              the text part of a wishlist card
+     --rf-wl-view: list                 the wishlist starts as a list instead of cards (the user can switch)
+   webkit.js tags the wishlist's hashed React parts (data-rfs-wl=…, see wlTag) and gives its tags / buy button /
+   Options + Sort the classes every style already dresses (.app_tag, .btn_green_steamui, .btnv6_blue_hoverfade).
+   Nested CSS (Steam's browser is Chromium 126). */
+:where(html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"])) {
+  --rfp-c: var(--rfp-card, var(--rf-panel));
+  --rfp-ch: var(--rfp-card-hover, var(--rf-panel-2));
+  --rfp-e: var(--rfp-card-edge, inset 0 0 0 1px var(--rf-border));
+  --rfp-s: var(--rfp-card-shadow, 0 10px 26px rgba(0, 0, 0, .32));
+  --rfp-r: var(--rfp-radius, var(--rf-radius-lg));
+  --rfp-l: var(--rfp-link, var(--rf-accent));
+  --rfp-hf: var(--rfp-head-font, var(--rf-heading-font, var(--rf-font-ui)));
+  --rfp-hc: var(--rfp-head-case, none);
+  --rfp-ht: var(--rfp-head-track, 0);
+  --rfp-hi: var(--rfp-head-ink, var(--rf-text));
+  --rfp-hr: var(--rfp-head-rule, 1px solid var(--rf-border));
+  --rfp-f: var(--rfp-field, var(--rf-panel));
+  --rfp-g: var(--rfp-glass, color-mix(in srgb, var(--rfp-c) 84%, transparent));
+}
+
+/* ───────── 1. wishlist (store.steampowered.com/wishlist/…) ───────── */
+:where(html[data-rfs-page="wishlist"]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"])) {
+  /* the header: the owner's name in the style's heading face */
+  & section h2 {
+    font-family: var(--rfp-hf) !important; text-transform: var(--rfp-hc) !important; letter-spacing: var(--rfp-ht) !important; color: var(--rfp-hi) !important;
+    font-size: 26px !important; font-weight: 700 !important; text-shadow: none !important;
+  }
+  /* search + Options / Sort + the cards / list switch: one row of the style's fields */
+  & [data-rfs-wl="bar"] { background: transparent !important; box-shadow: none !important; border: 0 !important; align-items: center; gap: 10px; }
+  & [data-rfs-wl="bar"] > input {
+    box-sizing: border-box; height: 38px !important; padding-inline: 14px !important; color: var(--rf-text) !important; font-family: var(--rf-font-ui) !important; font-style: normal !important;
+    background: var(--rfp-f) !important; border: 0 !important; border-radius: var(--rf-radius) !important; box-shadow: var(--rfp-e) !important; outline: 0 !important;
+  }
+  & [data-rfs-wl="bar"] > input::placeholder { color: var(--rf-text-dim) !important; font-style: normal !important; }
+  & [data-rfs-wl="bar"] > input:focus { box-shadow: inset 0 0 0 1px var(--rf-accent), 0 0 0 3px rgba(var(--rf-accent-rgb), .25) !important; }
+  & [data-rfs-wl="bar"] button.btnv6_blue_hoverfade {
+    box-sizing: border-box; height: 38px !important; display: inline-flex !important; align-items: center; gap: 6px; padding: 0 14px !important; margin: 0 !important;
+    color: var(--rf-text) !important; background: var(--rfp-f) !important; border: 0 !important; border-radius: var(--rf-radius) !important; box-shadow: var(--rfp-e) !important;
+    font-family: var(--rf-font-ui) !important; text-transform: none !important;
+  }
+  & [data-rfs-wl="bar"] button.btnv6_blue_hoverfade :is(span, div) { color: inherit !important; background: transparent !important; }
+  & [data-rfs-wl="bar"] button.btnv6_blue_hoverfade span span { color: var(--rf-text-dim) !important; }
+  /* the Options / Sort pop-overs */
+  & [data-rfs-wl="bar"] [popover] {
+    color: var(--rf-text) !important; background: var(--rfp-c) !important; border: 0 !important; border-radius: var(--rfp-r) !important;
+    box-shadow: var(--rfp-e), 0 24px 60px rgba(0, 0, 0, .6) !important;
+  }
+  & [data-rfs-wl="bar"] [popover] h3 { font-family: var(--rfp-hf) !important; text-transform: var(--rfp-hc) !important; letter-spacing: var(--rfp-ht) !important; color: var(--rf-text-dim) !important; }
+  & [data-rfs-wl="bar"] [popover] :is(input[type="radio"], input[type="checkbox"], input[type="range"]) { accent-color: var(--rf-accent); }
+  & [data-rfs-wl="bar"] [popover] label { color: var(--rf-text) !important; }
+
+  /* every row is the style's card (both views): no Steam blue gradients, links or chips left */
+  & [data-rfs-wl="row"] {
+    background: var(--rfp-c) !important; border: 0 !important; border-radius: var(--rfp-r) !important; box-shadow: var(--rfp-e), var(--rfp-s) !important;
+    color: var(--rf-text-dim) !important; transition: background-color .18s ease, transform .18s ease;
+  }
+  & [data-rfs-wl="row"]:is(:hover, :focus-visible) { background: var(--rfp-ch) !important; outline: 0; }
+  & [data-rfs-wl="art"] img { border-radius: max(0px, calc(var(--rfp-r) - 6px)); }
+  & [data-rfs-wl="title"] a { color: var(--rf-text) !important; font-family: var(--rfp-hf) !important; font-weight: 700 !important; text-decoration: none !important; text-transform: none !important; }
+  & [data-rfs-wl="title"] a:hover { color: var(--rfp-l) !important; }
+  & [data-rfs-wl="meta"] { color: var(--rf-text-dim) !important; }
+  & [data-rfs-wl="meta"] > div:first-child > div > div:last-child { color: var(--rf-text) !important; }
+  & [data-rfs-wl="meta"] span[title] { color: var(--rfp-l) !important; }
+  & [data-rfs-wl="row"] .app_tag {
+    color: var(--rfp-chip-ink, var(--rf-text)) !important; background: var(--rfp-chip, var(--rf-panel-2)) !important; border: 0 !important;
+    border-radius: var(--rfp-chip-radius, var(--rf-radius)) !important; box-shadow: var(--rfp-chip-edge, inset 0 0 0 1px var(--rf-border)) !important;
+    font-family: var(--rf-font-ui) !important; text-transform: none !important; cursor: pointer;
+  }
+  & [data-rfs-chip] {
+    text-decoration: none !important; box-shadow: none !important;
+    color: var(--rf-accent-ink) !important; background: var(--rf-accent) !important; border-radius: var(--rfp-chip-radius, var(--rf-radius)) !important;
+    text-transform: none !important; font-weight: 700 !important;
+  }
+  & [data-rfs-wl="added"] { color: var(--rf-text-dim) !important; }
+  /* "Send a Gift Card" was a Steam-blue banner: the style's secondary field */
+  & [data-rfs-wl="gift"] { background: var(--rfp-f) !important; border-radius: var(--rf-radius) !important; box-shadow: var(--rfp-e) !important; padding-inline-end: 12px !important; overflow: hidden; }
+  & [data-rfs-wl="gift"] :is(div, span) { background: transparent !important; color: var(--rf-text) !important; font-family: var(--rf-font-ui) !important; }
+  & [data-rfs-wl="row"] .btn_green_steamui {
+    color: var(--rf-play-ink) !important; background: var(--rf-play-1) !important; border: 0 !important; border-radius: var(--rf-radius) !important; text-shadow: none !important;
+    font-family: var(--rf-font-ui) !important; font-weight: 700 !important;
+  }
+  & [data-rfs-wl="row"] .btn_green_steamui > span { background: transparent !important; color: inherit !important; }
+  /* the price capsule: the style's raised surface, the price in the style's text colour (a sale keeps its green) */
+  & [data-rfs-price]:not(:has(.rfs-pct)) :is(div, span) { color: var(--rf-text) !important; }
+  & [data-rfs-price] :is(div, span) { font-family: var(--rf-font-ui) !important; }
+}
+/* the cards / list switch: one small segmented control after Sort */
+#rfs-wlview { display: inline-flex; flex: none; gap: 2px; padding: 3px; height: 38px; box-sizing: border-box; border-radius: var(--rf-radius, 8px); background: var(--rfp-f, #1b2838); box-shadow: var(--rfp-e, none); }
+#rfs-wlview button {
+  display: grid; place-items: center; width: 34px; height: 100%; padding: 0; margin: 0; border: 0; cursor: pointer; color: var(--rf-text-dim, #9fb2c8);
+  background: transparent; border-radius: max(0px, calc(var(--rf-radius, 8px) - 2px));
+}
+#rfs-wlview button:hover { color: var(--rf-text, #fff); }
+#rfs-wlview button.on { color: var(--rf-accent-ink, #fff); background: var(--rf-accent, #66c0f4); }
+#rfs-wlview svg.rf-ic { width: 17px; height: 17px; margin: 0; stroke: currentColor; filter: none; }
+html:is([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) #rfs-wlview { display: none; }
+
+/* ── cards: 3 side by side on a wide store column, 2 below that.  Geometry (webkit.js wlTag): the virtual list
+   measures each data-index wrapper, so a wrapper is 1/k of a card row tall and its card moves up by (i mod k)/k of a
+   row and across into column (i mod k).  The heights are fixed: long names and many tags are clipped, never grown. */
+html[data-rfs-page="wishlist"][data-rfs-wlview="cards"]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) {
+  & [data-rfs-wl="list"] { container-type: inline-size; }
+  & [data-rfs-wl="list"] [data-index] {
+    --k: 2; --gap: 16px; --m: var(--m2, 0);
+    --cw: calc((100cqw - (var(--k) - 1) * var(--gap)) / var(--k));
+    --art: calc(var(--cw) * 215 / 460);
+    --R: calc(var(--art) + var(--rfp-wl-body, 156px) + var(--gap));
+    height: calc(var(--R) / var(--k)) !important; min-height: 0 !important; padding: 0 !important; box-sizing: border-box;
+  }
+  & [data-rfs-wl="list"] [data-index] > div {
+    position: relative; box-sizing: border-box; width: var(--cw) !important; height: calc(var(--R) - var(--gap)) !important; padding: 0 !important; margin: 0 !important;
+    top: calc(var(--m) * var(--R) / var(--k) * -1); margin-inline-start: calc(var(--m) * (var(--cw) + var(--gap))) !important;
+  }
+  & [data-rfs-wl="row"] {
+    display: flex !important; flex-direction: column !important; align-items: stretch !important; position: relative; height: 100% !important; min-height: 0 !important; width: 100% !important;
+    padding: 0 !important; margin: 0 !important; gap: 0 !important; overflow: hidden !important; box-sizing: border-box;
+  }
+  & [data-rfs-wl="row"] > * { min-width: 0 !important; max-width: 100% !important; box-sizing: border-box; grid-area: auto !important; align-self: stretch !important; }
+  & [data-rfs-wl="row"]:hover { transform: translateY(-3px); }
+  & [data-rfs-wl="art"] { display: block !important; flex: none !important; width: 100% !important; height: var(--art) !important; margin: 0 !important; overflow: hidden; border-radius: 0 !important; }
+  & [data-rfs-wl="art"] > div { width: 100% !important; height: 100% !important; }
+  & [data-rfs-wl="art"] img { width: 100% !important; height: 100% !important; object-fit: cover; border-radius: 0 !important; }
+  & [data-rfs-wl="title"] { flex: none; padding: 12px 14px 0 !important; margin: 0 !important; min-width: 0; overflow: hidden; }
+  & [data-rfs-wl="title"] a { display: block !important; font-size: var(--rfp-wl-title, 16px) !important; line-height: 22px !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important; }
+  & [data-rfs-wl="meta"] { display: flex !important; flex-direction: column !important; gap: 8px !important; flex: none; padding: 6px 14px 0 !important; margin: 0 !important; min-width: 0; overflow: hidden; font-size: 12px !important; }
+  & [data-rfs-wl="meta"] > div { display: flex !important; flex-wrap: nowrap !important; justify-content: flex-start !important; align-items: center; gap: 6px 12px !important; height: 22px; overflow: hidden; margin: 0 !important; white-space: nowrap; min-width: 0; }
+  & [data-rfs-wl="meta"] > div > div:has(> .app_tag) { flex: 1 1 0; min-width: 0; height: 22px; overflow: hidden; flex-wrap: wrap !important; justify-content: flex-start !important; }
+  & [data-rfs-wl="meta"] .app_tag:nth-of-type(n+4) { display: none !important; }
+  & [data-rfs-wl="meta"] > div > div { flex: none; margin: 0 !important; display: flex !important; align-items: center; gap: 5px !important; }
+  /* the tag row: the "User Tags:" label goes, 2–3 tags fit, the rest are clipped */
+  & [data-rfs-wl="meta"] > div > div:has(> .app_tag) > span { display: none !important; }
+  & [data-rfs-wl="meta"] .app_tag { flex: none; margin: 0 !important; height: 22px; line-height: 20px !important; padding: 0 9px !important; font-size: 11.5px !important; }
+  & [data-rfs-chip] { display: inline-block; height: 22px; line-height: 22px !important; padding: 0 8px !important; font-size: 11px !important; }
+  & [data-rfs-wl="buy"] { display: flex !important; justify-content: flex-end; align-items: flex-end; margin: auto 0 0 !important; padding: 0 12px 12px !important; min-height: 0; width: auto !important; }
+  & [data-rfs-wl="buy"] > div { margin: 0 !important; flex-wrap: nowrap !important; }
+  & [data-rfs-wl="buy"] .btn_green_steamui { white-space: nowrap; }
+  /* "Added on …" and the owner's rank / drag handle: small chips over the art */
+  & [data-rfs-wl="added"] {
+    position: absolute !important; top: 8px; inset-inline-start: 8px; z-index: 2; margin: 0 !important; padding: 3px 8px !important; width: auto !important;
+    font-size: 11px !important; line-height: 16px; color: #fff !important; background: rgba(0, 0, 0, .66) !important; border-radius: var(--rf-radius, 6px);
+  }
+  & [data-rfs-wl="added"] * { color: inherit !important; font-size: inherit !important; margin: 0 !important; }
+  & [data-rfs-wl="rank"] {
+    position: absolute !important; top: 8px; inset-inline-end: 8px; z-index: 2; margin: 0 !important; padding: 2px 6px !important; width: auto !important; height: auto !important;
+    display: flex !important; align-items: center; gap: 6px; color: #fff !important; background: rgba(0, 0, 0, .66) !important; border-radius: var(--rf-radius, 6px);
+  }
+  & [data-rfs-wl="empty"] { display: none !important; }
+}
+/* (outranks SpaceTheme's own price-capsule rule, which paints it with the sidebar colour — light paper in Corkboard) */
+html[data-rfs-page="wishlist"]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) [data-rfs-wl="buy"] > div:has([data-rfs-price]) {
+  background: var(--rf-panel-2) !important; border-radius: var(--rf-radius) !important; box-shadow: var(--rfp-e) !important;
+}
+@container (min-width: 900px) {
+  html[data-rfs-page="wishlist"][data-rfs-wlview="cards"]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) [data-rfs-wl="list"] [data-index][data-index] { --k: 3; --m: var(--m3, 0); }
+}
+html[data-rfs-page="wishlist"] [data-index][data-rfs-m2="1"] { --m2: 1; }
+html[data-rfs-page="wishlist"] [data-index][data-rfs-m3="1"] { --m3: 1; }
+html[data-rfs-page="wishlist"] [data-index][data-rfs-m3="2"] { --m3: 2; }
+
+/* ───────── 2. profile (steamcommunity.com/id/… and /profiles/…) ─────────
+   The owner's own design stays: background art, animated video, profile theme colours, avatar frame and header
+   (the styles only restyle those on profiles WITHOUT a background).  Showcases, headings, links, buttons, the right
+   column and the comments wear the style, and over a background the panels stay translucent.
+   An animated background is a 1920 px video: on a wider window it left black bars at both sides — it now always
+   fills the width, like Steam's own full-width image backgrounds. */
+/* under the owner's art the page is Steam's black (as in stock Steam), not the style's page colour */
+html[data-rfs-style]:not([data-rfs-style="original"]):has(> body.has_profile_background) { background-color: #000 !important; background-image: none !important; }
+html[data-rfs-style]:not([data-rfs-style="original"]) body.has_profile_background::before { display: none !important; }
+html[data-rfs-style]:not([data-rfs-style="original"]) .profile_animated_background { left: 0 !important; right: 0 !important; width: 100% !important; overflow: hidden; }
+html[data-rfs-style]:not([data-rfs-style="original"]) .profile_animated_background video {
+  width: 100% !important; min-width: 100% !important; height: auto !important; max-width: none !important; object-fit: cover !important; margin: 0 !important;
+}
+:where(html.responsive[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"])) {
+  & .profile_customization { background: var(--rfp-g) !important; border: 0 !important; border-radius: var(--rfp-r) !important; box-shadow: var(--rfp-e) !important; overflow: hidden; }
+  & .profile_customization_header {
+    font-family: var(--rfp-hf) !important; text-transform: var(--rfp-hc) !important; letter-spacing: var(--rfp-ht) !important; color: var(--rfp-hi) !important;
+    background: transparent !important; border-bottom: var(--rfp-hr) !important; font-size: 15px !important; font-weight: 700 !important; text-shadow: none !important;
+  }
+  & .profile_customization :is(.showcase_stat .value) { font-family: var(--rfp-hf); color: var(--rf-text); }
+  /* Arabic: Steam keeps the stats left-aligned with their gap on the right, so in RTL the labels run together
+     ("ساعات اللعبالإنجازات") — each stat reads from the right with its gap on the left */
+  & .profile_customization:dir(rtl) .showcase_stats_row { text-align: right !important; }
+  & .profile_customization:dir(rtl) .showcase_stat { text-align: right !important; margin-right: 0 !important; margin-left: 28px !important; }
+  & .profile_customization :is(.showcase_stat .label) { color: var(--rf-text-dim); }
+  & .profile_customization a:not([class*="btn"]):hover { color: var(--rfp-l) !important; }
+  /* the header: the name in the heading face, links readable */
+  & .profile_header .actual_persona_name { font-family: var(--rfp-hf) !important; }
+  & .profile_header_summary a:not([class*="btn"]) { color: var(--rfp-l) !important; }
+  /* the right column: quiet counts with the number in the accent; friend and group rows highlight on hover */
+  & .profile_rightcol .profile_count_link a { color: var(--rf-text) !important; text-decoration: none !important; }
+  & .profile_rightcol .profile_count_link_total { color: var(--rfp-l) !important; font-family: var(--rfp-hf) !important; }
+  & .profile_rightcol .profile_count_link a:hover .count_link_label { color: var(--rfp-l) !important; }
+  & .profile_rightcol .profile_in_game_header { font-family: var(--rfp-hf) !important; }
+  & :is(.profile_topfriends .friendBlock, .profile_group) { border-radius: var(--rf-radius); transition: background-color .15s; }
+  & :is(.profile_topfriends .friendBlock, .profile_group):hover { background-color: color-mix(in srgb, var(--rf-text) 8%, transparent) !important; }
+  /* comments */
+  & .profile_comment_area :is(.commentthread_header, .commentthread_count) { font-family: var(--rfp-hf) !important; color: var(--rfp-hi) !important; }
+  & .commentthread_textarea { color: var(--rf-text) !important; background: var(--rfp-f) !important; border: 0 !important; border-radius: var(--rf-radius) !important; box-shadow: var(--rfp-e) !important; }
+  & :is(.commentthread_comment_author .hoverunderline, .commentthread_author_link) { color: var(--rf-text) !important; font-weight: 700; }
+  & .commentthread_comment_timestamp { color: var(--rf-text-dim) !important; }
+  /* the header buttons (Add Friend, More…) when a style has no rule of its own */
+  & .profile_header_actions .btn_profile_action { color: var(--rf-text) !important; background: var(--rfp-g) !important; border: 0 !important; border-radius: var(--rf-radius) !important; box-shadow: var(--rfp-e) !important; }
+  & .profile_header_actions .btn_profile_action > span { background: transparent !important; color: inherit !important; border: 0 !important; }
+}
+
+/* ───────── 3. friends pages (…/friends, /friends/add, /pending, /blocked, groups, user search) ───────── */
+:where(html.responsive[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"])) {
+  & .friends_header_bg { background: none !important; }
+  & .friends_header_name a { color: var(--rf-text) !important; font-family: var(--rfp-hf) !important; }
+  /* left navigation: the style's list rows, the current one marked with the accent */
+  & .friends_nav :is(h2, .title_text, .section_title) { color: var(--rf-text-dim) !important; font-family: var(--rfp-hf) !important; text-transform: var(--rfp-hc) !important; letter-spacing: var(--rfp-ht) !important; }
+  & .friends_nav a { border-radius: var(--rf-radius) !important; color: var(--rf-text) !important; }
+  & .friends_nav a:hover { background: var(--rfp-ch) !important; }
+  & .friends_nav a.active { background: rgba(var(--rf-accent-rgb), .16) !important; color: var(--rf-text) !important; box-shadow: inset 3px 0 0 var(--rf-accent) !important; }
+  & .friends_nav a .count { color: var(--rf-text-dim) !important; }
+  /* the title bar was Steam blue: the style's panel with a heading; the search field + buttons follow the style.
+     It wraps instead of overflowing (Add Friend + Manage + search did not fit next to a long title). */
+  & :is(.profile_friends.title_bar, .profile_groups.title_bar) {
+    min-height: 52px; flex-wrap: wrap; gap: 8px 12px; padding: 8px 14px !important; background: var(--rfp-c) !important; border-radius: var(--rfp-r) !important; box-shadow: var(--rfp-e) !important;
+  }
+  & :is(.profile_friends.title_bar, .profile_groups.title_bar) > :is(.title, span:first-child) { color: var(--rfp-hi) !important; font-family: var(--rfp-hf) !important; text-transform: var(--rfp-hc) !important; letter-spacing: var(--rfp-ht) !important; }
+  & :is(.friends_search_text_box, .groups_search_text_box, #search_text_box, .invite_section_ctn input[type="text"], .invite_section_ctn input:not([type])) {
+    box-sizing: border-box; height: 36px; padding: 0 12px !important; color: var(--rf-text) !important; font-family: var(--rf-font-ui) !important; font-style: normal !important;
+    background: var(--rfp-f) !important; border: 0 !important; border-radius: var(--rf-radius) !important; box-shadow: var(--rfp-e) !important; outline: 0 !important;
+  }
+  & :is(.friends_search_text_box, .groups_search_text_box, #search_text_box, .invite_section_ctn input)::placeholder { color: var(--rf-text-dim) !important; font-style: normal !important; }
+  & :is(.friends_search_text_box, .groups_search_text_box, #search_text_box, .invite_section_ctn input):focus { box-shadow: inset 0 0 0 1px var(--rf-accent), 0 0 0 3px rgba(var(--rf-accent-rgb), .25) !important; }
+  & :is(.manage_link, #add_friends_button) { color: var(--rf-text) !important; }
+  & .friends_content :is(.state_block, .search_results_header) { color: var(--rf-text-dim) !important; font-family: var(--rfp-hf) !important; text-transform: var(--rfp-hc) !important; letter-spacing: var(--rfp-ht) !important; }
+  /* friend tiles: the style's rows; the name in the online / in-game colour */
+  & .friend_block_v2 { background: var(--rfp-c) !important; border-radius: var(--rf-radius) !important; box-shadow: var(--rfp-e) !important; overflow: hidden; transition: background-color .15s; }
+  & .friend_block_v2:hover { background: var(--rfp-ch) !important; }
+  & .friend_block_v2 .friend_block_content { color: var(--rf-text) !important; }
+  & .friend_block_v2 :is(.friend_small_text, .friend_last_online_text) { color: var(--rf-text-dim) !important; }
+  & .friend_block_v2.online .friend_block_content { color: var(--rfp-l) !important; }
+  & .friend_block_v2.in-game .friend_block_content { color: var(--rfp-ingame, rgb(var(--st-green, 144, 186, 60))) !important; }
+  & .friend_block_v2.online .player_avatar { border-color: var(--rfp-l) !important; }
+  & .friend_block_v2.in-game .player_avatar { border-color: var(--rfp-ingame, rgb(var(--st-green, 144, 186, 60))) !important; }
+  & .friend_block_v2.selected { box-shadow: inset 0 0 0 2px var(--rf-accent) !important; }
+  & .manage_friends_panel { background: var(--rfp-c) !important; border-radius: var(--rfp-r) !important; box-shadow: var(--rfp-e) !important; color: var(--rf-text) !important; }
+  /* add a friend: grouped panels; the invite-link table (white rows, black text) becomes the style's rows */
+  & #friends_add { gap: 20px; align-items: flex-start; }
+  & #friends_add :is(.addfriend_column1, .addfriend_column2) { min-width: 0; margin: 0 !important; }
+  & .invite_section_ctn { color: var(--rf-text) !important; background: var(--rfp-c) !important; border-radius: var(--rfp-r) !important; box-shadow: var(--rfp-e), var(--rfp-s) !important; overflow: hidden; }
+  & .invite_section_ctn .header_row {
+    color: var(--rfp-hi) !important; font-family: var(--rfp-hf) !important; text-transform: var(--rfp-hc) !important; letter-spacing: var(--rfp-ht) !important;
+    padding-bottom: 12px !important; border-bottom: var(--rfp-hr);
+  }
+  & .invite_section_ctn .content { color: var(--rf-text-dim) !important; overflow-wrap: anywhere; }
+  & .invite_section_ctn :is(.table_header, .section_text, .description_note) { color: var(--rf-text-dim) !important; }
+  & .invite_section_ctn .table { color: var(--rf-text) !important; border-spacing: 0 4px !important; }
+  & .invite_section_ctn .table .tr { background: var(--rf-panel-2) !important; box-shadow: none !important; }
+  & .invite_section_ctn .table :is(.date_cell, .copy_cell, .url_cell, .revoke_cell) { border-color: var(--rf-border) !important; color: var(--rf-text) !important; }
+  & .invite_section_ctn .table .url_cell { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; width: 100%; max-width: 0; }
+  & .invite_section_ctn .table .url_cell_inner { overflow: hidden; text-overflow: ellipsis; }
+  & .invite_section_ctn :is(.searchBarContainer, form) input { flex: 1 1 auto; min-width: 0; }
+  & .invite_section_ctn .table .url_cell :is(a, .url_cell_inner) { color: var(--rfp-l) !important; }
+  /* invites / pending / blocked rows and the user search results */
+  & :is(.invite_row, .search_results_none, .search_row) { color: var(--rf-text) !important; background: var(--rfp-c) !important; border-radius: var(--rf-radius) !important; box-shadow: var(--rfp-e) !important; }
+  & :is(.invite_row, .search_row) :is(.inviterSmallText, .search_match_info) { color: var(--rf-text-dim) !important; }
+  & :is(.invite_row, .search_row) a:not([class*="btn"]) { color: var(--rf-text) !important; }
+  & .invite_row .indicator { background: var(--rf-panel-2) !important; color: var(--rf-text) !important; }
+}

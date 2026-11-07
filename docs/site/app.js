@@ -22,7 +22,7 @@ const THEMES = [
   { id: 'magazine', en: 'Magazine', ar: 'المجلة', den: 'An editorial magazine layout', dar: 'غلاف مجلة وأعمدة', lib: 1, store: 1 },
   { id: 'cupertino', en: 'Cupertino Dark', ar: 'كوبرتينو الداكن', den: 'The dark Mac / TV-app look', dar: 'أسلوب الماك الداكن وزر تشغيل أبيض', lib: 1, store: 1 },
   { id: 'cyberpunk', en: 'Cyberpunk', ar: 'سايبربنك', den: 'Cyberpunk atmosphere in eye-friendly tones', dar: 'أجواء سايبربنك بألوان مريحة للعين', lib: 0, store: 1 },
-  { id: 'shelter', en: 'Shelter OS', ar: 'الملجأ', den: 'A retro wrist computer with an amber CRT', dar: 'جهاز ذراع قديم بشاشة كهرمانية', lib: 0, store: 0 },
+  { id: 'shelter', en: 'Shelter OS', ar: 'الملجأ', den: 'A green shelter terminal with a raise-to-view wrist computer', dar: 'ملجأ أخضر وجهاز ذراع ترفعه بيدك', lib: 0, store: 0 },
   { id: 'original', en: 'Steam Original', ar: 'ستيم الأصلي', den: 'Stock Steam plus the Themes button and store panels', dar: 'ستيم مثل ما هو، مع زر الثيمات ولوحات المتجر', lib: 0, store: 1 },
   { id: 'space', en: 'SpaceTheme', ar: 'SpaceTheme', den: 'The popular dark community theme (MIT)', dar: 'ثيم المجتمع المشهور، داكن ومرتب (MIT)', lib: 1, store: 1, extra: 1 },
   { id: 'material', en: 'Material You', ar: 'Material You', den: "Google's Material 3 design (MIT)", dar: 'تصميم Material 3 من Google (MIT)', lib: 0, store: 0, extra: 1 },

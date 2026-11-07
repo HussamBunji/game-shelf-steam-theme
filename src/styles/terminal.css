@@ -450,16 +450,16 @@ html[data-rfs-style="terminal"] :is(.newmodal_header, .newmodal_header_border) {
 html[data-rfs-style="terminal"] .popup_menu_item:hover { background: var(--tw-g) !important; color: var(--tw-ink) !important; }
 
 /* ---- community: profile, hub, market, workshop, discussions, badges ---- */
-html[data-rfs-style="terminal"] :is(.profile_header_bg, .profile_header_bg_texture) {
+html[data-rfs-style="terminal"] :is(.profile_header_bg:not(body.has_profile_background *), .profile_header_bg_texture:not(body.has_profile_background *)) {
   background: var(--tw-b1) !important; border-bottom: 1px solid var(--tw-l) !important; box-shadow: none !important;
 }
-html[data-rfs-style="terminal"] .profile_header_bg_texture { background-image: none !important; border: 1px solid var(--tw-l) !important; }
+html[data-rfs-style="terminal"] .profile_header_bg_texture:not(body.has_profile_background *) { background-image: none !important; border: 1px solid var(--tw-l) !important; }
 html[data-rfs-style="terminal"] .profile_header .persona_name, html[data-rfs-style="terminal"] .actual_persona_name { color: var(--tw-hi) !important; font-weight: 800; }
 html[data-rfs-style="terminal"] .profile_header .persona_name::before { content: '~/'; color: var(--tw-g); }
 html[data-rfs-style="terminal"] :is(.profile_private_info, .profile_summary) { color: var(--tw-t) !important; }
 html[data-rfs-style="terminal"] .profile_private_info::before { content: '# '; color: var(--tw-a); }
 html[data-rfs-style="terminal"] :is(.playerAvatar, .playerAvatar img, .profile_header .playerAvatar) { border-radius: 0 !important; }
-html[data-rfs-style="terminal"] :is(.profile_content, .profile_content.has_profile_background) { background: transparent !important; }
+html[data-rfs-style="terminal"] :is(.profile_content:not(body.has_profile_background *), .profile_content:not(body.has_profile_background *)) { background: transparent !important; }
 html[data-rfs-style="terminal"] :is(.profile_count_link, .profile_count_link_preview) a { color: var(--tw-t) !important; }
 html[data-rfs-style="terminal"] .profile_count_link_total { color: var(--tw-g) !important; font-weight: 700; }
 html[data-rfs-style="terminal"] :is(.profile_level, .friendPlayerLevel) { border-radius: 0 !important; }
@@ -681,3 +681,26 @@ html[data-rfs-style="terminal"] #rfs-themes .tp-close:hover { background: #39ff8
 
 /* the user box and its footer bar (skin.js) */
 html[data-rfs-style="terminal"] { --rf-footer-bg: #000; --rf-footer-line: 1px solid rgba(57, 255, 136, .5); --rf-user-radius: 0; --rf-user-bg: #020a05; --rf-user-bg-hover: rgba(57, 255, 136, .14); --rf-user-border: 1px solid #39ff88; --rf-user-ink: #39ff88; --rf-user-font: 500 12.5px var(--rf-heading-font); }
+
+/* ─────────────── wishlist · profile · friends pages (the shared layer is in src/css/webkit.css; this style's tokens) ─────────────── */
+/* a terminal: the wishlist starts as a list (one row per game, like ls -l), hairline boxes, "> " before names,
+   caps headings in phosphor green */
+:root {
+  --rf-wl-view: list;
+  --rfp-card: #070c0b;
+  --rfp-card-hover: #0f1a17;
+  --rfp-card-edge: inset 0 0 0 1px rgba(57, 255, 136, .2);
+  --rfp-card-shadow: none;
+  --rfp-radius: 0px;
+  --rfp-head-case: uppercase;
+  --rfp-head-track: .08em;
+  --rfp-head-ink: #39ff88;
+  --rfp-head-rule: 1px dashed rgba(57, 255, 136, .35);
+  --rfp-glass: rgba(7, 12, 11, .88);
+  --rfp-field: #040706;
+  --rfp-wl-title: 15px;
+}
+html[data-rfs-lang="ar"][data-rfs-style="terminal"] { --rfp-head-track: 0; }
+html[data-rfs-page="wishlist"][data-rfs-style="terminal"] [data-rfs-wl="title"] a::before,
+html.responsive[data-rfs-style="terminal"] .friend_block_v2 .friend_block_content::before { content: '> '; color: #39ff88; }
+html[data-rfs-page="wishlist"][data-rfs-style="terminal"] [data-rfs-wl="row"]:hover { box-shadow: inset 3px 0 0 #39ff88, inset 0 0 0 1px rgba(57, 255, 136, .45) !important; }

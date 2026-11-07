@@ -554,7 +554,7 @@ html[data-rfs-style="cork"] .apphub_Card {
 }
 html[data-rfs-style="cork"] .apphub_Card :is(.apphub_CardContentMain, .apphub_CardContentAuthorBlock, .apphub_CardContentNewsTitle) { background: transparent !important; }
 html[data-rfs-style="cork"] .apphub_HeaderBottom { background: linear-gradient(180deg, rgba(42, 33, 25, .78), rgba(42, 33, 25, .9)) !important; }
-html[data-rfs-style="cork"] .profile_header_bg_texture { border-radius: 2px !important; box-shadow: 0 12px 20px -10px rgba(30, 15, 4, .8) !important; }
+html[data-rfs-style="cork"] .profile_header_bg_texture:not(body.has_profile_background *) { border-radius: 2px !important; box-shadow: 0 12px 20px -10px rgba(30, 15, 4, .8) !important; }
 html[data-rfs-style="cork"] .playerAvatar :is(img, picture) { box-shadow: 0 0 0 4px #fff, 0 4px 8px rgba(30, 15, 4, .5) !important; }
 html[data-rfs-style="cork"] :is(.market_home_listing_table, .market_listing_table) .market_listing_table_header { color: #6b5a45 !important; background: transparent !important; border-color: rgba(96, 64, 32, .25) !important; }
 html[data-rfs-style="cork"] .apphub_sectionTab { padding: 3px 9px !important; margin-inline-end: 4px !important; }
@@ -847,3 +847,28 @@ html[data-rfs-style="cork"] #rfs-qbtn:hover { background: linear-gradient(#fffdf
 
 /* the user box and its footer bar (skin.js) */
 html[data-rfs-style="cork"] { --rf-footer-bg: #5a3d24; --rf-footer-line: 3px solid #7a5434; --rf-user-radius: 2px; --rf-user-bg: #f7f0e1; --rf-user-bg-hover: #fff8e8; --rf-user-border: 0; --rf-user-shadow: 0 2px 5px rgba(0, 0, 0, .45); --rf-user-ink: #3a2a1a; }
+
+/* ─────────────── wishlist · profile · friends pages (the shared layer is in src/css/webkit.css; this style's tokens) ─────────────── */
+/* pinned to the board: felt-dark cards with a kraft edge, a push pin on top, paper fields, handwritten headings */
+:root {
+  --rfp-card: #2a2621;
+  --rfp-card-hover: #332e28;
+  --rfp-card-edge: inset 0 0 0 1px rgba(232, 211, 173, .16);
+  --rfp-card-shadow: 0 14px 22px -10px rgba(30, 15, 4, .85);
+  --rfp-radius: 4px;
+  --rfp-head-rule: 2px dashed rgba(232, 211, 173, .3);
+  --rfp-glass: rgba(36, 33, 29, .88);
+  --rfp-field: #fffdf7;
+}
+html[data-rfs-page="wishlist"][data-rfs-style="cork"] [data-rfs-wl="bar"] > input,
+html.responsive[data-rfs-style="cork"] :is(.friends_search_text_box, .groups_search_text_box, #search_text_box, .invite_section_ctn input, .commentthread_textarea) { color: #3a2c1c !important; }
+html[data-rfs-page="wishlist"][data-rfs-style="cork"] [data-rfs-wl="bar"] > input::placeholder { color: #7d6a52 !important; }
+html[data-rfs-page="wishlist"][data-rfs-style="cork"] [data-rfs-wl="bar"] button.btnv6_blue_hoverfade span span { color: #7d6a52 !important; }
+html[data-rfs-page="wishlist"][data-rfs-style="cork"] #rfs-wlview button:not(.on) { color: #7d6a52; }
+html[data-rfs-page="wishlist"][data-rfs-style="cork"] [data-rfs-wl="gift"] :is(div, span) { color: #3a2c1c !important; }
+html[data-rfs-page="wishlist"][data-rfs-style="cork"][data-rfs-wlview="cards"] [data-rfs-wl="row"] { overflow: visible !important; }
+html[data-rfs-page="wishlist"][data-rfs-style="cork"][data-rfs-wlview="cards"] [data-rfs-wl="art"] { border-radius: 4px 4px 0 0 !important; }
+html[data-rfs-page="wishlist"][data-rfs-style="cork"][data-rfs-wlview="cards"] [data-rfs-wl="row"]::after {
+  content: ''; position: absolute; top: -5px; left: calc(50% - 7px); z-index: 3; width: 14px; height: 14px; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle at 35% 30%, #ffb19c, #d9472f 55%, #8f2a1a); box-shadow: 0 3px 4px rgba(0, 0, 0, .55);
+}

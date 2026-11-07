@@ -18,7 +18,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const args = process.argv.slice(2);
-const opt = { style: 'Classic Shelf', lang: 'en', out: path.join(ROOT, 'shots'), w: 1600, h: 1000, wait: 4500, full: false, scroll: 0, eval: '' };
+const opt = { style: 'Classic Shelf', lang: 'en', out: path.join(ROOT, 'shots'), w: 1600, h: 1000, wait: 4500, full: false, scroll: 0, eval: '', pre: '', name: '' };
 const urls = [];
 for (let i = 0; i < args.length; i++) {
   const a = args[i];
@@ -37,7 +37,7 @@ const LANG = opt.lang === 'ar' ? 'Arabic' : 'English';
 mkdirSync(opt.out, { recursive: true });
 
 /* ---- the theme files, served as if from millennium.host */
-const STYLES = ['classic', 'neon', 'glass', 'original', 'space', 'material', 'terminal', 'vault', 'vinyl', 'cork', 'arcade', 'magazine'];
+const STYLES = ['classic', 'neon', 'glass', 'original', 'space', 'material', 'terminal', 'vault', 'vinyl', 'cork', 'arcade', 'magazine', 'cupertino', 'cyberpunk', 'shelter'];
 function webkitStyles() { // same transformation as tools/build.mjs
   let out = '';
   for (const s of STYLES) {
@@ -155,9 +155,10 @@ try {
     await S('Page.navigate', { url });
     await loaded;
     await sleep(opt.wait);
+    if (opt.pre) { const r = await S('Runtime.evaluate', { expression: opt.pre, returnByValue: true, awaitPromise: true }); console.log('  pre:', r.exceptionDetails ? 'ERROR ' + (r.exceptionDetails.exception?.description || '') : JSON.stringify(r.result.value)); }
     if (opt.scroll) { await S('Runtime.evaluate', { expression: `window.scrollTo(0, ${opt.scroll})` }); await sleep(800); }
     const slug = new URL(url).host.split('.')[0] + '-' + (new URL(url).pathname.replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '').slice(0, 40) || 'home');
-    const file = path.join(opt.out, `${sid}-${opt.lang}-${slug}${opt.scroll ? '-y' + opt.scroll : ''}.png`);
+    const file = path.join(opt.out, `${opt.name ? opt.name + '-' : ''}${sid}-${opt.lang}-${slug}${opt.scroll ? '-y' + opt.scroll : ''}.png`);
     let shot;
     if (opt.full) {
       const mt = await S('Page.getLayoutMetrics');

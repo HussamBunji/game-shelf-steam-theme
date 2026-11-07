@@ -233,6 +233,7 @@
     tag: '<path class="f" d="M3 12V4a1 1 0 0 1 1-1h8l9 9-9 9Z"/><circle class="s" cx="7.5" cy="7.5" r="1.5"/>',
     spines: '<path class="f" d="M5 4h3v16H5zM10 4h3v16h-3z"/><path class="f" d="m15.5 5 2.8-.8 3.2 15-2.8.8Z"/>',
     grid: '<rect x="4" y="4" width="6.5" height="6.5" rx="1.2"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.2"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.2"/><rect x="13.5" y="13.5" width="6.5" height="6.5" rx="1.2"/>',
+    rows: '<rect x="3.5" y="4.5" width="17" height="4" rx="1"/><rect x="3.5" y="10" width="17" height="4" rx="1"/><rect x="3.5" y="15.5" width="17" height="4" rx="1"/>',
     news: '<path class="f" d="M4 5h13v14H6a2 2 0 0 1-2-2Z"/><path d="M17 9h3v8a2 2 0 0 1-2 2"/><path d="M7.5 9h6M7.5 12.5h6M7.5 16h4"/>',
     volume: '<path class="f" d="M4 10v4h4l5 4V6l-5 4Z"/><path d="M16.5 9a4 4 0 0 1 0 6M19 6.5a7.5 7.5 0 0 1 0 11"/>',
     mute: '<path class="f" d="M4 10v4h4l5 4V6l-5 4Z"/><path d="m17 9.5 5 5M22 9.5l-5 5"/>',
@@ -444,7 +445,22 @@
     // on the search box's outer side: left of it in English; in the Arabic (RTL) store the box sits at the bar's left
     // end next to the wishlist button, so the button goes to its right instead
     const rtl = getComputedStyle(box).direction === 'rtl';
-    setStyles(qbtn, { top: Math.round(r.top + (r.height - 30) / 2) + 'px', left: Math.round(rtl ? r.right + 10 : r.left - qbtn.offsetWidth - 10) + 'px' });
+    let top = Math.round(r.top + (r.height - 30) / 2), left = Math.round(rtl ? r.right + 10 : r.left - qbtn.offsetWidth - 10);
+    // the new React store bar (wishlist, sales…) puts its menus right up to the search: if the spot is taken by a
+    // menu, the button sits just under the bar at the search's end instead of covering it
+    const w = qbtn.offsetWidth || 130, cy = top + 15;
+    qbtn.style.pointerEvents = 'none'; // elementFromPoint looks through it
+    const taken = [left + 4, left + w / 2, left + w - 4].some(x => {
+      const el = document.elementFromPoint(x, cy);
+      return el && !qbtn.contains(el) && !!el.closest('a, button, [role="button"], [role="menuitem"], .tab, .pulldown') && el.textContent.trim().length > 1;
+    });
+    qbtn.style.pointerEvents = '';
+    if (taken) {
+      const bar = box.closest('nav, [role="navigation"], .store_nav, #store_nav_area') || box;
+      const br = bar.getBoundingClientRect();
+      top = Math.round(br.bottom + 8); left = Math.round(rtl ? r.left : r.right - w);
+    }
+    setStyles(qbtn, { top: top + 'px', left: left + 'px' });
     qbtn.classList.toggle('on', true);
     const b = qbtn.getBoundingClientRect();
     setStyles(qmenu, { top: Math.round(b.bottom + 8) + 'px', left: Math.round(rtl ? Math.min(innerWidth - qmenu.offsetWidth - 12, b.left) : Math.max(12, b.right - qmenu.offsetWidth)) + 'px' });
@@ -652,8 +668,89 @@
       if (cs.backgroundColor === 'rgb(204, 204, 204)' || ghost) a.classList.add('rfs-btn2'); else a.setAttribute('data-rfs-nb', '');
     }
   }
+  /* ---- wishlist (React, hashed classes, a measuring virtual list): tag its parts with stable hooks so every style
+     can dress them, and lay the rows out as a card grid.  The list measures each row's box (data-index wrapper), so in
+     card mode every wrapper is exactly 1/k of a card row tall and its card is shifted into column (index mod k) by CSS:
+     the list's total height and scroll window stay true, nothing is re-ordered, sorting / drag / remove keep working.
+     Tags: data-rfs-wl = list | row | art | title | meta | buy | added | rank | empty, data-rfs-chip;  tags = .app_tag, the buy button =
+     .btn_green_steamui, Options / Sort = .btnv6_blue_hoverfade (each style already dresses those classes). */
+  const IS_WL = /store\.steampowered\.com$/.test(location.host) && /^\/wishlist\//.test(location.pathname);
+  const setA = (el, k, v) => { if (el && el.getAttribute(k) !== v) el.setAttribute(k, v); };
+  const addC = (el, c) => { if (el && !el.classList.contains(c)) el.classList.add(c); };
+  let wlBox = null, wlObs = null, wlBtn = null;
+  function wlView() {
+    let v = ''; try { v = localStorage.getItem('rfs.wlView') || ''; } catch (e) { /* ignore */ }
+    if (v !== 'cards' && v !== 'list') v = getComputedStyle(html).getPropertyValue('--rf-wl-view').trim() === 'list' ? 'list' : 'cards';
+    setA(html, 'data-rfs-wlview', v);
+    if (wlBtn) for (const b of wlBtn.children) b.classList.toggle('on', b.dataset.v === v);
+  }
+  function wlTagRow(w) {
+    const row = w.querySelector(':scope > div > [role="button"]') || w.querySelector('[role="button"]');
+    if (!row) return;
+    const i = +w.getAttribute('data-index') || 0;
+    setA(w, 'data-rfs-m3', String(i % 3)); setA(w, 'data-rfs-m2', String(i % 2));
+    setA(row, 'data-rfs-wl', 'row');
+    for (const c of row.children) {
+      let k = '';
+      if (c.tagName === 'A' && c.querySelector('img')) k = 'art';
+      else if (c.querySelector('button span, a[href*="/cart"]')) k = 'buy';
+      else if (c.querySelector('button, [title]')) k = 'meta';
+      else if (c.querySelector(':scope > a') && !c.querySelector('img')) k = 'title';
+      else if (c === row.lastElementChild && c.textContent.trim()) k = 'added';
+      else if (!c.textContent.trim() && !c.querySelector('svg, img, button, input')) k = 'empty';
+      else k = 'rank';
+      setA(c, 'data-rfs-wl', k);
+    }
+    const buy = row.querySelector(':scope > [data-rfs-wl="buy"]');
+    if (buy) for (const a of buy.querySelectorAll('a')) if (/\d/.test(a.textContent)) setA(a, 'data-rfs-price', '');
+    for (const b of row.querySelectorAll('button')) {
+      if (b.closest('[data-rfs-wl="buy"]')) { if (b.querySelector('span')) addC(b, 'btn_green_steamui'); }
+      else if (!b.firstElementChild && b.textContent.trim()) addC(b, 'app_tag');
+    }
+    // chips ("Early Access", "Demo Available"…): spans / links in the tag line that are not tags, the tag label or a review
+    for (const s of row.querySelectorAll('[data-rfs-wl="meta"] > div:not(:first-child) :is(span, a)')) {
+      if (s.hasAttribute('title') || s.closest('button') || s.parentElement.querySelector(':scope > .app_tag')) continue;
+      setA(s, 'data-rfs-chip', '');
+    }
+  }
+  function wlTag() {
+    if (!document.body) return;
+    const first = document.querySelector('[data-index] [role="button"].Panel');
+    if (!first) return;
+    const box = first.closest('[data-index]').parentElement.parentElement;
+    if (box !== wlBox) {
+      wlBox = box; setA(box, 'data-rfs-wl', 'list');
+      if (wlObs) wlObs.disconnect();
+      wlObs = new MutationObserver(() => wlTag());
+      wlObs.observe(box, { childList: true, subtree: true, attributes: true, attributeFilter: ['data-index'] });
+    }
+    for (const w of box.querySelectorAll('[data-index]')) wlTagRow(w);
+    // the header: Options / Sort by are secondary buttons; the cards / list switch sits after them
+    const search = document.querySelector('input[placeholder].Focusable:not([name="term"])');
+    const bar = search && search.parentElement;
+    if (bar && bar.querySelector('button[aria-expanded]')) {
+      setA(bar, 'data-rfs-wl', 'bar');
+      const gift = document.querySelector('a[href*="digitalgiftcards"]');
+      if (gift && gift.querySelector('img')) setA(gift, 'data-rfs-wl', 'gift');
+      for (const b of bar.querySelectorAll(':scope > div > button[aria-expanded], :scope > button[aria-expanded]')) addC(b, 'btnv6_blue_hoverfade');
+      if (!wlBtn || !wlBtn.isConnected) {
+        wlBtn = document.createElement('div');
+        wlBtn.id = 'rfs-wlview';
+        wlBtn.innerHTML = `<button type="button" data-v="cards">${ic('grid')}</button><button type="button" data-v="list">${ic('rows')}</button>`;
+        wlBtn.addEventListener('click', e => {
+          const b = e.target.closest('button'); if (!b) return;
+          try { localStorage.setItem('rfs.wlView', b.dataset.v); } catch (er) { /* ignore */ }
+          wlView();
+        });
+        bar.append(wlBtn);
+      }
+      setA(wlBtn.children[0], 'title', T('بطاقات', 'Cards')); setA(wlBtn.children[1], 'title', T('قائمة', 'List'));
+      wlView();
+    }
+  }
   function start() {
     iconDefs();
+    if (IS_WL) { setA(html, 'data-rfs-page', 'wishlist'); wlView(); wlTag(); setInterval(wlTag, 1200); }
     onLangChange = () => { if (rail) renderRail(); if (dataEl && dataFor) renderData(dataFor); if (qbtn) placeQuick(); };
     placeRail();
     setInterval(placeRail, 1500);

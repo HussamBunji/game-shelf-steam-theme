@@ -461,7 +461,7 @@ html[data-rfs-style="magazine"] #footer a { color: #d8ccb8 !important; }
 html[data-rfs-style="magazine"] #footer a:hover { color: #fff !important; text-decoration: underline !important; text-decoration-color: var(--rf-accent) !important; }
 
 /* ---- community: profile, hub, market, workshop, discussions, badges ---- */
-html[data-rfs-style="magazine"] .profile_header_bg_texture { background: #181818 !important; background-image: none !important; border-top: 3px solid var(--rf-text) !important; border-radius: 0 !important; }
+html[data-rfs-style="magazine"] .profile_header_bg_texture:not(body.has_profile_background *) { background: #181818 !important; background-image: none !important; border-top: 3px solid var(--rf-text) !important; border-radius: 0 !important; }
 html[data-rfs-style="magazine"] :is(.profile_header_centered_persona .actual_persona_name, .persona_name_text_content) { font-family: var(--rf-heading-font) !important; font-weight: 800 !important; }
 html[data-rfs-style="magazine"] .profile_private_info { color: var(--rf-text-dim) !important; font-style: italic; }
 html[data-rfs-style="magazine"] :is(.apphub_HeaderBottomBG, .group_content.bottomless, .apphub_CardAnnouncementBG) { background-image: none !important; }
@@ -625,3 +625,18 @@ html[data-rfs-style="magazine"] #rfs-themes :is(.tp-lang, .tp-lang button) { bor
 
 /* the user box and its footer bar (skin.js) */
 html[data-rfs-style="magazine"] { --rf-footer-bg: #0a0a0a; --rf-footer-line: 2px solid var(--rf-accent); --rf-user-radius: 0; --rf-user-bg: #0e0e0e; --rf-user-bg-hover: #1c1c1c; --rf-user-border: 1px solid rgba(239, 230, 214, .35); --rf-user-font: 700 12px var(--rf-heading-font); }
+
+/* ─────────────── wishlist · profile · friends pages (the shared layer is in src/css/webkit.css; this style's tokens) ─────────────── */
+/* print: flat charcoal pages, square, cream hairlines; the cards end on the editorial red rule */
+:root {
+  --rfp-card: #1a1a1a;
+  --rfp-card-hover: #222222;
+  --rfp-card-edge: inset 0 0 0 1px rgba(239, 230, 214, .12);
+  --rfp-card-shadow: none;
+  --rfp-radius: 0px;
+  --rfp-head-rule: 1px solid rgba(239, 230, 214, .35);
+  --rfp-glass: rgba(18, 18, 18, .88);
+  --rfp-field: #121212;
+}
+html[data-rfs-page="wishlist"][data-rfs-style="magazine"][data-rfs-wlview="cards"] [data-rfs-wl="row"] { box-shadow: inset 0 -3px 0 #e63b2e, inset 0 0 0 1px rgba(239, 230, 214, .12) !important; }
+html[data-rfs-page="wishlist"][data-rfs-style="magazine"][data-rfs-wlview="cards"] [data-rfs-wl="row"]:hover { transform: none; background: #222 !important; }

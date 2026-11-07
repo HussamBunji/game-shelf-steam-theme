@@ -747,3 +747,22 @@ html.responsive[data-rfs-style="cyberpunk"] .rfs-btn2:not(a):hover { color: #fff
 
 /* the footer bar under the user box (skin.js), the user box and its title-bar spot */
 html[data-rfs-style="cyberpunk"] { --rf-footer-bg: #0b0f16; --rf-footer-line: 1px solid rgba(217, 180, 90, .35); --rf-user-radius: 0; --rf-user-bg: rgba(217, 180, 90, .08); --rf-user-bg-hover: rgba(95, 196, 200, .14); --rf-user-border: 1px solid rgba(217, 180, 90, .4); --rf-user-ink: #e6e1d6; }
+
+/* ─────────────── wishlist · profile · friends pages (the shared layer is in src/css/webkit.css; this style's tokens) ─────────────── */
+/* data shards: notched corners, a cyan hairline, caps headings */
+:root {
+  --rfp-card: #121822;
+  --rfp-card-hover: #182130;
+  --rfp-card-edge: inset 0 0 0 1px rgba(154, 163, 173, .2);
+  --rfp-card-shadow: none;
+  --rfp-radius: 0px;
+  --rfp-head-case: uppercase;
+  --rfp-head-track: var(--cp-track);
+  --rfp-head-rule: 1px solid rgba(95, 196, 200, .3);
+  --rfp-glass: rgba(18, 24, 34, .88);
+  --rfp-field: #0d121a;
+  --rfp-link: #5fc4c8;
+}
+html[data-rfs-page="wishlist"][data-rfs-style="cyberpunk"] [data-rfs-wl="row"],
+html.responsive[data-rfs-style="cyberpunk"] :is(.profile_customization, .invite_section_ctn, .profile_friends.title_bar) { clip-path: var(--cp-notch); }
+html[data-rfs-page="wishlist"][data-rfs-style="cyberpunk"] [data-rfs-wl="row"]:hover { box-shadow: inset 0 0 0 1px rgba(95, 196, 200, .6) !important; }

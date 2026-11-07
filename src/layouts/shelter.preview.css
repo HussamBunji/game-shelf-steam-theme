@@ -1,0 +1,94 @@
+/* ═══ Shelter OS (الملجأ) — THEMES picker card: the green inventory page with the wrist computer resting in the corner ═══
+   pv-a = the INVENTORY title on its notch line + the filter bar, pv-b = the three-part status bar at the bottom,
+   pv-c = the forearm with the chunky device peeking up from the bottom-end corner (::before the rounded CRT with its
+   tab line, ::after the ribbed dial), pv-i × 12 = green-tinted game tiles in two rows (one lit by the cursor).
+   Plain CSS shapes, no images. */
+#rfs-themes .tp-shelter {
+  background:
+    radial-gradient(ellipse 70% 40px at 50% -6px, rgba(27, 255, 128, .14), transparent 75%),
+    repeating-linear-gradient(0deg, rgba(27, 255, 128, .03) 0 1px, transparent 1px 3px),
+    linear-gradient(180deg, #061009, #020604);
+}
+/* the title on the notch line + the green filter bar */
+#rfs-themes .tp-shelter .pv-a {
+  left: 5%; top: 8px; width: 90%; height: 28px;
+  background:
+    linear-gradient(#1bff80, #1bff80) 0 0 / 34% 6px no-repeat,
+    linear-gradient(#18dc6e, #18dc6e) 0 11px / 100% 1.5px no-repeat,
+    linear-gradient(#0f6b3a, #0f6b3a) 78% 1px / 6% 4px no-repeat,
+    linear-gradient(#0f6b3a, #0f6b3a) 88% 1px / 6% 4px no-repeat,
+    linear-gradient(#020a05, #020a05) 4px 18px / 40% 6px no-repeat,
+    linear-gradient(90deg, rgba(27, 255, 128, .35) 0 22%, transparent 22% 26%, rgba(27, 255, 128, .35) 26% 48%, transparent 48% 52%, rgba(27, 255, 128, .35) 52%) calc(40% + 10px) 18px / calc(60% - 14px) 6px no-repeat,
+    linear-gradient(rgba(27, 255, 128, .06), rgba(27, 255, 128, .06)) 0 15px / 100% 12px no-repeat;
+  box-shadow: none;
+}
+/* the status bar: HRS · LEVEL + XP · GAMES */
+#rfs-themes .tp-shelter .pv-b {
+  left: 5%; bottom: 6px; top: auto; width: 52%; height: 10px; border-radius: 2px;
+  background:
+    linear-gradient(#0a3d22, #0a3d22) 0 0 / 28% 100% no-repeat,
+    repeating-linear-gradient(90deg, #1bff80 0 3px, transparent 3px 4px) 38% 3px / 26% 4px no-repeat,
+    linear-gradient(#0a3d22, #0a3d22) 31% 0 / 38% 100% no-repeat,
+    linear-gradient(#0a3d22, #0a3d22) 100% 0 / 28% 100% no-repeat,
+    linear-gradient(#3a3a2a, #3a3a2a);
+  box-shadow: 0 0 0 1.5px #3a3a2a;
+}
+/* the forearm + device peeking up from the bottom-end corner */
+#rfs-themes .tp-shelter .pv-c {
+  right: 3%; bottom: -46px; top: auto; width: 46%; height: 84px; z-index: 2; border-radius: 16px 13px 13px 16px;
+  transform: rotate(-5deg); transform-origin: 100% 100%;
+  background:
+    radial-gradient(circle, #b4b394 0 1.2px, transparent 1.8px) 7px 6px / 6px 6px no-repeat,
+    radial-gradient(circle, #b4b394 0 1.2px, transparent 1.8px) calc(100% - 7px) 6px / 6px 6px no-repeat,
+    linear-gradient(180deg, #5c5f47, #3d3f2e 70%);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 230, .2), 0 0 0 1px #14150e, 0 6px 14px rgba(0, 0, 0, .7), -30px 50px 0 6px #33465a;
+}
+/* the rounded CRT with its tab line (the active tab in its notch) */
+#rfs-themes .tp-shelter .pv-c::before {
+  content: ''; position: absolute; left: 9px; top: 9px; width: calc(100% - 46px); height: 60px; border-radius: 9px;
+  background:
+    linear-gradient(#18dc6e, #18dc6e) 6px 10px / 22% 1.5px no-repeat,
+    linear-gradient(#1bff80, #1bff80) calc(6px + 26%) 4px / 18% 3px no-repeat,
+    linear-gradient(#18dc6e, #18dc6e) calc(6px + 48%) 10px / calc(52% - 12px) 1.5px no-repeat,
+    linear-gradient(#18dc6e, #18dc6e) calc(6px + 23%) 6px / 1.5px 5px no-repeat,
+    linear-gradient(#18dc6e, #18dc6e) calc(6px + 47%) 6px / 1.5px 5px no-repeat,
+    linear-gradient(rgba(27, 255, 128, .5), rgba(27, 255, 128, .5)) 6px 17px / 40% 2px no-repeat,
+    linear-gradient(rgba(27, 255, 128, .5), rgba(27, 255, 128, .5)) 6px 22px / 32% 2px no-repeat,
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, .25) 0 1px, transparent 1px 2.5px),
+    radial-gradient(ellipse 90% 85% at 50% 45%, #0b2a17, #04110a 65%, #010603);
+  box-shadow: 0 0 0 3px #17180f, 0 0 10px rgba(27, 255, 128, .2);
+}
+/* the ribbed selector dial on the end side */
+#rfs-themes .tp-shelter .pv-c::after {
+  content: ''; position: absolute; right: 8px; top: 12px; width: 24px; height: 24px; border-radius: 50%;
+  background:
+    linear-gradient(#e8e6cc, #e8e6cc) 50% 2px / 2px 7px no-repeat,
+    repeating-conic-gradient(rgba(0, 0, 0, .34) 0 8deg, rgba(255, 255, 230, .07) 8deg 18deg),
+    radial-gradient(circle at 36% 30%, #a3a589, #5f614a 45%, #222319);
+  box-shadow: 0 0 0 2px #24251b, 0 3px 5px rgba(0, 0, 0, .6);
+}
+/* the tiles: green-tinted art plates, name lines; the cursor tile is lit */
+#rfs-themes .tp-shelter .pv-i {
+  --art: linear-gradient(160deg, #0d4a28, #04170c);
+  top: 46px; left: calc(5% + var(--i) * 15.1%); width: 13.8%; height: 30px; border-radius: 2px;
+  background:
+    linear-gradient(rgba(27, 255, 128, .75), rgba(27, 255, 128, .75)) 3px 22px / 60% 2px no-repeat,
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, .3) 0 1px, transparent 1px 2.5px) 2px 2px / calc(100% - 4px) 15px no-repeat,
+    var(--art) 2px 2px / calc(100% - 4px) 15px no-repeat,
+    #04110a;
+  box-shadow: inset 0 0 0 1px rgba(24, 220, 110, .3);
+}
+#rfs-themes .tp-shelter .pv-i:nth-child(n+10) { top: 82px; left: calc(5% + (var(--i) - 6) * 15.1%); }
+#rfs-themes .tp-shelter .pv-i:nth-child(n+13) { opacity: .55; }
+#rfs-themes .tp-shelter .pv-i:nth-child(3n+1) { --art: radial-gradient(circle at 70% 35%, #1f9a56, transparent 65%), linear-gradient(160deg, #0b3d22, #03140a); }
+#rfs-themes .tp-shelter .pv-i:nth-child(3n+2) { --art: radial-gradient(circle at 30% 60%, #2fbf6e, transparent 60%), linear-gradient(160deg, #0f4a29, #04170c); }
+/* the cursor tile (--i:1): full colour, lit frame, inverted name bar */
+#rfs-themes .tp-shelter .pv-i:nth-child(5) {
+  transform: translateY(-2px);
+  background:
+    linear-gradient(#1bff80, #1bff80) 2px 20px / calc(100% - 4px) 6px no-repeat,
+    radial-gradient(circle at 60% 40%, #d07a3a, transparent 60%) 2px 2px / calc(100% - 4px) 15px no-repeat,
+    linear-gradient(160deg, #3a6aa0, #1a2a40) 2px 2px / calc(100% - 4px) 15px no-repeat,
+    #04110a;
+  box-shadow: inset 0 0 0 1px #1bff80, 0 0 8px rgba(27, 255, 128, .45);
+}

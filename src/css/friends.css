@@ -1,0 +1,106 @@
+/* ═══════════════ friends list + chat windows — the shared layer (skin.js loads it in windows with .friendsui-container) ═══════════════
+   SpaceTheme (src/vendor/space/src/css/friends*.css) builds these windows from each style's --st-* palette; this file
+   only makes them calmer and match the rest of the style:
+   - ONE surface instead of three nested boxes (list well → group box → rows): the groups sit straight on the list,
+     each with a small heading and a hairline, like the style's section headings on the store pages;
+   - rows round like the style's buttons and light up with the style's raised colour; status in the style's colours
+     (online = accent, in a game = the style's Play colour, away = dimmed accent, offline = dim text);
+   - the empty favourites strip shows its "Drag Friends & Chats here" hint whole (it was clipped to one cut line);
+   - chat: the style's field for the message box, the accent for names and the send button, tabs with an accent line.
+   Steam Original stays stock; Material You and Shelter OS carry their own. Hashed class names are avoided except the
+   ones SpaceTheme itself relies on. Tokens: the style's --rf-* plus its optional --rfp-* (see webkit.css). */
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) {
+  --rff-r: var(--rf-radius, 8px);
+  --rff-line: var(--rf-border, rgba(255, 255, 255, .1));
+  --rff-raise: var(--rf-panel-2, rgba(255, 255, 255, .06));
+  --rff-head: var(--rfp-head-font, var(--rf-heading-font, var(--rf-font-ui)));
+  --rff-case: var(--rfp-head-case, none);
+  --rff-track: var(--rfp-head-track, 0);
+  --rff-ink: var(--rfp-head-ink, var(--rf-text));
+  --rff-field: var(--rfp-field, var(--rf-panel));
+  --rff-edge: var(--rfp-card-edge, inset 0 0 0 1px var(--rf-border));
+  --rff-online: var(--rfp-link, var(--rf-accent));
+  --rff-game: var(--rfp-ingame, rgb(var(--st-green, 144, 186, 60)));   /* Steam's in-game green, in the style's own green */
+}
+
+/* ---- the window: the list well and the group boxes become one surface ---- */
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) .friendlist .friendlistListContainer {
+  padding: 6px 4px 10px !important; background: transparent !important; box-shadow: none !important;
+}
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) .friendlist .friendlistListContainer .listContentContainer { gap: 10px !important; }
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) .friendlist .friendlistListContainer .friendGroup {
+  gap: 2px !important; padding: 0 !important; background: transparent !important; box-shadow: none !important;
+}
+/* group headings ("In-Game", "Online", "Offline", a game's name): small, in the style's heading face, a hairline after */
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) .friendlist .friendlistListContainer .groupName {
+  padding: 6px 8px 4px !important; min-height: 22px; color: var(--rff-ink) !important; font-family: var(--rff-head) !important; font-size: 12.5px !important;
+  font-weight: 700 !important; text-transform: var(--rff-case) !important; letter-spacing: var(--rff-track) !important;
+  border-bottom: 1px solid var(--rff-line); margin-bottom: 4px !important; overflow: visible !important;
+}
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) .friendlist .friendlistListContainer .groupName .groupCount {
+  color: var(--rf-text-dim) !important; font-size: 12px !important; font-weight: 600 !important;
+}
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) .friendlist .friendlistListContainer .groupName :is(.ExpandPlusMinus, .SortByRecent)::before,
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) .friendlist .friendlistListContainer .friendGroup .SortByRecent::before { color: var(--rf-text-dim) !important; }
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) .friendlist .friendlistListContainer .groupName :is(.ExpandPlusMinus, .SortByRecent):hover::before,
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) .friendlist .friendlistListContainer .friendGroup .SortByRecent:hover::before { color: var(--rf-accent) !important; }
+
+/* ---- friend rows ---- */
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) .friendlist .friendlistListContainer .friendGroup .friend {
+  border-radius: var(--rff-r) !important; padding: 5px 8px !important; transition: background-color .12s ease;
+}
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) .friendlist .friendlistListContainer .friendGroup .friend:hover { background: var(--rff-raise) !important; box-shadow: var(--rff-edge) !important; }
+/* status colours (name; the game line follows) */
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) .friendlist .online :is(.playerName, .nOdcT-MoOaXGePXLyPe0H) { color: var(--rff-online) !important; }
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) .friendlist .ingame :is(.playerName, .nOdcT-MoOaXGePXLyPe0H) { color: var(--rff-game) !important; }
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) .friendlist .ingame .richPresenceLabel { color: color-mix(in srgb, var(--rff-game) 80%, var(--rf-text)) !important; }
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) .friendlist .awayOrSnooze :is(.playerName, .nOdcT-MoOaXGePXLyPe0H) { color: color-mix(in srgb, var(--rff-online) 55%, var(--rf-text-dim)) !important; }
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) .friendlist .offline :is(.playerName, .nOdcT-MoOaXGePXLyPe0H) { color: var(--rf-text-dim) !important; }
+
+/* ---- you (the header), the Friends tab with search / add, the favourites strip ---- */
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) .friendlist .currentUserContainer {
+  border-radius: var(--rf-radius-lg, 12px) !important; box-shadow: var(--rff-edge) !important;
+}
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) .friendlist .socialListTab {
+  border-radius: var(--rff-r) !important; box-shadow: var(--rff-edge) !important; font-family: var(--rff-head) !important;
+  text-transform: var(--rff-case) !important; letter-spacing: var(--rff-track) !important; color: var(--rff-ink) !important;
+}
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) .friendlist .socialListTab :is(.friendRequestButton, .addFriendButton, .TabSearchButton .searchIconButton) { border-radius: var(--rff-r) !important; }
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) .friendlist .socialListTab :is(.friendRequestButton, .addFriendButton, .TabSearchButton .searchIconButton):hover::before { color: var(--rf-accent) !important; }
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) .friendlist .socialListTab .TabSearchButton .inputContainer input {
+  color: var(--rf-text) !important; background: var(--rff-field) !important; border-radius: var(--rff-r) !important; box-shadow: var(--rff-edge) !important;
+}
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) .friendlist .quickAccessFriends {
+  min-height: 58px; align-items: center; overflow-y: hidden !important; padding-bottom: 10px !important;
+  background: transparent !important; box-shadow: inset 0 0 0 1px var(--rff-line) !important; border-radius: var(--rf-radius-lg, 12px) !important;
+}
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) .friendlist .quickAccessFriends .favoriteElement { border-radius: var(--rff-r) !important; background: var(--rff-raise) !important; }
+/* the empty strip's hint ("Drag Friends & Chats here"): whole, centred, wrapping instead of cut */
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) .friendlist .quickAccessFriends:not(:has(.quickAccessFriend)) { justify-content: center; padding: 10px 12px !important; }
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) .friendlist .quickAccessFriends:not(:has(.quickAccessFriend)) * {
+  white-space: normal !important; overflow: visible !important; text-overflow: clip !important; line-height: 1.35 !important;
+  height: auto !important; max-height: none !important; color: var(--rf-text-dim) !important; text-align: center;
+}
+
+/* ---- group chats section ---- */
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) .friendlist .friendsListSectionTitle {
+  background: transparent !important; box-shadow: none !important; border-radius: 0 !important; padding: 8px 8px 6px !important; margin: 12px 0 4px !important;
+  border-bottom: 1px solid var(--rff-line) !important; color: var(--rff-ink) !important; font-family: var(--rff-head) !important;
+  text-transform: var(--rff-case) !important; letter-spacing: var(--rff-track) !important; font-size: 12.5px !important; font-weight: 700 !important;
+}
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) .friendlist .friendsListSectionTitle .groupChatSectionTitle { color: inherit !important; font: inherit !important; text-transform: inherit !important; letter-spacing: inherit !important; }
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) .friendlist .chatRoomListContainer .ChatRoomList { background: transparent !important; box-shadow: none !important; padding: 0 !important; }
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) .friendlist .chatRoomListContainer .ChatRoomList .ChatRoomListGroupItem_header { border-radius: var(--rff-r) !important; }
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) .friendlist .chatRoomListContainer .ChatRoomList .ChatRoomListGroupItem_header:hover { background: var(--rff-raise) !important; }
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) .friendlist .chatRoomListContainer .ChatRoomList .ChatRoomGroupAvatar { border-radius: var(--rff-r) !important; }
+
+/* ---- chat windows ---- */
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) .chatWindow .speakerName { color: var(--rff-online) !important; font-weight: 700; }
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) .chatWindow :is(.chatEntry textarea, textarea.chatentry_input, .chatTextarea) {
+  color: var(--rf-text) !important; background: var(--rff-field) !important; border-radius: var(--rff-r) !important; box-shadow: var(--rff-edge) !important; caret-color: var(--rf-accent);
+}
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) .chatWindow .chatSubmitButton {
+  color: var(--rf-accent-ink) !important; background: var(--rf-accent) !important; border-radius: var(--rff-r) !important;
+}
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) :is(.ChatTabs, .chatTabSet) .chatTab { border-radius: var(--rff-r) var(--rff-r) 0 0 !important; }
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) :is(.ChatTabs, .chatTabSet) .chatTab.ActiveTab { box-shadow: inset 0 -2px 0 var(--rf-accent) !important; color: var(--rf-text) !important; }

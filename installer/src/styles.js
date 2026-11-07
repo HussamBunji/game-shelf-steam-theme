@@ -25,7 +25,7 @@ const STYLES = [
   { id: 'cyberpunk', value: 'Cyberpunk', ar: 'سايبربنك', en: 'Cyberpunk',
     descAr: 'أجواء سايبربنك بألوان مريحة للعين وزوايا مقصوصة', descEn: 'Cyberpunk atmosphere in eye-friendly tones, angular HUD panels' },
   { id: 'shelter', value: 'Shelter OS', ar: 'الملجأ', en: 'Shelter OS',
-    descAr: 'جهاز ذراع قديم بشاشة كهرمانية', descEn: 'A retro wrist computer with an amber CRT' },
+    descAr: 'ملجأ أخضر وجهاز ذراع ترفعه بيدك', descEn: 'A green shelter terminal with a raise-to-view wrist computer' },
   { id: 'original', value: 'Steam Original', ar: 'ستيم الأصلي', en: 'Steam Original',
     descAr: 'ستيم مثل ما هو، مع زر الثيمات ولوحات المتجر', descEn: 'Stock Steam plus the Themes button and store panels' },
   /* extra community themes (MIT), not selected by default */

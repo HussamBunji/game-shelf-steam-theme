@@ -61,3 +61,14 @@
   --rf-plate-2: rgb(102, 108, 255);
   --rf-plate-ink: #ffffff;
 }
+
+/* ─────────────── wishlist · profile · friends pages (the shared layer is in src/css/webkit.css; this style's tokens) ─────────────── */
+/* SpaceTheme: flat near-black cards, soft corners */
+:root {
+  --rfp-card: rgb(20, 20, 20);
+  --rfp-card-hover: rgb(28, 28, 30);
+  --rfp-card-edge: inset 0 0 0 1px rgb(38, 38, 41);
+  --rfp-radius: 12px;
+  --rfp-glass: rgba(17, 17, 17, .84);
+  --rfp-field: rgb(24, 24, 24);
+}

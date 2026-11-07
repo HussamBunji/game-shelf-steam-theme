@@ -357,7 +357,7 @@ html[data-rfs-style="arcade"]:not(#rfs-arc) :is(
   #game_area_description, .game_area_description, #game_area_reviews, .review_box, .game_page_autocollapse_ctn .game_area_dlc_section,
   .home_tabs_content, .page_content .block_content_inner, .search_rightcol .block_content, #additional_search_options .block_content,
   .cE9cj0nbqpY- :is(._982gncrqNug-, .i1XZFikuzME-, .nfxC9n3FRVE-, .uOkrV3eksDM-),
-  .profile_content, .profile_header_content, .profile_customization, .badge_row, .rightbox, .forum_list_right, .help_login_nag,
+  .profile_content:not(body.has_profile_background *), .profile_header_content, .profile_customization, .badge_row, .rightbox, .forum_list_right, .help_login_nag,
   .error_bg, .market_search_sidebar_contents, .market_home_listing_table, .apphub_HomeHeaderContent, .workshop_browse_menu_area
 ) {
   border: 0 !important;
@@ -477,7 +477,7 @@ html[data-rfs-style="arcade"]:not(#rfs-arc) :is(#footer, footer#footer, #footer_
 }
 
 /* ── community: profile, hub, market, workshop, discussions, badges ── */
-html[data-rfs-style="arcade"]:not(#rfs-arc) .profile_header_bg_texture { background-color: #0b0922 !important; background-image: none !important; }
+html[data-rfs-style="arcade"]:not(#rfs-arc) .profile_header_bg_texture:not(body.has_profile_background *) { background-color: #0b0922 !important; background-image: none !important; }
 html[data-rfs-style="arcade"]:not(#rfs-arc) .profile_header_content { padding: 24px !important; }
 html[data-rfs-style="arcade"]:not(#rfs-arc) .profile_header .playerAvatar { border-radius: 0 !important; box-shadow: 0 0 0 3px #000, 0 0 0 6px #ff3ddc !important; }
 html[data-rfs-style="arcade"]:not(#rfs-arc) :is(.profile_private_info, .profile_header_summary) { color: #c9c6ee !important; }
@@ -729,3 +729,18 @@ html[data-rfs-style="arcade"] #rfs-qmenu .ql.cur { background: #ffd400; color: #
 
 /* the user box and its footer bar (skin.js) */
 html[data-rfs-style="arcade"] { --rf-footer-bg: #0b0620; --rf-footer-line: 2px solid #ff2fa8; --rf-user-radius: 0; --rf-user-bg: #120a2e; --rf-user-bg-hover: #2a1660; --rf-user-border: 2px solid #ffd400; --rf-user-shadow: 3px 3px 0 #000; --rf-user-ink: #ffd400; --rf-user-font: 400 13px var(--rf-heading-font); }
+
+/* ─────────────── wishlist · profile · friends pages (the shared layer is in src/css/webkit.css; this style's tokens) ─────────────── */
+/* 8-bit boxes: square, a black + violet pixel frame and a hard black drop shadow; the pixel title face runs smaller */
+:root {
+  --rfp-card: #110e2e;
+  --rfp-card-hover: #1a1545;
+  --rfp-card-edge: inset 0 0 0 2px #000, inset 0 0 0 4px rgba(140, 125, 255, .45);
+  --rfp-card-shadow: 6px 6px 0 #000;
+  --rfp-radius: 0px;
+  --rfp-head-ink: #ffd400;
+  --rfp-head-rule: 3px solid #ff3ddc;
+  --rfp-glass: rgba(17, 14, 46, .88);
+  --rfp-field: #0b0922;
+  --rfp-wl-title: 13px;
+}

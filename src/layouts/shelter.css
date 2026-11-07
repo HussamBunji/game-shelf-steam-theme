@@ -1,0 +1,588 @@
+/* ═══ Shelter OS (الملجأ) — home design CSS (src/layouts/shelter.js) ═══
+   The home page (#rfs[data-layout="shelter"]): an INVENTORY page of green-tinted tiles over a dark shelter wall, a
+   sticky status bar and the forearm with the wrist computer resting LOWERED in the bottom-end corner.
+   The game panel (#rfs-sheet[data-layout="shelter"]): the same arm RAISED, the device screen showing the game.
+   The arm + device ("the rig") is one component used in both places, so lowering / raising is one transform:
+   .sh-rig.low = the resting pose (scaled to half, tilted, sunk so only the top rim and screen peek up).
+   Everything is CSS shapes and gradients (no images). VT323 has no Arabic letters, so Arabic labels take their own
+   sizes from variables (Arabic first, English below); digits are Latin and keep the CRT face.
+   Performance: tiles have no filters or blend modes (the green tint is a plain overlay that fades on hover), only the
+   hovered / focused tile moves, nothing animates at rest; the one filtered element is the device's single picture. */
+#rfs[data-layout="shelter"],
+#rfs-sheet[data-layout="shelter"] {
+  --hi: #1bff80; --a: #18dc6e; --dim: #0f6b3a; --deep: #0a3d22; --tx: #8ff5b8; --mu: #3fae72; --ink: #021208;
+  --ln: rgba(24, 220, 110, .26); --ln2: rgba(24, 220, 110, .5);
+  --glow: 0 0 6px rgba(27, 255, 128, .35);
+  --crt: 'VT323', 'IBM Plex Sans Arabic', 'Share Tech Mono', monospace;
+  --mono: 'Share Tech Mono', 'IBM Plex Sans Arabic', 'Consolas', monospace;
+  --trk: 0;
+  --mir: -1;                 /* the dial's labels run the other way in Arabic */
+  --sdir: 270deg;            /* segmented meters start at the reading start */
+  /* Arabic sizes (IBM Plex Sans Arabic draws these labels) */
+  --s-tab: 18px; --w-tab: 600;
+  --s-h: 15px; --w-h: 600;
+  --s-h1: 30px;
+  --s-name: 26px;
+  --s-lbl: 12.5px;
+  --s-dl: 11px;
+  --s-sb: 30px;
+  color: var(--tx);
+}
+html[data-rfs-lang="en"] #rfs[data-layout="shelter"],
+html[data-rfs-lang="en"] #rfs-sheet[data-layout="shelter"] {
+  --trk: .08em; --mir: 1; --sdir: 90deg;
+  --s-tab: 30px; --w-tab: 400;
+  --s-h: 22px; --w-h: 400;
+  --s-h1: 46px;
+  --s-name: 36px;
+  --s-lbl: 11.5px;
+  --s-dl: 15px;
+  --s-sb: 46px;
+}
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] * { box-sizing: border-box; }
+
+/* ══════════════ the home page ══════════════ */
+#rfs[data-layout="shelter"] .sh {
+  position: relative; min-height: 100%; padding: 22px 30px 0; font-variant-numeric: tabular-nums;
+  background:
+    radial-gradient(ellipse 70% 360px at 50% -80px, rgba(27, 255, 128, .07), transparent 70%),
+    repeating-linear-gradient(0deg, rgba(27, 255, 128, .014) 0 1px, transparent 1px 3px),
+    linear-gradient(180deg, #061009, #030805 60%, #020604);
+}
+/* the header: a big CRT title on the notch line, readouts at the end */
+#rfs[data-layout="shelter"] .sh-hd { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; padding: 0 4px 14px; border-bottom: 2px solid var(--a); box-shadow: 0 2px 8px -4px rgba(27, 255, 128, .6); }
+#rfs[data-layout="shelter"] .sh-kick { display: block; margin-bottom: 4px; font-size: 12px; letter-spacing: calc(var(--trk) * 2); color: var(--mu); }
+#rfs[data-layout="shelter"] .sh-h1 { margin: 0; font: var(--w-tab) var(--s-h1)/1 var(--crt) !important; letter-spacing: var(--trk); color: var(--hi); text-shadow: 0 0 12px rgba(27, 255, 128, .45); }
+#rfs[data-layout="shelter"] .sh-hd-r { display: flex; gap: 26px; padding-bottom: 4px; white-space: nowrap; }
+#rfs[data-layout="shelter"] .sh-hd-r span { display: inline-flex; align-items: baseline; gap: 8px; }
+#rfs[data-layout="shelter"] .sh-hd-r small { font-size: var(--s-lbl); color: var(--mu); letter-spacing: var(--trk); }
+#rfs[data-layout="shelter"] .sh-hd-r b { font: 400 28px/1 var(--crt) !important; color: var(--hi); text-shadow: var(--glow); }
+
+/* the filter strip: one green command bar */
+#rfs[data-layout="shelter"] .sh-dock { position: relative; z-index: 60; margin: 16px 0 0; }
+#rfs[data-layout="shelter"] .sh-dock > #rfs-bar.inhome {
+  margin: 0; padding: 9px 12px; gap: 8px; border: 1px solid var(--ln2); border-radius: 6px;
+  background: rgba(27, 255, 128, .035); box-shadow: inset 0 0 22px rgba(27, 255, 128, .04);
+}
+
+/* section headers on the notch line: ──┘ READY └─────── 40 ITEMS */
+#rfs[data-layout="shelter"] .sh-lib { padding-bottom: 150px; } /* room for the resting arm */
+#rfs[data-layout="shelter"] .sh-sec { margin-top: 30px; }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] :is(.sh-sec-h, .sh-tl) { display: flex; align-items: stretch; min-width: 0; }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] :is(.sh-sec-h, .sh-tl) > .sh-ln { flex: 0 0 22px; border-bottom: 2px solid var(--a); }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] :is(.sh-sec-h, .sh-tl) > .sh-ln.g { flex: 1 1 auto; }
+#rfs[data-layout="shelter"] .sh-sec-h { margin-bottom: 16px; }
+#rfs[data-layout="shelter"] .sh-sec-h h3,
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-tab[aria-selected="true"] { position: relative; }
+#rfs[data-layout="shelter"] .sh-sec-h h3 {
+  margin: 0; padding: 0 14px 4px; color: var(--hi); text-shadow: 0 0 8px rgba(27, 255, 128, .5);
+  font: var(--w-tab) calc(var(--s-tab) - 4px)/1.1 var(--crt) !important; letter-spacing: var(--trk); text-transform: uppercase; white-space: nowrap;
+}
+/* the two posts rising from the line on both sides of the active label */
+#rfs[data-layout="shelter"] .sh-sec-h h3::before,
+#rfs[data-layout="shelter"] .sh-sec-h h3::after,
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-tab[aria-selected="true"]::before,
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-tab[aria-selected="true"]::after {
+  content: ''; position: absolute; bottom: 0; width: 2px; height: 14px; background: var(--a); box-shadow: 0 0 6px rgba(27, 255, 128, .5);
+}
+#rfs[data-layout="shelter"] .sh-sec-h h3::before,
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-tab[aria-selected="true"]::before { inset-inline-start: 0; }
+#rfs[data-layout="shelter"] .sh-sec-h h3::after,
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-tab[aria-selected="true"]::after { inset-inline-end: 0; }
+#rfs[data-layout="shelter"] .sh-cnt { align-self: flex-end; padding: 0 0 5px; padding-inline-start: 12px; border-bottom: 2px solid var(--a); color: var(--mu); font-size: 12.5px; letter-spacing: var(--trk); white-space: nowrap; }
+
+/* the tiles: dark plates, the art tinted green (a plain overlay) that shows its colour on hover */
+#rfs[data-layout="shelter"] .sh-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(226px, 1fr)); gap: 16px; }
+#rfs[data-layout="shelter"] .sh-t {
+  position: relative; overflow: hidden; padding-bottom: 9px; border-radius: 7px; cursor: pointer;
+  background: #04110a; box-shadow: inset 0 0 0 1px var(--ln);
+  transition: transform .16s cubic-bezier(.2, .7, .2, 1), box-shadow .16s;
+}
+#rfs[data-layout="shelter"] .sh-t .art {
+  position: relative; aspect-ratio: 460 / 215; margin: 5px 5px 8px; border-radius: 4px;
+  background: var(--img, none) center / cover no-repeat, #021008;
+}
+#rfs[data-layout="shelter"] .sh-t .art::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background:
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, .3) 0 1px, transparent 1px 3px),
+    linear-gradient(180deg, rgba(6, 74, 36, .72), rgba(2, 26, 12, .82));
+  box-shadow: inset 0 0 0 1px rgba(27, 255, 128, .25);
+  transition: opacity .18s;
+}
+#rfs[data-layout="shelter"] .sh-t .t { padding: 0 12px; color: var(--hi); font-size: 14.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: var(--glow); }
+#rfs[data-layout="shelter"] .sh-t .h { padding: 3px 12px 0; color: var(--mu); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+html[data-rfs-lang="ar"] #rfs[data-layout="shelter"] .sh-t .t { text-align: right; }
+#rfs[data-layout="shelter"] .sh-t.ni .t { color: var(--tx); opacity: .75; }
+#rfs[data-layout="shelter"] .sh-t.run { box-shadow: inset 0 0 0 1px var(--hi), 0 0 14px rgba(27, 255, 128, .25); }
+#rfs[data-layout="shelter"] .sh-t.run .h { color: var(--hi); }
+#rfs[data-layout="shelter"] .sh-t:is(:hover, .kf) { transform: translateY(-3px); box-shadow: inset 0 0 0 1px var(--hi), 0 0 18px rgba(27, 255, 128, .28), 0 10px 24px rgba(0, 0, 0, .55); }
+#rfs[data-layout="shelter"] .sh-t:is(:hover, .kf) .art::after { opacity: 0; }
+/* the keyboard ring: the selected-item bar of the device (inverted name line) */
+#rfs[data-layout="shelter"] .sh-t.kf .t { color: var(--ink); background: var(--hi); text-shadow: none; margin: 0 5px; border-radius: 2px; }
+
+/* the sticky status bar at the bottom of the home page (and the corner the arm rests in) */
+#rfs[data-layout="shelter"] .sh-foot { position: sticky; bottom: 0; z-index: 50; height: 58px; margin: 0 -30px; padding: 8px 30px 10px; pointer-events: none; }
+#rfs[data-layout="shelter"] .sh-foot > .sh-b3 {
+  position: relative; z-index: 1; margin-inline-end: min(660px, 46%); pointer-events: auto;
+  padding: 5px; border-radius: 8px; background: linear-gradient(180deg, #47483a, #2d2e24); box-shadow: inset 0 1px 0 rgba(255, 255, 225, .14), 0 0 0 1px #11120c, 0 -6px 20px rgba(0, 0, 0, .55);
+}
+#rfs[data-layout="shelter"] .sh-peek { position: absolute; inset-inline: 0; bottom: 0; height: 100vh; overflow: hidden; pointer-events: none; }
+#rfs[data-layout="shelter"] .sh-peek .sh-rig { pointer-events: auto; cursor: pointer; }
+#rfs[data-layout="shelter"] .sh.term .sh-peek .sh-rig { cursor: default; }
+#rfs[data-layout="shelter"] .sh.raised .sh-peek .sh-rig { visibility: hidden; }
+#rfs[data-layout="shelter"] .sh.term .sh-foot { z-index: 90; }
+#rfs[data-layout="shelter"] .sh.term .sh-foot > .sh-b3 { visibility: hidden; }
+/* the veil behind the raised terminal */
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-veil {
+  position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .3s;
+  background: radial-gradient(ellipse 90% 80% at 60% 60%, rgba(1, 8, 4, .78), rgba(1, 5, 3, .93));
+}
+#rfs[data-layout="shelter"] .sh.term .sh-veil { opacity: 1; pointer-events: auto; }
+#rfs-sheet[data-layout="shelter"] .sh-veil { opacity: 1; pointer-events: auto; }
+#rfs-sheet[data-layout="shelter"] .shv { position: absolute; inset: 0; overflow: hidden; font-variant-numeric: tabular-nums; }
+
+/* ══════════════ the rig: forearm + wrist computer ══════════════ */
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-rig {
+  --hd: min(690px, calc(100vh - 280px));
+  position: absolute; inset-inline-end: 4%; bottom: 118px; width: min(1120px, 88%); height: var(--hd); outline: 0;
+  transform-origin: 100% 100%;
+  transition: transform .52s cubic-bezier(.2, .85, .25, 1.03);
+}
+html[data-rfs-lang="ar"] :is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-rig { transform-origin: 0 100%; }
+/* resting: half size, tilted, sunk into the corner — only the top rim + the top of the screen show */
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-rig.low { transform: translateY(calc(var(--hd) * .5 + 118px - 118px)) rotate(calc(-5deg * var(--mir))) scale(.5); }
+#rfs[data-layout="shelter"] .sh-peek .sh-rig.low:hover,
+#rfs[data-layout="shelter"] .sh-peek .sh-rig.low:focus-visible { transform: translateY(calc(var(--hd) * .5 + 118px - 140px)) rotate(calc(-4deg * var(--mir))) scale(.5); transition-duration: .22s; }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-rig.down { transition-duration: .28s; transition-timing-function: cubic-bezier(.5, 0, .8, .3); }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-rig.still { transition: none; }
+#rfs-sheet[data-layout="shelter"] .sh-rig:not(.ready) { pointer-events: none; } /* a double-click can't press Play */
+
+/* the forearm: a blue-grey jumpsuit sleeve under the device, a stitched seam, a gloved wrist above */
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-arm {
+  position: absolute; z-index: 0; inset-inline-start: 23%; width: 37%; top: -6%; height: 210%;
+  border-radius: 18% 18% 22% 22% / 4% 4% 6% 6%;
+  transform: rotate(calc(4deg * var(--mir))); transform-origin: 50% 25%;
+  background:
+    linear-gradient(90deg, transparent 63%, rgba(206, 222, 238, .32) 63% 63.6%, transparent 63.6%) 0 0 / 100% 100%,
+    repeating-linear-gradient(180deg, transparent 0 9px, rgba(10, 18, 28, .35) 9px 10px) 61% 0 / 5% 100% no-repeat,
+    repeating-linear-gradient(172deg, rgba(255, 255, 255, .02) 0 18px, rgba(0, 0, 0, .06) 18px 40px),
+    linear-gradient(90deg, #1c2733 0%, #33465a 14%, #4b6580 34%, #587594 50%, #47617b 68%, #2f4256 86%, #1a2430 100%);
+  box-shadow: inset 0 0 40px rgba(0, 0, 0, .45), 0 0 50px rgba(0, 0, 0, .6);
+}
+/* the gloved hand / wrist cuff above the device */
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-arm::before {
+  content: ''; position: absolute; inset-inline: -3%; top: 0; height: 4.2%; border-radius: 14px 14px 8px 8px;
+  background: repeating-linear-gradient(90deg, #22303e 0 6px, #3a5068 6px 11px); box-shadow: inset 0 3px 0 rgba(255, 255, 255, .08), 0 5px 10px rgba(0, 0, 0, .5);
+}
+/* a ribbed cuff where the sleeve meets the glove */
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-arm::after {
+  content: ''; position: absolute; inset-inline-start: 12%; width: 30%; top: 58%; height: 9%; border-radius: 6px; pointer-events: none;
+  background: linear-gradient(180deg, rgba(0, 0, 0, .22), rgba(0, 0, 0, 0) 30%, rgba(255, 255, 255, .04) 50%, rgba(0, 0, 0, .2)); /* a fold in the cloth */
+}
+/* the strap with its buckle, wrapped around the sleeve below the device */
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-strap {
+  position: absolute; z-index: 1; inset-inline-start: 22%; width: 40%; top: calc(100% + 26px); height: 40px; transform: rotate(calc(4deg * var(--mir))); transform-origin: 50% -200%; border-radius: 8px;
+  background:
+    linear-gradient(90deg, transparent 0 calc(50% - 26px), #2a2a1e calc(50% - 26px) calc(50% + 26px), transparent 0),
+    repeating-linear-gradient(90deg, transparent 0 7px, rgba(0, 0, 0, .18) 7px 8px),
+    linear-gradient(180deg, #4d4b36, #393826 50%, #2b2a1d);
+  box-shadow: inset 0 3px 0 rgba(255, 255, 225, .12), inset 0 -3px 0 rgba(0, 0, 0, .35), 0 6px 14px rgba(0, 0, 0, .55);
+}
+/* the buckle: a steel frame with its prong */
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-strap::after {
+  content: ''; position: absolute; left: 50%; top: -6px; width: 60px; height: 52px; margin-left: -30px; border-radius: 7px;
+  border: 6px solid #8d907f; background: linear-gradient(90deg, transparent 46%, #b9bcaa 46% 54%, transparent 54%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), 0 3px 6px rgba(0, 0, 0, .6), inset 0 0 0 1px rgba(0, 0, 0, .4);
+}
+
+/* the device body: chunky painted gunmetal / olive, thick bevels, a raised rim, rivets */
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-dev {
+  position: absolute; inset: 0; z-index: 2;
+  display: grid; grid-template-columns: minmax(0, 1fr) 178px; gap: 26px; padding: 36px 30px 36px 40px; padding-inline: 40px 30px;
+  border-start-start-radius: 70px 60px; border-end-start-radius: 70px 60px; border-start-end-radius: 54px; border-end-end-radius: 54px;
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 230, .012) 0 1px, transparent 1px 4px),
+    radial-gradient(ellipse 70% 40% at 45% 0%, rgba(255, 255, 220, .1), transparent 70%),
+    linear-gradient(180deg, #5c5f47 0%, #4b4e39 30%, #3d3f2e 70%, #2b2d21 100%);
+  box-shadow:
+    inset 0 5px 0 rgba(255, 255, 230, .2), inset 0 -8px 0 rgba(0, 0, 0, .38), inset 7px 0 0 rgba(255, 255, 230, .05), inset -7px 0 0 rgba(0, 0, 0, .22),
+    0 0 0 2px #14150e, 0 3px 0 2px #0c0d08, 0 24px 60px rgba(0, 0, 0, .75);
+}
+/* the raised rim, inset from the edge */
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-dev::before {
+  content: ''; position: absolute; inset: 13px; pointer-events: none; border-radius: inherit;
+  border: 2px solid rgba(0, 0, 0, .38); box-shadow: 0 1px 0 rgba(255, 255, 230, .1), inset 0 1px 0 rgba(255, 255, 230, .08);
+}
+/* rivets: corners and the middle of the long edges */
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-dev::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  --rv: radial-gradient(circle, #b4b394 0 2.6px, #6c6b54 3.2px 4.6px, rgba(0, 0, 0, .55) 5px 6px, transparent 6.5px);
+  background:
+    var(--rv) 30px 30px / 14px 14px no-repeat, var(--rv) calc(100% - 26px) 26px / 14px 14px no-repeat,
+    var(--rv) 30px calc(100% - 30px) / 14px 14px no-repeat, var(--rv) calc(100% - 26px) calc(100% - 26px) / 14px 14px no-repeat,
+    var(--rv) 50% 6px / 14px 14px no-repeat, var(--rv) 50% calc(100% - 6px) / 14px 14px no-repeat;
+}
+/* clamps that wrap the arm at the device's top and bottom edges */
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-clamp {
+  position: absolute; z-index: 3; inset-inline-start: 21%; width: 40%; height: 46px; border-radius: 14px;
+  --rv: radial-gradient(circle, #b4b394 0 2.4px, #6c6b54 3px 4.3px, transparent 4.8px);
+  background:
+    var(--rv) 16px 50% / 12px 12px no-repeat, var(--rv) calc(100% - 16px) 50% / 12px 12px no-repeat,
+    repeating-linear-gradient(90deg, transparent 0 14px, rgba(0, 0, 0, .14) 14px 16px) 40px 0 / calc(100% - 80px) 100% no-repeat,
+    linear-gradient(180deg, #55573f, #3c3e2d 55%, #2a2b20);
+  box-shadow: inset 0 3px 0 rgba(255, 255, 230, .18), inset 0 -4px 0 rgba(0, 0, 0, .4), 0 0 0 2px #14150e, 0 8px 16px rgba(0, 0, 0, .55);
+}
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-clamp.t { top: -26px; }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-clamp.b { bottom: -26px; }
+/* a ribbed hose leaving the device's bottom-end corner */
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-hose {
+  position: absolute; z-index: -1; inset-inline-end: 12%; top: calc(100% - 20px); width: 28px; height: 190px; border-radius: 14px;
+  background: repeating-linear-gradient(180deg, #2a2b21 0 5px, #4c4e3b 5px 9px, #34352a 9px 11px);
+  box-shadow: inset 4px 0 4px rgba(255, 255, 230, .08), inset -5px 0 6px rgba(0, 0, 0, .5), 0 6px 14px rgba(0, 0, 0, .6);
+  transform: rotate(calc(-12deg * var(--mir)));
+  transform-origin: top center;
+}
+
+/* the recessed bezel and the rounded CRT */
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-bezel {
+  position: relative; z-index: 1; display: grid; min-width: 0; min-height: 0; padding: 15px; border-radius: 42px;
+  background: linear-gradient(180deg, #121309, #1d1e15);
+  box-shadow: inset 0 5px 14px rgba(0, 0, 0, .85), inset 0 0 0 2px rgba(0, 0, 0, .7), 0 2px 0 rgba(255, 255, 230, .16), 0 -2px 0 rgba(0, 0, 0, .4);
+}
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-scr {
+  position: relative; min-width: 0; min-height: 0; overflow: hidden; border-radius: 28px;
+  background: radial-gradient(ellipse 90% 85% at 50% 45%, #0a2414 0%, #04110a 60%, #010603 100%);
+  color: var(--tx); text-shadow: var(--glow);
+}
+/* on the glass: scanlines, the vignette (curvature), a glare — static */
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-scr::after {
+  content: ''; position: absolute; inset: 0; z-index: 9; pointer-events: none; border-radius: inherit;
+  background:
+    linear-gradient(150deg, rgba(220, 255, 235, .07) 0%, rgba(220, 255, 235, 0) 24%),
+    radial-gradient(ellipse 110% 105% at 50% 50%, transparent 58%, rgba(0, 0, 0, .55) 100%),
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, .2) 0 1px, transparent 1px 3px);
+  box-shadow: inset 0 0 60px rgba(0, 0, 0, .6), inset 0 0 0 2px rgba(0, 0, 0, .65);
+}
+/* the power-on as the arm arrives: a bright line opens into the picture, two soft flickers (≤ 560 ms) */
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-scr.boot .sh-crt { animation: rfs-shelter-on .56s .12s cubic-bezier(.3, .6, .3, 1) both; }
+@keyframes rfs-shelter-on {
+  0% { opacity: 0; transform: scale(.96, .008); filter: brightness(2.6); }
+  30% { opacity: 1; transform: scale(1, .008); filter: brightness(2.6); }
+  60% { opacity: 1; transform: none; filter: brightness(1.5); }
+  72% { opacity: .55; filter: none; }
+  82% { opacity: 1; }
+  90% { opacity: .8; }
+  100% { opacity: 1; transform: none; filter: none; }
+}
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-crt { position: relative; height: 100%; padding: 18px 24px 16px; font-size: 14.5px; }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-ui { display: grid; grid-template-rows: auto minmax(0, 1fr) auto auto; height: 100%; min-height: 0; }
+#rfs[data-layout="shelter"] .sh-ui { grid-template-rows: auto minmax(0, 1fr) auto; }
+/* lowered on the home page: the screen idles on a standby card; its UI waits until the arm comes up */
+#rfs[data-layout="shelter"] .sh-rig.low .sh-ui { visibility: hidden; }
+#rfs[data-layout="shelter"] .sh-rig:not(.low) .sh-standby { display: none; }
+#rfs[data-layout="shelter"] .sh-standby {
+  position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; gap: 10px; padding-top: 40px; text-align: center;
+}
+#rfs[data-layout="shelter"] .sh-sb-k { font-size: 22px; letter-spacing: .3em; color: var(--mu); }
+#rfs[data-layout="shelter"] .sh-standby b { font: var(--w-tab) var(--s-sb)/1 var(--crt) !important; letter-spacing: var(--trk); color: var(--hi); text-shadow: 0 0 14px rgba(27, 255, 128, .6); }
+#rfs[data-layout="shelter"] .sh-sb-ar { width: 0; height: 0; border: 16px solid transparent; border-bottom: 20px solid var(--hi); border-top: 0; filter: drop-shadow(0 0 6px rgba(27, 255, 128, .6)); }
+#rfs[data-layout="shelter"] .sh-peek .sh-rig.low:hover .sh-standby b { color: #c8ffe0; }
+
+/* the side panel: the big ribbed selector, the tuning knob + lights, the radio tuner, a grille */
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-side { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 20px; min-height: 0; padding-top: 4px; }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-dialbox { position: relative; flex: none; width: 178px; height: 190px; }
+/* the tick ring around the selector */
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-dialbox::before {
+  content: ''; position: absolute; left: 50%; top: 122px; width: 150px; height: 150px; margin: -75px 0 0 -75px; border-radius: 50%; pointer-events: none;
+  background: repeating-conic-gradient(from -2deg, #17180f 0 4deg, transparent 4deg 15deg);
+  -webkit-mask: radial-gradient(closest-side, transparent 0 84%, #000 85% 100%); mask: radial-gradient(closest-side, transparent 0 84%, #000 85% 100%);
+}
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-dial {
+  position: absolute; left: 50%; top: 122px; width: 118px; height: 118px; margin: -59px 0 0 -59px; border-radius: 50%;
+  background:
+    radial-gradient(circle, #6f705a 0 26%, #4a4b39 27% 30%, transparent 31%),
+    repeating-conic-gradient(rgba(0, 0, 0, .34) 0 4deg, rgba(255, 255, 230, .07) 4deg 10deg),
+    radial-gradient(circle at 36% 30%, #a3a589 0, #5f614a 40%, #393a2c 70%, #222319 100%);
+  box-shadow: 0 0 0 4px #24251b, 0 0 0 5px rgba(255, 255, 230, .08), 0 8px 14px rgba(0, 0, 0, .65), inset 0 2px 2px rgba(255, 255, 230, .25);
+  transform: rotate(calc(var(--rot, 0deg) * var(--mir)));
+  transition: transform .3s cubic-bezier(.3, 1.4, .5, 1);
+}
+/* the index: a bright pointer from the hub to the rim */
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-dial::after {
+  content: ''; position: absolute; left: 50%; top: 6px; width: 5px; height: 30px; margin-left: -2.5px; border-radius: 3px;
+  background: #e8e6cc; box-shadow: 0 0 0 1px rgba(0, 0, 0, .5);
+}
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-dl {
+  position: absolute; left: 50%; top: 122px; margin: 0; padding: 1px 3px; border: 0; background: none; cursor: pointer; white-space: nowrap;
+  transform: translate(-50%, -50%) rotate(calc(var(--a) * var(--mir))) translateY(-86px) rotate(calc(var(--a) * var(--mir) * -1));
+  font: var(--w-tab) var(--s-dl)/1 var(--crt) !important; letter-spacing: var(--trk); color: #1a1b12; text-shadow: 0 1px 0 rgba(255, 255, 230, .22);
+  transition: color .12s, text-shadow .12s;
+}
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-dl:hover { color: #0b2a17; }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-dl.on { color: var(--hi); text-shadow: 0 0 8px rgba(27, 255, 128, .8), 0 1px 0 rgba(0, 0, 0, .6); }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-row2 { display: flex; align-items: center; gap: 16px; }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-knob {
+  position: relative; width: 50px; height: 50px; border-radius: 50%;
+  background: repeating-conic-gradient(rgba(0, 0, 0, .3) 0 6deg, rgba(255, 255, 230, .06) 6deg 14deg), radial-gradient(circle at 36% 30%, #9c9e83, #55574200 0), radial-gradient(circle at 36% 30%, #9a9c80 0, #595b45 42%, #2b2c21 100%);
+  box-shadow: 0 0 0 3px #24251b, 0 5px 10px rgba(0, 0, 0, .6), inset 0 1px 1px rgba(255, 255, 230, .25);
+}
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-knob::after { content: ''; position: absolute; left: 50%; top: 5px; width: 3px; height: 14px; margin-left: -1.5px; border-radius: 2px; background: #d7d5bb; transform-origin: 50% 20px; transform: rotate(38deg); }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-lights { display: flex; gap: 9px; padding: 7px 9px; border-radius: 12px; background: #23241a; box-shadow: inset 0 2px 4px rgba(0, 0, 0, .7), 0 1px 0 rgba(255, 255, 230, .1); }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-lights i { width: 12px; height: 12px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #2f4a38, #0d1a12 70%); box-shadow: inset 0 -1px 2px rgba(0, 0, 0, .6); }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-lights i.on { background: radial-gradient(circle at 35% 35%, #eaffef, #1bff80 45%, #0b8a43); box-shadow: 0 0 10px 2px rgba(27, 255, 128, .65); }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-lights i:nth-child(3).on { background: radial-gradient(circle at 35% 35%, #fff3d0, #ffb642 45%, #a8640e); box-shadow: 0 0 10px 2px rgba(255, 182, 66, .6); }
+/* the radio tuner window: a scale behind glass and a needle */
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-tuner {
+  position: relative; flex: 1 1 auto; width: 54px; min-height: 60px; max-height: 190px; border-radius: 10px; overflow: hidden;
+  background:
+    linear-gradient(150deg, rgba(220, 255, 235, .1), transparent 35%),
+    repeating-linear-gradient(180deg, rgba(27, 255, 128, .55) 0 1px, transparent 1px 12px) 8px 6px / 12px calc(100% - 12px) no-repeat,
+    repeating-linear-gradient(180deg, rgba(27, 255, 128, .3) 0 1px, transparent 1px 6px) 8px 6px / 6px calc(100% - 12px) no-repeat,
+    #061a0e;
+  box-shadow: 0 0 0 4px #24251b, 0 0 0 5px rgba(255, 255, 230, .08), inset 0 3px 8px rgba(0, 0, 0, .8);
+}
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-needle { position: absolute; inset-inline: 6px; top: var(--tune, 38%); height: 2px; background: #ff7a3c; box-shadow: 0 0 6px rgba(255, 122, 60, .8); }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-grille {
+  flex: none; width: 100%; height: 66px; border-radius: 12px;
+  background: radial-gradient(circle, #0c0d08 0 2.3px, transparent 2.8px) 4px 4px / 10px 10px, linear-gradient(180deg, #2f3024, #393a2c);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, .7), 0 1px 0 rgba(255, 255, 230, .1);
+}
+
+/* ══════════════ the screen UI ══════════════ */
+/* the tab line (spacers draw the line; the active tab stands in its notch) */
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-tl { margin-bottom: 14px; }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-tab {
+  margin: 0; padding: 0 16px 4px; border: 0; border-bottom: 2px solid var(--a); background: none; cursor: pointer; white-space: nowrap;
+  font: var(--w-tab) var(--s-tab)/1.1 var(--crt) !important; letter-spacing: var(--trk); text-transform: uppercase; color: var(--dim); text-shadow: none;
+  transition: color .12s;
+}
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-tab:hover { color: var(--a); }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-tab[aria-selected="true"] { border-bottom-color: transparent; color: var(--hi); text-shadow: 0 0 10px rgba(27, 255, 128, .6); }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-tab:focus-visible { outline: 1px dashed var(--hi); outline-offset: -4px; }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-panes { position: relative; min-height: 0; }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-pane { display: none; height: 100%; min-height: 0; }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-scr:is([data-tab="item"]) .sh-pane[data-pane="item"],
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-scr:is([data-tab="data"]) .sh-pane[data-pane="data"],
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-scr:is([data-tab="stat"]) .sh-pane[data-pane="stat"] { display: block; }
+/* the close key at the end of the tab line (terminal) */
+#rfs[data-layout="shelter"] .sh-ui > .sh-x { position: absolute; top: 18px; inset-inline-end: 22px; }
+
+/* the three-part status bar: HRS · LEVEL + XP · GAMES */
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-b3 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr) minmax(0, 1fr); gap: 8px; margin-top: 12px; }
+#rfs[data-layout="shelter"] .sh-foot > .sh-b3 { margin-top: 0; }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .b3 {
+  display: flex; align-items: center; gap: 10px; min-width: 0; height: 36px; padding: 0 14px; border-radius: 3px;
+  background: linear-gradient(180deg, rgba(10, 61, 34, .95), rgba(7, 42, 23, .95)); box-shadow: inset 0 0 0 1px rgba(27, 255, 128, .35);
+}
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .b3.e { justify-content: flex-end; }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .b3 small { font-size: var(--s-lbl); letter-spacing: var(--trk); color: var(--a); white-space: nowrap; }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .b3 b { font: 400 26px/1 var(--crt) !important; color: var(--hi); text-shadow: var(--glow); white-space: nowrap; }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .b3-xp {
+  position: relative; flex: 1 1 auto; height: 12px; min-width: 40px;
+  background: repeating-linear-gradient(var(--sdir), rgba(27, 255, 128, .2) 0 6px, transparent 6px 8px);
+}
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .b3-xp > i { position: absolute; inset-block: 0; inset-inline-start: 0; background: repeating-linear-gradient(var(--sdir), var(--hi) 0 6px, transparent 6px 8px); box-shadow: 0 0 8px rgba(27, 255, 128, .4); }
+
+/* device keys: boxed green, inverted on hover; Play already inverted */
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] :is(.rf-act, .sh-x) {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding: 0 16px; margin: 0;
+  border: 1px solid var(--ln2); border-radius: 3px; cursor: pointer; white-space: nowrap;
+  color: var(--hi); background: rgba(27, 255, 128, .05); text-shadow: var(--glow);
+  font: var(--w-tab) calc(var(--s-tab) - 8px)/1 var(--crt) !important; letter-spacing: var(--trk); text-transform: uppercase;
+  transition: background-color .1s, color .1s, box-shadow .1s, transform .1s;
+}
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] :is(.rf-act, .sh-x):hover { color: var(--ink); background: var(--a); border-color: var(--hi); text-shadow: none; box-shadow: 0 0 14px rgba(27, 255, 128, .35); }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] :is(.rf-act, .sh-x):active { transform: translateY(1px); }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] :is(.rf-act, .sh-x):focus-visible { outline: 1px dashed var(--hi); outline-offset: 3px; }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .rf-act.play {
+  color: var(--ink); border-color: #5dffa4; text-shadow: none; background: linear-gradient(180deg, #4dff9c, #18dc6e);
+  box-shadow: inset 0 1px 0 rgba(210, 255, 230, .6), inset 0 -2px 0 rgba(4, 70, 34, .5), 0 0 14px rgba(27, 255, 128, .3);
+}
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .rf-act.play:hover { background: linear-gradient(180deg, #7affb6, #2bf088); box-shadow: inset 0 1px 0 rgba(210, 255, 230, .6), 0 0 22px rgba(27, 255, 128, .5); }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .rf-act.play.is-running { color: var(--hi); background: rgba(27, 255, 128, .12); border-color: var(--hi); text-shadow: var(--glow); }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-x { width: auto; padding: 0 12px; }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] :is(.rf-act, .sh-x) > svg.rf-ic { flex: none; width: 16px; height: 16px; margin: 0; stroke: currentColor; filter: none; }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] :is(.rf-act, .sh-x) > svg.rf-ic :is(.f, rect, ellipse, circle:not(.s)) { fill: currentColor; fill-opacity: .18; }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] :is(.rf-act, .sh-x) > svg.rf-ic .s { fill: currentColor; stroke: none; }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] kbd {
+  display: inline-block; min-width: 18px; padding: 1px 5px; border-radius: 2px; text-align: center;
+  font: 400 11px/1.35 var(--mono) !important; color: inherit; background: transparent; box-shadow: inset 0 0 0 1px currentColor; opacity: .8; text-shadow: none;
+}
+
+/* ---- the game on the device: ITEM ---- */
+#rfs-sheet[data-layout="shelter"] .shv-item { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 28px; height: 100%; min-height: 0; overflow: hidden; }
+#rfs-sheet[data-layout="shelter"] .shv-l { display: flex; flex-direction: column; gap: 10px; min-width: 0; min-height: 0; }
+#rfs-sheet[data-layout="shelter"] .shv-pic {
+  position: relative; flex: none; aspect-ratio: 460 / 215; max-height: 52%; overflow: hidden; border-radius: 4px; background: #010603;
+  box-shadow: 0 0 0 1px var(--ln2), 0 0 18px rgba(27, 255, 128, .1);
+}
+#rfs-sheet[data-layout="shelter"] .shv-pic::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(0, 0, 0, .3) 0 1px, transparent 1px 3px), radial-gradient(ellipse at 50% 50%, transparent 55%, rgba(0, 0, 0, .45) 100%);
+}
+/* the one picture, in green monochrome (a single element) */
+#rfs-sheet[data-layout="shelter"] .shv-img {
+  display: block; width: 100%; height: 100%; object-fit: cover;
+  filter: grayscale(1) sepia(1) hue-rotate(80deg) saturate(3.4) brightness(.86) contrast(1.15);
+}
+#rfs-sheet[data-layout="shelter"] .shv-pic.tall .shv-img { object-fit: contain; }
+#rfs-sheet[data-layout="shelter"] .shv-name {
+  margin: 4px 0 0; color: var(--hi); text-transform: uppercase; overflow-wrap: anywhere;
+  font: 400 var(--s-name)/1 var(--crt) !important; letter-spacing: .03em; text-shadow: 0 0 10px rgba(27, 255, 128, .5);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+html[data-rfs-lang="ar"] #rfs-sheet[data-layout="shelter"] .shv-name { text-align: right; }
+#rfs-sheet[data-layout="shelter"] .shv-blurb { margin: 4px 0 0; color: var(--tx); font-size: 14px; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+#rfs-sheet[data-layout="shelter"] .shv-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+#rfs-sheet[data-layout="shelter"] .shv-tags span { padding: 2px 8px; border-radius: 2px; font-size: 12.5px; color: var(--a); box-shadow: inset 0 0 0 1px var(--ln2); text-shadow: none; }
+/* the weapon-card table: label start, value end, a rule under every row */
+#rfs-sheet[data-layout="shelter"] .shv-card { display: flex; flex-direction: column; min-width: 0; align-self: start; border-top: 2px solid var(--a); }
+#rfs-sheet[data-layout="shelter"] .shv-r { display: flex; align-items: center; gap: 12px; min-height: 42px; padding: 6px 4px; border-bottom: 1px solid var(--ln2); }
+#rfs-sheet[data-layout="shelter"] .shv-r .k { flex: none; color: var(--a); font-size: 13.5px; letter-spacing: var(--trk); text-transform: uppercase; }
+#rfs-sheet[data-layout="shelter"] .shv-r .v { flex: 1 1 auto; min-width: 0; text-align: end; color: var(--hi); font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+html[data-rfs-lang="ar"] #rfs-sheet[data-layout="shelter"] .shv-r .v { text-align: left; }
+#rfs-sheet[data-layout="shelter"] .shv-r em { flex: none; font-style: normal; color: var(--mu); font-size: 13px; }
+#rfs-sheet[data-layout="shelter"] .shv-mb { position: relative; flex: 0 0 96px; height: 10px; background: repeating-linear-gradient(var(--sdir), rgba(27, 255, 128, .18) 0 5px, transparent 5px 7px); }
+#rfs-sheet[data-layout="shelter"] .shv-mb.wide { flex: 0 0 55%; }
+#rfs-sheet[data-layout="shelter"] .shv-mb > i { position: absolute; inset-block: 0; inset-inline-start: 0; background: repeating-linear-gradient(var(--sdir), var(--hi) 0 5px, transparent 5px 7px); box-shadow: 0 0 8px rgba(27, 255, 128, .4); }
+#rfs-sheet[data-layout="shelter"] .shv-mb.done > i { background: repeating-linear-gradient(var(--sdir), #c8ffe0 0 5px, transparent 5px 7px); }
+#rfs-sheet[data-layout="shelter"] .shv-st { display: inline-block; padding: 1px 8px; border-radius: 2px; font-size: 13px; box-shadow: inset 0 0 0 1px var(--ln2); }
+#rfs-sheet[data-layout="shelter"] .shv-st[data-st="ni"] { color: var(--mu); }
+#rfs-sheet[data-layout="shelter"] .shv-st[data-st="run"] { color: var(--ink); background: var(--hi); text-shadow: none; }
+#rfs-sheet[data-layout="shelter"] .shv-keys { display: flex; align-items: center; gap: 10px; margin-top: 14px; min-width: 0; }
+#rfs-sheet[data-layout="shelter"] .shv-keys .rf-acts { display: flex; flex-wrap: wrap; gap: 10px; margin: 0; padding: 0; }
+#rfs-sheet[data-layout="shelter"] .shv-keys .sh-x { margin-inline-start: auto; }
+/* DATA: the description and every fact */
+#rfs-sheet[data-layout="shelter"] .shv-data { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px; height: 100%; overflow-y: auto; }
+#rfs-sheet[data-layout="shelter"] .shv-desc { margin: 0; color: var(--tx); font-size: 15px; line-height: 1.7; }
+#rfs-sheet[data-layout="shelter"] .shv-desc.none { color: var(--mu); }
+/* STAT: this game against the library */
+#rfs-sheet[data-layout="shelter"] .shv-stat { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px 26px; align-content: start; padding-top: 6px; }
+#rfs-sheet[data-layout="shelter"] :is(.shv-use, .shv-ach) { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 8px; padding-top: 14px; border-top: 1px solid var(--ln2); }
+#rfs-sheet[data-layout="shelter"] .shv-use small { color: var(--a); font-size: var(--s-lbl); letter-spacing: var(--trk); }
+#rfs-sheet[data-layout="shelter"] .shv-use .shv-mb { flex: none; width: 100%; height: 14px; }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-cn { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-cn small { font-size: var(--s-lbl); color: var(--a); letter-spacing: calc(var(--trk) * 1.2); text-transform: uppercase; }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-cn b { font: 400 32px/1 var(--crt) !important; color: var(--hi); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 0 8px rgba(27, 255, 128, .4); }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-cn.big b { font-size: 46px !important; }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-cn em { font-style: normal; font-size: 11.5px; color: var(--mu); }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-cn b i { font-style: normal; font-size: .55em; color: var(--mu); }
+html[data-rfs-lang="ar"] :is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-cn b { text-align: right; }
+
+/* achievements readout: a boxed device meter (shelf.js draws it, the colours come from here) */
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .rf-ach { --ach-fg: #8ff5b8; --ach-dim: #3fae72; --ach-track: rgba(27, 255, 128, .14); --ach-fill: #1bff80; --ach-done: #c8ffe0; --ach-radius: 0; }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .rf-ach > b { font: 400 22px/1 var(--crt) !important; color: var(--hi); }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .rf-ach > em { font: 400 20px/1 var(--crt) !important; color: var(--hi); }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .rf-ach-bar { height: 10px; background: repeating-linear-gradient(var(--sdir), rgba(27, 255, 128, .16) 0 5px, transparent 5px 7px); }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .rf-ach-bar > i { background: repeating-linear-gradient(var(--sdir), var(--ach-fill) 0 5px, transparent 5px 7px); }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .rf-ach.done .rf-ach-bar > i { background: repeating-linear-gradient(var(--sdir), var(--ach-done) 0 5px, transparent 5px 7px); }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .rf-ach > svg.rf-ic { stroke: var(--hi); }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .rf-ach > svg.rf-ic :is(.f, rect, ellipse, circle:not(.s)) { fill: rgba(27, 255, 128, .18); }
+#rfs[data-layout="shelter"] .sh-mach .rf-ach.mini > b { font: 400 12.5px var(--mono) !important; }
+
+/* ---- the library terminal (raised from the home page): STAT + DATA ---- */
+#rfs[data-layout="shelter"] .sh-card { position: relative; min-width: 0; padding: 12px 16px 14px; border: 1px solid var(--ln); border-radius: 4px; background: rgba(27, 255, 128, .025); }
+#rfs[data-layout="shelter"] .sh-h {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 0 0 12px; padding: 0 2px 5px;
+  font: var(--w-h) var(--s-h)/1.15 var(--crt) !important; letter-spacing: var(--trk); text-transform: uppercase; color: var(--hi);
+  border-bottom: 1px solid var(--ln2);
+}
+#rfs[data-layout="shelter"] .sh-h small { font-family: var(--mono) !important; font-size: var(--s-lbl); font-weight: 400; color: var(--mu); }
+#rfs[data-layout="shelter"] .sh-none { margin: 6px 2px; color: var(--mu); }
+#rfs[data-layout="shelter"] .sh-stat { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 16px; height: 100%; overflow-y: auto; padding-inline-end: 4px; }
+#rfs[data-layout="shelter"] .sh-col { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+#rfs[data-layout="shelter"] .sh-lvrow { display: flex; align-items: center; gap: 18px; }
+#rfs[data-layout="shelter"] .sh-lvn { flex: none; min-width: 84px; padding: 2px 10px 0; text-align: center; border: 2px solid var(--a); border-radius: 4px; font: 400 68px/.95 var(--crt) !important; color: var(--hi); text-shadow: 0 0 14px rgba(27, 255, 128, .5); }
+#rfs[data-layout="shelter"] .sh-lvt { display: flex; flex-direction: column; gap: 8px; flex: 1 1 auto; min-width: 0; font-size: 13.5px; }
+#rfs[data-layout="shelter"] .sh-lvt b { color: var(--hi); font-weight: 400; }
+#rfs[data-layout="shelter"] .sh-lvt small { color: var(--mu); font-size: 12px; }
+#rfs[data-layout="shelter"] .sh-xp { position: relative; display: block; height: 16px; border: 1px solid var(--ln2); border-radius: 2px; }
+#rfs[data-layout="shelter"] .sh-xp::before,
+#rfs[data-layout="shelter"] .sh-xp > i { content: ''; position: absolute; inset: 2px; display: block; background: repeating-linear-gradient(90deg, rgba(27, 255, 128, .16) 0 calc(5% - 2px), transparent calc(5% - 2px) 5%); }
+#rfs[data-layout="shelter"] .sh-xp > i { background: repeating-linear-gradient(90deg, var(--hi) 0 calc(5% - 2px), transparent calc(5% - 2px) 5%); clip-path: inset(0 calc(100% - var(--seg) * 5%) 0 0); }
+html[data-rfs-lang="ar"] #rfs[data-layout="shelter"] .sh-xp > i { clip-path: inset(0 0 0 calc(100% - var(--seg) * 5%)); }
+#rfs[data-layout="shelter"] .sh-gauge { display: flex; align-items: center; gap: 22px; }
+#rfs[data-layout="shelter"] .sh-ring {
+  position: relative; flex: none; display: grid; place-items: center; width: 116px; height: 116px; margin: 8px; border-radius: 50%;
+  background: radial-gradient(closest-side, #04110a 0 72%, transparent 73%), conic-gradient(var(--hi) calc(var(--p) * 1%), rgba(27, 255, 128, .14) 0);
+}
+#rfs[data-layout="shelter"] .sh-ring::before {
+  content: ''; position: absolute; inset: -9px; border-radius: 50%; background: repeating-conic-gradient(rgba(27, 255, 128, .55) 0 1.2deg, transparent 1.2deg 15deg);
+  -webkit-mask: radial-gradient(closest-side, transparent 0 90%, #000 91%); mask: radial-gradient(closest-side, transparent 0 90%, #000 91%);
+}
+#rfs[data-layout="shelter"] .sh-ring b { font: 400 40px/1 var(--crt) !important; color: var(--hi); }
+#rfs[data-layout="shelter"] .sh-ring b small { font-size: .55em; color: var(--mu); }
+#rfs[data-layout="shelter"] .sh-gtxt { margin: 0; line-height: 1.6; color: var(--tx); }
+#rfs[data-layout="shelter"] .sh-gtxt b { color: var(--hi); font-weight: 400; }
+#rfs[data-layout="shelter"] .sh-cns { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px 16px; }
+#rfs[data-layout="shelter"] .sh-bars { display: flex; flex-direction: column; gap: 3px; }
+#rfs[data-layout="shelter"] :is(.sh-bar, .sh-ms) {
+  position: relative; width: 100%; margin: 0; border: 0; border-radius: 2px; cursor: pointer; background: transparent; color: var(--tx); text-align: start; font: inherit; text-shadow: inherit;
+}
+#rfs[data-layout="shelter"] .sh-bar { display: grid; grid-template-columns: minmax(0, 38%) minmax(0, 1fr) 64px; align-items: center; gap: 12px; height: 32px; padding: 0 10px; }
+/* the cursor: the device's selected-item bar (inverted) */
+#rfs[data-layout="shelter"] :is(.sh-bar, .sh-ms):hover { background: rgba(27, 255, 128, .08); }
+#rfs[data-layout="shelter"] :is(.sh-bar, .sh-ms).sel { background: var(--hi); color: var(--ink); text-shadow: none; }
+#rfs[data-layout="shelter"] :is(.sh-bar, .sh-ms).sel * { color: var(--ink) !important; text-shadow: none !important; }
+#rfs[data-layout="shelter"] :is(.sh-bar, .sh-ms):focus-visible { outline: 1px dashed var(--hi); outline-offset: 2px; }
+#rfs[data-layout="shelter"] .sh-bn { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#rfs[data-layout="shelter"] .sh-bt { position: relative; display: block; height: 11px; background: repeating-linear-gradient(var(--sdir), rgba(27, 255, 128, .14) 0 4px, transparent 4px 6px); }
+#rfs[data-layout="shelter"] .sh-bt > i { position: absolute; inset-block: 0; inset-inline-start: 0; background: repeating-linear-gradient(var(--sdir), var(--hi) 0 4px, transparent 4px 6px); }
+#rfs[data-layout="shelter"] .sh-bar.sel .sh-bt { background: repeating-linear-gradient(var(--sdir), rgba(2, 18, 8, .25) 0 4px, transparent 4px 6px); }
+#rfs[data-layout="shelter"] .sh-bar.sel .sh-bt > i { background: repeating-linear-gradient(var(--sdir), var(--ink) 0 4px, transparent 4px 6px); }
+#rfs[data-layout="shelter"] .sh-bv { text-align: end; font: 400 22px/1 var(--crt) !important; color: var(--hi); }
+#rfs[data-layout="shelter"] .sh-bv small { font-size: .7em; color: var(--mu); margin-inline-start: 2px; }
+#rfs[data-layout="shelter"] .sh-log { display: flex; flex-direction: column; height: 100%; min-height: 0; }
+#rfs[data-layout="shelter"] .sh-ms-list { min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+#rfs[data-layout="shelter"] .sh-ms { display: grid; grid-template-columns: 16px 96px minmax(0, 1fr) 104px 110px; align-items: center; column-gap: 14px; min-height: 48px; padding: 6px 10px; border-bottom: 1px solid rgba(24, 220, 110, .14); }
+#rfs[data-layout="shelter"] .sh-box { position: relative; width: 14px; height: 14px; border: 1.5px solid var(--a); border-radius: 2px; }
+#rfs[data-layout="shelter"] .sh-ms[data-st="done"] .sh-box::after { content: ''; position: absolute; left: 3px; top: 0; width: 4px; height: 8px; border: solid currentColor; border-width: 0 2px 2px 0; transform: rotate(45deg); color: var(--mu); }
+#rfs[data-layout="shelter"] .sh-ms[data-st="act"] .sh-box::after { content: ''; position: absolute; inset: 2px; background: var(--a); }
+#rfs[data-layout="shelter"] .sh-ms[data-st="run"] .sh-box { background: var(--hi); box-shadow: 0 0 8px rgba(27, 255, 128, .6); }
+#rfs[data-layout="shelter"] .sh-ms.sel .sh-box { border-color: var(--ink); }
+#rfs[data-layout="shelter"] .sh-ms.sel .sh-box::after { background: var(--ink); border-color: var(--ink); }
+#rfs[data-layout="shelter"] .sh-md { color: var(--mu); font-size: 13.5px; }
+#rfs[data-layout="shelter"] .sh-mt { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+#rfs[data-layout="shelter"] .sh-mt b { font-weight: 400; color: var(--hi); font-size: 15.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#rfs[data-layout="shelter"] .sh-mt small { display: flex; align-items: center; gap: 6px; min-width: 0; color: var(--mu); font-size: 12px; white-space: nowrap; overflow: hidden; }
+#rfs[data-layout="shelter"] .sh-mach { display: inline-flex; align-items: center; gap: 6px; }
+#rfs[data-layout="shelter"] .sh-mach:empty { display: none; }
+#rfs[data-layout="shelter"] .sh-sep { font-style: normal; }
+#rfs[data-layout="shelter"] .sh-mh { text-align: end; color: var(--hi); font-size: 14px; white-space: nowrap; }
+#rfs[data-layout="shelter"] .sh-mst { justify-self: start; padding: 2px 7px; border-radius: 2px; font-size: 11.5px; color: var(--hi); box-shadow: inset 0 0 0 1px var(--ln2); white-space: nowrap; }
+#rfs[data-layout="shelter"] .sh-ms[data-st="done"] .sh-mst { color: var(--mu); }
+#rfs[data-layout="shelter"] .sh-ms.sel .sh-mst { box-shadow: inset 0 0 0 1px var(--ink); }
+html[data-rfs-lang="ar"] #rfs[data-layout="shelter"] :is(.sh-mt b, .sh-bn) { text-align: right; }
+
+/* ══════════════ smaller panels ══════════════ */
+#rfs[data-layout="shelter"] .sh.narrow { padding-inline: 18px; }
+#rfs[data-layout="shelter"] .sh.narrow .sh-foot { margin-inline: -18px; padding-inline: 18px; }
+#rfs[data-layout="shelter"] .sh.narrow .sh-hd-r span:nth-child(3) { display: none; }
+#rfs[data-layout="shelter"] .sh.narrow .sh-grid { grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; }
+#rfs[data-layout="shelter"] .sh.tiny .sh-hd-r { display: none; }
+#rfs[data-layout="shelter"] .sh.tiny .sh-foot > .sh-b3 { margin-inline-end: 0; grid-template-columns: 1fr 1fr; }
+#rfs[data-layout="shelter"] .sh.tiny .sh-foot > .sh-b3 .b3.c { display: none; }
+#rfs[data-layout="shelter"] .sh.tiny .sh-peek { display: none; }
+@media (max-width: 1100px) {
+  :is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-dev { grid-template-columns: minmax(0, 1fr) 132px; gap: 18px; padding-inline: 30px 22px; }
+  :is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-dialbox { transform: scale(.76); transform-origin: top center; margin-bottom: -44px; }
+  :is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-tuner { width: 44px; }
+  #rfs-sheet[data-layout="shelter"] .shv-item { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; }
+  #rfs[data-layout="shelter"] .sh-ms { grid-template-columns: 16px 86px minmax(0, 1fr) 90px; }
+  #rfs[data-layout="shelter"] .sh-ms .sh-mst { display: none; }
+}
+@media (max-height: 760px) {
+  :is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-grille { display: none; }
+  #rfs-sheet[data-layout="shelter"] .shv-r { min-height: 34px; padding-block: 3px; }
+  #rfs-sheet[data-layout="shelter"] .shv-pic { max-height: 40%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-rig { transition: none; }
+  :is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-scr.boot .sh-crt { animation: none; }
+  :is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-dial { transition: none; }
+  #rfs[data-layout="shelter"] .sh-t { transition: none; }
+  #rfs[data-layout="shelter"] .sh-t:is(:hover, .kf) { transform: none; }
+  :is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-veil { transition: none; }
+}
