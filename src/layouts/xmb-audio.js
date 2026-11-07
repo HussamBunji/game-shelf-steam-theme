@@ -16,8 +16,9 @@
   const me = document.currentScript;
   const TRACK = (me && me.src ? me.src : '').replace(/xmb-audio\.js(\?.*)?$/, 'xmb-ambience.mp3');
   const K_AMB = 'rfs.xmb.amb', K_SFX = 'rfs.xmb.sfx';
-  const getFlag = k => { try { return localStorage.getItem(k) === '1'; } catch (e) { return false; } };
-  const setFlag = (k, v) => { try { localStorage.setItem(k, v ? '1' : '0'); } catch (e) { /* private */ } };
+  // the theme picker's master "Sounds: off" switch (rfs.sound = '0') silences Crossbar too
+  const getFlag = k => { try { return localStorage.getItem('rfs.sound') !== '0' && localStorage.getItem(k) === '1'; } catch (e) { return false; } };
+  const setFlag = (k, v) => { try { localStorage.setItem(k, v ? '1' : '0'); if (v) localStorage.setItem('rfs.sound', '1'); } catch (e) { /* private */ } };
 
   let ac = null, master = null, verbIn = null, sfxBus = null, noise = null;
   let pad = null, watchT = 0, gestured = false, dead = false;

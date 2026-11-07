@@ -586,4 +586,5 @@ html:is([data-rfs-style="glass"], [data-rfs-style="magazine"], [data-rfs-style="
 /* in the title bar there is room for the icon and the % only */
 html:is([data-rfs-style="glass"], [data-rfs-style="magazine"], [data-rfs-style="vault"], [data-rfs-style="cork"], [data-rfs-style="neon"], [data-rfs-style="space"], [data-rfs-style="cupertino"], [data-rfs-style="xmb"], [data-rfs-style="material"], [data-rfs-style="original"]) #rfs-dl { padding: 0 8px; }
 html:is([data-rfs-style="glass"], [data-rfs-style="magazine"], [data-rfs-style="vault"], [data-rfs-style="cork"], [data-rfs-style="neon"], [data-rfs-style="space"], [data-rfs-style="cupertino"], [data-rfs-style="xmb"], [data-rfs-style="material"], [data-rfs-style="original"]) #rfs-dl .lbl { display: none; }
-
+/* master sound switch in the picker header, next to the language switch */
+#rfs-themes .tp-snd { margin-inline-end: 8px; }

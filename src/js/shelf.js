@@ -647,6 +647,7 @@
     <div class="tp-box">
       <div class="tp-head">
         <h2>${ic('palette')}${T('اختر تصميم الثيم', 'Choose a theme design')}</h2>
+        <div class="tp-lang tp-snd" role="group" aria-label="${T('أصوات الثيم', 'Theme sounds')}">${ic('volume')}<button data-snd="off" type="button">${T('الأصوات: مطفأة', 'Sounds: off')}</button><button data-snd="on" type="button">${T('شغّالة', 'On')}</button></div>
         <div class="tp-lang" role="group" aria-label="${T('لغة الواجهة', 'Interface language')}">${ic('globe')}<button data-lang="ar" lang="ar" class="${LTR ? '' : 'on'}" aria-pressed="${!LTR}">العربية</button><button data-lang="en" lang="en" class="${LTR ? 'on' : ''}" aria-pressed="${LTR}">English</button></div>
         <p>${T('كل تصميم يغيّر الصفحة الرئيسية وشكل ستيم كله والمتجر. التطبيق ياخذ ثواني (ستيم يعيد تحميل الواجهة).', 'Each design changes the home page, the look of all of Steam, and the store. Applying takes a few seconds (Steam reloads its interface).')}</p>
       </div>
@@ -1442,7 +1443,18 @@
     const b = e.target.closest('button'); if (!b) return;
     state.view = b.dataset.v; store.set('view', state.view); sfx('tick'); render();
   });
-  $('.tb-snd', bar).addEventListener('click', () => { state.sound = !state.sound; store.set('sound', state.sound ? '1' : '0'); Sfx.load(); updateBar(); sfx('tick'); });
+  /* one master switch for every theme sound (clicks, moves, opens) AND the background ambience: off = total silence */
+  function setSound(on) {
+    state.sound = !!on; store.set('sound', on ? '1' : '0');
+    if (!on && state.amb) { state.amb = false; store.set('amb', '0'); }
+    Sfx.load(); updateBar(); try { Sfx.sync(); } catch (e) { /* ambience engine not ready */ }
+    paintSoundSwitch(); if (on) sfx('tick');
+  }
+  function paintSoundSwitch() {
+    picker.querySelectorAll('.tp-snd button').forEach(b => { const on = (b.dataset.snd === 'on') === !!state.sound; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); });
+    const off = picker.querySelector('.tp-snd button[data-snd="off"]'); if (off) off.textContent = T('الأصوات: مطفأة', 'Sounds: off');
+  }
+  $('.tb-snd', bar).addEventListener('click', () => setSound(!state.sound));
   $('.tb-amb', bar).addEventListener('click', () => { state.amb = !state.amb; store.set('amb', state.amb ? '1' : '0'); Sfx.load(); updateBar(); Sfx.sync(); });
   $('.tb-theme', bar).addEventListener('click', () => Themes.open());
   $('.tb-news', bar).addEventListener('click', () => { state.news = !state.news; store.set('news', state.news ? '1' : '0'); sfx('tick'); placement.key = ''; tick(true); });
@@ -1908,6 +1920,7 @@
     open() {
       picker.querySelectorAll('.tp-card').forEach(c => c.classList.toggle('cur', c.dataset.sid === curStyle()));
       Pager.toCurrent();
+      paintSoundSwitch();
       installedStyles().then(() => Pager.toCurrent());
       Updater.paint();
       picker.classList.add('on');
@@ -2005,7 +2018,9 @@
   };
 
   picker.addEventListener('click', e => {
-    const lb = e.target.closest('.tp-lang button');
+    const sb = e.target.closest('.tp-snd button');
+    if (sb) { setSound(sb.dataset.snd === 'on'); return; }
+    const lb = e.target.closest('.tp-lang:not(.tp-snd) button');
     if (lb) { if (!lb.classList.contains('on')) Lang.set(lb.dataset.lang); return; }
     if (e.target.closest('.tp-upd-go')) { Updater.open(); return; }
     const pg = e.target.closest('.tp-pg');
