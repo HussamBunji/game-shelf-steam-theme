@@ -5496,6 +5496,663 @@ html[data-rfs-style="magazine"] #rfs-themes :is(.tp-lang, .tp-lang button) { bor
 html[data-rfs-style="magazine"] { --rf-footer-bg: #0a0a0a; --rf-footer-line: 2px solid var(--rf-accent); --rf-user-radius: 0; --rf-user-bg: #0e0e0e; --rf-user-bg-hover: #1c1c1c; --rf-user-border: 1px solid rgba(239, 230, 214, .35); --rf-user-font: 700 12px var(--rf-heading-font); }
 
 
+/* ═══ Theme — Cupertino Dark (كوبرتينو الداكن) ═══
+   Home: a cinematic hero banner, a floating glass filter capsule, large Recently Played lockups, then every game as
+   16:9 lockups in two sections.  Chrome: a premium desktop dark UI — true black, liquid glass on the few singular
+   surfaces, grouped gray lists with hairlines, large tight display titles, systemBlue links and buy pills,
+   the white Play pill, translucent glass pills for everything else. */
+html[data-rfs-style="cupertino"] {
+  /* layout base: SpaceTheme (MIT, src/vendor/space) — its sidebar, search, centred store/library;
+     this style supplies the colours below, its own fonts, home design, icons and the touches further down */
+  --rf-vendor: space;
+  --rf-vendor-skip: options/fonts/, options/general/alwaysShowSidebar;
+  --rf-style-id: cupertino;
+  --rf-layout: cupertino;
+
+  /* fonts: Inter + IBM Plex Sans Arabic for everything (Latin first, Arabic second — each script picks its own).
+     Display titles use the same pair, bold, with tight Latin tracking (0 in Arabic, set below). */
+  --rf-font-ui: 'Inter', 'IBM Plex Sans Arabic', 'Segoe UI', sans-serif;
+  --rf-font-gf: "family=Inter:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700";
+  --rf-heading-font: var(--rf-font-ui);
+  --rf-heading-case: none;
+  --rf-heading-spacing: -.022em;
+
+  /* this style's own tokens (system dark palette) */
+  --cu-bg: #000000;
+  --cu-2: #1c1c1e;          /* secondary grouped surface */
+  --cu-3: #2c2c2e;          /* tertiary */
+  --cu-4: #3a3a3c;          /* raised / hover */
+  --cu-sep: rgba(84, 84, 88, .6);
+  --cu-label: #ffffff;
+  --cu-label-2: rgba(235, 235, 245, .6);
+  --cu-label-3: rgba(235, 235, 245, .3);
+  --cu-fill: rgba(120, 120, 128, .24);
+  --cu-fill-hi: rgba(120, 120, 128, .36);
+  --cu-blue: #0a84ff;
+  --cu-blue-hi: #409cff;
+  --cu-green: #30d158;
+  --cu-ease: cubic-bezier(.2, .8, .2, 1);
+  /* liquid glass (only for singular surfaces) and the solid "card" stack used on repeated ones */
+  --cu-glass: linear-gradient(180deg, rgba(255, 255, 255, .09), rgba(255, 255, 255, .02) 60%), rgba(30, 30, 34, .6);
+  --cu-glass-edge: inset 0 1px 0 rgba(255, 255, 255, .14), inset 0 0 0 .5px rgba(255, 255, 255, .06), 0 0 0 .5px rgba(255, 255, 255, .1);
+  --cu-card: linear-gradient(180deg, rgba(255, 255, 255, .035), rgba(255, 255, 255, 0) 40%), #1c1c1e;
+  --cu-card-edge: inset 0 1px 0 rgba(255, 255, 255, .06), 0 0 0 .5px rgba(255, 255, 255, .06);
+  --cu-depth: 0 12px 32px rgba(0, 0, 0, .55), 0 2px 8px rgba(0, 0, 0, .35);
+
+  /* icons: white to light-blue strokes; icon tiles are rounded-square dark gray app icons with a top highlight */
+  --rf-ic-1: #ffffff;
+  --rf-ic-2: #7cc4ff;
+  --rf-ic-fill: rgba(124, 196, 255, .16);
+  --rf-ic-sw: 1.8;
+  --rf-ic-glow: none;
+  --rf-ict-bg: linear-gradient(180deg, #4a4a4e, #2c2c2e 55%, #232325);
+  --rf-ict-border: 0;
+  --rf-ict-radius: 9px;
+  --rf-ict-shadow: inset 0 1px 0 rgba(255, 255, 255, .2), inset 0 0 0 .5px rgba(255, 255, 255, .08), 0 1px 3px rgba(0, 0, 0, .6);
+  --rf-ict-shadow-hi: inset 0 1px 0 rgba(255, 255, 255, .24), 0 0 0 2px rgba(10, 132, 255, .8), 0 2px 6px rgba(0, 0, 0, .6);
+  --rf-ict-1: #ffffff;
+  --rf-ict-2: #8ccaff;
+  --rf-ict-fill: rgba(140, 202, 255, .18);
+  --rf-ict-glow: none;
+
+  /* surfaces: true black with one very soft glow from the top */
+  --rf-bg: #000000;
+  --rf-bg-img: radial-gradient(ellipse 70% 360px at 50% -80px, rgba(120, 140, 190, .12), transparent 75%);
+  --rf-panel: #1c1c1e;
+  --rf-panel-2: #2c2c2e;
+  --rf-panel-3: #3a3a3c;
+  --rf-border: rgba(84, 84, 88, .6);
+  --rf-text: #ffffff;
+  --rf-text-dim: rgba(235, 235, 245, .6);
+  --rf-accent: #0a84ff;
+  --rf-accent-2: #64d2ff;
+  --rf-accent-rgb: 10, 132, 255;
+  --rf-accent-ink: #ffffff;
+  /* "play" = the white pill with black type */
+  --rf-play-1: #ffffff;
+  --rf-play-2: #f2f2f7;
+  --rf-play-ink: #000000;
+  --rf-glow: 10, 132, 255;
+
+  /* chrome shape: 10 px controls, 14–16 px cards, 980 px pills */
+  --rf-radius: 10px;
+  --rf-radius-lg: 16px;
+  --rf-topbar: linear-gradient(rgba(28, 28, 30, .96), rgba(20, 20, 22, .96));
+  --rf-topbar-line: rgba(84, 84, 88, .6);
+  --rf-sidebar: #0b0b0c;
+  --rf-card: #1c1c1e;
+  --rf-card-border: 0;
+  --rf-card-hover-shadow: 0 24px 48px rgba(0, 0, 0, .7), 0 0 0 .5px rgba(255, 255, 255, .14);
+  --rf-blur: 0px;
+
+  --rf-led-rgb: 10, 132, 255;
+  --rf-plate-1: #f5f5f7;
+  --rf-plate-2: #c7c7cc;
+  --rf-plate-ink: #1c1c1e;
+}
+/* Arabic letters must not be spaced apart: the tight tracking is for Latin only */
+html[data-rfs-style="cupertino"][data-rfs-lang="ar"] { --rf-heading-spacing: 0; }
+
+/* SpaceTheme's colour slots (system grays, systemBlue accent). :root:root outranks SpaceTheme's own root.css. */
+html[data-rfs-style="cupertino"][data-rfs-style] {
+  --st-accent-1: 10, 132, 255;
+  --st-accent-2: 64, 156, 255;
+  --st-background: 0, 0, 0;
+  --st-color-1: 28, 28, 30;
+  --st-color-2: 44, 44, 46;
+  --st-color-3: 28, 28, 30;
+  --st-color-4: 58, 58, 60;
+  --st-color-5: 72, 72, 74;
+  --st-color-6: 58, 58, 60;
+  --st-green: 48, 209, 88;           /* success / Steam's own Play buttons: systemGreen */
+  --st-green-hover: 74, 222, 110;
+  --st-blue: 10, 132, 255;
+  --st-blue-hover: 64, 156, 255;
+  --st-border-radius: 10px;
+}
+
+/* ─────────────── Steam windows (stable class names only) ─────────────── */
+html[data-rfs-style="cupertino"] ::selection { background: rgba(10, 132, 255, .55); color: #fff; }
+html[data-rfs-style="cupertino"] body { -webkit-font-smoothing: antialiased; }
+
+/* buttons: translucent pills with an inner top highlight, no borders */
+html[data-rfs-style="cupertino"] .DialogButton {
+  border: 0 !important; border-radius: 980px !important; color: #fff !important; font-weight: 600 !important;
+  background: rgba(120, 120, 128, .24) !important; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1) !important; text-shadow: none !important;
+  transition: background-color .2s cubic-bezier(.2, .8, .2, 1), transform .2s cubic-bezier(.2, .8, .2, 1) !important;
+}
+html[data-rfs-style="cupertino"] .DialogButton:not(:disabled):not(.Disabled):hover { background: rgba(120, 120, 128, .38) !important; }
+html[data-rfs-style="cupertino"] .DialogButton:not(:disabled):not(.Disabled):active { transform: scale(.97); }
+/* the main step: a systemBlue pill; Steam's green Play button: the white pill */
+html[data-rfs-style="cupertino"] .DialogButton.Primary { color: #fff !important; background: #0a84ff !important; box-shadow: 0 4px 14px rgba(10, 132, 255, .3) !important; }
+html[data-rfs-style="cupertino"] .DialogButton.Primary:not(:disabled):not(.Disabled):hover { background: #409cff !important; }
+html[data-rfs-style="cupertino"] .DialogButton.Green { color: #000 !important; background: #fff !important; box-shadow: 0 4px 14px rgba(0, 0, 0, .35) !important; }
+html[data-rfs-style="cupertino"] .DialogButton.Green:not(:disabled):not(.Disabled):hover { background: #f2f2f7 !important; }
+html[data-rfs-style="cupertino"] .DialogButton:is(:disabled, .Disabled) { opacity: .4 !important; }
+html[data-rfs-style="cupertino"] .DialogButton:focus-visible { outline: 3px solid #0a84ff !important; outline-offset: 3px !important; }
+
+/* text fields: rounded #1c1c1e fields, a soft blue focus ring */
+html[data-rfs-style="cupertino"] .DialogInput {
+  border-radius: 10px !important; color: #fff !important; background-color: #1c1c1e !important;
+  border: 1px solid rgba(84, 84, 88, .6) !important; box-shadow: none !important;
+}
+html[data-rfs-style="cupertino"] .DialogInput:focus { border-color: #0a84ff !important; box-shadow: 0 0 0 3px rgba(10, 132, 255, .5) !important; }
+html[data-rfs-style="cupertino"] .DialogInput::placeholder { color: rgba(235, 235, 245, .3) !important; }
+html[data-rfs-style="cupertino"] .DialogDropDown {
+  border-radius: 10px !important; color: #fff !important; background: #2c2c2e !important;
+  border: 0 !important; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), 0 1px 2px rgba(0, 0, 0, .4) !important;
+}
+html[data-rfs-style="cupertino"] .DialogDropDown:hover { background: #3a3a3c !important; }
+html[data-rfs-style="cupertino"] .DialogCheckbox { border-radius: 6px !important; }
+
+/* scrollbars: thin, rounded, gray (overlay style) */
+html[data-rfs-style="cupertino"] *::-webkit-scrollbar { width: 10px; height: 10px; }
+html[data-rfs-style="cupertino"] *::-webkit-scrollbar-thumb {
+  border-radius: 99px !important; background-color: rgba(142, 142, 147, .42) !important;
+  border: 2.5px solid transparent !important; background-clip: padding-box !important;
+}
+html[data-rfs-style="cupertino"] *::-webkit-scrollbar-thumb:hover { background-color: rgba(174, 174, 178, .7) !important; }
+html[data-rfs-style="cupertino"] *::-webkit-scrollbar-track { background: transparent !important; }
+html[data-rfs-style="cupertino"] *::-webkit-scrollbar-corner { background: transparent !important; }
+
+/* our toast + theme picker */
+html[data-rfs-style="cupertino"] #rfs-toast { background: rgba(44, 44, 46, .97); border: 0; border-radius: 16px; color: #fff; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1), 0 0 0 .5px rgba(255, 255, 255, .1), 0 20px 50px rgba(0, 0, 0, .65); }
+html[data-rfs-style="cupertino"] #rfs-themes .tp-box { background: linear-gradient(180deg, #232326, #1c1c1e 240px); border-radius: 26px; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), 0 0 0 .5px rgba(255, 255, 255, .1), 0 40px 100px rgba(0, 0, 0, .75); }
+html[data-rfs-style="cupertino"] #rfs-themes .tp-head h2 { font-weight: 700; letter-spacing: var(--rf-heading-spacing); }
+
+/* ═══════════════ store, community and help pages: an app-store dark look ═══════════════
+   Web pages carry html.responsive (Steam's own windows don't), so the page rules below are scoped
+   html.responsive[data-rfs-style="cupertino"] and never reach the library.
+   The look: a black page with a faint top glow; the store bar a floating glass capsule (the page's one blur);
+   large bold titles with tight tracking; capsules and cards with 12–16 px radii and deep soft shadows; tab lists as
+   grouped inset rows with hairlines; blue buy pills, gray pills for the rest; green discount capsules; blue links.
+   No Steam blue borders or gradients, no blur or filters on repeated items. */
+
+/* ---- 1. the page ---- */
+html.responsive[data-rfs-style="cupertino"] {
+  --standard-root-background: #000;
+  background-color: #000 !important;
+  background-image: radial-gradient(ellipse 70% 420px at 50% -100px, rgba(120, 140, 190, .13), transparent 75%) !important;
+}
+html.responsive[data-rfs-style="cupertino"] body { color: rgba(235, 235, 245, .82); font-variant-numeric: tabular-nums; }
+html.responsive[data-rfs-style="cupertino"] :is(.react_landing_background, .SaleBackground:not([style*="url"]), .page_content_ctn, .home_page_body_ctn, .home_page_content) { background-color: transparent !important; }
+/* the game page keeps its own art (Steam fades it out); only the colour under it turns black */
+html.responsive[data-rfs-style="cupertino"] .game_page_background { background-color: #000 !important; }
+
+/* ---- 2. titles: large, bold, white, tight ---- */
+html.responsive[data-rfs-style="cupertino"] :is(.home_title, .home_section_title, .home_page_content > h2, .home_page_content h2.home_title, .pagesubheader, .pageheader, .page_content > h2,
+  .game_purchase_options_editions_header_title, .game_area_dlc_section > h2, #game_area_description > h2:first-child, #game_area_reviews > h2,
+  .large_title, .discussion_primary_header, .help_intro_text, .market_header_text h1, .game_area_purchase_game > h1) {
+  font-family: var(--rf-font-ui) !important; font-weight: 700 !important; letter-spacing: var(--rf-heading-spacing) !important;
+  text-transform: none !important; text-shadow: none !important; color: #fff !important; background: none !important; border: 0 !important;
+}
+html.responsive[data-rfs-style="cupertino"] :is(.home_title, .home_section_title, .home_page_content > h2, .pagesubheader, .large_title) { font-size: 28px !important; line-height: 1.2 !important; margin-bottom: 14px !important; }
+html.responsive[data-rfs-style="cupertino"] .apphub_AppName {
+  font-family: var(--rf-font-ui) !important; font-weight: 700 !important; font-size: 34px !important; line-height: 1.1 !important;
+  letter-spacing: var(--rf-heading-spacing) !important; color: #fff !important; text-shadow: none !important;
+}
+html.responsive[data-rfs-style="cupertino"] .game_area_purchase_game h2.title { font-size: 20px !important; font-weight: 700 !important; letter-spacing: var(--rf-heading-spacing) !important; color: #fff !important; text-transform: none !important; }
+/* small labels (side blocks, footer columns): secondary, quiet */
+html.responsive[data-rfs-style="cupertino"] :is(.block_header, .rightbox_content_header, #footer h3) {
+  font-family: var(--rf-font-ui) !important; color: rgba(235, 235, 245, .6) !important; font-size: 13px !important; font-weight: 600 !important;
+  letter-spacing: 0 !important; text-transform: none !important; background: none !important; border: 0 !important;
+}
+html.responsive[data-rfs-style="cupertino"] :is(h2.bb_tag, .bb_h1, .bb_h2, .bb_h3) { color: #fff !important; font-weight: 700 !important; text-transform: none !important; letter-spacing: var(--rf-heading-spacing) !important; }
+/* the editions header's Steam rule image goes; a hairline instead */
+html.responsive[data-rfs-style="cupertino"] .game_purchase_options_editions_header { background: none !important; border-bottom: .5px solid rgba(84, 84, 88, .6) !important; }
+
+/* ---- 3. the store bar: one floating glass capsule; tabs are quiet text with a blue underline ---- */
+html.responsive[data-rfs-style="cupertino"] :is(.store_nav_area, #store_nav_area) .store_nav_bg {
+  background:
+    linear-gradient(100deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, 0) 30% 70%, rgba(255, 255, 255, .035)),
+    linear-gradient(180deg, rgba(255, 255, 255, .07), rgba(255, 255, 255, .015)),
+    rgba(28, 28, 32, .62) !important;
+  border: 0 !important; border-radius: 16px !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14), 0 0 0 .5px rgba(255, 255, 255, .1), 0 18px 44px rgba(0, 0, 0, .55) !important;
+  backdrop-filter: blur(30px) saturate(1.8);
+}
+html.responsive[data-rfs-style="cupertino"] .store_nav .tab {
+  position: relative; background: transparent !important; border-radius: 0 !important; box-shadow: none !important;
+}
+html.responsive[data-rfs-style="cupertino"] .store_nav .tab > span,
+html.responsive[data-rfs-style="cupertino"] .store_nav .tab .pulldown > span {
+  color: rgba(235, 235, 245, .72) !important; font-weight: 500 !important; text-transform: none !important; letter-spacing: 0 !important;
+  transition: color .2s cubic-bezier(.2, .8, .2, 1) !important;
+}
+html.responsive[data-rfs-style="cupertino"] .store_nav .tab::after {
+  content: ''; position: absolute; inset-inline: 12px; bottom: 6px; height: 2px; border-radius: 2px; background: #0a84ff;
+  transform: scaleX(0); transition: transform .25s cubic-bezier(.2, .8, .2, 1); pointer-events: none;
+}
+html.responsive[data-rfs-style="cupertino"] .store_nav .tab:is(:hover, .focus, .active)::after { transform: none; }
+html.responsive[data-rfs-style="cupertino"] .store_nav .tab:is(:hover, .focus, .active) > span,
+html.responsive[data-rfs-style="cupertino"] .store_nav .tab:is(:hover, .focus, .active) .pulldown > span { color: #fff !important; }
+html.responsive[data-rfs-style="cupertino"] :is(.store_nav .searchbox, #store_search .searchbox) {
+  border-radius: 10px !important; background-color: rgba(118, 118, 128, .24) !important; border: 0 !important; box-shadow: none !important;
+}
+html.responsive[data-rfs-style="cupertino"] :is(.store_nav .searchbox, #store_search .searchbox):focus-within { box-shadow: 0 0 0 3px rgba(10, 132, 255, .5) !important; }
+html.responsive[data-rfs-style="cupertino"] #store_nav_search_term { color: #fff !important; background: transparent !important; font-family: var(--rf-font-ui) !important; }
+html.responsive[data-rfs-style="cupertino"] #store_nav_search_term::placeholder { color: rgba(235, 235, 245, .4) !important; }
+/* the tab menus: a solid menu panel with a hairline; the hovered row is blue */
+html.responsive[data-rfs-style="cupertino"] .popup_block_new .popup_body {
+  background: #2c2c2e !important; border: 0 !important; border-radius: 12px !important; padding: 5px !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), 0 0 0 .5px rgba(255, 255, 255, .12), 0 24px 60px rgba(0, 0, 0, .7) !important;
+}
+html.responsive[data-rfs-style="cupertino"] .popup_body .popup_menu_item { border-radius: 6px; color: #fff !important; }
+html.responsive[data-rfs-style="cupertino"] .popup_body .popup_menu_item:hover { background: #0a84ff !important; color: #fff !important; }
+
+/* ---- 4. capsules and carousels: rounded art, deep soft shadows, no blue frames ---- */
+html.responsive[data-rfs-style="cupertino"] .store_main_capsule {
+  border-radius: 16px !important; overflow: hidden; background: #1c1c1e !important;
+  box-shadow: inset 0 0 0 .5px rgba(255, 255, 255, .08), 0 24px 60px rgba(0, 0, 0, .7) !important;
+}
+html.responsive[data-rfs-style="cupertino"] .store_main_capsule .info { background: linear-gradient(180deg, #232326, #1c1c1e) !important; box-shadow: inset .5px 0 0 rgba(255, 255, 255, .06) !important; }
+html.responsive[data-rfs-style="cupertino"] .store_main_capsule .app_name { color: #fff !important; font-weight: 700 !important; letter-spacing: var(--rf-heading-spacing); }
+html.responsive[data-rfs-style="cupertino"] .store_capsule {
+  border-radius: 12px !important; overflow: hidden; background: #1c1c1e !important;
+  box-shadow: inset 0 0 0 .5px rgba(255, 255, 255, .06), 0 10px 26px rgba(0, 0, 0, .55) !important;
+  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .25s cubic-bezier(.2, .8, .2, 1) !important;
+}
+html.responsive[data-rfs-style="cupertino"] .store_capsule:hover { transform: translateY(-2px); box-shadow: inset 0 0 0 .5px rgba(255, 255, 255, .12), 0 20px 40px rgba(0, 0, 0, .7) !important; }
+html.responsive[data-rfs-style="cupertino"] .store_capsule img { border-radius: 0 !important; }
+html.responsive[data-rfs-style="cupertino"] :is(.carousel_container .carousel_items, .home_discount_games_ctn, .carousel__slider) { background: transparent !important; box-shadow: none !important; }
+/* carousel arrows — ONE shape everywhere: a 44 px glass circle with a crisp white chevron, centred in Steam's own
+   hit area (which stays as it is: old carousels use a 45×122 .arrow, the React ones a full-height button).
+   The circle and the chevron are pseudo-elements; Steam's own arrow art is hidden. */
+html.responsive[data-rfs-style="cupertino"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button) {
+  background: none !important; box-shadow: none !important; border: 0 !important; border-radius: 0 !important; opacity: 1 !important;
+}
+html.responsive[data-rfs-style="cupertino"] .carousel_container .arrow > div,
+html.responsive[data-rfs-style="cupertino"] :is(.carousel__back-button, .carousel__next-button) > svg { opacity: 0 !important; }
+html.responsive[data-rfs-style="cupertino"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button)::before,
+html.responsive[data-rfs-style="cupertino"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button)::after {
+  content: ''; position: absolute; top: 50%; left: 50%; width: 44px; height: 44px; margin: -22px 0 0 -22px; border-radius: 50%; pointer-events: none;
+}
+html.responsive[data-rfs-style="cupertino"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button)::before {
+  background: linear-gradient(180deg, rgba(255, 255, 255, .14), rgba(255, 255, 255, .04)), rgba(38, 38, 42, .86);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .16), 0 0 0 .5px rgba(255, 255, 255, .08), 0 8px 22px rgba(0, 0, 0, .55);
+  transition: transform .25s cubic-bezier(.2, .8, .2, 1), background-color .2s;
+}
+html.responsive[data-rfs-style="cupertino"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button)::after {
+  background: center / 18px 18px no-repeat;
+}
+html.responsive[data-rfs-style="cupertino"] :is(.carousel_container .arrow.left, .carousel__back-button)::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 5l-7 7 7 7'/%3E%3C/svg%3E");
+}
+html.responsive[data-rfs-style="cupertino"] :is(.carousel_container .arrow.right, .carousel__next-button)::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 5l7 7-7 7'/%3E%3C/svg%3E");
+}
+html.responsive[data-rfs-style="cupertino"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button):hover::before {
+  transform: scale(1.08); background-color: rgba(58, 58, 62, .92);
+}
+html.responsive[data-rfs-style="cupertino"] :is(.carousel__back-button, .carousel__next-button):disabled { opacity: 0 !important; pointer-events: none; }
+/* the featured carousel (wide mode): its arrow hit areas cover the side previews — the circles sit at the main
+   capsule's edges instead of floating over the previews */
+html.responsive[data-rfs-style="cupertino"] .carousel_wide_mode .carousel_container .arrow.left::before,
+html.responsive[data-rfs-style="cupertino"] .carousel_wide_mode .carousel_container .arrow.left::after { left: auto; right: 0; margin: -22px 0 0 0; }
+html.responsive[data-rfs-style="cupertino"] .carousel_wide_mode .carousel_container .arrow.right::before,
+html.responsive[data-rfs-style="cupertino"] .carousel_wide_mode .carousel_container .arrow.right::after { left: 0; margin: -22px 0 0 0; }
+/* Arabic (RTL): Steam swaps the arrows' sides (next sits on the left), so each chevron points outward the other way
+   and the featured carousel's circles hug the main capsule from the mirrored side */
+html[dir="rtl"][data-rfs-style="cupertino"] :is(.carousel_container .arrow.left, .carousel__back-button)::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 5l7 7-7 7'/%3E%3C/svg%3E");
+}
+html[dir="rtl"][data-rfs-style="cupertino"] :is(.carousel_container .arrow.right, .carousel__next-button)::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 5l-7 7 7 7'/%3E%3C/svg%3E");
+}
+html.responsive[dir="rtl"][data-rfs-style="cupertino"] .carousel_wide_mode .carousel_container .arrow.left::before,
+html.responsive[dir="rtl"][data-rfs-style="cupertino"] .carousel_wide_mode .carousel_container .arrow.left::after { left: 0; right: auto; }
+html.responsive[dir="rtl"][data-rfs-style="cupertino"] .carousel_wide_mode .carousel_container .arrow.right::before,
+html.responsive[dir="rtl"][data-rfs-style="cupertino"] .carousel_wide_mode .carousel_container .arrow.right::after { left: auto; right: 0; }
+/* "See More" links of the React rows (webkit.js tags them .rfs-btn2): the same dark pill as every other secondary button */
+html.responsive[data-rfs-style="cupertino"] a.rfs-btn2 {
+  color: #fff !important; background: rgba(120, 120, 128, .24) !important; border-radius: 99px !important; border: 0 !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08) !important; padding-inline: 14px !important; font-weight: 600 !important;
+}
+html.responsive[data-rfs-style="cupertino"] a.rfs-btn2:hover { background: rgba(120, 120, 128, .38) !important; }
+html.responsive[data-rfs-style="cupertino"] .carousel_container .carousel_thumbs > div { border-radius: 99px !important; background: rgba(235, 235, 245, .3) !important; }
+html.responsive[data-rfs-style="cupertino"] .carousel_container .carousel_thumbs > div.focus { background: #fff !important; }
+
+/* ---- 5. tab lists: grouped inset rows with hairlines; the home tab strip is a segmented control ---- */
+html.responsive[data-rfs-style="cupertino"] .tab_item {
+  position: relative; border: 0 !important; border-radius: 0 !important; background: #1c1c1e !important; box-shadow: none !important;
+  margin-bottom: 0 !important; transition: background-color .2s cubic-bezier(.2, .8, .2, 1) !important;
+}
+html.responsive[data-rfs-style="cupertino"] .tab_item + .tab_item::before {
+  content: ''; position: absolute; top: 0; inset-inline: 16px 0; border-top: .5px solid rgba(84, 84, 88, .6); z-index: 1; pointer-events: none;
+}
+html.responsive[data-rfs-style="cupertino"] .tab_item:first-of-type { border-start-start-radius: 14px !important; border-start-end-radius: 14px !important; }
+html.responsive[data-rfs-style="cupertino"] .tab_item:last-of-type { border-end-start-radius: 14px !important; border-end-end-radius: 14px !important; }
+html.responsive[data-rfs-style="cupertino"] .tab_item:is(:hover, .focus) { background: #2c2c2e !important; }
+html.responsive[data-rfs-style="cupertino"] .tab_item .tab_item_cap img { border-radius: 8px; }
+html.responsive[data-rfs-style="cupertino"] :is(.tab_item_name, .search_name .title, .market_listing_item_name, .forum_topic_name) { color: #fff !important; font-weight: 600 !important; }
+html.responsive[data-rfs-style="cupertino"] :is(.tab_item_details, .tab_item_top_tags, .search_released, .market_listing_game_name) { color: rgba(235, 235, 245, .6) !important; }
+html.responsive[data-rfs-style="cupertino"] .tabs_menu_ctn { background: none !important; border: 0 !important; box-shadow: none !important; }
+html.responsive[data-rfs-style="cupertino"] .home_tabs_row {
+  padding: 2px !important; border-radius: 10px !important; background: rgba(118, 118, 128, .24) !important; border: 0 !important;
+}
+html.responsive[data-rfs-style="cupertino"] .home_tabs_row .home_tab { margin: 0 !important; }
+html.responsive[data-rfs-style="cupertino"] .home_tabs_row .home_tab .tab_content {
+  border-radius: 8px !important; color: rgba(235, 235, 245, .8) !important; background: transparent !important; box-shadow: none !important; border: 0 !important;
+  font-weight: 500 !important; text-transform: none !important; letter-spacing: 0 !important;
+}
+html.responsive[data-rfs-style="cupertino"] .home_tabs_row .home_tab:hover .tab_content { color: #fff !important; }
+html.responsive[data-rfs-style="cupertino"] .home_tabs_row .home_tab.active .tab_content {
+  color: #fff !important; background: #636366 !important; font-weight: 600 !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .12), 0 3px 8px rgba(0, 0, 0, .3) !important;
+}
+html.responsive[data-rfs-style="cupertino"] :is(.tab_preview_container, .home_rightcol .tab_preview) {
+  background: var(--cu-card) !important; border-radius: 16px !important; box-shadow: var(--cu-card-edge), var(--cu-depth) !important;
+}
+/* search results and other repeated rows: the same grouped inset look */
+html.responsive[data-rfs-style="cupertino"] :is(.search_result_row, .game_area_dlc_row, .market_listing_row, .badge_row, .forum_topic, .help_wizard_button) {
+  position: relative; border: 0 !important; border-radius: 0 !important; background: #1c1c1e !important; box-shadow: none !important;
+  transition: background-color .2s cubic-bezier(.2, .8, .2, 1) !important;
+}
+html.responsive[data-rfs-style="cupertino"] :is(.search_result_row, .game_area_dlc_row, .market_listing_row, .forum_topic) + :is(.search_result_row, .game_area_dlc_row, .market_listing_row, .forum_topic)::before {
+  content: ''; position: absolute; top: 0; inset-inline: 16px 0; border-top: .5px solid rgba(84, 84, 88, .6); pointer-events: none;
+}
+html.responsive[data-rfs-style="cupertino"] :is(.search_result_row, .game_area_dlc_row, .market_listing_row, .badge_row, .forum_topic, .help_wizard_button):hover { background: #2c2c2e !important; }
+html.responsive[data-rfs-style="cupertino"] :is(.badge_row, .help_wizard_button) { border-radius: 14px !important; margin-bottom: 8px !important; }
+
+/* ---- 6. cards and side blocks: grouped gray cards with depth ---- */
+html.responsive[data-rfs-style="cupertino"] :is(.block.search_collapse_block, .rightcol .block, .block.responsive_apppage_details_right, .block.responsive_apppage_details_left,
+  .rightbox, .market_search_sidebar_contents, .apphub_StoreInfoHeader, .steam_curators_block, .profile_customization) {
+  border: 0 !important; border-radius: 16px !important; background: var(--cu-card) !important; box-shadow: var(--cu-card-edge), var(--cu-depth) !important;
+}
+html.responsive[data-rfs-style="cupertino"] :is(.block .block_content, .rightcol .block .block_content) { background: transparent !important; }
+/* the game page header: highlights + the glance panel */
+html.responsive[data-rfs-style="cupertino"] #game_highlights { border-radius: 16px; overflow: hidden; background: #1c1c1e !important; box-shadow: var(--cu-card-edge), 0 30px 70px rgba(0, 0, 0, .7) !important; }
+html.responsive[data-rfs-style="cupertino"] #game_highlights :is(.highlight_ctn, .rightcol, .leftcol) { background: transparent !important; }
+html.responsive[data-rfs-style="cupertino"] .glance_ctn { background: transparent !important; }
+html.responsive[data-rfs-style="cupertino"] .game_header_image_full { border-radius: 12px; }
+html.responsive[data-rfs-style="cupertino"] :is(.glance_ctn .subtitle, .dev_row .subtitle, .release_date .subtitle) { color: rgba(235, 235, 245, .5) !important; text-transform: none !important; }
+html.responsive[data-rfs-style="cupertino"] .highlight_strip_item { border-radius: 6px; overflow: hidden; }
+html.responsive[data-rfs-style="cupertino"] .highlight_strip_item.focus { outline: 2px solid #0a84ff; outline-offset: 1px; }
+/* each edition: a product card; its price + button sit on a dark capsule */
+html.responsive[data-rfs-style="cupertino"] .game_area_purchase_game {
+  border: 0 !important; border-radius: 16px !important; padding: 20px 24px 28px !important;
+  background: var(--cu-card) !important; box-shadow: var(--cu-card-edge), var(--cu-depth) !important;
+}
+html.responsive[data-rfs-style="cupertino"] .game_purchase_action_bg {
+  border-radius: 980px !important; padding: 4px !important; padding-inline-start: 14px !important;
+  background: #2c2c2e !important; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), 0 8px 20px rgba(0, 0, 0, .45) !important;
+}
+html.responsive[data-rfs-style="cupertino"] .game_purchase_action_bg :is(.game_purchase_price, .price) { color: #fff !important; background: transparent !important; font-weight: 600 !important; font-size: 14px !important; }
+html.responsive[data-rfs-style="cupertino"] .game_purchase_action_bg :is(.discount_block, .discount_prices) { background: transparent !important; box-shadow: none !important; }
+html.responsive[data-rfs-style="cupertino"] .btn_addtocart { border-radius: 980px; }
+
+/* ---- 7. buttons: buy + main step = systemBlue pills, the rest translucent gray pills ---- */
+html.responsive[data-rfs-style="cupertino"] :is(.btn_green_steamui, .btn_blue_steamui, .btnv6_blue_hoverfade, .btnv6_grey_black, .btn_grey_steamui, .btnv6_white_transparent,
+  .btn_grey_black, .btn_grey_white_innerfade, .btn_darkblue_white_innerfade, .btn_green_white_innerfade, .btnv6_lightblue_blue, .btn_profile_action, .help_site_button) {
+  border: 0 !important; border-radius: 980px !important; text-shadow: none !important; background-image: none !important;
+  transition: background-color .2s cubic-bezier(.2, .8, .2, 1), transform .2s cubic-bezier(.2, .8, .2, 1) !important;
+}
+html.responsive[data-rfs-style="cupertino"] :is(.btn_green_steamui, .btn_blue_steamui, .btnv6_blue_hoverfade, .btnv6_grey_black, .btn_grey_steamui, .btnv6_white_transparent,
+  .btn_grey_black, .btn_grey_white_innerfade, .btn_darkblue_white_innerfade, .btn_green_white_innerfade, .btnv6_lightblue_blue, .btn_profile_action):not(.btn_disabled):active { transform: scale(.97); }
+html.responsive[data-rfs-style="cupertino"] :is(.btn_green_steamui, .btn_blue_steamui, .btnv6_blue_hoverfade, .btnv6_grey_black, .btn_grey_steamui, .btnv6_white_transparent,
+  .btn_grey_black, .btn_grey_white_innerfade, .btn_darkblue_white_innerfade, .btn_green_white_innerfade, .btnv6_lightblue_blue, .btn_profile_action) > span {
+  background: transparent !important; border: 0 !important; border-radius: 980px !important; color: inherit !important; text-shadow: none !important; font-weight: 600 !important;
+}
+html.responsive[data-rfs-style="cupertino"] :is(.btn_green_steamui, .btn_blue_steamui, .btn_green_white_innerfade) {
+  color: #fff !important; background-color: #0a84ff !important; box-shadow: 0 6px 16px rgba(10, 132, 255, .28) !important;
+}
+html.responsive[data-rfs-style="cupertino"] :is(.btn_green_steamui, .btn_blue_steamui, .btn_green_white_innerfade):not(.btn_disabled):hover { background-color: #409cff !important; box-shadow: 0 8px 22px rgba(10, 132, 255, .4) !important; }
+html.responsive[data-rfs-style="cupertino"] .btn_addtocart .btn_green_steamui > span { padding-inline: 20px !important; }
+html.responsive[data-rfs-style="cupertino"] :is(.btnv6_blue_hoverfade, .btnv6_grey_black, .btn_grey_steamui, .btnv6_white_transparent, .btn_grey_black,
+  .btn_grey_white_innerfade, .btn_darkblue_white_innerfade, .btnv6_lightblue_blue, .btn_profile_action, .help_site_button) {
+  color: #fff !important; background-color: rgba(120, 120, 128, .24) !important; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08) !important;
+}
+html.responsive[data-rfs-style="cupertino"] :is(.btnv6_blue_hoverfade, .btnv6_grey_black, .btn_grey_steamui, .btnv6_white_transparent, .btn_grey_black,
+  .btn_grey_white_innerfade, .btn_darkblue_white_innerfade, .btnv6_lightblue_blue, .btn_profile_action, .help_site_button):not(.btn_disabled):hover {
+  color: #fff !important; background-color: rgba(120, 120, 128, .38) !important;
+}
+html.responsive[data-rfs-style="cupertino"] :is(body.responsive_page, body.v6, #StoreTemplate) .DialogButton:is(.Primary, .Green) { color: #fff !important; background: #0a84ff !important; }
+
+/* ---- 8. prices: a clean dark capsule; the discount is systemGreen text on a green-tinted capsule ---- */
+html.responsive[data-rfs-style="cupertino"] .discount_block {
+  border-radius: 10px !important; overflow: hidden; background: #2c2c2e !important; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06) !important;
+}
+html.responsive[data-rfs-style="cupertino"] .discount_block .discount_pct,
+html.responsive[data-rfs-style="cupertino"] .discount_pct,
+html.responsive[data-rfs-style="cupertino"] .rfs-pct {
+  color: #30d158 !important; background: rgba(48, 209, 88, .16) !important; border-radius: 99px !important; font-weight: 700 !important;
+  padding-inline: 8px !important; margin: 4px !important; text-shadow: none !important;
+}
+html.responsive[data-rfs-style="cupertino"] .discount_block .discount_prices,
+html.responsive[data-rfs-style="cupertino"] .discount_prices { background: transparent !important; }
+html.responsive[data-rfs-style="cupertino"] .discount_final_price { color: #fff !important; font-weight: 700 !important; }
+html.responsive[data-rfs-style="cupertino"] .discount_original_price { color: rgba(235, 235, 245, .45) !important; }
+/* the React carousels draw their discount with a hashed class (lime box): webkit.js tags every "-NN%" as .rfs-pct,
+   so all discounts on the page are the same capsule; their price box sits on the same dark pill */
+html.responsive[data-rfs-style="cupertino"] .rfs-pct { display: inline-flex; align-items: center; line-height: 1.2 !important; padding-block: 3px !important; }
+html.responsive[data-rfs-style="cupertino"] .rfs-price { background: #2c2c2e !important; border-radius: 10px !important; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06) !important; overflow: hidden; }
+/* tags: gray capsules — every kind of tag the store draws (game page, deep-dive rows, tab preview) */
+html.responsive[data-rfs-style="cupertino"] :is(.deep_dive_tag, .tab_preview .tags a) {
+  color: rgba(235, 235, 245, .85) !important; background: rgba(120, 120, 128, .24) !important;
+  border: 0 !important; border-radius: 99px !important; box-shadow: none !important; padding-inline: 10px !important;
+}
+html.responsive[data-rfs-style="cupertino"] :is(.deep_dive_tag, .tab_preview .tags a):hover { color: #fff !important; background: rgba(120, 120, 128, .4) !important; }
+/* "Because you played": the tag panel under each capsule was Steam's blue gradient — a dark grouped surface */
+html.responsive[data-rfs-style="cupertino"] .deep_dive_key_tags { background: #1c1c1e !important; box-shadow: inset 0 .5px 0 rgba(255, 255, 255, .08) !important; }
+/* the hover card over a game: a dark sheet instead of Steam's slate blue */
+html.responsive[data-rfs-style="cupertino"] .game_hover_box {
+  background: #1c1c1e !important; border-radius: 14px !important; border: 0 !important;
+  box-shadow: 0 0 0 .5px rgba(255, 255, 255, .12), 0 24px 60px rgba(0, 0, 0, .7) !important; color: rgba(235, 235, 245, .8) !important;
+}
+html.responsive[data-rfs-style="cupertino"] .game_hover :is(.hover_arrow_left, .hover_arrow_right) { display: none !important; }
+html.responsive[data-rfs-style="cupertino"] .game_hover_box :is(h4, .hover_title) { color: #fff !important; }
+html.responsive[data-rfs-style="cupertino"] .game_hover_box :is(.hover_review_summary, .hover_body .hover_review_summary) { background: #2c2c2e !important; border-radius: 10px !important; }
+html.responsive[data-rfs-style="cupertino"] .game_hover_box .app_tag, html.responsive[data-rfs-style="cupertino"] .game_hover_box .hover_tag_row > * { background: rgba(120, 120, 128, .24) !important; border-radius: 99px !important; color: rgba(235, 235, 245, .85) !important; }
+html.responsive[data-rfs-style="cupertino"] .app_tag {
+  color: rgba(235, 235, 245, .85) !important; background: rgba(120, 120, 128, .24) !important;
+  border: 0 !important; border-radius: 99px !important; box-shadow: none !important; padding-inline: 10px !important;
+}
+html.responsive[data-rfs-style="cupertino"] .app_tag:hover { color: #fff !important; background: #0a84ff !important; }
+
+/* ---- 9. links: system blue ---- */
+html.responsive[data-rfs-style="cupertino"] :is(.dev_row a, .details_block a, #genresAndManufacturer a, .glance_ctn a, a.all_languages, .game_page_autocollapse_readmore,
+  .breadcrumbs a, .blockbg a, .home_page_content .see_all a, .rightbox a, .profile_count_link a, .whiteLink, .apphub_OtherSiteInfo a) { color: #409cff !important; }
+html.responsive[data-rfs-style="cupertino"] .game_page_autocollapse_readmore { background: linear-gradient(180deg, rgba(0, 0, 0, 0), #000 70%) !important; }
+html.responsive[data-rfs-style="cupertino"] .game_review_summary.positive { color: #64d2ff !important; }
+
+/* ---- 10. form fields ---- */
+html.responsive[data-rfs-style="cupertino"] :is(#term, .searchbar_left input, #help_search_support_input, #findItemsSearchBox, .gray_bevel input, .gray_bevel textarea, textarea.commentthread_textarea, input.dselect_search) {
+  color: #fff !important; background: #1c1c1e !important; border: 1px solid rgba(84, 84, 88, .6) !important; border-radius: 10px !important;
+  box-shadow: none !important; font-family: var(--rf-font-ui) !important;
+}
+html.responsive[data-rfs-style="cupertino"] :is(#term, #help_search_support_input, #findItemsSearchBox, .gray_bevel input, .gray_bevel textarea, textarea.commentthread_textarea):focus {
+  outline: 0 !important; border-color: #0a84ff !important; box-shadow: 0 0 0 3px rgba(10, 132, 255, .5) !important;
+}
+html.responsive[data-rfs-style="cupertino"] .gray_bevel { background: transparent !important; box-shadow: none !important; border: 0 !important; }
+
+/* ---- 11. footer: black, a hairline on top ---- */
+html.responsive[data-rfs-style="cupertino"] #footer { background: #000 !important; border-top: .5px solid rgba(84, 84, 88, .6) !important; color: rgba(235, 235, 245, .5) !important; }
+html.responsive[data-rfs-style="cupertino"] #footer :is(a, a:visited) { color: rgba(235, 235, 245, .75) !important; }
+html.responsive[data-rfs-style="cupertino"] #footer a:hover { color: #fff !important; }
+html.responsive[data-rfs-style="cupertino"] #footer :is(.rule, hr) { border-color: rgba(84, 84, 88, .6) !important; background: rgba(84, 84, 88, .6) !important; }
+
+/* ─────────────── our filter strip (the glass capsule itself is drawn by the home design CSS) ─────────────── */
+/* buttons: translucent pills; the active one is systemBlue */
+html[data-rfs-style="cupertino"] #rfs-bar.inhome .tb-btn {
+  --ink: #fff;
+  height: 32px; border: 0; border-radius: 980px; color: #fff; font-weight: 500;
+  background: rgba(255, 255, 255, .1); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08);
+  transition: background-color .2s cubic-bezier(.2, .8, .2, 1), transform .2s cubic-bezier(.2, .8, .2, 1);
+}
+html[data-rfs-style="cupertino"] #rfs-bar.inhome .tb-btn:hover { background: rgba(255, 255, 255, .17); }
+html[data-rfs-style="cupertino"] #rfs-bar.inhome .tb-btn:active { transform: scale(.97); }
+html[data-rfs-style="cupertino"] #rfs-bar.inhome :is(.tb-btn.on, .rf-dd.open > .tb-btn) { --ink: #fff; color: #fff; background: #0a84ff; box-shadow: 0 4px 12px rgba(10, 132, 255, .3); }
+html[data-rfs-style="cupertino"] #rfs-bar.inhome .tb-btn svg.rf-ic { stroke: currentColor; }
+/* toggles: a segmented control (one track, the chosen segment raised) */
+html[data-rfs-style="cupertino"] #rfs-bar.inhome .tb-seg { padding: 2px; gap: 2px; border-radius: 10px; background: rgba(118, 118, 128, .24); }
+html[data-rfs-style="cupertino"] #rfs-bar.inhome .tb-seg button,
+html[data-rfs-style="cupertino"] #rfs-bar.inhome .tb-seg button:is(:first-child, :last-child) {
+  --ink: rgba(235, 235, 245, .8);
+  height: 28px; border: 0; border-radius: 8px; color: rgba(235, 235, 245, .8); font-weight: 500; background: transparent; box-shadow: none;
+  transition: background-color .2s cubic-bezier(.2, .8, .2, 1), color .2s;
+}
+html[data-rfs-style="cupertino"] #rfs-bar.inhome .tb-seg button:hover { color: #fff; background: rgba(255, 255, 255, .06); }
+html[data-rfs-style="cupertino"] #rfs-bar.inhome .tb-seg button.on { --ink: #fff; color: #fff; font-weight: 600; background: #636366; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .12), 0 3px 8px rgba(0, 0, 0, .3); }
+/* the search: a rounded filled field, blue ring on focus */
+html[data-rfs-style="cupertino"] #rfs-bar:is(.inhome, .float) .tb-search {
+  height: 34px; border-radius: 10px; border: 0; background: rgba(118, 118, 128, .24); box-shadow: inset 0 .5px 0 rgba(0, 0, 0, .4);
+  transition: box-shadow .2s cubic-bezier(.2, .8, .2, 1);
+}
+html[data-rfs-style="cupertino"] #rfs-bar:is(.inhome, .float) .tb-search:focus-within { box-shadow: 0 0 0 3px rgba(10, 132, 255, .55); }
+html[data-rfs-style="cupertino"] #rfs-bar .tb-q { color: #fff; font-weight: 400; font-size: 14px; }
+html[data-rfs-style="cupertino"] #rfs-bar .tb-q::placeholder { color: rgba(235, 235, 245, .42); }
+html[data-rfs-style="cupertino"] #rfs-bar .tb-ico svg.rf-ic { stroke: rgba(235, 235, 245, .6); }
+html[data-rfs-style="cupertino"] #rfs-bar .tb-ico svg.rf-ic :is(.f, circle:not(.s)) { fill: none; }
+html[data-rfs-style="cupertino"] #rfs-bar .tb-kbd { color: rgba(235, 235, 245, .6); background: rgba(120, 120, 128, .24); border-radius: 5px; }
+/* dropdowns + quick results: a solid menu panel, hairline edge, the highlighted row blue with white text */
+html[data-rfs-style="cupertino"] #rfs-bar :is(.rf-dd-menu, .tb-results) {
+  color: #fff; background: #2c2c2e; border: 0; border-radius: 12px; padding: 5px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), 0 0 0 .5px rgba(255, 255, 255, .14), 0 24px 60px rgba(0, 0, 0, .7);
+}
+html[data-rfs-style="cupertino"] #rfs-bar .rf-dd-menu button { color: #fff; border-radius: 6px; }
+html[data-rfs-style="cupertino"] #rfs-bar .rf-dd-menu button b { color: rgba(235, 235, 245, .55); font-variant-numeric: tabular-nums; }
+html[data-rfs-style="cupertino"] #rfs-bar .rf-dd-menu button:is(:hover, .on) { color: #fff; background: #0a84ff; }
+html[data-rfs-style="cupertino"] #rfs-bar .rf-dd-menu button:is(:hover, .on) b { color: rgba(255, 255, 255, .8); }
+html[data-rfs-style="cupertino"] #rfs-bar .pl-item { color: #fff; border-radius: 6px; }
+html[data-rfs-style="cupertino"] #rfs-bar :is(.pl-item.sel, .pl-item:hover) { background: #0a84ff; }
+html[data-rfs-style="cupertino"] #rfs-bar :is(.pl-item.sel, .pl-item:hover) .pl-meta { color: rgba(255, 255, 255, .8); }
+html[data-rfs-style="cupertino"] #rfs-bar .pl-meta { color: rgba(235, 235, 245, .6); }
+html[data-rfs-style="cupertino"] #rfs-bar .pl-tag { color: #fff; background: rgba(120, 120, 128, .32); border-radius: 99px; }
+html[data-rfs-style="cupertino"] #rfs-bar .pl-tag.dim { color: rgba(235, 235, 245, .6); background: rgba(120, 120, 128, .18); }
+html[data-rfs-style="cupertino"] #rfs-bar .pl-sec { color: rgba(235, 235, 245, .6); font-size: 12px; font-weight: 600; }
+html[data-rfs-style="cupertino"] #rfs-bar .pl-foot { color: rgba(235, 235, 245, .6); background: transparent; border-top: .5px solid rgba(84, 84, 88, .6); }
+html[data-rfs-style="cupertino"] #rfs-bar .pl-foot kbd { color: #fff; background: rgba(120, 120, 128, .32); border-radius: 4px; }
+/* Ctrl+K anywhere else: the floating search is a solid dark sheet (no blur: it floats over everything) */
+html[data-rfs-style="cupertino"] #rfs-bar.float { background: linear-gradient(180deg, #2a2a2d, #1f1f22); border: 0; border-radius: 18px; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1), 0 0 0 .5px rgba(255, 255, 255, .14), 0 40px 100px rgba(0, 0, 0, .75); }
+
+/* ─────────────── store side panels (#rfs-rail / #rfs-data / Quick links): grouped inset lists ─────────────── */
+html[data-rfs-style="cupertino"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) section {
+  padding: 8px 0; border: 0; border-radius: 14px; background: var(--cu-card);
+  box-shadow: var(--cu-card-edge), var(--cu-depth);
+}
+html[data-rfs-style="cupertino"] #rfs-qmenu section { background: var(--cu-card) !important; }
+/* the section label sits like a grouped-list header: small, secondary */
+html[data-rfs-style="cupertino"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) h4 {
+  margin: 4px 16px 8px; padding: 0; color: rgba(235, 235, 245, .6); background: none;
+  font-size: 12.5px; font-weight: 600; letter-spacing: 0; text-transform: none;
+}
+html[data-rfs-lang="en"][data-rfs-style="cupertino"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) h4 { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; }
+html[data-rfs-style="cupertino"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) h4 small { color: rgba(235, 235, 245, .3); letter-spacing: 0; text-transform: none; }
+/* rows: full-width with hairline separators between them (inset from the start, like a grouped list) */
+html[data-rfs-style="cupertino"] :is(#rfs-rail .rr-link, #rfs-qmenu .ql, #rfs-data .rd-row) {
+  position: relative; border-radius: 0; margin-inline: 0; padding-inline: 16px;
+  transition: background-color .2s cubic-bezier(.2, .8, .2, 1);
+}
+html[data-rfs-style="cupertino"] :is(#rfs-rail .rr-link, #rfs-qmenu .ql, #rfs-data .rd-row) + :is(.rr-link, .ql, .rd-row)::before {
+  content: ''; position: absolute; top: 0; inset-inline: 16px 0; height: 0; border-top: .5px solid rgba(84, 84, 88, .6); pointer-events: none;
+}
+html[data-rfs-style="cupertino"] :is(#rfs-rail .rr-link, #rfs-qmenu .ql):hover { background: rgba(255, 255, 255, .06); }
+html[data-rfs-style="cupertino"] :is(#rfs-rail .rr-link, #rfs-qmenu .ql).cur { background: #0a84ff; color: #fff !important; }
+html[data-rfs-style="cupertino"] #rfs-rail .rr-app { padding-inline: 16px; }
+html[data-rfs-style="cupertino"] #rfs-rail .rr-app img { border-radius: 12px; box-shadow: 0 0 0 .5px rgba(255, 255, 255, .08), 0 12px 28px rgba(0, 0, 0, .6); }
+html[data-rfs-style="cupertino"] #rfs-rail .rr-own { color: #30d158; }
+html[data-rfs-style="cupertino"] #rfs-rail .rr-price { color: #fff; font-weight: 700; font-variant-numeric: tabular-nums; }
+html[data-rfs-style="cupertino"] #rfs-rail .rr-price i { color: #30d158; background: rgba(48, 209, 88, .16); border-radius: 99px; }
+html[data-rfs-style="cupertino"] #rfs-rail .rr-btn {
+  border: 0; border-radius: 980px; color: #fff !important; font-weight: 600; background: rgba(120, 120, 128, .24); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08);
+  transition: background-color .2s cubic-bezier(.2, .8, .2, 1), transform .2s cubic-bezier(.2, .8, .2, 1);
+}
+html[data-rfs-style="cupertino"] #rfs-rail .rr-btn:hover { background: rgba(120, 120, 128, .38); }
+html[data-rfs-style="cupertino"] #rfs-rail .rr-btn:active { transform: scale(.97); }
+html[data-rfs-style="cupertino"] #rfs-rail .rr-btn.go { color: #fff !important; background: #0a84ff; box-shadow: 0 6px 16px rgba(10, 132, 255, .28); }
+html[data-rfs-style="cupertino"] #rfs-rail .rr-btn.go:hover { background: #409cff; }
+html[data-rfs-style="cupertino"] #rfs-rail .rr-btn.on { color: #fff !important; background: rgba(10, 132, 255, .3); }
+html[data-rfs-style="cupertino"] #rfs-rail .rr-btn > svg.rf-ic { stroke: currentColor; }
+/* data panel: the live count is a big display number */
+html[data-rfs-style="cupertino"] #rfs-data .rd-live { padding-inline: 16px; }
+html[data-rfs-style="cupertino"] #rfs-data .rd-live b { font-size: 30px; font-weight: 700; color: #fff; letter-spacing: var(--rf-heading-spacing); font-variant-numeric: tabular-nums; }
+html[data-rfs-style="cupertino"] #rfs-data .rd-live small { color: rgba(235, 235, 245, .6); }
+html[data-rfs-style="cupertino"] #rfs-data .rd-dot { background: #30d158; box-shadow: 0 0 0 3px rgba(48, 209, 88, .25); }
+html[data-rfs-style="cupertino"] #rfs-data .rd-cc { color: #fff; background: rgba(120, 120, 128, .28); border: 0; border-radius: 6px; }
+html[data-rfs-style="cupertino"] #rfs-data :is(.rd-name, .rd-kwd) { color: #fff; }
+html[data-rfs-style="cupertino"] #rfs-data .rd-loc { color: rgba(235, 235, 245, .6); font-variant-numeric: tabular-nums; }
+html[data-rfs-style="cupertino"] #rfs-data .rd-diff.lo { color: #30d158; }
+html[data-rfs-style="cupertino"] #rfs-data .rd-diff.hi { color: #ff453a; }
+html[data-rfs-style="cupertino"] #rfs-data .rd-tag { color: #fff; background: rgba(10, 132, 255, .28); border-radius: 99px; }
+html[data-rfs-style="cupertino"] #rfs-data .rd-row.home { background: rgba(10, 132, 255, .14); }
+html[data-rfs-style="cupertino"] #rfs-data .rd-row.home .rd-cc { background: #0a84ff; }
+html[data-rfs-style="cupertino"] #rfs-data .rd-row.best { background: rgba(48, 209, 88, .12); }
+html[data-rfs-style="cupertino"] #rfs-data .rd-row.best .rd-cc { color: #000; background: #30d158; }
+html[data-rfs-style="cupertino"] #rfs-data .rd-row.best .rd-tag { color: #30d158; background: rgba(48, 209, 88, .16); }
+html[data-rfs-style="cupertino"] #rfs-data :is(.rd-fact, .rd-link) { margin-inline: 16px; border-radius: 12px; background: #2c2c2e; border: 0; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06); }
+html[data-rfs-style="cupertino"] #rfs-data .rd-link { color: #409cff; }
+html[data-rfs-style="cupertino"] #rfs-data .rd-link:hover { background: #3a3a3c; }
+/* the header Quick links button: a translucent pill */
+html[data-rfs-style="cupertino"] #rfs-qbtn { color: #fff; border: 0; border-radius: 980px; background: rgba(120, 120, 128, .24); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1); transition: background-color .2s cubic-bezier(.2, .8, .2, 1); }
+html[data-rfs-style="cupertino"] #rfs-qbtn:hover { background: rgba(120, 120, 128, .38); }
+html[data-rfs-style="cupertino"] #rfs-qbtn svg.rf-ic { stroke: currentColor; }
+html[data-rfs-style="cupertino"] #rfs-qbtn svg.rf-ic :is(.f, rect, ellipse, circle:not(.s)) { fill: rgba(255, 255, 255, .14); }
+html[data-rfs-style="cupertino"] #rfs-qbtn svg.rf-ic .s { fill: currentColor; }
+
+/* the footer bar under the user box (skin.js) */
+html[data-rfs-style="cupertino"] { --rf-footer-bg: rgba(18, 18, 20, .98); --rf-footer-line: .5px solid rgba(84, 84, 88, .6); }
+
+/* ---- game page: one hierarchy for every section, quiet controls ---- */
+/* section titles ("Content For This Game", "Reviews", "About This Game", events…) were 14 px Steam caps */
+html.responsive[data-rfs-style="cupertino"] :is(.game_area_description h2, .game_area_dlc_section h2, #game_area_description h2, .game_page_autocollapse_ctn h2, .page_content h2.gradientbg, .rightcol h2, .block h2) {
+  font-size: 22px !important; font-weight: 700 !important; letter-spacing: -.02em !important; text-transform: none !important;
+  color: #fff !important; background: none !important; border: 0 !important; padding: 0 0 6px !important; margin: 26px 0 12px !important;
+}
+html[data-rfs-lang="ar"][data-rfs-style="cupertino"] :is(.game_area_description h2, .game_area_dlc_section h2, #game_area_description h2) { letter-spacing: 0 !important; }
+/* outlined Steam links next to them ("View All", "Browse all", "See all updates") → gray pills */
+html.responsive[data-rfs-style="cupertino"] :is(.game_area_dlc_section .note, a.btnv6_white_transparent, .btnv6_white_transparent, .game_area_dlc_section h2 .note) {
+  color: #fff !important; background: rgba(120, 120, 128, .24) !important; border: 0 !important; border-radius: 99px !important;
+  padding: 3px 12px !important; box-shadow: none !important; text-shadow: none !important;
+}
+html.responsive[data-rfs-style="cupertino"] .btnv6_white_transparent > span { background: none !important; border: 0 !important; color: #fff !important; }
+/* the purchase rows: price, discount and button stay on one line (the discount capsule's margin pushed the button down) */
+html.responsive[data-rfs-style="cupertino"] .game_purchase_action .discount_pct,
+html.responsive[data-rfs-style="cupertino"] .game_purchase_action .rfs-pct { margin: 0 6px 0 0 !important; }
+html.responsive[data-rfs-style="cupertino"] .game_purchase_action .bundle_base_discount {
+  color: rgba(235, 235, 245, .55) !important; background: transparent !important; border-radius: 99px !important; margin: 0 2px 0 0 !important; font-weight: 600 !important;
+}
+/* the feature list on the right (Single-player, Achievements…): a grouped inset list instead of slate rows */
+html.responsive[data-rfs-style="cupertino"] .game_area_details_specs_ctn { background: #1c1c1e !important; border-radius: 0 !important; margin: 0 !important; }
+html.responsive[data-rfs-style="cupertino"] .game_area_details_specs_ctn + .game_area_details_specs_ctn { box-shadow: inset 0 .5px 0 rgba(84, 84, 88, .6) !important; }
+html.responsive[data-rfs-style="cupertino"] .game_area_details_specs_ctn:first-of-type { border-radius: 12px 12px 0 0 !important; }
+html.responsive[data-rfs-style="cupertino"] .game_area_details_specs_ctn:last-of-type { border-radius: 0 0 12px 12px !important; }
+html.responsive[data-rfs-style="cupertino"] .game_area_details_specs_ctn:hover { background: #2c2c2e !important; }
+html.responsive[data-rfs-style="cupertino"] .game_area_details_specs_ctn .label { background: transparent !important; color: #fff !important; }
+html.responsive[data-rfs-style="cupertino"] .game_area_details_specs_ctn .icon { background: transparent !important; filter: grayscale(1) brightness(1.6); }
+/* the screenshot strip's scroll bar: a thin neutral track */
+html.responsive[data-rfs-style="cupertino"] :is(.highlight_selector, #highlight_slider, .slider_ctn) { background: transparent !important; }
+html.responsive[data-rfs-style="cupertino"] :is(.slider_left, .slider_right) { background: rgba(120, 120, 128, .24) !important; border-radius: 99px !important; }
+html.responsive[data-rfs-style="cupertino"] :is(.slider .handle, .slider_bg) { background: rgba(120, 120, 128, .4) !important; border-radius: 99px !important; }
+
+/* a purchase row's dark capsule: price, discount and the button side by side (they wrapped in bundles) */
+html.responsive[data-rfs-style="cupertino"] .game_purchase_action_bg { display: inline-flex !important; align-items: center; white-space: nowrap; }
+html.responsive[data-rfs-style="cupertino"] .game_purchase_action_bg > * { float: none !important; }
+/* "Recent Events & Announcements" (React) — the same section title */
+html.responsive[data-rfs-style="cupertino"] .early_access_announcements h2 {
+  font-size: 22px !important; font-weight: 700 !important; letter-spacing: -.02em !important; text-transform: none !important; color: #fff !important; border: 0 !important;
+}
+/* right column lists: the links block and the controller rows as grouped inset lists */
+html.responsive[data-rfs-style="cupertino"] :is(a.linkbar, #category_block a:not(.game_area_details_specs_ctn)) {
+  background: #1c1c1e !important; border-radius: 0 !important; margin: 0 !important; color: #0a84ff !important; box-shadow: inset 0 -.5px 0 rgba(84, 84, 88, .6) !important;
+}
+html.responsive[data-rfs-style="cupertino"] :is(a.linkbar, #category_block a:not(.game_area_details_specs_ctn)):hover { background: #2c2c2e !important; }
+html.responsive[data-rfs-style="cupertino"] a.linkbar:first-of-type { border-radius: 12px 12px 0 0 !important; }
+html.responsive[data-rfs-style="cupertino"] a.linkbar:last-of-type { border-radius: 0 0 12px 12px !important; box-shadow: none !important; }
+
+html.responsive[data-rfs-style="cupertino"] #category_block a * { background-color: transparent !important; }
+/* tags stay gray-white even inside blue-link areas (the glance box links are blue) */
+html.responsive[data-rfs-style="cupertino"] :is(.glance_tags, .glance_ctn) a.app_tag { color: rgba(235, 235, 245, .85) !important; }
+html.responsive[data-rfs-style="cupertino"] :is(.glance_tags, .glance_ctn) a.app_tag:hover { color: #fff !important; }
+/* ghost buttons that are not links (webkit.js tags them too) */
+html.responsive[data-rfs-style="cupertino"] .rfs-btn2:not(a) {
+  color: #fff !important; background: rgba(120, 120, 128, .24) !important; border-radius: 99px !important; border: 0 !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08) !important; padding-inline: 14px !important; font-weight: 600 !important; cursor: pointer;
+}
+
+/* the user box and its title-bar spot */
+html[data-rfs-style="cupertino"] { --rf-user-radius: 99px; --rf-user-bg: rgba(120, 120, 128, .24); --rf-user-bg-hover: rgba(120, 120, 128, .36); --rf-user-border: 0; --rf-user-ink: #fff; }
+
+
 /* ===================================================================
    رف الألعاب — theme icons (library window + store/community pages)
    One SVG set (shelf.js / webkit.js), dressed differently by every theme through the

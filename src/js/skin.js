@@ -147,7 +147,7 @@
      Original keeps Valve's. */
   const U = 'html:not([data-rfs-style="material"]):not([data-rfs-style="original"])';
   const FOOT = 'html:is([data-rfs-style="arcade"], [data-rfs-style="terminal"], [data-rfs-style="vinyl"], [data-rfs-style="classic"])';
-  const HEAD = 'html:is([data-rfs-style="glass"], [data-rfs-style="magazine"], [data-rfs-style="vault"], [data-rfs-style="cork"], [data-rfs-style="neon"], [data-rfs-style="space"])';
+  const HEAD = 'html:is([data-rfs-style="glass"], [data-rfs-style="magazine"], [data-rfs-style="vault"], [data-rfs-style="cork"], [data-rfs-style="neon"], [data-rfs-style="space"], [data-rfs-style="cupertino"])';
   urule`${FOOT} ${C('TitleBarControls')} {
     position: fixed !important; inset: auto 0 0 0 !important; z-index: 900; display: flex !important;
     flex-direction: row !important; align-items: center !important; justify-content: flex-start !important;
@@ -162,6 +162,9 @@
     width: auto !important; max-width: none !important; height: 100% !important; gap: 6px !important; margin: 0 28px 0 0 !important; padding: 0 !important;
     background: none !important; border: 0 !important; box-shadow: none !important; -webkit-app-region: no-drag; }`;
   urule`${U} ${C('TitleBarControls')} > * { flex: 0 0 auto !important; width: auto !important; }`;
+  /* SpaceTheme hides the box on pages without its game list (body:not(:has(list)) → visibility: hidden): we took the
+     list off the store and the home design, which made the user name vanish there — it shows on every page */
+  urule`${U} ${C('TitleBarControls')} { visibility: visible !important; }`;
   urule`${U} ${C('TitleBarControls')} .userpanel-buttoncontainer { display: flex !important; flex-direction: row !important; gap: 4px !important; width: auto !important; }`;
   urule`${U} ${C('TitleBarControls')} ${C('AccountMenu')} {
     height: 32px !important; max-height: 32px !important; padding: 0 12px 0 4px !important; gap: 8px !important;

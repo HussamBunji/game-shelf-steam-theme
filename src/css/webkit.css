@@ -349,3 +349,9 @@ html[data-rfs-style="glass"] :is(#rfs-rail, #rfs-data) section { background: lin
 html.rfs-safe [data-rfs-adult] { display: none !important; }
 /* "Send a Gift Card" sat on top of the featured carousel's corner: it lives in Quick links → My account now */
 .home_gift_card_link.gift_card_desktop { display: none !important; }
+
+/* Arabic store: the featured carousel's side previews overlapped the main capsule. Steam places every capsule at
+   inset-inline-start: 0 (= the RIGHT edge in RTL), then moves the 756 px previews by amounts measured from the LEFT
+   edge (home.css .next:dir(rtl) / .prev:dir(rtl)) — the left preview landed ~400 px inside the main one. Anchoring
+   the previews to the left edge gives the same 40 px gaps as the English store. */
+html[dir="rtl"] .carousel_wide_mode .carousel_container .store_main_capsule:is(.next, .prev) { inset-inline-start: auto !important; left: 0 !important; right: auto !important; }

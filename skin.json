@@ -1,7 +1,7 @@
 {
   "name": "Game Shelf — رف الألعاب",
   "author": "Yousef (yousf612-alwazzan)",
-  "description": "Twelve looks for Steam — Classic Shelf, Glass Gallery, Neon Coverflow, Terminal, RPG Vault, Vinyl Records, Corkboard, Retro Arcade, Magazine, Steam Original, plus SpaceTheme and Material You (MIT). Store stats panels, Ctrl+K search, full Arabic or English.",
+  "description": "Thirteen looks for Steam — Classic Shelf, Glass Gallery, Neon Coverflow, Terminal, RPG Vault, Vinyl Records, Corkboard, Retro Arcade, Magazine, Cupertino Dark, Steam Original, plus SpaceTheme and Material You (MIT). Store stats panels, Ctrl+K search, full Arabic or English.",
   "version": "3.0.0",
   "header_image": "https://raw.githubusercontent.com/SteamClientHomebrew/Millennium/main/assets/header.png",
   "splash_image": "https://raw.githubusercontent.com/SteamClientHomebrew/Millennium/main/assets/header.png",
@@ -140,6 +140,16 @@
               "https://steamcommunity\\.com(/.*)?"
             ],
             "src": "src/styles/magazine.css"
+          }
+        },
+        "Cupertino Dark": {
+          "TargetCss": {
+            "affects": [
+              ".*",
+              "https://.*\\.steampowered\\.com(/.*)?",
+              "https://steamcommunity\\.com(/.*)?"
+            ],
+            "src": "src/styles/cupertino.css"
           }
         }
       }

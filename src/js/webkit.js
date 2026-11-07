@@ -14,7 +14,7 @@
 
   /* ---- which theme style + language are active?  Millennium only injects the default style into web
      pages, so ask Millennium for the user's choices and switch the variable set / texts ourselves. */
-  const STYLE_IDS = { 'Classic Shelf': 'classic', 'Neon Coverflow': 'neon', 'Glass Gallery': 'glass', 'Steam Original': 'original', 'SpaceTheme': 'space', 'Material You': 'material', 'Terminal': 'terminal', 'RPG Vault': 'vault', 'Vinyl Records': 'vinyl', 'Corkboard': 'cork', 'Retro Arcade': 'arcade', 'Magazine': 'magazine' };
+  const STYLE_IDS = { 'Classic Shelf': 'classic', 'Neon Coverflow': 'neon', 'Glass Gallery': 'glass', 'Steam Original': 'original', 'SpaceTheme': 'space', 'Material You': 'material', 'Terminal': 'terminal', 'RPG Vault': 'vault', 'Vinyl Records': 'vinyl', 'Corkboard': 'cork', 'Retro Arcade': 'arcade', 'Magazine': 'magazine', 'Cupertino Dark': 'cupertino' };
   // styles that do not use our own store recolour (stock Steam, or a bundled community theme)
   // every style now leaves the store to stock Steam or a community theme base (SpaceTheme / Material);
   // the old colour-classifying recolour below stays in the code but is switched off
@@ -209,7 +209,7 @@
   }
   /* ---- usability: keep the store navigation bar (Browse · Recommendations · search · Wishlist) on screen */
   function stickyNav() {
-    const search = document.querySelector('input[placeholder*="Search the store" i], #store_nav_search_term');
+    const search = document.querySelector('input[name="term"][role="combobox"], input[placeholder*="Search the store" i], #store_nav_search_term');
     if (!search) return;
     let bar = search, best = null;
     while (bar && bar !== document.body) {
@@ -376,7 +376,7 @@
     if (!column || !column.isConnected) column = findColumn();
     const free = column ? column.getBoundingClientRect().left : 0;
     // below the store's top bar (the sticky wrapper itself can be 0px tall, so also measure the search box in it)
-    const navBits = [qs('[data-rfs-sticky]'), qs('input[placeholder*="Search the store" i], #store_nav_search_term')].filter(Boolean);
+    const navBits = [qs('[data-rfs-sticky]'), qs('input[name="term"][role="combobox"], input[placeholder*="Search the store" i], #store_nav_search_term')].filter(Boolean);
     const navBottom = navBits.length ? Math.max(...navBits.map(e => e.getBoundingClientRect().bottom)) : 0;
     const top = navBottom > 0 ? Math.round(navBottom + 16) : 70;
     const fits = free >= 300;
@@ -437,14 +437,17 @@
       qbtn.title = T('العروض، الأكثر مبيعًا، الأمنيات، السلة…', 'Specials, top sellers, wishlist, cart…');
       qmenu.dir = LANG === 'ar' ? 'rtl' : 'ltr';
     }
-    const search = qs('input[placeholder*="Search the store" i], #store_nav_search_term');
+    const search = qs('input[name="term"][role="combobox"], input[placeholder*="Search the store" i], #store_nav_search_term');
     const box = search && (search.parentElement || search);
     const r = box && box.getBoundingClientRect();
     if (!r || !r.width || r.bottom < 0 || r.top > innerHeight) { qbtn.classList.toggle('on', false); qmenu.classList.toggle('on', false); return; }
-    setStyles(qbtn, { top: Math.round(r.top + (r.height - 30) / 2) + 'px', left: Math.round(r.left - qbtn.offsetWidth - 10) + 'px' });
+    // on the search box's outer side: left of it in English; in the Arabic (RTL) store the box sits at the bar's left
+    // end next to the wishlist button, so the button goes to its right instead
+    const rtl = getComputedStyle(box).direction === 'rtl';
+    setStyles(qbtn, { top: Math.round(r.top + (r.height - 30) / 2) + 'px', left: Math.round(rtl ? r.right + 10 : r.left - qbtn.offsetWidth - 10) + 'px' });
     qbtn.classList.toggle('on', true);
     const b = qbtn.getBoundingClientRect();
-    setStyles(qmenu, { top: Math.round(b.bottom + 8) + 'px', left: Math.round(Math.max(12, b.right - qmenu.offsetWidth)) + 'px' });
+    setStyles(qmenu, { top: Math.round(b.bottom + 8) + 'px', left: Math.round(rtl ? Math.min(innerWidth - qmenu.offsetWidth - 12, b.left) : Math.max(12, b.right - qmenu.offsetWidth)) + 'px' });
   }
 
   /* ---- Family mode (button next to the user name, shelf.js; saved as the theme condition "Family"). On (the default), adult games disappear from every store
@@ -631,13 +634,31 @@
     }).catch(() => { if (mine()) dataEl.querySelector('.rd-facts').closest('section').remove(); });
   }
 
+  /* every "-NN%" discount on the page gets one stable class (.rfs-pct, its box .rfs-price): Steam's React carousels
+     draw theirs with hashed class names, so a style can't reach them otherwise. Leaves only; each one marked once. */
+  function markDiscounts() {
+    if (!document.body) return;
+    for (const d of document.querySelectorAll('div:not(.rfs-pct):not([data-rfs-np]):not(.bundle_base_discount)')) {
+      if (d.firstElementChild || d.textContent.length > 16) continue;
+      // "-30%", and the sale tiles' "Up to -50%" / «حتى -50%»
+      if (/^[^\d%]{0,10}-\d{1,3}%$/.test(d.textContent.trim())) { d.classList.add('rfs-pct'); if (d.parentElement) d.parentElement.classList.add('rfs-price'); }
+    }
+    // the React rows' "See More" links are light-gray boxes with hashed classes: one class for the styles to dress
+    for (const a of document.querySelectorAll(':is(a, button, div):not(.rfs-btn2):not([data-rfs-nb])')) {
+      if (a.firstElementChild || a.textContent.length > 40 || (a.tagName === 'DIV' && !a.textContent.trim())) { a.setAttribute('data-rfs-nb', ''); continue; }
+      // light-gray boxes ("See More") and outlined ghost links ("See all updates", "View All") → one secondary pill
+      const cs = getComputedStyle(a);
+      const ghost = cs.borderTopStyle === 'solid' && parseFloat(cs.borderTopWidth) >= 1 && cs.backgroundColor === 'rgba(0, 0, 0, 0)' && a.textContent.trim().length > 2;
+      if (cs.backgroundColor === 'rgb(204, 204, 204)' || ghost) a.classList.add('rfs-btn2'); else a.setAttribute('data-rfs-nb', '');
+    }
+  }
   function start() {
     iconDefs();
     onLangChange = () => { if (rail) renderRail(); if (dataEl && dataFor) renderData(dataFor); if (qbtn) placeQuick(); };
     placeRail();
     setInterval(placeRail, 1500);
-    filterAdult();
-    setInterval(filterAdult, 1200); // carousels and infinite lists keep adding items
+    filterAdult(); markDiscounts();
+    setInterval(() => { filterAdult(); markDiscounts(); }, 1200); // carousels and infinite lists keep adding items
     addEventListener('resize', () => { column = null; placeRail(); });
     setTimeout(() => rail && renderRail(), 2500); // purchase / wishlist blocks may load late
     // the old colour-classifying recolour is off for every style (they all build on stock Steam or a community

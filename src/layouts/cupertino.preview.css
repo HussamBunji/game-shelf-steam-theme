@@ -1,0 +1,65 @@
+/* ═══ Cupertino Dark — THEMES picker card: a black page, a cinematic hero banner with a glass plate holding the
+   white Play pill, a centred glass filter capsule, three large Recently Played lockups, then smaller 16:9 tiles ═══
+   pv-a = hero (::before the logo + chips, ::after the glass plate with the white pill and a glass pill),
+   pv-b = the filter capsule, pv-c = the round glass arrow, pv-i 0–2 = the big row, 3–11 = two grid rows. */
+#rfs-themes .tp-cupertino {
+  background: radial-gradient(ellipse 70% 40px at 50% -10px, rgba(120, 140, 190, .16), transparent 75%), #000;
+}
+#rfs-themes .tp-cupertino .pv-a {
+  left: 6%; top: 6px; width: 88%; height: 56px; border-radius: 10px; overflow: hidden;
+  background:
+    linear-gradient(0deg, #000 0%, rgba(0, 0, 0, 0) 45%),
+    linear-gradient(90deg, rgba(0, 0, 0, .8) 0%, rgba(0, 0, 0, .35) 38%, transparent 66%),
+    radial-gradient(ellipse 45% 90% at 76% 35%, #6b80b5 0%, transparent 70%),
+    radial-gradient(ellipse 35% 70% at 96% 90%, #9a5f86 0%, transparent 70%),
+    radial-gradient(ellipse 30% 60% at 55% 10%, #3f6f8f 0%, transparent 70%),
+    linear-gradient(160deg, #26324d, #10131c);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1), 0 8px 18px rgba(0, 0, 0, .8);
+}
+#rfs-themes .tp-cupertino .pv-a::before { /* big logo line + two small chips */
+  content: ''; position: absolute; left: 9px; top: 9px; width: 58px; height: 9px; border-radius: 3px;
+  background: #fff;
+  box-shadow: 0 12px 0 -2px rgba(255, 255, 255, .22), 22px 12px 0 -2px rgba(255, 255, 255, .22);
+}
+#rfs-themes .tp-cupertino .pv-a::after { /* the glass plate: white Play pill + glass pill */
+  content: ''; position: absolute; left: 7px; top: 35px; width: 58px; height: 15px; border-radius: 99px;
+  background:
+    radial-gradient(circle at 10px 50%, #fff 0 5px, transparent 5.5px) 0 0 / 100% 100% no-repeat,
+    linear-gradient(90deg, transparent 2px, #fff 2px 28px, transparent 28px 31px, rgba(255, 255, 255, .28) 31px 55px, transparent 55px) 0 50% / 100% 9px no-repeat,
+    rgba(255, 255, 255, .12);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25);
+}
+#rfs-themes .tp-cupertino .pv-b { /* the centred glass filter capsule */
+  left: 18%; top: 67px; width: 64%; height: 9px; border-radius: 5px;
+  background:
+    linear-gradient(90deg, transparent 3px, rgba(118, 118, 128, .5) 3px 44%, transparent 44% 47%, #0a84ff 47% 57%, transparent 57% 60%, rgba(255, 255, 255, .18) 60% 70%, transparent 70%) 0 50% / 100% 5px no-repeat,
+    linear-gradient(180deg, rgba(255, 255, 255, .12), rgba(255, 255, 255, .03)), #1c1c1e;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .16), 0 3px 8px rgba(0, 0, 0, .7);
+}
+#rfs-themes .tp-cupertino .pv-c { /* the round glass arrow at the row's end */
+  z-index: 2; right: calc(6% - 5px); top: 90px; width: 13px; height: 13px; border-radius: 50%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .22), rgba(255, 255, 255, .06)), #2c2c30;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25), 0 2px 6px rgba(0, 0, 0, .8);
+}
+#rfs-themes .tp-cupertino .pv-c::after {
+  content: ''; position: absolute; left: 3.5px; top: 4.5px; width: 3px; height: 3px;
+  border-top: 1.2px solid #fff; border-right: 1.2px solid #fff; transform: rotate(45deg);
+}
+/* the big Recently Played lockups */
+#rfs-themes .tp-cupertino .pv-i {
+  top: 83px; left: calc(6% + var(--i) * 30.5%); width: 27.5%; height: 27px; border-radius: 5px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1), 0 4px 8px rgba(0, 0, 0, .7);
+}
+/* the grid: two rows of smaller tiles */
+#rfs-themes .tp-cupertino .pv-i:nth-child(n+7) { top: 118px; left: calc(6% + (var(--i) - 3) * 17.7%); width: 15.9%; height: 13px; border-radius: 3px; }
+#rfs-themes .tp-cupertino .pv-i:nth-child(n+12) { top: 137px; left: calc(6% + (var(--i) - 8) * 17.7%); }
+/* tile art: rich dark gradients, each a little different */
+#rfs-themes .tp-cupertino .pv-i:nth-child(5n+1) { background: radial-gradient(circle at 70% 30%, #6c86c4, transparent 60%), linear-gradient(135deg, #34446b, #151a28); }
+#rfs-themes .tp-cupertino .pv-i:nth-child(5n+2) { background: radial-gradient(circle at 30% 70%, #c98a5a, transparent 60%), linear-gradient(135deg, #6b4a3b, #22170f); }
+#rfs-themes .tp-cupertino .pv-i:nth-child(5n+3) { background: radial-gradient(circle at 60% 40%, #4fb39a, transparent 60%), linear-gradient(135deg, #2f5a4e, #0f201b); }
+#rfs-themes .tp-cupertino .pv-i:nth-child(5n+4) { background: radial-gradient(circle at 40% 30%, #a77fd0, transparent 60%), linear-gradient(135deg, #4d3466, #1b1224); }
+#rfs-themes .tp-cupertino .pv-i:nth-child(5n) { background: radial-gradient(circle at 50% 50%, #8e8e93, transparent 60%), linear-gradient(135deg, #3a3a3c, #161618); }
+/* the focused lockup: lifted, with the blue focus ring and a gap */
+#rfs-themes .tp-cupertino .pv-i[style*="--i:1"]:not([style*="--i:10"]):not([style*="--i:11"]) {
+  z-index: 1; transform: scale(1.04); outline: 1.5px solid #0a84ff; outline-offset: 1.5px;
+}

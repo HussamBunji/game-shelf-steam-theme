@@ -305,7 +305,10 @@
     { value: 'Glass Gallery', sid: 'glass', layout: 'gallery', name: T('المعرض الزجاجي', 'Glass Gallery'), desc: T('لوحة عملية: كمّل اللعب + كروت زجاجية + فلاتر', 'A practical dashboard: continue playing, glass cards and filters') },
     { value: 'Steam Original', sid: 'original', layout: 'original', name: T('ستيم الأصلي', 'Steam Original'), desc: T('ستيم مثل ما هو بدون أي تعديل — يبقى زر الثيمات ولوحة الأرقام بالمتجر', 'Steam exactly as Valve ships it — only the Themes button and the store stats panel stay') },
     { value: 'SpaceTheme', sid: 'space', layout: 'space', name: 'SpaceTheme', desc: T('ثيم المجتمع المشهور (SpaceTheme، رخصة MIT) — داكن ومرتب، مع لوحات الأرقام والأيقونات حقتنا', 'The popular community theme (SpaceTheme, MIT) — dark and modular, plus our stats panels and icons') },
-    { value: 'Material You', sid: 'material', layout: 'material', name: 'Material You', desc: T('تصميم Material 3 من Google (Material Theme، رخصة MIT) — أسطح ناعمة وزوايا دائرية', 'Google\'s Material 3 design (Material Theme, MIT) — soft tonal surfaces and round corners') },
+    // Material You stays installed (skin.json, src/styles/material.css, src/vendor/material) but left the picker:
+    // Cupertino Dark took its place (the owner's call, 2026-11-07). Uncomment to offer it again.
+    // { value: 'Material You', sid: 'material', layout: 'material', name: 'Material You', desc: T('تصميم Material 3 من Google (Material Theme، رخصة MIT) — أسطح ناعمة وزوايا دائرية', 'Google\'s Material 3 design (Material Theme, MIT) — soft tonal surfaces and round corners') },
+    { value: 'Cupertino Dark', sid: 'cupertino', layout: 'cupertino', name: T('كوبرتينو الداكن', 'Cupertino Dark'), desc: T('أسلوب الماك والتلفزيون الداكن: زجاج معتم، زوايا ناعمة وزر تشغيل أبيض', 'The dark Mac / TV-app look: dark glass, soft corners and a white Play button') },
     // plug-in themes (src/layouts/<id>.js + src/styles/<id>.css)
     { value: 'Terminal', sid: 'terminal', layout: 'terminal', name: T('الطرفية', 'Terminal'), desc: T('مكتبتك كجدول أوامر بالأسود والأخضر — تتنقل بالأسهم وتفتح بـ Enter', 'Your library as a green-on-black command table — arrow keys to move, Enter to open') },
     { value: 'RPG Vault', sid: 'vault', layout: 'vault', name: T('خزنة المغامر', 'Adventurer\'s Vault'), desc: T('ألعابك أغراض في حقيبة — إطار كل لعبة حسب ساعاتك: عادي، نادر، أسطوري', 'Your games as inventory loot — each frame shows its rarity by your hours played') },
@@ -1184,7 +1187,9 @@
     if (!lay.dockInside) dockBar(); // strip on top of the design, measured before sizing it
     const barH = bar.parentElement === root ? bar.offsetHeight + 22 : 0;
     const h = Math.max(420, (placement.height || 760) - barH);
-    root.style.height = lay.fixedHeight ? (h + barH) + 'px' : 'auto';
+    // overlay mode (no "What's New" block to sit under): #rfs is a fixed box that scrolls itself, so it keeps the
+    // panel's height — 'auto' made it as tall as the whole list and nothing could scroll
+    root.style.height = lay.fixedHeight ? (h + barH) + 'px' : placement.mode === 'overlay' ? placement.height + 'px' : 'auto';
     lay.render(visibleGames(), w, h);
     if (lay.dockInside) dockBar();
     keep();
@@ -1726,18 +1731,22 @@
   let leftHidden = [];
   function hideLeftFilters(inHome) {
     const want = [];
+    let park = null; // the left list itself: parked off-screen, not display: none (see layouts.css)
     if (inHome) {
       // one list: the home design already shows every game, so Steam's whole left game list (with its search,
       // filters and the drag divider next to it) steps aside and the design gets the full width — the same
       // two elements Material You's own "hide left sidebar" option hides. Game pages keep Steam's list.
       const left = SteamAPI.el('LeftListSizableContainer');
-      if (left) want.push(left);
+      if (left) { want.push(left); park = left; }
       const dvSel = SteamAPI.sel('LibraryWindowDivider');
       const dv = dvSel && left && left.parentElement && [...left.parentElement.children].find(c => c.matches(dvSel));
       if (dv) want.push(dv);
     }
     for (const el of leftHidden) if (!want.includes(el)) el.removeAttribute('data-rfs-hide');
-    for (const el of want) if (!el.hasAttribute('data-rfs-hide')) el.setAttribute('data-rfs-hide', '');
+    for (const el of want) {
+      const v = el === park ? 'park' : '';
+      if (el.getAttribute('data-rfs-hide') !== v) el.setAttribute('data-rfs-hide', v);
+    }
     leftHidden = want;
   }
   let navCheckAt = 0, navOk = false;

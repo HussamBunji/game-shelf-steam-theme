@@ -27,7 +27,7 @@ for (let i = 0; i < args.length; i++) {
   else urls.push(a);
 }
 if (!urls.length) { console.log('usage: node tools/webshot.mjs --style "Retro Arcade" [--lang ar] URL …'); process.exit(1); }
-const STYLE_IDS = { 'Classic Shelf': 'classic', 'Neon Coverflow': 'neon', 'Glass Gallery': 'glass', 'Steam Original': 'original', 'SpaceTheme': 'space', 'Material You': 'material', 'Terminal': 'terminal', 'RPG Vault': 'vault', 'Vinyl Records': 'vinyl', 'Corkboard': 'cork', 'Retro Arcade': 'arcade', 'Magazine': 'magazine' };
+const STYLE_IDS = { 'Classic Shelf': 'classic', 'Neon Coverflow': 'neon', 'Glass Gallery': 'glass', 'Steam Original': 'original', 'SpaceTheme': 'space', 'Material You': 'material', 'Terminal': 'terminal', 'RPG Vault': 'vault', 'Vinyl Records': 'vinyl', 'Corkboard': 'cork', 'Retro Arcade': 'arcade', 'Magazine': 'magazine', 'Cupertino Dark': 'cupertino' };
 // accept the id too ("arcade")
 const byId = Object.fromEntries(Object.entries(STYLE_IDS).map(([v, id]) => [id, v]));
 if (byId[opt.style]) opt.style = byId[opt.style];

@@ -1,0 +1,329 @@
+/* ═══ Cupertino Dark (كوبرتينو الداكن) — home design CSS (src/layouts/cupertino.js) ═══
+   Everything is scoped to #rfs[data-layout="cupertino"]; the game sheet to #rfs-sheet[data-layout="cupertino"].
+   Logical properties throughout (Arabic is right-to-left, English left-to-right). The only things drawn by
+   physical side are the Recently Played arrows: they point and scroll in their visual direction.
+   Rhythm: an 8-pt grid, 48–56 px between sections, content capped at 1680 px and centred.
+   Materials: liquid glass (backdrop-filter) on three singular surfaces only — the hero's action plate, the filter
+   strip and the sheet's backdrop. The ~900 tiles use layered gradients, hairlines and inner highlights instead.
+   Performance: no filters, no 3D; only the hovered / focused tile moves; the hero's slow drift is the one loop. */
+#rfs[data-layout="cupertino"] {
+  --cu-to: left;            /* hero shade: dark at the reading start (right in Arabic) */
+  --cu-l2: rgba(235, 235, 245, .6);
+  --cu-l3: rgba(235, 235, 245, .3);
+  --cu-sep: rgba(84, 84, 88, .6);
+  --cu-blue: #0a84ff;
+  --cu-ease: cubic-bezier(.2, .8, .2, 1);
+  --cu-track: 0;            /* display tracking: tight in Latin, none in Arabic */
+  --cu-glass: linear-gradient(180deg, rgba(255, 255, 255, .1), rgba(255, 255, 255, .025) 60%), rgba(36, 36, 40, .5);
+  --cu-glass-edge: inset 0 1px 0 rgba(255, 255, 255, .14), inset 0 0 0 .5px rgba(255, 255, 255, .08), 0 0 0 .5px rgba(0, 0, 0, .5);
+}
+html[data-rfs-lang="en"] #rfs[data-layout="cupertino"] { --cu-to: right; --cu-track: -.022em; }
+
+#rfs[data-layout="cupertino"] .cu { position: relative; padding: 24px 32px 72px; color: #fff; overflow-x: clip; font-variant-numeric: tabular-nums; }
+#rfs[data-layout="cupertino"] .cu-in { max-width: 1680px; margin-inline: auto; }
+
+/* ═════════════ the hero banner ═════════════ */
+#rfs[data-layout="cupertino"] .cu-hero {
+  position: relative; isolation: isolate; overflow: hidden;
+  height: clamp(240px, 24vw, 380px); border-radius: 20px; /* full width; a fixed ratio capped the width at 380 px tall */
+  background: #111;
+  box-shadow: 0 0 0 .5px rgba(255, 255, 255, .08), 0 30px 80px rgba(0, 0, 0, .8), 0 8px 24px rgba(0, 0, 0, .5);
+}
+/* the one big image, drifting slowly (Ken Burns) */
+#rfs[data-layout="cupertino"] .cu-hero-art {
+  position: absolute; inset: 0; z-index: 0; cursor: pointer;
+  background: #111 center 22% / cover no-repeat;
+  transform-origin: 60% 40%; will-change: transform;
+  animation: cu-kb 24s ease-in-out infinite alternate;
+}
+@keyframes cu-kb { from { transform: scale(1); } to { transform: scale(1.06); } }
+html:has(#rfs-sheet.on) #rfs[data-layout="cupertino"] .cu-hero-art { animation-play-state: paused; }
+/* vignette, a shade at the start side for the text, and a fade into the page at the bottom */
+#rfs[data-layout="cupertino"] .cu-hero::after {
+  content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background:
+    linear-gradient(to var(--cu-to), rgba(0, 0, 0, .78) 0%, rgba(0, 0, 0, .42) 32%, rgba(0, 0, 0, 0) 62%),
+    linear-gradient(0deg, #000 0%, rgba(0, 0, 0, .55) 22%, rgba(0, 0, 0, 0) 55%),
+    radial-gradient(ellipse 120% 100% at 50% 40%, transparent 55%, rgba(0, 0, 0, .45) 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08);
+}
+#rfs[data-layout="cupertino"] .cu-hero-in {
+  position: absolute; z-index: 2; inset-block-end: 0; inset-inline-start: 0; width: min(600px, 56%);
+  padding: 32px 40px 32px; display: flex; flex-direction: column; align-items: flex-start; gap: 12px;
+  pointer-events: none;
+}
+#rfs[data-layout="cupertino"] .cu-hero-in > * { pointer-events: auto; }
+#rfs[data-layout="cupertino"] .cu-eyebrow { font-size: 13px; font-weight: 600; color: var(--cu-l2); letter-spacing: 0; }
+#rfs[data-layout="cupertino"] .cu-hero.running .cu-eyebrow { color: #30d158; }
+#rfs[data-layout="cupertino"] .cu-hero-logo { max-width: 100%; }
+#rfs[data-layout="cupertino"] .cu-hero-logo .cu-logo { display: block; width: auto; height: auto; max-width: min(460px, 100%); max-height: clamp(84px, 9vw, 150px); pointer-events: none; }
+#rfs[data-layout="cupertino"] .cu-hero-logo.has-logo h2 { display: none; }
+#rfs[data-layout="cupertino"] .cu-hero-logo h2 {
+  margin: 0; font-size: clamp(32px, 3.4vw, 50px); font-weight: 700; line-height: 1.05; letter-spacing: var(--cu-track); color: #fff;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere;
+}
+/* metadata chips */
+#rfs[data-layout="cupertino"] .cu-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+#rfs[data-layout="cupertino"] .cu-chip {
+  display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 11px; border-radius: 99px;
+  font-size: 12.5px; font-weight: 600; color: rgba(255, 255, 255, .9);
+  background: rgba(255, 255, 255, .12); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1), inset 0 0 0 .5px rgba(255, 255, 255, .08);
+}
+#rfs[data-layout="cupertino"] .cu-chip.on { color: #000; background: #30d158; box-shadow: none; }
+#rfs[data-layout="cupertino"] .cu-chip > svg.rf-ic { width: 13px; height: 13px; margin: 0; stroke: currentColor; filter: none; }
+#rfs[data-layout="cupertino"] .cu-chip > svg.rf-ic :is(.f, rect, ellipse, circle:not(.s)) { fill: none; }
+/* the glass plate behind the buttons (one of the three blurred surfaces) */
+#rfs[data-layout="cupertino"] .cu-plate {
+  display: inline-flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; padding: 6px; border-radius: 28px;
+  background: var(--cu-glass); box-shadow: var(--cu-glass-edge), 0 12px 30px rgba(0, 0, 0, .35);
+  backdrop-filter: blur(24px) saturate(1.8);
+}
+
+/* pills: white = Play (black type), glass = everything else */
+#rfs[data-layout="cupertino"] .cu-pill {
+  display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 22px; border: 0; border-radius: 980px;
+  font-size: 15px; font-weight: 600; white-space: nowrap; cursor: pointer; color: #fff;
+  background: rgba(255, 255, 255, .14); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14);
+  transition: background-color .2s var(--cu-ease), transform .2s var(--cu-ease), box-shadow .2s var(--cu-ease);
+}
+#rfs[data-layout="cupertino"] .cu-pill:hover { background: rgba(255, 255, 255, .22); }
+#rfs[data-layout="cupertino"] .cu-pill:active { transform: scale(.97); }
+#rfs[data-layout="cupertino"] .cu-pill:focus-visible { outline: 3px solid var(--cu-blue); outline-offset: 3px; }
+#rfs[data-layout="cupertino"] .cu-pill.white { padding: 0 28px; color: #000; background: #fff; box-shadow: 0 6px 18px rgba(0, 0, 0, .35); }
+#rfs[data-layout="cupertino"] .cu-pill.white:hover { background: #f2f2f7; box-shadow: 0 8px 24px rgba(0, 0, 0, .45); }
+#rfs[data-layout="cupertino"] .cu-hero.running .cu-pill.white { background: #30d158; }
+#rfs[data-layout="cupertino"] .cu-pill > svg.rf-ic { width: 16px; height: 16px; margin: 0; stroke: currentColor; filter: none; }
+#rfs[data-layout="cupertino"] .cu-pill > svg.rf-ic .s { fill: currentColor; stroke: none; }
+#rfs[data-layout="cupertino"] .cu-pill.white > svg.rf-ic :is(.f, rect, ellipse, circle:not(.s)) { fill: currentColor; fill-opacity: 1; }
+#rfs[data-layout="cupertino"] .cu-pill:not(.white) > svg.rf-ic :is(.f, rect, ellipse, circle:not(.s)) { fill: currentColor; fill-opacity: .16; }
+
+/* ═════════════ the filter strip: a centred floating glass capsule (one of the three blurred surfaces) ═════════════ */
+#rfs[data-layout="cupertino"] .rf-dock { position: relative; z-index: 60; margin: 32px 0 0; display: flex; justify-content: center; }
+#rfs[data-layout="cupertino"] .rf-dock > #rfs-bar.inhome {
+  width: min(1120px, 100%); margin: 0; padding: 8px 10px; gap: 8px; border: 0; border-radius: 16px;
+  background:
+    linear-gradient(100deg, rgba(255, 255, 255, .07), rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, 0) 70%, rgba(255, 255, 255, .04)),
+    linear-gradient(180deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .02)),
+    rgba(30, 30, 34, .58);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14), inset 0 0 0 .5px rgba(255, 255, 255, .06), 0 0 0 .5px rgba(255, 255, 255, .1), 0 18px 44px rgba(0, 0, 0, .55);
+  backdrop-filter: blur(30px) saturate(1.8);
+}
+
+/* ═════════════ section headers: large display titles, a trailing count in the link colour ═════════════ */
+#rfs[data-layout="cupertino"] .cu-sec-h { display: flex; align-items: baseline; gap: 16px; margin: 0 0 16px; padding-inline: 4px; }
+#rfs[data-layout="cupertino"] .cu-sec-h h3 { margin: 0; font-size: clamp(26px, 2.1vw, 32px); font-weight: 700; line-height: 1.15; letter-spacing: var(--cu-track); color: #fff; }
+#rfs[data-layout="cupertino"] .cu-trail { margin-inline-start: auto; font-size: 14px; font-weight: 500; color: var(--cu-blue); white-space: nowrap; }
+
+/* ═════════════ Recently Played: large lockups in one row, round glass arrows on row hover ═════════════ */
+#rfs[data-layout="cupertino"] .cu-recent { margin-top: 48px; }
+#rfs[data-layout="cupertino"] .cu-rowwrap { --rw: clamp(300px, 25vw, 440px); position: relative; }
+#rfs[data-layout="cupertino"] .cu-row {
+  display: grid; grid-auto-flow: column; grid-auto-columns: var(--rw); gap: 24px;
+  overflow-x: auto; overflow-y: hidden; margin: -10px -8px 0; padding: 10px 8px 12px;
+  scrollbar-width: none; overscroll-behavior-x: contain;
+}
+#rfs[data-layout="cupertino"] .cu-row::-webkit-scrollbar { display: none; }
+/* arrows (physical sides on purpose: they scroll the way they point); centred on the art */
+#rfs[data-layout="cupertino"] .cu-arrow {
+  position: absolute; z-index: 4; top: calc(var(--rw) * 9 / 32 - 20px); width: 40px; height: 40px; padding: 0; border: 0; border-radius: 50%;
+  display: grid; place-items: center; cursor: pointer; color: #fff;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .18), rgba(255, 255, 255, .06)), rgba(44, 44, 48, .88);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .2), 0 0 0 .5px rgba(255, 255, 255, .12), 0 10px 24px rgba(0, 0, 0, .6);
+  opacity: 0; pointer-events: none; transition: opacity .25s var(--cu-ease), transform .2s var(--cu-ease), background-color .2s;
+}
+#rfs[data-layout="cupertino"] .cu-arrow.l { left: -20px; }
+#rfs[data-layout="cupertino"] .cu-arrow.r { right: -20px; }
+#rfs[data-layout="cupertino"] .cu-rowwrap.can-l:hover .cu-arrow.l,
+#rfs[data-layout="cupertino"] .cu-rowwrap.can-r:hover .cu-arrow.r { opacity: 1; pointer-events: auto; }
+#rfs[data-layout="cupertino"] .cu-arrow:hover { transform: scale(1.06); }
+#rfs[data-layout="cupertino"] .cu-arrow:active { transform: scale(.96); }
+#rfs[data-layout="cupertino"] .cu-arrow > svg.rf-ic { width: 20px; height: 20px; margin: 0; stroke: currentColor; filter: none; }
+
+/* ═════════════ the library: two sections of 16:9 lockups ═════════════ */
+#rfs[data-layout="cupertino"] .cu-lib { margin-top: 56px; }
+#rfs[data-layout="cupertino"] .cu-sec + .cu-sec { margin-top: 56px; }
+#rfs[data-layout="cupertino"] .cu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(232px, 1fr)); gap: 32px 24px; }
+#rfs[data-layout="cupertino"] .cu-lib > .rf-empty { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 80px 0; text-align: center; }
+#rfs[data-layout="cupertino"] .cu-lib > .rf-empty b { font-size: 22px; font-weight: 700; letter-spacing: var(--cu-track); color: #fff; }
+#rfs[data-layout="cupertino"] .cu-lib > .rf-empty span { font-size: 14px; color: var(--cu-l2); }
+
+/* ---- one lockup: art (+ sheen + shared play button), title, secondary line ---- */
+#rfs[data-layout="cupertino"] .cu-t { --img: none; position: relative; min-width: 0; cursor: pointer; }
+#rfs[data-layout="cupertino"] .cu-t .art {
+  position: relative; aspect-ratio: 16 / 9; border-radius: 14px; overflow: hidden;
+  background: var(--img) center / cover no-repeat, linear-gradient(160deg, #2c2c2e, #1c1c1e);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1), inset 0 0 0 .5px rgba(255, 255, 255, .07), 0 10px 24px rgba(0, 0, 0, .55), 0 2px 6px rgba(0, 0, 0, .4);
+  transition: transform .28s var(--cu-ease), box-shadow .28s var(--cu-ease);
+}
+#rfs[data-layout="cupertino"] .cu-t.ni .art { box-shadow: inset 0 0 0 999px rgba(0, 0, 0, .3), inset 0 0 0 .5px rgba(255, 255, 255, .07), 0 10px 24px rgba(0, 0, 0, .55); }
+/* the specular sheen: invisible at rest, sweeps across on hover only */
+#rfs[data-layout="cupertino"] .cu-t .art::after {
+  content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none; border-radius: inherit;
+  background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, .2) 45%, rgba(255, 255, 255, .05) 55%, transparent 66%) 130% 0 / 260% 100% no-repeat;
+  opacity: 0; transition: opacity .3s var(--cu-ease), background-position 0s .3s;
+}
+#rfs[data-layout="cupertino"] .cu-t:hover .art::after { opacity: 1; background-position: -30% 0; transition: opacity .2s var(--cu-ease), background-position .8s var(--cu-ease); }
+/* hover: only this tile grows a little and gains depth */
+#rfs[data-layout="cupertino"] .cu-t:is(:hover, .kf) .art {
+  transform: scale(1.04);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .16), inset 0 0 0 .5px rgba(255, 255, 255, .12), 0 24px 48px rgba(0, 0, 0, .75), 0 6px 14px rgba(0, 0, 0, .5);
+}
+/* keyboard focus: the system-blue ring with a gap */
+#rfs[data-layout="cupertino"] .cu-t.running .art { outline: 2px solid #30d158; outline-offset: 2px; }
+#rfs[data-layout="cupertino"] .cu-t.kf .art { outline: 3px solid var(--cu-blue); outline-offset: 3px; }
+html:has(#rfs-sheet.on) #rfs[data-layout="cupertino"] .cu-t.taken .art { opacity: .4; }
+#rfs[data-layout="cupertino"] .cu-t .t {
+  margin-top: 12px; padding-inline: 2px; font-size: 14px; font-weight: 600; line-height: 1.3; color: #fff;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; unicode-bidi: plaintext;
+  transition: transform .28s var(--cu-ease);
+}
+html[data-rfs-lang="ar"] #rfs[data-layout="cupertino"] .cu-t .t { text-align: right; }
+html[data-rfs-lang="en"] #rfs[data-layout="cupertino"] .cu-t .t { text-align: left; letter-spacing: -.01em; }
+#rfs[data-layout="cupertino"] .cu-t .h { margin-top: 3px; padding-inline: 2px; font-size: 12.5px; color: var(--cu-l2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#rfs[data-layout="cupertino"] .cu-t.running .h { color: #30d158; font-weight: 600; }
+/* the Recently Played lockups: bigger art, bigger type */
+#rfs[data-layout="cupertino"] .cu-r .art { border-radius: 16px; }
+#rfs[data-layout="cupertino"] .cu-r .t { margin-top: 14px; font-size: 16px; }
+#rfs[data-layout="cupertino"] .cu-r .h { font-size: 13px; }
+/* the one shared play button: a white circle in the art's end corner */
+#rfs[data-layout="cupertino"] .cu-t .pl {
+  position: absolute; z-index: 2; inset-block-end: 10px; inset-inline-end: 10px; width: 36px; height: 36px; padding: 0; border: 0; border-radius: 50%;
+  display: grid; place-items: center; cursor: pointer; color: #000; background: #fff;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .5);
+  opacity: 0; transform: scale(.85); transition: opacity .2s var(--cu-ease), transform .2s var(--cu-ease);
+}
+#rfs[data-layout="cupertino"] .cu-r .pl { width: 44px; height: 44px; inset-block-end: 14px; inset-inline-end: 14px; }
+#rfs[data-layout="cupertino"] .cu-t:is(:hover, .kf) .pl { opacity: 1; transform: none; }
+#rfs[data-layout="cupertino"] .cu-t .pl:hover { transform: scale(1.08); }
+#rfs[data-layout="cupertino"] .cu-t .pl:active { transform: scale(.95); }
+#rfs[data-layout="cupertino"] .cu-t .pl > svg.rf-ic { width: 16px; height: 16px; margin: 0; stroke: currentColor; filter: none; }
+#rfs[data-layout="cupertino"] .cu-t .pl > svg.rf-ic .s { fill: currentColor; stroke: none; }
+#rfs[data-layout="cupertino"] .cu-t .pl > svg.rf-ic :is(.f, rect, ellipse, circle:not(.s)) { fill: currentColor; fill-opacity: 1; }
+
+/* ═════════════ smaller windows (cupertino.js sets .narrow / .tiny from the panel width) ═════════════ */
+#rfs[data-layout="cupertino"] .cu.narrow { padding-inline: 24px; }
+#rfs[data-layout="cupertino"] .cu.narrow .cu-hero-in { width: min(560px, 76%); padding: 24px 28px; }
+#rfs[data-layout="cupertino"] .cu.narrow .cu-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 28px 18px; }
+#rfs[data-layout="cupertino"] .cu.tiny { padding-inline: 16px; }
+#rfs[data-layout="cupertino"] .cu.tiny .cu-hero { height: 260px; }
+#rfs[data-layout="cupertino"] .cu.tiny .cu-hero-in { width: 100%; padding: 20px; }
+#rfs[data-layout="cupertino"] .cu.tiny .cu-rowwrap { --rw: 260px; }
+#rfs[data-layout="cupertino"] .cu.tiny .cu-grid { grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 24px 16px; }
+
+@media (prefers-reduced-motion: reduce) {
+  #rfs[data-layout="cupertino"] .cu-hero-art { animation: none; }
+  #rfs[data-layout="cupertino"] :is(.cu-t .art, .cu-t .art::after, .cu-t .pl) { transition: none; }
+}
+
+/* ═════════════ the game sheet (#rfs-sheet, cupertino.js open / close) ═════════════
+   A product page in a card. The dim backdrop carries the sheet's one backdrop-filter and lets clicks through to the
+   sheet, so a click outside the card closes it. Card: banner + logo + pills, a stat strip of big numbers,
+   a grouped inset list, the description. */
+#rfs-sheet[data-layout="cupertino"] {
+  --cu-track: 0; --cu-blue: #0a84ff; --cu-l2: rgba(235, 235, 245, .6); --cu-sep: rgba(84, 84, 88, .6);
+  font-variant-numeric: tabular-nums;
+}
+html[data-rfs-lang="en"] #rfs-sheet[data-layout="cupertino"] { --cu-track: -.022em; }
+#rfs-sheet[data-layout="cupertino"] .cu-dim {
+  position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse 80% 70% at 50% 45%, rgba(0, 0, 0, .38), rgba(0, 0, 0, .66));
+  backdrop-filter: blur(24px) saturate(1.5);
+}
+#rfs-sheet[data-layout="cupertino"] .cu-wrap {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  padding: 32px; pointer-events: none;
+}
+#rfs-sheet[data-layout="cupertino"] .cu-card {
+  position: relative; width: min(980px, 100%); max-height: 100%; overflow-y: auto; overscroll-behavior: contain; outline: 0;
+  border-radius: 28px; color: #fff; pointer-events: auto;
+  background: linear-gradient(180deg, #232326, #1c1c1e 360px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1), 0 0 0 .5px rgba(255, 255, 255, .12), 0 50px 120px rgba(0, 0, 0, .8), 0 12px 36px rgba(0, 0, 0, .5);
+}
+#rfs-sheet[data-layout="cupertino"] .cu-card:not(.ready) { pointer-events: none; } /* a double-click can't press Play */
+#rfs-sheet[data-layout="cupertino"] .cu-card::-webkit-scrollbar { width: 12px; }
+#rfs-sheet[data-layout="cupertino"] .cu-card::-webkit-scrollbar-thumb { background: rgba(142, 142, 147, .45); border: 4px solid transparent; background-clip: padding-box; border-radius: 99px; }
+
+/* close: a round glass button at the top end */
+#rfs-sheet[data-layout="cupertino"] .cu-x {
+  position: absolute; z-index: 5; top: 16px; inset-inline-end: 16px; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 50%;
+  display: grid; place-items: center; cursor: pointer; color: rgba(255, 255, 255, .9);
+  background: linear-gradient(180deg, rgba(255, 255, 255, .16), rgba(255, 255, 255, .05)), rgba(30, 30, 34, .72);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .18), 0 0 0 .5px rgba(255, 255, 255, .1), 0 4px 12px rgba(0, 0, 0, .4);
+  transition: background-color .2s, transform .2s cubic-bezier(.2, .8, .2, 1);
+}
+#rfs-sheet[data-layout="cupertino"] .cu-x:hover { transform: scale(1.08); color: #fff; }
+#rfs-sheet[data-layout="cupertino"] .cu-x > svg.rf-ic { width: 14px; height: 14px; margin: 0; stroke: currentColor; filter: none; }
+
+/* banner: hero art (or header) fading into the card */
+#rfs-sheet[data-layout="cupertino"] .cu-ban { position: relative; height: clamp(200px, 30vh, 330px); overflow: hidden; border-radius: 28px 28px 0 0; }
+#rfs-sheet[data-layout="cupertino"] .cu-ban-art { position: absolute; inset: 0; background: #2c2c2e center 22% / cover no-repeat; }
+#rfs-sheet[data-layout="cupertino"] .cu-ban::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background:
+    linear-gradient(0deg, #232326 0%, rgba(35, 35, 38, .75) 26%, rgba(35, 35, 38, 0) 62%),
+    radial-gradient(ellipse 120% 100% at 50% 30%, transparent 55%, rgba(0, 0, 0, .4) 100%);
+}
+#rfs-sheet[data-layout="cupertino"] .cu-ban-in {
+  position: absolute; z-index: 1; inset-inline: 0; inset-block-end: 0; padding: 0 40px 20px;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 12px;
+}
+#rfs-sheet[data-layout="cupertino"] .cu-eyebrow { font-size: 13px; font-weight: 600; color: var(--cu-l2); }
+#rfs-sheet[data-layout="cupertino"] .cu-card.running .cu-eyebrow { color: #30d158; }
+#rfs-sheet[data-layout="cupertino"] .cu-ban-logo { max-width: 100%; }
+#rfs-sheet[data-layout="cupertino"] .cu-ban-logo .cu-logo { display: block; width: auto; height: auto; max-width: min(420px, 70%); max-height: 112px; }
+#rfs-sheet[data-layout="cupertino"] .cu-ban-logo.has-logo h2 { display: none; }
+#rfs-sheet[data-layout="cupertino"] .cu-ban-logo h2 {
+  margin: 0; font-size: 38px; font-weight: 700; line-height: 1.08; letter-spacing: var(--cu-track); color: #fff; overflow-wrap: anywhere;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+/* the wired buttons, exactly like the hero: white Play pill, glass pills */
+#rfs-sheet[data-layout="cupertino"] .rf-acts { gap: 10px; margin: 4px 0 0; }
+#rfs-sheet[data-layout="cupertino"] .rf-act {
+  height: 44px; padding: 0 22px; gap: 8px; border: 0; border-radius: 980px;
+  font-size: 15px; font-weight: 600; color: #fff;
+  background: rgba(255, 255, 255, .14); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14);
+  transition: background-color .2s cubic-bezier(.2, .8, .2, 1), transform .2s cubic-bezier(.2, .8, .2, 1);
+}
+#rfs-sheet[data-layout="cupertino"] .rf-act:hover { background: rgba(255, 255, 255, .22); }
+#rfs-sheet[data-layout="cupertino"] .rf-act:active { transform: scale(.97); }
+#rfs-sheet[data-layout="cupertino"] .rf-act:focus-visible { outline: 3px solid var(--cu-blue); outline-offset: 3px; }
+#rfs-sheet[data-layout="cupertino"] .rf-act.play { padding: 0 28px; color: #000; background: #fff; box-shadow: 0 6px 18px rgba(0, 0, 0, .35); }
+#rfs-sheet[data-layout="cupertino"] .rf-act.play:hover { background: #f2f2f7; }
+#rfs-sheet[data-layout="cupertino"] .rf-act.play.is-running { background: #30d158; }
+#rfs-sheet[data-layout="cupertino"] .rf-act > svg.rf-ic { width: 16px; height: 16px; margin: 0; stroke: currentColor; filter: none; }
+#rfs-sheet[data-layout="cupertino"] .rf-act > svg.rf-ic .s { fill: currentColor; stroke: none; }
+#rfs-sheet[data-layout="cupertino"] .rf-act > svg.rf-ic :is(.f, rect, ellipse, circle:not(.s)) { fill: currentColor; fill-opacity: .16; }
+#rfs-sheet[data-layout="cupertino"] .rf-act.play > svg.rf-ic :is(.f, rect, ellipse, circle:not(.s)) { fill-opacity: 1; }
+
+#rfs-sheet[data-layout="cupertino"] .cu-body { padding: 8px 40px 40px; }
+/* the stat strip: big numbers, tiny captions, hairlines between */
+#rfs-sheet[data-layout="cupertino"] .cu-stats {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  padding: 20px 0; border-block: .5px solid var(--cu-sep);
+}
+#rfs-sheet[data-layout="cupertino"] .cu-stat { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 0 12px; text-align: center; min-width: 0; }
+#rfs-sheet[data-layout="cupertino"] .cu-stat + .cu-stat { border-inline-start: .5px solid var(--cu-sep); }
+#rfs-sheet[data-layout="cupertino"] .cu-stat b {
+  max-width: 100%; font-size: 22px; font-weight: 700; line-height: 1.15; letter-spacing: var(--cu-track); color: #fff;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+#rfs-sheet[data-layout="cupertino"] .cu-stat small { font-size: 12px; font-weight: 500; color: var(--cu-l2); }
+/* labels above the list and the description */
+#rfs-sheet[data-layout="cupertino"] .cu-label { margin: 28px 4px 10px; font-size: 20px; font-weight: 700; letter-spacing: var(--cu-track); color: #fff; }
+/* the facts: a grouped inset list — label at the start, value at the end, hairlines between rows */
+#rfs-sheet[data-layout="cupertino"] .cu-group {
+  border-radius: 14px; overflow: hidden;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .03), rgba(255, 255, 255, 0)), #2c2c2e;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06);
+}
+#rfs-sheet[data-layout="cupertino"] .cu-fr { position: relative; display: flex; align-items: center; gap: 16px; min-height: 48px; padding: 12px 18px; font-size: 14px; }
+#rfs-sheet[data-layout="cupertino"] .cu-fr + .cu-fr::before { content: ''; position: absolute; top: 0; inset-inline: 18px 0; border-top: .5px solid var(--cu-sep); }
+#rfs-sheet[data-layout="cupertino"] .cu-fr span { flex: none; color: #fff; }
+#rfs-sheet[data-layout="cupertino"] .cu-fr b {
+  flex: 1 1 auto; min-width: 0; font-weight: 400; color: var(--cu-l2); text-align: end;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+#rfs-sheet[data-layout="cupertino"] .cu-desc {
+  margin: 0 4px; font-size: 14px; line-height: 1.65; color: rgba(235, 235, 245, .78);
+  display: -webkit-box; -webkit-line-clamp: 7; -webkit-box-orient: vertical; overflow: hidden;
+}

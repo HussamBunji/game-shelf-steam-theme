@@ -7,6 +7,7 @@
 @import url("../layouts/cork.preview.css");
 @import url("../layouts/arcade.preview.css");
 @import url("../layouts/magazine.preview.css");
+@import url("../layouts/cupertino.preview.css");
 /* ===================================================================
    رف الألعاب — the three non-shelf home designs + home embedding
    =================================================================== */
@@ -249,7 +250,13 @@ html.rfs-home-on:not(.rfs-show-news) [data-rfs-home] > :has([data-rfs-upd]) { di
 #rfs-themes .pv-scap { top: 78px; left: calc(56px + var(--i) * 30px); width: 25px; height: 37px; border-radius: 2px; background: hsl(calc(205deg + var(--i) * 11deg) 32% calc(26% + var(--i) * 3%)); }
 
 /* ═════════════ v4: ONE toolbar in Steam's top navigation row ═════════════ */
-[data-rfs-hide] { display: none !important; }   /* Steam's own left-list search box (our toolbar search replaces it) */
+[data-rfs-hide]:not([data-rfs-hide="park"]) { display: none !important; }
+/* Steam's left game list is parked off-screen at its real size instead (display: none made its virtual list measure
+   every row as 0 px high — back on a game page it showed empty rows until Steam restarted) */
+[data-rfs-hide="park"] {
+  position: fixed !important; left: -10000px !important; top: 0 !important; height: 100vh !important;
+  visibility: hidden !important; pointer-events: none !important;
+}   /* Steam's own left-list search box (our toolbar search replaces it) */
 #rfs-bar {
   --font: 'Segoe UI', 'Motiva Sans', Tahoma, Arial, sans-serif;
   --ink: var(--rf-text, #f4ede5); --muted: var(--rf-text-dim, #b9aa9b);
@@ -451,5 +458,5 @@ html[data-rfs-native] :is(#rfs-bar, #rfs-themes, #rfs-toast) * { font-family: va
 #rfs-family .dot { width: 8px; height: 8px; border-radius: 50%; background: #6b7280; box-shadow: 0 0 0 2px rgba(0, 0, 0, .35); }
 #rfs-family.on .dot { background: #4ade80; box-shadow: 0 0 6px rgba(74, 222, 128, .8); }
 /* in the title bar there is room for the shield and its light only (the name is in the tooltip) */
-html:is([data-rfs-style="glass"], [data-rfs-style="magazine"], [data-rfs-style="vault"], [data-rfs-style="cork"], [data-rfs-style="neon"], [data-rfs-style="space"], [data-rfs-style="material"], [data-rfs-style="original"]) #rfs-family { padding: 0 8px; }
-html:is([data-rfs-style="glass"], [data-rfs-style="magazine"], [data-rfs-style="vault"], [data-rfs-style="cork"], [data-rfs-style="neon"], [data-rfs-style="space"], [data-rfs-style="material"], [data-rfs-style="original"]) #rfs-family .lbl { display: none; }
+html:is([data-rfs-style="glass"], [data-rfs-style="magazine"], [data-rfs-style="vault"], [data-rfs-style="cork"], [data-rfs-style="neon"], [data-rfs-style="space"], [data-rfs-style="cupertino"], [data-rfs-style="material"], [data-rfs-style="original"]) #rfs-family { padding: 0 8px; }
+html:is([data-rfs-style="glass"], [data-rfs-style="magazine"], [data-rfs-style="vault"], [data-rfs-style="cork"], [data-rfs-style="neon"], [data-rfs-style="space"], [data-rfs-style="cupertino"], [data-rfs-style="material"], [data-rfs-style="original"]) #rfs-family .lbl { display: none; }
