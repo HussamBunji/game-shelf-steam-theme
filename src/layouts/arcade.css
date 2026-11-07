@@ -267,7 +267,7 @@ html:not([data-rfs-lang="en"]) #rfs[data-layout="arcade"] .ar-logo-img { object-
   overflow: hidden;
   text-overflow: ellipsis;
 }
-#rfs[data-layout="arcade"] .ar-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+#rfs[data-layout="arcade"] .ar-stats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
 #rfs[data-layout="arcade"] .ar-stat {
   min-width: 0;
   padding: 8px 10px 7px;
@@ -286,6 +286,20 @@ html:not([data-rfs-lang="en"]) #rfs[data-layout="arcade"] .ar-logo-img { object-
 #rfs[data-layout="arcade"] .ar-stat.s2 { --c: var(--ar-cyan); }
 #rfs[data-layout="arcade"] .ar-stat.s3 { --c: var(--ar-magenta); }
 #rfs[data-layout="arcade"] .ar-stat.s4 { --c: var(--ar-green); }
+/* TROPHIES: gold label, "12/50" value and a stepped pixel bar (8 blocks) filling from the reading start */
+#rfs[data-layout="arcade"] .ar-stat.s5 { --c: #ffb000; position: relative; }
+#rfs[data-layout="arcade"] .ar-stat.s5.done { --c: var(--ar-green); }
+#rfs[data-layout="arcade"] .ar-stat.s5 .ar-val small { font-size: .7em; color: var(--ar-dim); }
+#rfs[data-layout="arcade"] .ar-achbar {
+  display: block; position: relative; height: 5px; margin-top: 5px; background: #000;
+  box-shadow: 0 0 0 1px var(--ar-line);
+}
+#rfs[data-layout="arcade"] .ar-achbar > i {
+  position: absolute; inset-block: 0; inset-inline-start: 0; width: calc(var(--p, 0) * 1%);
+  background: repeating-linear-gradient(90deg, var(--c) 0 calc(12.5% - 2px), transparent calc(12.5% - 2px) 12.5%);
+  background-size: calc(10000% / max(var(--p, 1), 1)) 100%;
+}
+#rfs[data-layout="arcade"] .ar-stat.s5.none .ar-achbar { opacity: .35; }
 #rfs[data-layout="arcade"] .ar-val {
   display: block;
   margin-top: 5px;

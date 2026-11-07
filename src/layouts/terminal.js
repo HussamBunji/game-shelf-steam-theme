@@ -126,6 +126,7 @@
               <div class="tm-cat" dir="ltr"></div>
               <div class="tm-frame" title="${esc(T('افتح صفحة اللعبة', 'Open this game'))}"><div class="tm-img"></div></div>
               <h3 class="tm-name" dir="auto"></h3>
+              <div class="tm-ach" hidden></div>
               <dl class="tm-kv"></dl>
               <div class="tm-about"><span class="tm-cmt">${esc(T('# نبذة', '# about'))}</span><p class="tm-desc" dir="auto"></p></div>
               <div class="tm-acts">
@@ -169,6 +170,7 @@
       this.catEl = $('.tm-cat', el);
       this.nameEl = $('.tm-name', el);
       this.kv = $('.tm-kv', el);
+      this.achEl = $('.tm-ach', el);
       this.desc = $('.tm-desc', el);
       this.playBtn = $('.tm-act.go', el);
       this.posEl = $('.tm-pos', el);
@@ -276,6 +278,7 @@
       this.catEl.innerHTML = `<span class="tm-s">$</span> cat <b>${esc(infoFile(g))}</b>`;
       this.nameEl.textContent = g.name;
       this.fillKv(g);
+      this.fillAch(g);
       this.fillDesc(g);
       this.fillPlay(g);
       this.frame.dataset.appid = g.appid;
@@ -283,9 +286,24 @@
       if (!g.detailed) {
         api.Data.ensureDetails(g).then(gg => {
           if (this.shownId !== gg.appid || !this.frame || !this.frame.isConnected) return;
-          this.fillKv(gg); this.fillDesc(gg); this.paintImg(gg);
+          this.fillKv(gg); this.fillAch(gg); this.fillDesc(gg); this.paintImg(gg);
         });
       }
+    },
+    /** TROPHIES [#####.....] 12/50 52%  — a text gauge; it fills from the reading start (right in Arabic) */
+    fillAch(g) {
+      const a = api.gameAch(g), box = this.achEl;
+      if (!box) return;
+      box.hidden = !a;
+      if (!a) { box.textContent = ''; return; }
+      const W = 10, k = Math.max(a.got ? 1 : 0, Math.min(W, Math.round(a.pct / 10)));
+      const fill = `<b>${'#'.repeat(k)}</b>`, rest = `<i>${'.'.repeat(W - k)}</i>`;
+      box.classList.toggle('done', a.got >= a.total);
+      box.title = T(`الإنجازات: ${NUM.format(a.got)} من ${NUM.format(a.total)}`, `Achievements: ${NUM.format(a.got)} of ${NUM.format(a.total)}`);
+      box.innerHTML = `<span class="tm-ach-k">${esc(T('الإنجازات', 'TROPHIES'))}</span>`
+        + `<span class="tm-ach-g" dir="ltr">[${api.LTR ? fill + rest : rest + fill}]</span>`
+        + `<span class="tm-ach-n" dir="ltr">${NUM.format(a.got)}/${NUM.format(a.total)}</span>`
+        + `<span class="tm-ach-p" dir="ltr">${a.pct}%</span>`;
     },
     fillKv(g) {
       const run = api.running().has(g.appid);

@@ -96,6 +96,22 @@
       };
     },
     icon(ov) { try { return this.ctx().appStore.GetIconURLForApp(ov) || ''; } catch (e) { return ''; } },
+    /** achievements: { got, total, pct } or null (no achievements). The game's details carry exact counts;
+        until they arrive, Steam's own progress cache (filled by the library) often has them. */
+    achievements(appid) {
+      const c = this.ctx();
+      try {
+        const d = c.appDetailsStore.GetAppDetails(appid);
+        const a = d && d.achievements;
+        if (a && a.nTotal > 0) return { got: a.nAchieved || 0, total: a.nTotal, pct: Math.round(((a.nAchieved || 0) / a.nTotal) * 100) };
+      } catch (e) { /* not loaded */ }
+      try {
+        const m = c.appAchievementProgressCache && c.appAchievementProgressCache.m_achievementProgress && c.appAchievementProgressCache.m_achievementProgress.mapCache;
+        const e = m && m.get(Number(appid));
+        if (e && e.total > 0) return { got: e.unlocked || 0, total: e.total, pct: Math.round(e.percentage != null ? e.percentage : (e.unlocked / e.total) * 100) };
+      } catch (e) { /* no cache */ }
+      return null;
+    },
     description(appid) { try { const d = this.ctx().appDetailsStore.GetDescriptions(appid); return (d && d.strSnippet) || ''; } catch (e) { return ''; } },
     tags(ov, n = 4) {
       const a = this.ctx().appStore;
@@ -314,6 +330,7 @@
     { value: 'Magazine', sid: 'magazine', layout: 'magazine', name: T('المجلة', 'Magazine'), desc: T('غلاف مجلة: آخر لعبة قصة الغلاف، والباقي أعمدة وقوائم بأرقام كبيرة', 'An editorial magazine: your last game is the cover story, the rest are columns and charts') },
     { value: 'Cupertino Dark', sid: 'cupertino', layout: 'cupertino', name: T('كوبرتينو الداكن', 'Cupertino Dark'), desc: T('أسلوب الماك والتلفزيون الداكن: زجاج معتم، زوايا ناعمة وزر تشغيل أبيض', 'The dark Mac / TV-app look: dark glass, soft corners and a white Play button') },
     { value: 'Cyberpunk', sid: 'cyberpunk', layout: 'cyberpunk', name: T('سايبربنك', 'Cyberpunk'), desc: T('أجواء سايبربنك بألوان مريحة للعين وزوايا مقصوصة', 'Cyberpunk atmosphere in eye-friendly tones, angular HUD panels') },
+    { value: 'Shelter OS', sid: 'shelter', layout: 'shelter', name: T('الملجأ', 'Shelter OS'), desc: T('جهاز ذراع قديم بشاشة كهرمانية: إحصائياتك وأغراضك ومهماتك', 'A retro wrist computer with an amber CRT: stats, items and missions') },
     // page 2: Steam as Valve ships it, then the extra community themes (MIT) — optional in the installer
     { value: 'Steam Original', sid: 'original', layout: 'original', name: T('ستيم الأصلي', 'Steam Original'), desc: T('ستيم مثل ما هو بدون أي تعديل — يبقى زر الثيمات ولوحة الأرقام بالمتجر', 'Steam exactly as Valve ships it — only the Themes button and the store stats panel stay') },
     { value: 'SpaceTheme', sid: 'space', layout: 'space', name: 'SpaceTheme', desc: T('ثيم المجتمع المشهور (SpaceTheme، رخصة MIT) — داكن ومرتب، مع لوحات الأرقام والأيقونات حقتنا', 'The popular community theme (SpaceTheme, MIT) — dark and modular, plus our stats panels and icons') },
@@ -387,6 +404,7 @@
               if (!g.sizeOnDisk && d.lDiskUsageBytes) g.sizeOnDisk = Number(d.lDiskUsageBytes);
             }
             g.description = SteamAPI.description(g.appid);
+            g.ach = SteamAPI.achievements(g.appid);
           } catch (e) { /* keep lite data */ }
           g.detailed = true;
           this.active--;
@@ -711,7 +729,17 @@
       if (!slot) { hideTip(); return; }
       slot.classList.add('hover');
       const g = byId(slot.dataset.appid);
-      if (g) { const r = slot.getBoundingClientRect(); showTip(g, r.left + r.width / 2, r.top); }
+      if (g) {
+        const r = slot.getBoundingClientRect();
+        showTip(g, r.left + r.width / 2, r.top);
+        tip.insertAdjacentHTML('beforeend', achHTML(g, 'mini'));
+        // exact counts come with the details: refill the tip once if this case is still the one under the mouse
+        if (!g.detailed) Data.ensureDetails(g).then(() => {
+          if (hoverSlot !== slot) return;
+          const old = tip.querySelector('.rf-ach'), h = achHTML(g, 'mini');
+          if ((old ? old.outerHTML : '') !== h) { if (old) old.remove(); if (h) tip.insertAdjacentHTML('beforeend', h); }
+        });
+      }
       sfx('tick');
     },
     source(appid) {
@@ -746,6 +774,7 @@
         <input class="cf-range" type="range" min="0" max="${Math.max(0, games.length - 1)}" value="${this.cur}" title="${T('اسحب للتنقل السريع', 'Drag to browse quickly')}">
         <div class="cf-info">
           <h2 class="cf-name" dir="auto"></h2>
+          <div class="cf-ach"></div>
           <div class="cf-meta"></div>
           <div class="cf-actions">
             <button class="cf-btn play" data-act="play">${ic('play')}${T('تشغيل', 'Play')}</button>
@@ -860,6 +889,9 @@
       const fill = () => {
         const run = SteamAPI.runningIds().has(g.appid);
         $('.cf-name', this.el).textContent = g.name;
+        const ach = $('.cf-ach', this.el), ah = achHTML(g);
+        if (ach.innerHTML !== ah) ach.innerHTML = ah;
+        ach.hidden = !ah;
         $('.cf-meta', this.el).innerHTML = `<span>${ic('clock')}${esc(fmtPlaytime(g.playtimeMin))}</span><span>${ic('calendar')}${esc(fmtAgo(g.lastPlayed))}</span>${g.sizeOnDisk ? `<span>${ic('drive')}${esc(fmtSize(g.sizeOnDisk))}</span>` : ''}${g.installed ? '' : `<span>${ic('download')}${T('غير مثبتة', 'Not installed')}</span>`}${g.genres[0] ? `<span>${ic('tag')}${esc(g.genres[0])}</span>` : ''}`;
         $('.cf-btn.play', this.el).innerHTML = run ? ic('pulse') + T('شغّالة', 'Running') : g.installed ? ic('play') + T('تشغيل', 'Play') : ic('download') + T('تثبيت', 'Install');
         $('.cf-count', this.el).textContent = `${NUM.format(this.cur + 1)} / ${NUM.format(this.games.length)}`;
@@ -964,7 +996,7 @@
             <div class="gl-hero-body">
               <div class="gl-kicker">${T('كمّل من وين وقفت', 'Continue where you left off')}</div>
               <div class="gl-hero-logo"><h2 dir="auto">${esc(recent.name)}</h2></div>
-              <div class="gl-hero-meta"><span>${ic('clock')}${esc(fmtPlaytime(recent.playtimeMin))}</span><span>${ic('calendar')}${esc(fmtAgo(recent.lastPlayed))}</span>${recent.playtime2wksMin ? `<span>${ic('fire')}${esc(fmtPlaytime(recent.playtime2wksMin))} ${T('آخر أسبوعين', 'past 2 weeks')}</span>` : ''}</div>
+              <div class="gl-hero-meta"><span>${ic('clock')}${esc(fmtPlaytime(recent.playtimeMin))}</span><span>${ic('calendar')}${esc(fmtAgo(recent.lastPlayed))}</span>${recent.playtime2wksMin ? `<span>${ic('fire')}${esc(fmtPlaytime(recent.playtime2wksMin))} ${T('آخر أسبوعين', 'past 2 weeks')}</span>` : ''}${achHTML(recent)}</div>
               <div class="gl-hero-actions">
                 <button class="gl-btn play" data-act="play">${running.has(recent.appid) ? ic('pulse') + T('شغّالة الحين', 'Running now') : recent.installed ? ic('play') + T('كمّل اللعب', 'Continue playing') : ic('download') + T('تثبيت', 'Install')}</button>
                 <button class="gl-btn" data-act="open">${ic('info')}${T('التفاصيل', 'Details')}</button>
@@ -979,6 +1011,9 @@
           $('.gl-hero-bg', el).style.backgroundImage = cssUrl(first(g.images.hero) || first(g.images.header) || first(g.images.capsule));
           const lg = $('.gl-hero-logo', el);
           if (g.images.logo.length && !lg.querySelector('img')) lg.replaceChildren(imgWithFallback(g.images.logo, '', im => im.replaceWith(Object.assign(document.createElement('h2'), { textContent: g.name }))));
+          // achievements chip: only this chip is swapped, and only when the numbers changed (details bring exact counts)
+          const meta = $('.gl-hero-meta', el), old = meta.querySelector('.rf-ach'), html = achHTML(g);
+          if ((old ? old.outerHTML : '') !== html) { if (old) old.remove(); if (html) meta.insertAdjacentHTML('beforeend', html); }
         };
         paintHero(recent);
         Data.ensureDetails(recent).then(paintHero);
@@ -1093,7 +1128,7 @@
         box while the cover glides into its place (styles: src/css/sheets.css, #rfs-sheet[data-layout="gallery"]) */
     async open(g, sheet, src) {
       const run = SteamAPI.runningIds().has(g.appid), facts = gameFacts(g), desc = gameDesc(g);
-      const FI = { [T('وقت اللعب', 'Play time')]: 'hourglass', [T('آخر مرة لعبت', 'Last played')]: 'clock', [T('آخر أسبوعين', 'Past 2 weeks')]: 'fire',
+      const FI = { [T('وقت اللعب', 'Play time')]: 'hourglass', [T('آخر مرة لعبت', 'Last played')]: 'clock', [T('آخر أسبوعين', 'Past 2 weeks')]: 'fire', [T('الإنجازات', 'Achievements')]: 'trophy',
         [T('الحجم', 'Size')]: 'drive', [T('المطوّر', 'Developer')]: 'users', [T('الإصدار', 'Released')]: 'calendar' };
       const st = run ? ['run', T('شغّالة الحين', 'Running now')] : g.installed ? ['in', T('مثبتة وجاهزة', 'Installed')] : ['out', T('غير مثبتة', 'Not installed')];
       const hasLogo = g.images.logo.length > 0;
@@ -1310,10 +1345,33 @@
   function gameFacts(g) {
     const stats = [[T('وقت اللعب', 'Play time'), fmtPlaytime(g.playtimeMin)], [T('آخر مرة لعبت', 'Last played'), fmtAgo(g.lastPlayed)]];
     if (g.playtime2wksMin) stats.push([T('آخر أسبوعين', 'Past 2 weeks'), fmtPlaytime(g.playtime2wksMin)]);
+    const a = gameAch(g);
+    if (a) stats.push([T('الإنجازات', 'Achievements'), T(`${NUM.format(a.got)} من ${NUM.format(a.total)} (${a.pct}%)`, `${NUM.format(a.got)} / ${NUM.format(a.total)} (${a.pct}%)`)]);
     stats.push([T('الحجم', 'Size'), g.installed ? `${fmtSize(g.sizeOnDisk)}${g.drive ? ` · ${g.drive}` : ''}` : T('غير مثبتة', 'Not installed')], [T('المطوّر', 'Developer'), (g.developers || []).join(T('، ', ', ')) || '—'], [T('الإصدار', 'Released'), g.releaseDate || '—']);
     return stats;
   }
   const gameDesc = g => g.description || SteamAPI.description(g.appid) || '';
+  /** achievement progress { got, total, pct } or null — from the loaded details, else Steam's progress cache */
+  function gameAch(g) {
+    if (!g) return null;
+    if (g.ach) return g.ach;
+    const a = SteamAPI.achievements(g.appid);
+    if (a && g.detailed) g.ach = a;
+    return a;
+  }
+  /** the shared achievements readout every design can drop in: a trophy, "12 / 50", a progress bar and the % —
+      each style dresses .rf-ach with its own colours/shape (variables --ach-fg / --ach-track / --ach-fill / --ach-radius).
+      kind: '' (full) | 'mini' (trophy + 12/50 only). Returns '' when the game has no achievements. */
+  function achHTML(g, kind = '') {
+    const a = gameAch(g);
+    if (!a) return '';
+    const done = a.got >= a.total;
+    const label = T(`الإنجازات: ${NUM.format(a.got)} من ${NUM.format(a.total)}`, `Achievements: ${NUM.format(a.got)} of ${NUM.format(a.total)}`);
+    if (kind === 'mini') return `<span class="rf-ach mini${done ? ' done' : ''}" title="${esc(label)} (${a.pct}%)">${ic('trophy')}<b>${NUM.format(a.got)}/${NUM.format(a.total)}</b></span>`;
+    return `<div class="rf-ach${done ? ' done' : ''}" title="${esc(label)}" role="group" aria-label="${esc(label)} (${a.pct}%)">${ic('trophy')}`
+      + `<b>${NUM.format(a.got)}<small>/${NUM.format(a.total)}</small></b>`
+      + `<span class="rf-ach-bar"><i style="width:${Math.max(a.pct, a.got ? 2 : 0)}%"></i></span><em>${a.pct}%</em></div>`;
+  }
   /** Play / Game page / Store buttons, already wired. Plug-in themes style them (.rf-acts button[data-act]). */
   function gameActions(g) {
     const box = div('rf-acts');
@@ -2019,7 +2077,7 @@
     // actions
     openGame, launch, openDetails: appid => SteamAPI.openDetails(appid), rerender: () => render(),
     // a theme's own game panel (layout.open(g, sheet, src) / layout.close(sheet, g)): facts, text and wired buttons
-    gameFacts, gameDesc, gameActions, closeGame: () => closeViewer(), get openId() { return current ? current.appid : null; },
+    gameFacts, gameDesc, gameActions, gameAch, achHTML, closeGame: () => closeViewer(), get openId() { return current ? current.appid : null; },
     openStore: appid => SteamAPI.steamUrl('steam://store/' + appid), steamUrl: url => SteamAPI.steamUrl(url),
     showTip, hideTip, sfx, toast,
   };

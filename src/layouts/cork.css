@@ -116,6 +116,27 @@
 #rfs[data-layout="cork"] .ck-p .go > svg.rf-ic { width: 15px; height: 15px; margin: 0; }
 #rfs[data-layout="cork"] .ck-p:is(:hover, .kf) .go { opacity: 1; box-shadow: 0 3px 7px rgba(30, 15, 4, .4); }
 #rfs[data-layout="cork"] .ck-p .go:hover { background: linear-gradient(135deg, #a6e096, #5db455); }
+/* achievements: ONE kraft price tag (cork.js tag()) tied to the hovered / focused polaroid's start edge */
+#rfs[data-layout="cork"] .ck-ach {
+  position: absolute; z-index: 3; top: 16px; inset-inline-start: -10px; display: none; align-items: center; gap: 4px;
+  height: 24px; padding-block: 0; padding-inline: 15px 9px; white-space: nowrap; pointer-events: none;
+  color: #3b2614; background: linear-gradient(180deg, #e2c595, #cfa96f);
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 50%, calc(100% - 10px) 100%, 0 100%);  /* RTL: the point at the start (right) */
+  transform: rotate(4deg); font-variant-numeric: tabular-nums;
+}
+html[data-rfs-lang="en"] #rfs[data-layout="cork"] .ck-ach { clip-path: polygon(10px 0, 100% 0, 100% 100%, 10px 100%, 0 50%); transform: rotate(-4deg); }
+#rfs[data-layout="cork"] .ck-p:is(:hover, .kf) > .ck-ach { display: inline-flex; }
+#rfs[data-layout="cork"] .ck-ach::before { /* the string hole */
+  content: ''; position: absolute; top: 50%; inset-inline-start: 5px; width: 5px; height: 5px; margin-top: -2.5px; border-radius: 50%;
+  background: #6b4a2a; box-shadow: inset 0 1px 1px rgba(0, 0, 0, .5);
+}
+#rfs[data-layout="cork"] .ck-ach > svg.rf-ic { width: 13px; height: 13px; margin: 0; stroke: #8a4b12; filter: none; }
+#rfs[data-layout="cork"] .ck-ach > b { font-family: var(--rf-heading-font) !important; font-size: 17px; font-weight: 700; line-height: 1; color: var(--ck-ink); }
+#rfs[data-layout="cork"] .ck-ach > b small { font-size: .8em; font-weight: 600; color: #5d4a36; }
+#rfs[data-layout="cork"] .ck-ach > em { font-style: normal; font-size: 10.5px; font-weight: 800; color: #6b4a2a; }
+#rfs[data-layout="cork"] .ck-ach.done { background: linear-gradient(180deg, #f6d77c, #e2b24a); }
+#rfs[data-layout="cork"] .ck-ach.done > svg.rf-ic { stroke: #9a5a00; }
+#rfs[data-layout="cork"] .ck-ach.done > em { color: var(--ck-red); }
 
 /* hover / keyboard focus: ONLY this polaroid straightens, lifts and gets a soft shadow */
 #rfs[data-layout="cork"] .ck-p:hover,
@@ -261,6 +282,25 @@
 }
 html:not([data-rfs-lang="en"]) #rfs-sheet[data-layout="cork"] .ckv-snap { transform: rotate(-3deg); }
 #rfs-sheet[data-layout="cork"] .ckv-snap .art { aspect-ratio: 460 / 215; border: 1px solid rgba(40, 25, 10, .12); }
+/* achievements written in ballpoint on the snapshot's caption strip, with a hand-drawn bar (cork.js snapAch) */
+#rfs-sheet[data-layout="cork"] .ckv-ach {
+  position: absolute; bottom: 2px; inset-inline: 9px; display: flex; align-items: center; gap: 6px; height: 19px;
+  color: var(--ck-ink); font-variant-numeric: tabular-nums;
+}
+#rfs-sheet[data-layout="cork"] .ckv-ach > svg.rf-ic { flex: none; width: 13px; height: 13px; margin: 0; stroke: #a0611a; filter: none; }
+#rfs-sheet[data-layout="cork"] .ckv-ach > b { flex: none; font-family: var(--rf-heading-font) !important; font-size: 17px; font-weight: 700; line-height: 1; }
+#rfs-sheet[data-layout="cork"] .ckv-ach > b small { font-size: .8em; font-weight: 600; color: var(--ck-pencil); }
+#rfs-sheet[data-layout="cork"] .ckv-ach-bar {
+  position: relative; flex: 1 1 auto; min-width: 30px; height: 5px; border-radius: 3px;
+  background: rgba(47, 59, 110, .12); box-shadow: inset 0 0 0 1px rgba(47, 59, 110, .28);
+}
+#rfs-sheet[data-layout="cork"] .ckv-ach-bar > i {
+  position: absolute; inset-block: 0; inset-inline-start: 0; border-radius: inherit;
+  background: repeating-linear-gradient(115deg, var(--ck-ink) 0 2px, rgba(47, 59, 110, .7) 2px 4px);
+}
+#rfs-sheet[data-layout="cork"] .ckv-ach > em { flex: none; font-style: normal; font-size: 11px; font-weight: 800; color: var(--ck-pencil); }
+#rfs-sheet[data-layout="cork"] .ckv-ach.done .ckv-ach-bar > i { background: repeating-linear-gradient(115deg, #d39a1f 0 2px, #e8b84a 2px 4px); }
+#rfs-sheet[data-layout="cork"] .ckv-ach.done > em { color: var(--ck-red); }
 #rfs-sheet[data-layout="cork"] .ckv-snap::before {
   content: ''; position: absolute; top: -11px; left: 50%; width: 84px; height: 22px; margin-left: -42px; transform: rotate(-5deg);
   background: repeating-linear-gradient(135deg, rgba(255, 255, 255, .32) 0 5px, transparent 5px 10px), rgba(240, 192, 76, .84);

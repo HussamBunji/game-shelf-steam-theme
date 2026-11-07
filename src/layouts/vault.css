@@ -192,6 +192,29 @@ html[data-rfs-lang="ar"] :is(#rfs, #rfs-sheet)[data-layout="vault"] { --vt-end: 
 #rfs[data-layout="vault"] .vt-eq-meta { display: flex; justify-content: center; flex-wrap: wrap; gap: 0 6px; margin-top: 2px; font-size: 12px; color: var(--rf-text-dim); }
 #rfs[data-layout="vault"] .vt-eq-meta > span + span::before { content: ''; display: inline-block; width: 3px; height: 3px; margin-inline-end: 6px; vertical-align: middle; border-radius: 50%; background: rgba(217, 176, 102, .6); }
 #rfs[data-layout="vault"] .vt-eq-meta .vt-tier { font-weight: 700; color: rgb(var(--rc)); }
+/* achievements: a gold trophy + molten-gold bar in a recessed track (the equipped card and the item tooltip) */
+#rfs[data-layout="vault"] :is(.vt-eq-ach, .vt-tip .tt-ach) .rf-ach {
+  --ach-fg: #f3e6c4; --ach-dim: #a99a7e; --ach-track: #0b0806; --ach-fill: #f0be55; --ach-done: #fff1b8; --ach-radius: 4px;
+  gap: 7px;
+}
+#rfs[data-layout="vault"] :is(.vt-eq-ach, .vt-tip .tt-ach) .rf-ach > svg.rf-ic { color: #f1cf6e; filter: none; }
+#rfs[data-layout="vault"] :is(.vt-eq-ach, .vt-tip .tt-ach) .rf-ach-bar {
+  height: 8px; border: 1px solid rgba(217, 176, 102, .55); box-shadow: inset 0 1px 3px rgba(0, 0, 0, .9), 0 0 0 1px #000;
+}
+#rfs[data-layout="vault"] :is(.vt-eq-ach, .vt-tip .tt-ach) .rf-ach-bar > i {
+  min-width: 2px; background: linear-gradient(180deg, #fff1b8, #f0be55 45%, #b07a26); box-shadow: 0 0 6px rgba(240, 190, 85, .5);
+}
+#rfs[data-layout="vault"] :is(.vt-eq-ach, .vt-tip .tt-ach) .rf-ach > b {
+  font-family: var(--vt-btn-font) !important; letter-spacing: .03em;
+  background: var(--vt-gold-text); -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+#rfs[data-layout="vault"] :is(.vt-eq-ach, .vt-tip .tt-ach) .rf-ach > b small { -webkit-text-fill-color: #a08a62; }
+#rfs[data-layout="vault"] :is(.vt-eq-ach, .vt-tip .tt-ach) .rf-ach > em { color: #e2c27e; }
+#rfs[data-layout="vault"] :is(.vt-eq-ach, .vt-tip .tt-ach) .rf-ach.done .rf-ach-bar { border-color: #f3dc9c; }
+#rfs[data-layout="vault"] .vt-eq-ach { margin: 9px auto 0; max-width: 300px; }
+#rfs[data-layout="vault"] .vt-eq-ach[hidden] { display: none; }
+#rfs[data-layout="vault"] .vt-tip .tt-ach { margin-top: 7px; padding-top: 6px; border-top: 1px solid rgba(217, 176, 102, .18); }
+#rfs[data-layout="vault"] .vt-tip .tt-ach .rf-ach > b { font-size: 12.5px; }
 #rfs[data-layout="vault"] .vt-eq-acts { display: flex; gap: 8px; margin-top: 11px; }
 #rfs[data-layout="vault"] .vt-eq-acts .vt-btn { flex: 1 1 0; min-width: 0; }
 #rfs[data-layout="vault"] .vt-eq-acts .vt-btn.play { flex-grow: 1.4; }

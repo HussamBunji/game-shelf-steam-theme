@@ -136,6 +136,7 @@
           <div class="vy-side-head"><b>${esc(T('الوجه أ', 'Side A'))}</b><span>${esc(side)}</span></div>
           <div class="vy-bar"><i style="width:${pct}%"></i></div>
         </div>
+        <div class="vy-trk" hidden></div>
         <div class="vy-acts">
           <button class="vy-btn play" data-act="play">${play}</button>
           <button class="vy-btn" data-act="open">${ic('disc')}${details}</button>
@@ -151,6 +152,28 @@
     const big = first(g.images.hero) || first(g.images.header); // the page's one big image (a faint backdrop)
     const bg = $('.vy-deck-bg', deck);
     if (big && bg && deck._bg !== big) { deck._bg = big; bg.style.backgroundImage = cssUrl(big); }
+    paintTracks(deck, g);
+  }
+
+  /** the deck's achievements, as a tracklist: "12 of 50 tracks completed", one groove segment per track (≤ 40).
+      Only this box is rewritten, and only when the numbers change (the details often bring the exact count). */
+  function paintTracks(deck, g) {
+    const box = $('.vy-trk', deck);
+    if (!box) return;
+    const a = api.gameAch ? api.gameAch(g) : null;
+    const sig = a ? `${a.got}/${a.total}` : '';
+    if (box._sig === sig) return;
+    box._sig = sig;
+    box.hidden = !a;
+    if (!a) { box.textContent = ''; return; }
+    const done = a.got >= a.total;
+    const got = NUM.format(a.got), total = NUM.format(a.total);
+    const label = done ? T(`اكتملت كل المقاطع: ${total} من ${total}`, `All ${total} tracks completed`)
+      : T(`${got} من ${total} مقطع مكتمل`, `${got} of ${total} tracks completed`);
+    box.classList.toggle('done', done);
+    box.title = T(`الإنجازات: ${got} من ${total} (${a.pct}%)`, `Achievements: ${got} of ${total} (${a.pct}%)`);
+    box.innerHTML = `<div class="vy-trk-head">${ic('trophy')}<b>${esc(T('قائمة المقاطع', 'Tracklist'))}</b><span>${esc(label)}</span><em><bdi>${NUM.format(a.pct)}%</bdi></em></div>`
+      + `<div class="vy-trk-bar" style="--n:${Math.max(1, Math.min(a.total, 40))}"><i style="width:${Math.max(a.pct, a.got ? 2 : 0)}%"></i></div>`;
   }
 
   /** the game's Store page (the layout API has no store helper yet, so ask the Steam client directly) */

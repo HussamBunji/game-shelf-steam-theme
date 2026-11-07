@@ -176,6 +176,24 @@ html[data-rfs-lang="en"] #rfs[data-layout="vinyl"] .vy-kicker > span { font-size
   mask: repeating-linear-gradient(var(--vy-ang), #000 0 calc(12.5% - 3px), transparent calc(12.5% - 3px) 12.5%);
 }
 #rfs[data-layout="vinyl"] .vy-bar i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(var(--vy-ang), #e3b23c, #e8742a 60%, #c8452d); }
+/* the tracklist: achievements as tracks played through (one groove segment per track, gold when the album is done) */
+#rfs[data-layout="vinyl"] .vy-trk { width: min(460px, 100%); margin-top: -2px; }
+#rfs[data-layout="vinyl"] .vy-trk[hidden] { display: none; }
+#rfs[data-layout="vinyl"] .vy-trk-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 7px; font-size: 12px; color: var(--muted); min-width: 0; }
+#rfs[data-layout="vinyl"] .vy-trk-head > svg.rf-ic { flex: none; align-self: center; width: 15px; height: 15px; margin: 0; stroke: var(--vy-gold); filter: none; }
+#rfs[data-layout="vinyl"] .vy-trk-head > b { flex: none; font-family: var(--rf-heading-font) !important; font-weight: 400; font-synthesis: none; font-size: 15px; color: var(--vy-gold); }
+#rfs[data-layout="vinyl"] .vy-trk-head > span { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-variant-numeric: tabular-nums; }
+#rfs[data-layout="vinyl"] .vy-trk-head > em {
+  flex: none; margin-inline-start: auto; font-style: normal; font-weight: 700; font-size: 12px; color: #fbeed6; font-variant-numeric: tabular-nums;
+}
+#rfs[data-layout="vinyl"] .vy-trk-bar {
+  height: 6px; border-radius: 2px; background: rgba(243, 230, 207, .13);
+  -webkit-mask: repeating-linear-gradient(var(--vy-ang), #000 0 calc(100% / var(--n) - 2px), transparent calc(100% / var(--n) - 2px) calc(100% / var(--n)));
+  mask: repeating-linear-gradient(var(--vy-ang), #000 0 calc(100% / var(--n) - 2px), transparent calc(100% / var(--n) - 2px) calc(100% / var(--n)));
+}
+#rfs[data-layout="vinyl"] .vy-trk-bar i { display: block; height: 100%; background: linear-gradient(var(--vy-ang), #6fd3c6, #3a9a90); }
+#rfs[data-layout="vinyl"] .vy-trk.done .vy-trk-bar i { background: linear-gradient(var(--vy-ang), #f7d77a, var(--vy-gold) 50%, #d79a2b); }
+#rfs[data-layout="vinyl"] .vy-trk.done .vy-trk-head > em { color: var(--vy-gold); }
 /* buttons: walnut pills, Play is the burnt-orange one (teal while the game runs) */
 #rfs[data-layout="vinyl"] .vy-acts { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
 #rfs[data-layout="vinyl"] .vy-btn {

@@ -9,6 +9,7 @@
 @import url("../layouts/magazine.preview.css");
 @import url("../layouts/cupertino.preview.css");
 @import url("../layouts/cyberpunk.preview.css");
+@import url("../layouts/shelter.preview.css");
 /* ===================================================================
    رف الألعاب — the three non-shelf home designs + home embedding
    =================================================================== */
@@ -513,4 +514,51 @@ html:is([data-rfs-style="glass"], [data-rfs-style="magazine"], [data-rfs-style="
   background: #ff9f0a; color: #1a1000; font: 700 13px var(--font);
 }
 #rfs-themes .tp-upd-go:hover { filter: brightness(1.1); }
+/* achievements readout (shelf.js achHTML / api.achHTML): trophy · 12/50 · bar · % — styles retune the variables */
+.rf-ach {
+  --ach-fg: var(--rf-text, #eee); --ach-dim: var(--rf-text-dim, #aaa); --ach-track: rgba(255, 255, 255, .12);
+  --ach-fill: var(--rf-accent, #66c0f4); --ach-done: #f5c542; --ach-radius: 99px;
+  display: flex; align-items: center; gap: 8px; min-width: 0; color: var(--ach-fg); font-variant-numeric: tabular-nums;
+}
+.rf-ach > svg.rf-ic { flex: none; width: 16px; height: 16px; margin: 0; color: var(--ach-fill); stroke: currentColor; }
+.rf-ach > b { flex: none; font-weight: 700; font-size: 13px; }
+.rf-ach > b small { font-size: .85em; font-weight: 500; color: var(--ach-dim); }
+.rf-ach-bar { position: relative; flex: 1 1 80px; min-width: 50px; height: 6px; overflow: hidden; border-radius: var(--ach-radius); background: var(--ach-track); }
+.rf-ach-bar > i { position: absolute; inset-block: 0; inset-inline-start: 0; border-radius: inherit; background: var(--ach-fill); }
+.rf-ach > em { flex: none; font-style: normal; font-size: 12px; font-weight: 600; color: var(--ach-dim); }
+.rf-ach.done > svg.rf-ic, .rf-ach.done > em { color: var(--ach-done); }
+.rf-ach.done .rf-ach-bar > i { background: var(--ach-done); }
+.rf-ach.mini { display: inline-flex; gap: 5px; }
+.rf-ach.mini > svg.rf-ic { width: 13px; height: 13px; }
+.rf-ach.mini > b { font-size: 12px; }
 
+/* achievements in the built-in home designs */
+/* Glass gallery: one more frosted chip in the "continue playing" meta row (trophy · 12/50 · thin bar · %) */
+#rfs[data-layout="gallery"] .gl-hero-meta .rf-ach {
+  --ach-track: rgba(255, 255, 255, .16); --ach-dim: rgba(255, 255, 255, .7);
+  gap: 7px; padding: 4px 12px; border-radius: 99px; font-size: 12.5px;
+  background: rgba(0, 0, 0, .38); border: 1px solid rgba(255, 255, 255, .12);
+}
+#rfs[data-layout="gallery"] .gl-hero-meta .rf-ach > svg.rf-ic { width: 14px; height: 14px; }
+#rfs[data-layout="gallery"] .gl-hero-meta .rf-ach > b { font-size: 12.5px; }
+#rfs[data-layout="gallery"] .gl-hero-meta .rf-ach-bar {
+  flex: none; width: 72px; min-width: 0; height: 4px; padding: 0; border: 0; backdrop-filter: none; background: var(--ach-track);
+}
+#rfs[data-layout="gallery"] .gl-hero-meta .rf-ach > em { font-size: 11.5px; }
+/* Neon coverflow: a glowing tube under the focused title */
+#rfs[data-layout="coverflow"] .cf-ach { display: flex; justify-content: center; margin: -2px 0 12px; }
+#rfs[data-layout="coverflow"] .cf-ach[hidden] { display: none; }
+#rfs[data-layout="coverflow"] .cf-ach .rf-ach {
+  --ach-fill: var(--accent); --ach-track: rgba(var(--acc-rgb), .14); --ach-dim: var(--muted); --ach-radius: 2px;
+  width: min(380px, 80%); gap: 10px; padding: 5px 14px; border-radius: var(--rf-radius);
+  background: rgba(0, 0, 0, .45); border: 1px solid rgba(var(--acc-rgb), .3);
+}
+#rfs[data-layout="coverflow"] .cf-ach .rf-ach > b { color: #fff; text-shadow: 0 0 10px rgba(var(--acc-rgb), .6); }
+#rfs[data-layout="coverflow"] .cf-ach .rf-ach-bar { height: 4px; box-shadow: inset 0 0 0 1px rgba(var(--acc-rgb), .18); }
+#rfs[data-layout="coverflow"] .cf-ach .rf-ach-bar > i { box-shadow: 0 0 8px rgba(var(--acc-rgb), .9), 0 0 16px rgba(var(--rf-glow, var(--acc-rgb)), .55); }
+#rfs[data-layout="coverflow"] .cf-ach .rf-ach.done .rf-ach-bar > i { box-shadow: 0 0 8px rgba(245, 197, 66, .9); }
+#rfs[data-layout="coverflow"] .cf-ach .rf-ach > em { color: var(--accent); }
+/* Classic bookcase: the hover label gets a small trophy line */
+#rfs[data-layout="shelf"] .rf-tip .rf-ach.mini { display: flex; margin-top: 3px; --ach-fill: var(--accent); }
+#rfs[data-layout="shelf"] .rf-tip .rf-ach.mini > b { color: var(--muted); font-weight: 600; }
+#rfs[data-layout="shelf"] .rf-tip .rf-ach.mini.done > b { color: var(--ach-done); }

@@ -144,6 +144,23 @@ html[data-rfs-lang="en"] #rfs[data-layout="magazine"] .mg [dir="auto"] { text-al
 }
 #rfs[data-layout="magazine"] .mg-fig span { display: block; margin-top: 4px; font-size: 10.5px; font-weight: 600; color: var(--mg-dim); }
 #rfs[data-layout="magazine"] .mg-acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; }
+/* the completion stat under the figures: big display-face %, small caps caption, a hairline rule in the masthead red */
+#rfs[data-layout="magazine"] .mg-ach {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: baseline; column-gap: 14px; row-gap: 6px;
+  margin: -8px 0 18px; padding: 0 0 12px; border-bottom: 1px solid var(--mg-rule);
+}
+#rfs[data-layout="magazine"] .mg-ach[hidden] { display: none; }
+#rfs[data-layout="magazine"] .mg-ach > b {
+  font-family: var(--mg-display) !important; font-size: 30px; font-weight: 900; line-height: 1; color: var(--mg-cream); font-variant-numeric: lining-nums;
+}
+#rfs[data-layout="magazine"] .mg-ach > b small { font-size: .55em; font-weight: 700; color: var(--mg-red); margin-inline-start: 1px; }
+#rfs[data-layout="magazine"] .mg-ach > span { min-width: 0; font-size: 11.5px; font-weight: 600; line-height: 1.4; color: var(--mg-dim); }
+#rfs[data-layout="magazine"] .mg-ach > span em {
+  margin-inline-start: 8px; padding: 1px 6px; font-style: normal; font-size: 10px; font-weight: 800; color: var(--mg-paper); background: var(--mg-red);
+}
+#rfs[data-layout="magazine"] .mg-ach-rule { grid-column: 1 / -1; position: relative; display: block; height: 2px; background: var(--mg-rule-2); }
+#rfs[data-layout="magazine"] .mg-ach-rule > i { position: absolute; inset-block: 0; inset-inline-start: 0; background: var(--mg-red); }
+html[data-rfs-lang="en"] #rfs[data-layout="magazine"] :is(.mg-ach > span, .mg-ach > span em) { text-transform: uppercase; letter-spacing: .1em; }
 #rfs[data-layout="magazine"] .mg-mid .mg-figs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 #rfs[data-layout="magazine"] .mg-mid .mg-fig:nth-child(3) { display: none; }
 #rfs[data-layout="magazine"] .mg-narrow .mg-cover { grid-template-columns: minmax(0, 1fr); }

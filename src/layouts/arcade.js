@@ -141,6 +141,7 @@
                 <div class="ar-stat s2"><span class="ar-lbl">${T('آخر لعب', 'LAST PLAYED')}</span><b class="ar-val" data-k="last"></b></div>
                 <div class="ar-stat s3"><span class="ar-lbl">${T('الحجم', 'SIZE')}</span><b class="ar-val" data-k="size"></b></div>
                 <div class="ar-stat s4"><span class="ar-lbl">${T('الحالة', 'STATUS')}</span><b class="ar-val" data-k="status"></b></div>
+                <div class="ar-stat s5"><span class="ar-lbl">${T('الإنجازات', 'TROPHIES')}</span><b class="ar-val" data-k="ach"></b><i class="ar-achbar" aria-hidden="true"><i></i></i></div>
               </div>
               <div class="ar-acts">
                 <button class="ar-btn start" data-act="start"></button>
@@ -171,7 +172,7 @@
       const r = this.r = {
         el, list: $('.ar-list', el), screen: $('.ar-screen', el), shot: $('.ar-shot', el), hero: $('.ar-hero', el), logo: $('.ar-logo', el),
         rank: $('.ar-rank', el), title: $('.ar-title', el), genre: $('.ar-genre', el),
-        hours: $('[data-k="hours"]', el), last: $('[data-k="last"]', el), size: $('[data-k="size"]', el), status: $('[data-k="status"]', el),
+        hours: $('[data-k="hours"]', el), last: $('[data-k="last"]', el), size: $('[data-k="size"]', el), status: $('[data-k="status"]', el), ach: $('[data-k="ach"]', el), achBox: $('.ar-stat.s5', el),
         start: $('[data-act="start"]', el), info: $('[data-act="info"]', el), store: $('[data-act="store"]', el),
         count: $('.ar-count', el), loId: null, hiId: null,
       };
@@ -273,7 +274,8 @@
         r.rank.textContent = '';
         r.title.textContent = T('ما فيه ألعاب', 'NO GAMES');
         r.genre.textContent = '';
-        for (const k of ['hours', 'last', 'size', 'status']) r[k].textContent = '—';
+        for (const k of ['hours', 'last', 'size', 'status', 'ach']) r[k].textContent = '—';
+        this.ach(null);
         r.start.innerHTML = `${ic('play')}<span>${T('ابدأ', 'START')}</span>`;
         r.start.dataset.st = '';
         r.count.textContent = '';
@@ -289,6 +291,7 @@
       const st = running ? 'run' : g.installed ? 'ok' : 'ni';
       r.status.textContent = running ? T('شغّالة الحين', 'RUNNING') : g.installed ? T('جاهزة', 'READY') : T('غير مثبتة', 'NOT INSTALLED');
       if (r.status.dataset.st !== st) r.status.dataset.st = st;
+      this.ach(g);
       if (r.start.dataset.st !== st) { // the START key only changes with the game's state
         r.start.dataset.st = st;
         r.start.classList.toggle('run', running);
@@ -298,6 +301,21 @@
         r.start.title = g.installed ? T('شغّل اللعبة (Enter)', 'Play (Enter)') : T('ثبّت اللعبة (Enter)', 'Install (Enter)');
       }
       r.count.textContent = `${pad(this.cur + 1, this.nd)} / ${pad(this.games.length, this.nd)}`;
+    },
+
+    /** the TROPHIES box: "12/50" + a stepped pixel bar; exact once the details are in (fill() runs again then) */
+    ach(g) {
+      const r = this.r; if (!r || !r.ach) return;
+      const a = g ? api.gameAch(g) : null;
+      const key = a ? `${a.got}/${a.total}` : g && g.detailed ? 'x' : '';
+      if (r.achBox.dataset.k === key) return;
+      r.achBox.dataset.k = key;
+      r.ach.innerHTML = a ? `${NUM.format(a.got)}<small>/${NUM.format(a.total)}</small>` : '—';
+      r.achBox.style.setProperty('--p', a ? String(a.pct) : '0');
+      r.achBox.classList.toggle('done', !!a && a.got >= a.total);
+      r.achBox.classList.toggle('none', !a);
+      r.achBox.title = a ? T(`الإنجازات: ${NUM.format(a.got)} من ${NUM.format(a.total)} (${a.pct}%)`, `Achievements: ${NUM.format(a.got)} of ${NUM.format(a.total)} (${a.pct}%)`)
+        : (g && g.detailed ? T('ما فيها إنجازات', 'No achievements') : '');
     },
 
     /* ---- the CRT picture: the small header at once, the hero on top when it has loaded ---- */

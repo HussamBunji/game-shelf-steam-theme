@@ -39,6 +39,22 @@
 
   const chip = (icon, text, cls) => `<span class="cu-chip${cls ? ' ' + cls : ''}">${icon ? ic(icon) : ''}<bdi>${esc(text)}</bdi></span>`;
 
+  /** achievements as an Apple-style chip: a thin progress ring, "12/50" and the % (filled in by paintHero) */
+  function achChip(g) {
+    const a = api.gameAch ? api.gameAch(g) : null;
+    if (!a) return '';
+    const done = a.got >= a.total;
+    const label = T(`الإنجازات: ${NUM.format(a.got)} من ${NUM.format(a.total)} (${a.pct}%)`, `Achievements: ${NUM.format(a.got)} of ${NUM.format(a.total)} (${a.pct}%)`);
+    return `<span class="cu-chip cu-achc${done ? ' done' : ''}" data-k="${a.got}/${a.total}" title="${esc(label)}" aria-label="${esc(label)}"><i class="cu-ring" style="--p:${a.pct}"></i>`
+      + `<bdi>${NUM.format(a.got)}<small>/${NUM.format(a.total)}</small></bdi><em>${a.pct}%</em></span>`;
+  }
+  /** achievements in the sheet's stat strip: big "12/50", a hairline bar, caption with the % */
+  function achStat(g) {
+    const a = api.gameAch ? api.gameAch(g) : null;
+    if (!a) return '';
+    return `<div class="cu-stat ach${a.got >= a.total ? ' done' : ''}"><b dir="ltr">${NUM.format(a.got)}<span>/${NUM.format(a.total)}</span></b>`
+      + `<i class="cu-bar"><i style="width:${Math.max(a.pct, a.got ? 2 : 0)}%"></i></i><small>${esc(T('الإنجازات', 'Achievements'))} · <bdi dir="ltr">${a.pct}%</bdi></small></div>`;
+  }
   /** the hero banner */
   function heroHTML(g, run) {
     const kick = run ? T('شغّالة الحين', 'Now running') : g.lastPlayed ? T('كمّل من وين وقفت', 'Continue playing') : T('من مكتبتك', 'From your library');
@@ -46,7 +62,8 @@
       run ? chip('pulse', T('شغّالة', 'Running'), 'on') : g.installed ? chip('check', T('مثبتة', 'Installed')) : chip('download', T('غير مثبتة', 'Not installed')),
       g.playtimeMin ? chip('clock', fmtPlaytime(g.playtimeMin)) : '',
       g.lastPlayed ? chip('calendar', fmtAgo(g.lastPlayed)) : '',
-      (g.genres || []).length ? chip('', g.genres[0]) : '',
+      achChip(g),
+      (g.genres || []).length ? chip('', g.genres[0], 'cu-genre') : '',
     ].join('');
     const play = run ? ic('pulse') + esc(T('شغّالة', 'Running'))
       : !g.installed ? ic('download') + esc(T('ثبّت', 'Install'))
@@ -65,6 +82,14 @@
     </section>`;
   }
   function paintHero(hero, g) {
+    // achievements: exact once the details arrive — swap only the chip, and only if the numbers changed
+    const A = api.gameAch ? api.gameAch(g) : null, key = A ? `${A.got}/${A.total}` : '';
+    const cur = $('.cu-achc', hero);
+    if (key !== (cur ? cur.dataset.k : '')) {
+      const ah = achChip(g);
+      if (cur) { if (ah) cur.outerHTML = ah; else cur.remove(); }
+      else if (ah) { const gen = $('.cu-chips > .cu-genre', hero); if (gen) gen.insertAdjacentHTML('beforebegin', ah); else { const c = $('.cu-chips', hero); if (c) c.insertAdjacentHTML('beforeend', ah); } }
+    }
     const big = first(g.images.hero) || first(g.images.header); // the page's one big image
     const art = $('.cu-hero-art', hero);
     if (big && art && hero._bg !== big) { hero._bg = big; art.style.backgroundImage = cssUrl(big); }
@@ -356,7 +381,7 @@
         g.playtime2wksMin ? [fmtPlaytime(g.playtime2wksMin), T('آخر أسبوعين', 'Past 2 weeks')] : null,
         [g.installed && g.sizeOnDisk ? fmtSize(g.sizeOnDisk) : T('غير مثبتة', 'Not installed'), T('الحجم', 'Size')],
       ].filter(Boolean);
-      const statHTML = stats.map(([v, k]) => `<div class="cu-stat"><b dir="auto">${esc(v)}</b><small>${esc(k)}</small></div>`).join('');
+      const statHTML = stats.map(([v, k]) => `<div class="cu-stat"><b dir="auto">${esc(v)}</b><small>${esc(k)}</small></div>`).join('') + achStat(g);
       // the grouped list: developer + release (the last two facts; time and size are in the stat strip), genres
       const rowsData = facts.slice(-2);
       if (genres.length) rowsData.push([T('التصنيف', 'Genres'), genres.join(T('، ', ', '))]);
@@ -383,6 +408,12 @@
         </div>`;
       const card = $('.cu-card', sheet);
       $('.cu-acts-slot', card).replaceWith(api.gameActions(g));
+      // details still on the way: add / correct the achievements stat when they land (this sheet only)
+      if (!g.detailed && api.Data && api.Data.ensureDetails) api.Data.ensureDetails(g).then(() => {
+        if (!card.isConnected) return;
+        const box = $('.cu-stats', card), old = $('.cu-stat.ach', card), h = achStat(g);
+        if (old) { if (h) old.outerHTML = h; } else if (h && box) box.insertAdjacentHTML('beforeend', h);
+      });
       const art = $('.cu-ban-art', card);
       const big = first(g.images.hero) || first(g.images.header);
       if (big) art.style.backgroundImage = cssUrl(big);

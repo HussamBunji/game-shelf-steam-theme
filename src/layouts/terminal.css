@@ -221,6 +221,22 @@
 #rfs[data-layout="terminal"] .tm-kv :is(.no, .run) { color: var(--tm-a); }
 #rfs[data-layout="terminal"] .tm-dim { font-style: normal; color: var(--tm-dim); }
 
+/* achievements as a text gauge:  TROPHIES [#####.....] 12/50 52%  (filled cells green, the rest dim; amber at 100%) */
+#rfs[data-layout="terminal"] .tm-ach {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 1ch; margin: -2px 0 12px; padding: 4px 8px;
+  font-size: 12.5px; line-height: 18px; font-variant-numeric: tabular-nums; font-feature-settings: "zero" 1;
+  border: 1px dashed var(--tm-line); background: rgba(var(--tm-rgb), .04);
+}
+#rfs[data-layout="terminal"] .tm-ach[hidden] { display: none; }
+#rfs[data-layout="terminal"] .tm-ach-k { color: var(--tm-dim); letter-spacing: .06em; }
+#rfs[data-layout="terminal"] .tm-ach-g { color: var(--tm-dim); white-space: pre; }
+#rfs[data-layout="terminal"] .tm-ach-g b { font-weight: 700; color: var(--tm-g); text-shadow: 0 0 6px rgba(var(--tm-rgb), .45); }
+#rfs[data-layout="terminal"] .tm-ach-g i { font-style: normal; color: rgba(var(--tm-rgb), .3); }
+#rfs[data-layout="terminal"] .tm-ach-n { font-weight: 700; color: var(--tm-hi); }
+#rfs[data-layout="terminal"] .tm-ach-p { color: var(--tm-g); }
+#rfs[data-layout="terminal"] .tm-ach.done { border-color: var(--tm-a); border-style: solid; }
+#rfs[data-layout="terminal"] .tm-ach.done :is(.tm-ach-g b, .tm-ach-p, .tm-ach-k) { color: var(--tm-a); text-shadow: none; }
+
 /* description, quoted under a "# about" comment */
 #rfs[data-layout="terminal"] .tm-about { margin-bottom: 14px; }
 #rfs[data-layout="terminal"] .tm-cmt { display: block; margin-bottom: 4px; font-size: 11.5px; color: var(--tm-dim); }

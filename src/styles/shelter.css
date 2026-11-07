@@ -1,0 +1,735 @@
+/* ═══ Theme — Shelter OS (الملجأ) ═══
+   Home: a retro-futuristic wrist computer — an olive, bolted metal casing with knobs and a radio grille around a
+   recessed amber CRT; on the screen three device tabs (STAT · INV · DATA), an inventory list with weight-style
+   HRS / GB columns and a monochrome amber picture of the selected item.
+   Chrome: one vocabulary everywhere, taken from that screen — near-black warm surfaces, amber phosphor text with a
+   faint glow, headings in a CRT face over a bracketed rule, every button a boxed amber key that inverts (amber
+   fill, dark text) when pressed or hovered, the buy / main step already inverted, tags as amber ghost chips,
+   discounts as amber capsules, one rounded-square arrow key everywhere, amber links. No Steam blue.
+   Static: the scanlines and the vignette never move; nothing animates at rest. Generic retro-futurism only. */
+:root {
+  /* layout base: SpaceTheme (MIT, src/vendor/space) — its sidebar, search, centred store/library;
+     this style supplies the colours below, its own fonts, home design, icons and the device rules further down */
+  --rf-vendor: space;
+  --rf-vendor-skip: options/fonts/, options/general/alwaysShowSidebar;
+  --rf-style-id: shelter;
+  --rf-layout: shelter;
+
+  /* fonts (Latin first, Arabic second — each script picks its own): Share Tech Mono (a compact CRT mono that reads
+     well at 13–15 px) for all text, VT323 (the phosphor terminal face, used large) for headings, tabs and big
+     readouts; IBM Plex Sans Arabic draws every Arabic letter in both */
+  --rf-font-ui: 'Share Tech Mono', 'IBM Plex Sans Arabic', 'Consolas', monospace;
+  --rf-font-gf: "family=Share+Tech+Mono&family=VT323&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700";
+  --rf-heading-font: 'VT323', 'IBM Plex Sans Arabic', 'Share Tech Mono', monospace;
+  --rf-heading-case: uppercase;
+  --rf-heading-spacing: .06em;
+
+  /* this style's own tokens (also used by src/layouts/shelter.css) */
+  --sh-bg: #0d0a05;          /* the screen */
+  --sh-1: #120d06;           /* panels */
+  --sh-2: #1a1309;           /* raised / inputs */
+  --sh-3: #241a0b;           /* hover */
+  --sh-hi: #ffb642;          /* bright phosphor */
+  --sh-a: #e8a33a;           /* main amber */
+  --sh-dim: #8a5a1a;         /* dim phosphor */
+  --sh-text: #f0c27a;        /* body text: a soft amber that reads for long */
+  --sh-mute: #a87c3e;
+  --sh-ink: #140c02;         /* text on amber */
+  --sh-line: rgba(232, 163, 58, .28);
+  --sh-line-2: rgba(232, 163, 58, .5);
+  --sh-line-hi: rgba(255, 182, 66, .8);
+  --sh-glow: 0 0 6px rgba(255, 182, 66, .32);
+  --sh-olive: #4a4a34;
+  --sh-olive-2: #3a3a2a;
+  --sh-olive-3: #23231a;
+  --sh-olive-hi: #6b6b4d;
+  --sh-track: .08em;         /* Latin tracking for caps labels (0 in Arabic, set below) */
+  --sh-mono: 'Share Tech Mono', 'IBM Plex Sans Arabic', 'Consolas', monospace;
+  --sh-crt: 'VT323', 'IBM Plex Sans Arabic', 'Share Tech Mono', monospace;
+  --sh-ease: cubic-bezier(.2, .7, .2, 1);
+  /* the device key: a boxed amber key that inverts; the main step is already inverted, with a bevel */
+  --sh-key-bg: linear-gradient(180deg, #1e160a, #140e06);
+  --sh-key-sh: inset 0 1px 0 rgba(255, 214, 150, .08), 0 1px 0 rgba(0, 0, 0, .6);
+  --sh-key-hi-sh: 0 0 12px rgba(255, 182, 66, .26);
+  --sh-pri-bg: linear-gradient(180deg, #ffbf55, #e8a33a);
+  --sh-pri-bg-hi: linear-gradient(180deg, #ffcd75, #f2ad45);
+  --sh-pri-sh: inset 0 1px 0 rgba(255, 236, 190, .6), inset 0 -2px 0 rgba(122, 72, 12, .5), 0 0 12px rgba(255, 182, 66, .16);
+  /* the heading rule: a 1 px amber line with a short tick at each end (direction-neutral) */
+  --sh-rule:
+    linear-gradient(#e8a33a, #e8a33a) left bottom / 100% 1px no-repeat,
+    linear-gradient(#e8a33a, #e8a33a) left bottom / 1px 7px no-repeat,
+    linear-gradient(#e8a33a, #e8a33a) right bottom / 1px 7px no-repeat;
+  --sh-rule-dim:
+    linear-gradient(rgba(232, 163, 58, .45), rgba(232, 163, 58, .45)) left bottom / 100% 1px no-repeat,
+    linear-gradient(rgba(232, 163, 58, .45), rgba(232, 163, 58, .45)) left bottom / 1px 5px no-repeat,
+    linear-gradient(rgba(232, 163, 58, .45), rgba(232, 163, 58, .45)) right bottom / 1px 5px no-repeat;
+  /* chevrons for the arrow key: amber at rest, ink when the key inverts */
+  --sh-chev-back: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffb642' stroke-width='2.6' stroke-linecap='square'%3E%3Cpath d='M15 5l-7 7 7 7'/%3E%3C/svg%3E");
+  --sh-chev-next: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffb642' stroke-width='2.6' stroke-linecap='square'%3E%3Cpath d='M9 5l7 7-7 7'/%3E%3C/svg%3E");
+  --sh-chev-back-ink: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23140c02' stroke-width='2.6' stroke-linecap='square'%3E%3Cpath d='M15 5l-7 7 7 7'/%3E%3C/svg%3E");
+  --sh-chev-next-ink: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23140c02' stroke-width='2.6' stroke-linecap='square'%3E%3Cpath d='M9 5l7 7-7 7'/%3E%3C/svg%3E");
+
+  /* icons: amber strokes; icon tiles are small olive metal plates (the casing) carrying an amber glyph */
+  --rf-ic-1: #ffb642;
+  --rf-ic-2: #e8a33a;
+  --rf-ic-fill: rgba(255, 182, 66, .14);
+  --rf-ic-sw: 1.7;
+  --rf-ic-glow: none;
+  --rf-ict-bg: linear-gradient(180deg, #4e4e37, #2f2f22);
+  --rf-ict-border: 1px solid #1b1b13;
+  --rf-ict-radius: 6px;
+  --rf-ict-shadow: inset 0 1px 0 rgba(255, 255, 225, .16), inset 0 -1px 0 rgba(0, 0, 0, .35), 0 2px 5px rgba(0, 0, 0, .5);
+  --rf-ict-shadow-hi: inset 0 0 0 1px rgba(255, 182, 66, .75), 0 0 10px rgba(255, 182, 66, .2);
+  --rf-ict-1: #ffb642;
+  --rf-ict-2: #e8a33a;
+  --rf-ict-fill: rgba(255, 182, 66, .16);
+  --rf-ict-glow: none;
+
+  /* surfaces: a warm near-black, a faint amber haze at the top, barely-there scanlines */
+  --rf-bg: #0d0a05;
+  --rf-bg-img:
+    repeating-linear-gradient(0deg, rgba(255, 182, 66, .016) 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse 70% 420px at 50% -120px, rgba(255, 182, 66, .07), transparent 70%),
+    radial-gradient(ellipse 140% 100% at 50% 40%, transparent 60%, rgba(0, 0, 0, .4) 100%);
+  --rf-panel: #120d06;
+  --rf-panel-2: #1a1309;
+  --rf-panel-3: #241a0b;
+  --rf-border: rgba(232, 163, 58, .26);
+  --rf-text: #f0c27a;
+  --rf-text-dim: #a87c3e;
+  --rf-accent: #ffb642;
+  --rf-accent-2: #e8a33a;
+  --rf-accent-rgb: 255, 182, 66;
+  --rf-accent-ink: #140c02;
+  /* "play" = the inverted amber key with dark type */
+  --rf-play-1: #ffbf55;
+  --rf-play-2: #e8a33a;
+  --rf-play-ink: #140c02;
+  --rf-glow: 255, 182, 66;
+
+  /* chrome shape: small radii, like keys and bezels */
+  --rf-radius: 4px;
+  --rf-radius-lg: 10px;
+  --rf-topbar: linear-gradient(#3a3a2a, #2a2a1e);
+  --rf-topbar-line: linear-gradient(90deg, #55553e, #6b6b4d 50%, #55553e);
+  --rf-sidebar: #100c06;
+  --rf-card: #120d06;
+  --rf-card-border: 1px solid rgba(232, 163, 58, .26);
+  --rf-card-hover-shadow: 0 0 0 1px rgba(255, 182, 66, .75), 0 0 16px rgba(255, 182, 66, .16), 0 10px 26px rgba(0, 0, 0, .55);
+  --rf-blur: 0px;
+
+  --rf-led-rgb: 255, 182, 66;
+  --rf-plate-1: #ffbf55;
+  --rf-plate-2: #e8a33a;
+  --rf-plate-ink: #140c02;
+}
+/* Arabic letters must not be spaced apart: the caps tracking is for Latin only */
+html[data-rfs-style="shelter"][data-rfs-lang="ar"] { --rf-heading-spacing: 0; --sh-track: 0; }
+
+/* SpaceTheme's colour slots (warm near-black surfaces, amber accent, small radii).
+   :root:root outranks SpaceTheme's own root.css. No Steam blue: its "blue" and "green" become amber shades. */
+:root:root {
+  --st-accent-1: 255, 182, 66;
+  --st-accent-2: 232, 163, 58;
+  --st-background: 13, 10, 5;
+  --st-color-1: 16, 12, 6;
+  --st-color-2: 30, 22, 10;
+  --st-color-3: 20, 15, 7;
+  --st-color-4: 38, 28, 12;
+  --st-color-5: 84, 60, 24;
+  --st-color-6: 62, 45, 18;
+  --st-green: 196, 132, 42;
+  --st-green-hover: 232, 163, 58;
+  --st-blue: 168, 112, 36;
+  --st-blue-hover: 214, 146, 50;
+  --st-red: 190, 76, 40;
+  --st-red-hover: 214, 94, 52;
+  --st-yellow: 255, 182, 66;
+  --st-yellow-hover: 255, 205, 117;
+  --st-border-radius: 4px;
+}
+
+/* ─────────────── Steam windows (stable class names only) ─────────────── */
+html[data-rfs-style="shelter"] ::selection { background: rgba(255, 182, 66, .85); color: #140c02; text-shadow: none; }
+html[data-rfs-style="shelter"] body { -webkit-font-smoothing: antialiased; }
+
+/* buttons: boxed amber device keys that invert on hover; the main step is already inverted, with a bevel */
+html[data-rfs-style="shelter"] .DialogButton {
+  border: 1px solid rgba(232, 163, 58, .55) !important; border-radius: 3px !important; color: #ffb642 !important;
+  text-transform: uppercase; letter-spacing: var(--sh-track) !important; text-shadow: var(--sh-glow) !important;
+  background: var(--sh-key-bg) !important; box-shadow: var(--sh-key-sh) !important;
+  transition: background-color .12s, color .12s, box-shadow .12s, transform .12s var(--sh-ease) !important;
+}
+html[data-rfs-style="shelter"] .DialogButton:not(:disabled):not(.Disabled):hover {
+  color: #140c02 !important; background: #e8a33a !important; border-color: #ffb642 !important; text-shadow: none !important; box-shadow: var(--sh-key-hi-sh) !important;
+}
+html[data-rfs-style="shelter"] .DialogButton:not(:disabled):not(.Disabled):active { transform: translateY(1px); }
+html[data-rfs-style="shelter"] .DialogButton:is(.Primary, .Green) {
+  color: #140c02 !important; background: var(--sh-pri-bg) !important; border-color: #ffc561 !important; text-shadow: none !important; box-shadow: var(--sh-pri-sh) !important;
+}
+html[data-rfs-style="shelter"] .DialogButton:is(.Primary, .Green):not(:disabled):not(.Disabled):hover { color: #140c02 !important; background: var(--sh-pri-bg-hi) !important; box-shadow: var(--sh-pri-sh), var(--sh-key-hi-sh) !important; }
+html[data-rfs-style="shelter"] .DialogButton:is(:disabled, .Disabled) { opacity: .45 !important; }
+html[data-rfs-style="shelter"] .DialogButton:focus-visible { outline: 1px dashed #ffb642 !important; outline-offset: 3px; }
+
+/* text fields: a dark screen well with an amber hairline; focus = a brighter line and a faint glow */
+html[data-rfs-style="shelter"] .DialogInput {
+  border-radius: 3px !important; color: #ffcf80 !important; background-color: #0d0a05 !important;
+  border: 1px solid rgba(232, 163, 58, .35) !important; box-shadow: inset 0 2px 6px rgba(0, 0, 0, .6) !important; caret-color: #ffb642;
+}
+html[data-rfs-style="shelter"] .DialogInput:focus { border-color: #ffb642 !important; box-shadow: inset 0 2px 6px rgba(0, 0, 0, .6), 0 0 0 1px rgba(255, 182, 66, .25), 0 0 10px rgba(255, 182, 66, .15) !important; }
+html[data-rfs-style="shelter"] .DialogInput::placeholder { color: #8a5a1a !important; }
+html[data-rfs-style="shelter"] .DialogDropDown {
+  border-radius: 3px !important; color: #f0c27a !important; background: var(--sh-key-bg) !important;
+  border: 1px solid rgba(232, 163, 58, .4) !important; box-shadow: var(--sh-key-sh) !important;
+}
+html[data-rfs-style="shelter"] .DialogDropDown:hover { background: #241a0b !important; border-color: #ffb642 !important; }
+html[data-rfs-style="shelter"] .DialogCheckbox { border-radius: 2px !important; }
+
+/* scrollbars: thin amber rails on a dark track */
+html[data-rfs-style="shelter"] *::-webkit-scrollbar { width: 10px; height: 10px; }
+html[data-rfs-style="shelter"] *::-webkit-scrollbar-thumb {
+  border-radius: 2px !important; background-color: rgba(232, 163, 58, .32) !important;
+  border: 3px solid transparent !important; background-clip: padding-box !important;
+}
+html[data-rfs-style="shelter"] *::-webkit-scrollbar-thumb:hover { background-color: rgba(255, 182, 66, .6) !important; }
+html[data-rfs-style="shelter"] *::-webkit-scrollbar-track { background: transparent !important; }
+html[data-rfs-style="shelter"] *::-webkit-scrollbar-corner { background: transparent !important; }
+
+/* our toast + theme picker: a dark screen plate in an olive rim */
+html[data-rfs-style="shelter"] #rfs-toast {
+  background: #120d06; border: 1px solid rgba(232, 163, 58, .5); border-radius: 4px; color: #ffcf80; text-shadow: var(--sh-glow);
+  box-shadow: 0 0 0 3px #3a3a2a, 0 0 0 4px #1b1b13, 0 18px 44px rgba(0, 0, 0, .6);
+}
+html[data-rfs-style="shelter"] #rfs-themes .tp-box {
+  background: repeating-linear-gradient(0deg, rgba(255, 182, 66, .014) 0 1px, transparent 1px 3px), linear-gradient(180deg, #161008, #0f0b05 260px);
+  border-radius: 12px; box-shadow: 0 0 0 1px rgba(232, 163, 58, .3), 0 0 0 6px #3a3a2a, 0 0 0 7px #1b1b13, 0 40px 100px rgba(0, 0, 0, .7);
+}
+html[data-rfs-style="shelter"] #rfs-themes .tp-head h2 { font-family: var(--rf-heading-font) !important; font-weight: 400; font-size: 30px; letter-spacing: var(--rf-heading-spacing); text-transform: uppercase; color: #ffb642; text-shadow: var(--sh-glow); }
+html[data-rfs-lang="ar"][data-rfs-style="shelter"] #rfs-themes .tp-head h2 { font-size: 22px; font-weight: 600; }
+
+/* ═══════════════ store, community and help pages: the amber CRT ═══════════════
+   Web pages carry html.responsive (Steam's own windows don't), so the page rules below are scoped
+   html.responsive[data-rfs-style="shelter"] and never reach the library.
+   One vocabulary everywhere: every heading = CRT caps over the bracketed rule; every panel = a dark screen plate with
+   an amber hairline; every buy button = the inverted amber key; every secondary button = the boxed key that inverts;
+   every tag = an amber ghost chip; every discount = an amber capsule; every arrow = the same rounded-square key with
+   an amber chevron; links are amber. No Steam blue, no blur, no art filters on repeated capsules. */
+
+/* ---- 1. the page ---- */
+html.responsive[data-rfs-style="shelter"] {
+  --standard-root-background: #0d0a05;
+  background-color: #0d0a05 !important;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(255, 182, 66, .014) 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse 70% 480px at 50% -160px, rgba(255, 182, 66, .075), transparent 70%) !important;
+}
+html.responsive[data-rfs-style="shelter"] body { color: #e3b871; font-variant-numeric: tabular-nums; }
+html.responsive[data-rfs-style="shelter"] :is(.react_landing_background, .SaleBackground:not([style*="url"]), .page_content_ctn, .home_page_body_ctn, .home_page_content) { background-color: transparent !important; }
+/* the game page keeps its own art (Steam fades it out); only the colour under it turns warm black */
+html.responsive[data-rfs-style="shelter"] .game_page_background { background-color: #0d0a05 !important; }
+
+/* ---- 2. titles: CRT caps in bright amber, a soft phosphor glow, the bracketed rule under ---- */
+html.responsive[data-rfs-style="shelter"] :is(.home_title, .home_section_title, .home_page_content > h2, .home_page_content h2.home_title, .pagesubheader, .pageheader, .page_content > h2,
+  .game_purchase_options_editions_header_title, .game_area_dlc_section > h2, #game_area_description > h2:first-child, #game_area_reviews > h2,
+  .large_title, .discussion_primary_header, .help_intro_text, .market_header_text h1, .game_area_purchase_game > h1) {
+  font-family: var(--rf-heading-font) !important; font-weight: 400 !important; letter-spacing: var(--rf-heading-spacing) !important;
+  text-transform: uppercase !important; text-shadow: var(--sh-glow) !important; color: #ffb642 !important; border: 0 !important;
+  background: none !important;
+}
+html.responsive[data-rfs-style="shelter"] :is(.home_title, .home_section_title, .home_page_content > h2, .pagesubheader, .large_title) {
+  font-size: 26px !important; line-height: 1.1 !important; margin-bottom: 14px !important; padding: 0 2px 8px !important;
+  background: var(--sh-rule) !important;
+}
+html[data-rfs-lang="ar"][data-rfs-style="shelter"] :is(.home_title, .home_section_title, .home_page_content > h2, .pagesubheader, .large_title) { font-size: 20px !important; font-weight: 600 !important; line-height: 1.4 !important; }
+html.responsive[data-rfs-style="shelter"] .apphub_AppName {
+  font-family: var(--rf-heading-font) !important; font-weight: 400 !important; font-size: 40px !important; line-height: 1 !important;
+  letter-spacing: var(--rf-heading-spacing) !important; text-transform: uppercase !important; color: #ffb642 !important; text-shadow: 0 0 10px rgba(255, 182, 66, .35) !important;
+}
+html[data-rfs-lang="ar"][data-rfs-style="shelter"] .apphub_AppName { font-size: 30px !important; font-weight: 600 !important; line-height: 1.25 !important; }
+html.responsive[data-rfs-style="shelter"] .game_area_purchase_game h2.title { font-family: var(--rf-heading-font) !important; font-size: 23px !important; font-weight: 400 !important; letter-spacing: var(--rf-heading-spacing) !important; color: #ffb642 !important; text-transform: uppercase !important; text-shadow: var(--sh-glow) !important; }
+html[data-rfs-lang="ar"][data-rfs-style="shelter"] .game_area_purchase_game h2.title { font-size: 17px !important; font-weight: 600 !important; }
+/* small labels (side blocks, footer columns): dim amber mono caps */
+html.responsive[data-rfs-style="shelter"] :is(.block_header, .rightbox_content_header, #footer h3) {
+  font-family: var(--sh-mono) !important; color: #c98d34 !important; font-size: 12px !important; font-weight: 400 !important;
+  letter-spacing: .14em !important; text-transform: uppercase !important; background: none !important; border: 0 !important;
+}
+html[data-rfs-lang="ar"][data-rfs-style="shelter"] :is(.block_header, .rightbox_content_header, #footer h3) { letter-spacing: 0 !important; font-size: 13px !important; }
+html.responsive[data-rfs-style="shelter"] :is(h2.bb_tag, .bb_h1, .bb_h2, .bb_h3) { color: #ffb642 !important; font-weight: 600 !important; text-transform: uppercase !important; letter-spacing: var(--rf-heading-spacing) !important; text-shadow: var(--sh-glow) !important; }
+/* the editions header's Steam rule image goes; the dim bracketed rule instead */
+html.responsive[data-rfs-style="shelter"] .game_purchase_options_editions_header { background: var(--sh-rule-dim) !important; border: 0 !important; }
+
+/* ---- 3. the store bar: a dark screen plate in a thin olive rim; tabs get boxed like the device tabs ---- */
+html.responsive[data-rfs-style="shelter"] :is(.store_nav_area, #store_nav_area) .store_nav_bg {
+  background: linear-gradient(180deg, rgba(255, 182, 66, .05), transparent 60%), #120d06 !important;
+  border: 1px solid rgba(232, 163, 58, .38) !important; border-radius: 6px !important;
+  box-shadow: 0 0 0 3px #3a3a2a, 0 0 0 4px #1b1b13, 0 14px 34px rgba(0, 0, 0, .5) !important;
+}
+html.responsive[data-rfs-style="shelter"] .store_nav .tab {
+  position: relative; background: transparent !important; border-radius: 3px !important; box-shadow: none !important;
+}
+html.responsive[data-rfs-style="shelter"] .store_nav .tab > span,
+html.responsive[data-rfs-style="shelter"] .store_nav .tab .pulldown > span {
+  color: #c98d34 !important; text-transform: uppercase !important; letter-spacing: var(--sh-track) !important; transition: color .12s !important;
+}
+html.responsive[data-rfs-style="shelter"] .store_nav .tab::after {
+  content: ''; position: absolute; inset: 6px 4px; border: 1px solid #ffb642; border-radius: 3px; opacity: 0;
+  background: rgba(255, 182, 66, .08); pointer-events: none; transition: opacity .12s;
+}
+html.responsive[data-rfs-style="shelter"] .store_nav .tab:is(:hover, .focus, .active)::after { opacity: 1; }
+html.responsive[data-rfs-style="shelter"] .store_nav .tab:is(:hover, .focus, .active) > span,
+html.responsive[data-rfs-style="shelter"] .store_nav .tab:is(:hover, .focus, .active) .pulldown > span { color: #ffb642 !important; text-shadow: var(--sh-glow); }
+html.responsive[data-rfs-style="shelter"] :is(.store_nav .searchbox, #store_search .searchbox) {
+  border-radius: 3px !important; background-color: #0d0a05 !important; border: 1px solid rgba(232, 163, 58, .38) !important; box-shadow: inset 0 2px 6px rgba(0, 0, 0, .6) !important;
+}
+html.responsive[data-rfs-style="shelter"] :is(.store_nav .searchbox, #store_search .searchbox):focus-within { border-color: #ffb642 !important; box-shadow: inset 0 2px 6px rgba(0, 0, 0, .6), 0 0 10px rgba(255, 182, 66, .18) !important; }
+html.responsive[data-rfs-style="shelter"] #store_nav_search_term { color: #ffcf80 !important; background: transparent !important; font-family: var(--rf-font-ui) !important; caret-color: #ffb642; }
+html.responsive[data-rfs-style="shelter"] #store_nav_search_term::placeholder { color: #8a5a1a !important; }
+/* the tab menus: a dark plate, amber hairline; the hovered row inverts like the device list */
+html.responsive[data-rfs-style="shelter"] .popup_block_new .popup_body {
+  background: #120d06 !important; border: 1px solid rgba(232, 163, 58, .45) !important; border-radius: 4px !important; padding: 5px !important;
+  box-shadow: 0 22px 54px rgba(0, 0, 0, .65) !important;
+}
+html.responsive[data-rfs-style="shelter"] .popup_body .popup_menu_item { border-radius: 2px; color: #f0c27a !important; }
+html.responsive[data-rfs-style="shelter"] .popup_body .popup_menu_item:hover { background: #e8a33a !important; color: #140c02 !important; text-shadow: none !important; }
+
+/* ---- 4. capsules and carousels: a dark plate, an amber hairline frame that brightens and glows on hover ---- */
+html.responsive[data-rfs-style="shelter"] .store_main_capsule {
+  border-radius: 6px !important; overflow: hidden; background: #120d06 !important;
+  box-shadow: 0 0 0 1px rgba(232, 163, 58, .32), 0 20px 50px rgba(0, 0, 0, .55) !important;
+}
+html.responsive[data-rfs-style="shelter"] .store_main_capsule .info { background: linear-gradient(180deg, #161008, #120d06) !important; box-shadow: inset 1px 0 0 rgba(232, 163, 58, .18) !important; }
+html.responsive[data-rfs-style="shelter"] .store_main_capsule .app_name { color: #ffb642 !important; font-family: var(--rf-heading-font) !important; font-size: 26px !important; font-weight: 400 !important; text-transform: uppercase; letter-spacing: var(--sh-track); text-shadow: var(--sh-glow); }
+html[data-rfs-lang="ar"][data-rfs-style="shelter"] .store_main_capsule .app_name { font-size: 19px !important; font-weight: 600 !important; }
+html.responsive[data-rfs-style="shelter"] .store_capsule {
+  border-radius: 4px !important; overflow: hidden; background: #120d06 !important; /* Steam positions it (its flags sit inside) */
+  box-shadow: none !important; transition: transform .16s var(--sh-ease) !important;
+}
+/* the frame is an overlay (the art would cover an inset line) */
+html.responsive[data-rfs-style="shelter"] .store_capsule::after {
+  content: ''; position: absolute; inset: 0; z-index: 3; pointer-events: none; border-radius: inherit;
+  box-shadow: inset 0 0 0 1px rgba(232, 163, 58, .26); transition: box-shadow .16s;
+}
+html.responsive[data-rfs-style="shelter"] .store_capsule:hover { transform: translateY(-2px); }
+html.responsive[data-rfs-style="shelter"] .store_capsule:hover::after { box-shadow: inset 0 0 0 1px #ffb642, inset 0 0 18px rgba(255, 182, 66, .18); }
+html.responsive[data-rfs-style="shelter"] .store_capsule img { border-radius: 0 !important; }
+html.responsive[data-rfs-style="shelter"] :is(.carousel_container .carousel_items, .home_discount_games_ctn, .carousel__slider) { background: transparent !important; box-shadow: none !important; }
+/* carousel arrows — ONE shape everywhere: a 38 px rounded-square device key (dark, amber hairline, amber chevron)
+   that inverts on hover, centred in Steam's own hit area (old carousels: a 45×122 .arrow; React: a full-height
+   button). The key and the chevron are pseudo-elements; Steam's own arrow art is hidden. */
+html.responsive[data-rfs-style="shelter"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button) {
+  background: none !important; box-shadow: none !important; border: 0 !important; border-radius: 0 !important; opacity: 1 !important;
+}
+html.responsive[data-rfs-style="shelter"] .carousel_container .arrow > div,
+html.responsive[data-rfs-style="shelter"] :is(.carousel__back-button, .carousel__next-button) > svg { opacity: 0 !important; }
+html.responsive[data-rfs-style="shelter"] :is(.carousel_container .arrow.left, .carousel__back-button) { --chev: var(--sh-chev-back); --chev-hi: var(--sh-chev-back-ink); }
+html.responsive[data-rfs-style="shelter"] :is(.carousel_container .arrow.right, .carousel__next-button) { --chev: var(--sh-chev-next); --chev-hi: var(--sh-chev-next-ink); }
+html.responsive[data-rfs-style="shelter"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button)::before,
+html.responsive[data-rfs-style="shelter"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button)::after {
+  content: ''; position: absolute; top: 50%; left: 50%; width: 38px; height: 38px; margin: -19px 0 0 -19px; pointer-events: none; box-sizing: border-box;
+}
+html.responsive[data-rfs-style="shelter"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button)::before {
+  border-radius: 5px; border: 1px solid rgba(232, 163, 58, .6);
+  background: linear-gradient(180deg, rgba(30, 22, 10, .95), rgba(18, 13, 6, .95));
+  box-shadow: inset 0 1px 0 rgba(255, 214, 150, .1), 0 0 0 2px rgba(13, 10, 5, .55), 0 4px 12px rgba(0, 0, 0, .5);
+  transition: background-color .12s, box-shadow .12s, transform .12s var(--sh-ease);
+}
+html.responsive[data-rfs-style="shelter"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button)::after {
+  background: var(--chev) center / 16px 16px no-repeat;
+}
+html.responsive[data-rfs-style="shelter"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button):hover::before {
+  border-color: #ffb642; background: #e8a33a; box-shadow: 0 0 0 2px rgba(13, 10, 5, .55), 0 0 14px rgba(255, 182, 66, .35);
+}
+html.responsive[data-rfs-style="shelter"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button):hover::after { background-image: var(--chev-hi); }
+html.responsive[data-rfs-style="shelter"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button):active::before { transform: translateY(1px); }
+html.responsive[data-rfs-style="shelter"] :is(.carousel__back-button, .carousel__next-button):disabled { opacity: 0 !important; pointer-events: none; }
+/* the featured carousel (wide mode): its arrow hit areas cover the side previews — the keys sit at the main
+   capsule's edges instead of floating over the previews */
+html.responsive[data-rfs-style="shelter"] .carousel_wide_mode .carousel_container .arrow.left::before,
+html.responsive[data-rfs-style="shelter"] .carousel_wide_mode .carousel_container .arrow.left::after { left: auto; right: 0; margin: -19px 0 0 0; }
+html.responsive[data-rfs-style="shelter"] .carousel_wide_mode .carousel_container .arrow.right::before,
+html.responsive[data-rfs-style="shelter"] .carousel_wide_mode .carousel_container .arrow.right::after { left: 0; margin: -19px 0 0 0; }
+/* Arabic (RTL): Steam swaps the arrows' sides (next sits on the left), so each chevron points outward the other way
+   and the featured carousel's keys hug the main capsule from the mirrored side */
+html[dir="rtl"][data-rfs-style="shelter"] :is(.carousel_container .arrow.left, .carousel__back-button) { --chev: var(--sh-chev-next); --chev-hi: var(--sh-chev-next-ink); }
+html[dir="rtl"][data-rfs-style="shelter"] :is(.carousel_container .arrow.right, .carousel__next-button) { --chev: var(--sh-chev-back); --chev-hi: var(--sh-chev-back-ink); }
+html.responsive[dir="rtl"][data-rfs-style="shelter"] .carousel_wide_mode .carousel_container .arrow.left::before,
+html.responsive[dir="rtl"][data-rfs-style="shelter"] .carousel_wide_mode .carousel_container .arrow.left::after { left: 0; right: auto; }
+html.responsive[dir="rtl"][data-rfs-style="shelter"] .carousel_wide_mode .carousel_container .arrow.right::before,
+html.responsive[dir="rtl"][data-rfs-style="shelter"] .carousel_wide_mode .carousel_container .arrow.right::after { left: auto; right: 0; }
+/* "See More" links of the React rows (webkit.js tags them .rfs-btn2): the same boxed key as every secondary button */
+html.responsive[data-rfs-style="shelter"] a.rfs-btn2 {
+  color: #ffb642 !important; background: var(--sh-key-bg) !important; box-shadow: var(--sh-key-sh) !important; text-shadow: var(--sh-glow);
+  border: 1px solid rgba(232, 163, 58, .55) !important; border-radius: 3px !important; padding-inline: 14px !important;
+  text-transform: uppercase; letter-spacing: var(--sh-track);
+}
+html.responsive[data-rfs-style="shelter"] a.rfs-btn2:hover { color: #140c02 !important; background: #e8a33a !important; border-color: #ffb642 !important; text-shadow: none; box-shadow: var(--sh-key-hi-sh) !important; }
+/* the carousel page dots: short amber dashes; the current one bright and glowing */
+html.responsive[data-rfs-style="shelter"] .carousel_container .carousel_thumbs > div { border-radius: 1px !important; background: rgba(232, 163, 58, .28) !important; }
+html.responsive[data-rfs-style="shelter"] .carousel_container .carousel_thumbs > div.focus { background: #ffb642 !important; box-shadow: 0 0 6px rgba(255, 182, 66, .5); }
+
+/* ---- 5. tab lists: dark rows; the hovered row gets an amber start bar and a faint amber wash (the list cursor) ---- */
+html.responsive[data-rfs-style="shelter"] .tab_item {
+  position: relative; border: 0 !important; border-radius: 3px !important; background: #120d06 !important; box-shadow: inset 0 0 0 1px rgba(232, 163, 58, .1) !important;
+  margin-bottom: 3px !important; transition: background-color .12s !important;
+}
+html.responsive[data-rfs-style="shelter"] .tab_item::before {
+  content: ''; position: absolute; inset-block: 0; inset-inline-start: 0; width: 3px; z-index: 2; background: transparent; pointer-events: none;
+}
+html.responsive[data-rfs-style="shelter"] .tab_item:is(:hover, .focus) { background: #1e160a !important; box-shadow: inset 0 0 0 1px rgba(255, 182, 66, .45) !important; }
+html.responsive[data-rfs-style="shelter"] .tab_item:is(:hover, .focus)::before { background: #ffb642; box-shadow: 0 0 8px rgba(255, 182, 66, .6); }
+html.responsive[data-rfs-style="shelter"] .tab_item .tab_item_cap img { border-radius: 0; }
+html.responsive[data-rfs-style="shelter"] :is(.tab_item_name, .search_name .title, .market_listing_item_name, .forum_topic_name) { color: #ffcf80 !important; }
+html.responsive[data-rfs-style="shelter"] :is(.tab_item_details, .tab_item_top_tags, .search_released, .market_listing_game_name) { color: #a87c3e !important; }
+html.responsive[data-rfs-style="shelter"] .tabs_menu_ctn { background: none !important; border: 0 !important; box-shadow: none !important; }
+html.responsive[data-rfs-style="shelter"] .home_tabs_row {
+  padding: 0 !important; border-radius: 0 !important; background: transparent !important; border: 0 !important;
+  box-shadow: inset 0 -2px 0 rgba(232, 163, 58, .55) !important;
+}
+html.responsive[data-rfs-style="shelter"] .home_tabs_row .home_tab { margin: 0 !important; }
+/* the home tab strip = the device tabs: the active tab is a box open at the bottom, sitting on the line */
+html.responsive[data-rfs-style="shelter"] .home_tabs_row .home_tab .tab_content {
+  border-radius: 4px 4px 0 0 !important; color: #c98d34 !important; background: transparent !important; box-shadow: none !important; border: 0 !important;
+  text-transform: uppercase !important; letter-spacing: var(--sh-track) !important;
+}
+html.responsive[data-rfs-style="shelter"] .home_tabs_row .home_tab:hover .tab_content { color: #ffb642 !important; background: rgba(255, 182, 66, .06) !important; }
+html.responsive[data-rfs-style="shelter"] .home_tabs_row .home_tab.active .tab_content {
+  color: #ffb642 !important; text-shadow: var(--sh-glow); background: #0d0a05 !important;
+  box-shadow: inset 2px 0 0 #e8a33a, inset -2px 0 0 #e8a33a, inset 0 2px 0 #e8a33a, 0 2px 0 #0d0a05 !important;
+}
+html.responsive[data-rfs-style="shelter"] :is(.tab_preview_container, .home_rightcol .tab_preview) {
+  background: #120d06 !important; border-radius: 4px !important; box-shadow: inset 0 0 0 1px rgba(232, 163, 58, .26) !important;
+}
+/* search results and other repeated rows: the same dark rows with the start bar */
+html.responsive[data-rfs-style="shelter"] :is(.search_result_row, .game_area_dlc_row, .market_listing_row, .badge_row, .forum_topic, .help_wizard_button) {
+  position: relative; border: 0 !important; border-radius: 3px !important; background: #120d06 !important; box-shadow: inset 0 0 0 1px rgba(232, 163, 58, .1) !important;
+  margin-bottom: 3px !important; transition: background-color .12s !important;
+}
+html.responsive[data-rfs-style="shelter"] :is(.search_result_row, .game_area_dlc_row, .market_listing_row, .badge_row, .forum_topic, .help_wizard_button)::before {
+  content: ''; position: absolute; inset-block: 0; inset-inline-start: 0; width: 3px; z-index: 2; background: transparent; pointer-events: none;
+}
+html.responsive[data-rfs-style="shelter"] :is(.search_result_row, .game_area_dlc_row, .market_listing_row, .badge_row, .forum_topic, .help_wizard_button):hover { background: #1e160a !important; box-shadow: inset 0 0 0 1px rgba(255, 182, 66, .45) !important; }
+html.responsive[data-rfs-style="shelter"] :is(.search_result_row, .game_area_dlc_row, .market_listing_row, .badge_row, .forum_topic, .help_wizard_button):hover::before { background: #ffb642; box-shadow: 0 0 8px rgba(255, 182, 66, .6); }
+html.responsive[data-rfs-style="shelter"] :is(.badge_row, .help_wizard_button) { box-shadow: inset 0 0 0 1px rgba(232, 163, 58, .22) !important; margin-bottom: 8px !important; }
+
+/* ---- 6. cards and side blocks: dark screen plates with an amber hairline ---- */
+html.responsive[data-rfs-style="shelter"] :is(.block.search_collapse_block, .rightcol .block, .block.responsive_apppage_details_right, .block.responsive_apppage_details_left,
+  .rightbox, .market_search_sidebar_contents, .apphub_StoreInfoHeader, .steam_curators_block, .profile_customization) {
+  border: 0 !important; border-radius: 4px !important; background: linear-gradient(180deg, rgba(255, 182, 66, .03), transparent 120px), #120d06 !important;
+  box-shadow: inset 0 0 0 1px rgba(232, 163, 58, .26), 0 12px 30px rgba(0, 0, 0, .4) !important;
+}
+html.responsive[data-rfs-style="shelter"] :is(.block .block_content, .rightcol .block .block_content) { background: transparent !important; }
+/* the game page header: highlights + the glance panel, framed like a screen in a thin olive rim */
+html.responsive[data-rfs-style="shelter"] #game_highlights {
+  border-radius: 6px; overflow: hidden; background: #120d06 !important;
+  box-shadow: inset 0 0 0 1px rgba(232, 163, 58, .3), 0 0 0 3px #3a3a2a, 0 0 0 4px #1b1b13, 0 24px 60px rgba(0, 0, 0, .55) !important;
+}
+html.responsive[data-rfs-style="shelter"] #game_highlights :is(.highlight_ctn, .rightcol, .leftcol) { background: transparent !important; }
+html.responsive[data-rfs-style="shelter"] .glance_ctn { background: transparent !important; }
+html.responsive[data-rfs-style="shelter"] .game_header_image_full { border-radius: 3px; box-shadow: 0 0 0 1px rgba(232, 163, 58, .3); }
+html.responsive[data-rfs-style="shelter"] :is(.glance_ctn .subtitle, .dev_row .subtitle, .release_date .subtitle) {
+  color: #8a5a1a !important; font-family: var(--sh-mono) !important; font-size: 11.5px !important; text-transform: uppercase !important; letter-spacing: .1em !important;
+}
+html[data-rfs-lang="ar"][data-rfs-style="shelter"] :is(.glance_ctn .subtitle, .dev_row .subtitle, .release_date .subtitle) { letter-spacing: 0 !important; font-size: 12px !important; }
+html.responsive[data-rfs-style="shelter"] .highlight_strip_item { border-radius: 2px; overflow: hidden; }
+html.responsive[data-rfs-style="shelter"] .highlight_strip_item.focus { outline: 1px solid #ffb642; outline-offset: 1px; }
+/* each edition: a dark plate; its price + button sit in a dark well with an amber hairline */
+html.responsive[data-rfs-style="shelter"] .game_area_purchase_game {
+  border: 0 !important; border-radius: 4px !important; padding: 18px 22px 26px !important;
+  background: linear-gradient(180deg, rgba(255, 182, 66, .04), transparent 70%), #120d06 !important;
+  box-shadow: inset 0 0 0 1px rgba(232, 163, 58, .26), 0 12px 30px rgba(0, 0, 0, .4) !important;
+}
+html.responsive[data-rfs-style="shelter"] .game_purchase_action_bg {
+  border-radius: 4px !important; padding: 3px !important; padding-inline-start: 12px !important;
+  background: #0d0a05 !important; box-shadow: inset 0 0 0 1px rgba(232, 163, 58, .38), inset 0 2px 6px rgba(0, 0, 0, .6) !important;
+}
+html.responsive[data-rfs-style="shelter"] .game_purchase_action_bg :is(.game_purchase_price, .price) {
+  color: #ffcf80 !important; background: transparent !important; font-family: var(--sh-mono) !important; font-size: 14px !important; text-shadow: var(--sh-glow);
+}
+html.responsive[data-rfs-style="shelter"] .game_purchase_action_bg :is(.discount_block, .discount_prices) { background: transparent !important; box-shadow: none !important; }
+html.responsive[data-rfs-style="shelter"] .btn_addtocart { border-radius: 3px; }
+
+/* ---- 7. buttons: buy + main step = the inverted amber key with a bevel; the rest = boxed keys that invert ---- */
+html.responsive[data-rfs-style="shelter"] :is(.btn_green_steamui, .btn_blue_steamui, .btnv6_blue_hoverfade, .btnv6_grey_black, .btn_grey_steamui, .btnv6_white_transparent,
+  .btn_grey_black, .btn_grey_white_innerfade, .btn_darkblue_white_innerfade, .btn_green_white_innerfade, .btnv6_lightblue_blue, .btn_profile_action, .help_site_button) {
+  border: 1px solid rgba(232, 163, 58, .55) !important; border-radius: 3px !important; text-shadow: none !important;
+  transition: background-color .12s, color .12s, box-shadow .12s, transform .12s var(--sh-ease) !important;
+}
+html.responsive[data-rfs-style="shelter"] :is(.btn_green_steamui, .btn_blue_steamui, .btnv6_blue_hoverfade, .btnv6_grey_black, .btn_grey_steamui, .btnv6_white_transparent,
+  .btn_grey_black, .btn_grey_white_innerfade, .btn_darkblue_white_innerfade, .btn_green_white_innerfade, .btnv6_lightblue_blue, .btn_profile_action):not(.btn_disabled):active { transform: translateY(1px); }
+html.responsive[data-rfs-style="shelter"] :is(.btn_green_steamui, .btn_blue_steamui, .btnv6_blue_hoverfade, .btnv6_grey_black, .btn_grey_steamui, .btnv6_white_transparent,
+  .btn_grey_black, .btn_grey_white_innerfade, .btn_darkblue_white_innerfade, .btn_green_white_innerfade, .btnv6_lightblue_blue, .btn_profile_action) > span {
+  background: transparent !important; border: 0 !important; border-radius: 0 !important; color: inherit !important; text-shadow: inherit !important;
+  text-transform: uppercase; letter-spacing: var(--sh-track);
+}
+html.responsive[data-rfs-style="shelter"] :is(.btn_green_steamui, .btn_blue_steamui, .btn_green_white_innerfade) {
+  color: #140c02 !important; background: var(--sh-pri-bg) !important; border-color: #ffc561 !important; box-shadow: var(--sh-pri-sh) !important;
+}
+html.responsive[data-rfs-style="shelter"] :is(.btn_green_steamui, .btn_blue_steamui, .btn_green_white_innerfade):not(.btn_disabled):hover { color: #140c02 !important; background: var(--sh-pri-bg-hi) !important; box-shadow: var(--sh-pri-sh), var(--sh-key-hi-sh) !important; }
+html.responsive[data-rfs-style="shelter"] .btn_addtocart .btn_green_steamui > span { padding-inline: 20px !important; }
+html.responsive[data-rfs-style="shelter"] :is(.btnv6_blue_hoverfade, .btnv6_grey_black, .btn_grey_steamui, .btnv6_white_transparent, .btn_grey_black,
+  .btn_grey_white_innerfade, .btn_darkblue_white_innerfade, .btnv6_lightblue_blue, .btn_profile_action, .help_site_button) {
+  color: #ffb642 !important; background: var(--sh-key-bg) !important; box-shadow: var(--sh-key-sh) !important; text-shadow: var(--sh-glow) !important;
+}
+html.responsive[data-rfs-style="shelter"] :is(.btnv6_blue_hoverfade, .btnv6_grey_black, .btn_grey_steamui, .btnv6_white_transparent, .btn_grey_black,
+  .btn_grey_white_innerfade, .btn_darkblue_white_innerfade, .btnv6_lightblue_blue, .btn_profile_action, .help_site_button):not(.btn_disabled):hover {
+  color: #140c02 !important; background: #e8a33a !important; border-color: #ffb642 !important; text-shadow: none !important; box-shadow: var(--sh-key-hi-sh) !important;
+}
+html.responsive[data-rfs-style="shelter"] :is(body.responsive_page, body.v6, #StoreTemplate) .DialogButton:is(.Primary, .Green) { color: #140c02 !important; background: var(--sh-pri-bg) !important; }
+
+/* ---- 8. prices: a dark well; the discount is an amber capsule (inverted, dark type) everywhere ---- */
+html.responsive[data-rfs-style="shelter"] .discount_block {
+  border-radius: 4px !important; overflow: hidden; background: #0d0a05 !important; box-shadow: inset 0 0 0 1px rgba(232, 163, 58, .3) !important;
+}
+html.responsive[data-rfs-style="shelter"] .discount_block .discount_pct,
+html.responsive[data-rfs-style="shelter"] .discount_pct,
+html.responsive[data-rfs-style="shelter"] .rfs-pct {
+  color: #140c02 !important; background: linear-gradient(180deg, #ffbf55, #e8a33a) !important; border-radius: 99px !important;
+  font-family: var(--sh-mono) !important; font-weight: 400 !important; padding-inline: 8px !important; margin: 4px !important; text-shadow: none !important;
+  box-shadow: inset 0 1px 0 rgba(255, 236, 190, .5), 0 0 8px rgba(255, 182, 66, .25) !important;
+}
+html.responsive[data-rfs-style="shelter"] .discount_block .discount_prices,
+html.responsive[data-rfs-style="shelter"] .discount_prices { background: transparent !important; }
+html.responsive[data-rfs-style="shelter"] .discount_final_price { color: #ffcf80 !important; font-family: var(--sh-mono) !important; text-shadow: var(--sh-glow); }
+html.responsive[data-rfs-style="shelter"] .discount_original_price { color: #8a5a1a !important; font-family: var(--sh-mono) !important; }
+/* the React carousels draw their discount with a hashed class (lime box): webkit.js tags every "-NN%" as .rfs-pct,
+   so all discounts on the page are the same capsule; their price box sits in the same dark well */
+html.responsive[data-rfs-style="shelter"] .rfs-pct { display: inline-flex; align-items: center; line-height: 1.2 !important; padding-block: 3px !important; }
+html.responsive[data-rfs-style="shelter"] .rfs-price { background: #0d0a05 !important; border-radius: 4px !important; box-shadow: inset 0 0 0 1px rgba(232, 163, 58, .3) !important; overflow: hidden; }
+/* tags: amber ghost chips — every kind of tag the store draws (game page, deep-dive rows, tab preview, hover card) */
+html.responsive[data-rfs-style="shelter"] :is(.deep_dive_tag, .tab_preview .tags a, .app_tag, .game_hover_box .hover_tag_row > *) {
+  color: #e8a33a !important; background: rgba(255, 182, 66, .05) !important; border: 0 !important; border-radius: 2px !important;
+  box-shadow: inset 0 0 0 1px rgba(232, 163, 58, .38) !important; padding-inline: 8px !important; text-shadow: none !important;
+}
+html.responsive[data-rfs-style="shelter"] :is(.deep_dive_tag, .tab_preview .tags a, .app_tag, .game_hover_box .hover_tag_row > *):hover {
+  color: #140c02 !important; background: #e8a33a !important; box-shadow: inset 0 0 0 1px #ffb642 !important;
+}
+/* "Because you played": the tag panel under each capsule was Steam's blue gradient — a dark plate */
+html.responsive[data-rfs-style="shelter"] .deep_dive_key_tags { background: #120d06 !important; box-shadow: inset 0 1px 0 rgba(232, 163, 58, .4) !important; }
+/* the hover card over a game: a dark screen plate instead of Steam's slate blue */
+html.responsive[data-rfs-style="shelter"] .game_hover_box {
+  background: #120d06 !important; border-radius: 4px !important; border: 0 !important;
+  box-shadow: inset 0 0 0 1px rgba(232, 163, 58, .45), 0 0 0 3px #3a3a2a, 0 22px 54px rgba(0, 0, 0, .65) !important; color: #e3b871 !important;
+}
+html.responsive[data-rfs-style="shelter"] .game_hover :is(.hover_arrow_left, .hover_arrow_right) { display: none !important; }
+html.responsive[data-rfs-style="shelter"] .game_hover_box :is(h4, .hover_title) { color: #ffb642 !important; text-transform: uppercase; letter-spacing: var(--sh-track); text-shadow: var(--sh-glow); }
+html.responsive[data-rfs-style="shelter"] .game_hover_box :is(.hover_review_summary, .hover_body .hover_review_summary) { background: #0d0a05 !important; border-radius: 3px !important; box-shadow: inset 0 0 0 1px rgba(232, 163, 58, .26) !important; }
+
+/* ---- 9. links: amber, brighter with an underline on hover ---- */
+html.responsive[data-rfs-style="shelter"] :is(.dev_row a, .details_block a, #genresAndManufacturer a, .glance_ctn a, a.all_languages, .game_page_autocollapse_readmore,
+  .breadcrumbs a, .blockbg a, .home_page_content .see_all a, .rightbox a, .profile_count_link a, .whiteLink, .apphub_OtherSiteInfo a) { color: #ffb642 !important; }
+html.responsive[data-rfs-style="shelter"] :is(.dev_row a, .details_block a, #genresAndManufacturer a, .glance_ctn a:not(.app_tag), .breadcrumbs a, .rightbox a):hover { color: #ffd890 !important; text-decoration: underline; text-shadow: var(--sh-glow); }
+html.responsive[data-rfs-style="shelter"] .game_page_autocollapse_readmore { background: linear-gradient(180deg, rgba(13, 10, 5, 0), #0d0a05 70%) !important; }
+html.responsive[data-rfs-style="shelter"] .game_review_summary.positive { color: #ffcf80 !important; }
+html.responsive[data-rfs-style="shelter"] .game_review_summary.mixed { color: #c98d34 !important; }
+html.responsive[data-rfs-style="shelter"] .game_review_summary.negative { color: #d9673a !important; }
+
+/* ---- 10. form fields ---- */
+html.responsive[data-rfs-style="shelter"] :is(#term, .searchbar_left input, #help_search_support_input, #findItemsSearchBox, .gray_bevel input, .gray_bevel textarea, textarea.commentthread_textarea, input.dselect_search) {
+  color: #ffcf80 !important; background: #0d0a05 !important; border: 1px solid rgba(232, 163, 58, .38) !important; border-radius: 3px !important;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, .6) !important; font-family: var(--rf-font-ui) !important; caret-color: #ffb642;
+}
+html.responsive[data-rfs-style="shelter"] :is(#term, #help_search_support_input, #findItemsSearchBox, .gray_bevel input, .gray_bevel textarea, textarea.commentthread_textarea):focus {
+  outline: 0 !important; border-color: #ffb642 !important; box-shadow: inset 0 2px 6px rgba(0, 0, 0, .6), 0 0 10px rgba(255, 182, 66, .18) !important;
+}
+html.responsive[data-rfs-style="shelter"] .gray_bevel { background: transparent !important; box-shadow: none !important; border: 0 !important; }
+
+/* ---- 11. footer: the olive casing strip with an amber hairline ---- */
+html.responsive[data-rfs-style="shelter"] #footer { background: linear-gradient(180deg, #23231a, #1a1a13) !important; border-top: 2px solid #55553e !important; color: #a8a07a !important; }
+html.responsive[data-rfs-style="shelter"] #footer :is(a, a:visited) { color: #d6c79a !important; }
+html.responsive[data-rfs-style="shelter"] #footer a:hover { color: #ffb642 !important; }
+html.responsive[data-rfs-style="shelter"] #footer :is(.rule, hr) { border-color: rgba(232, 163, 58, .22) !important; background: rgba(232, 163, 58, .22) !important; }
+
+/* ─────────────── our filter strip (the screen well behind it is drawn by the home design CSS) ─────────────── */
+/* buttons: boxed amber keys that invert; the active one is inverted */
+html[data-rfs-style="shelter"] #rfs-bar.inhome .tb-btn {
+  --ink: #ffb642;
+  height: 30px; border: 1px solid rgba(232, 163, 58, .5); border-radius: 3px; color: #ffb642; text-transform: uppercase; letter-spacing: var(--sh-track);
+  background: rgba(255, 182, 66, .04); box-shadow: none; text-shadow: var(--sh-glow);
+  transition: background-color .12s, color .12s, transform .12s var(--sh-ease);
+}
+html[data-rfs-style="shelter"] #rfs-bar.inhome .tb-btn:hover { --ink: #140c02; color: #140c02; background: #e8a33a; border-color: #ffb642; text-shadow: none; }
+html[data-rfs-style="shelter"] #rfs-bar.inhome .tb-btn:active { transform: translateY(1px); }
+html[data-rfs-style="shelter"] #rfs-bar.inhome :is(.tb-btn.on, .rf-dd.open > .tb-btn) { --ink: #140c02; color: #140c02; background: #ffb642; border-color: #ffb642; text-shadow: none; }
+html[data-rfs-style="shelter"] #rfs-bar.inhome .tb-btn svg.rf-ic { stroke: currentColor; }
+html[data-rfs-style="shelter"] #rfs-bar.inhome .tb-btn svg.rf-ic :is(.f, circle:not(.s)) { fill: none; }
+/* toggles: one boxed track of attached segments; the chosen one inverts */
+html[data-rfs-style="shelter"] #rfs-bar.inhome .tb-seg { padding: 0; gap: 0; border-radius: 3px; background: transparent; box-shadow: inset 0 0 0 1px rgba(232, 163, 58, .5); }
+html[data-rfs-style="shelter"] #rfs-bar.inhome .tb-seg button,
+html[data-rfs-style="shelter"] #rfs-bar.inhome .tb-seg button:is(:first-child, :last-child) {
+  --ink: #c98d34;
+  height: 30px; border: 0; border-radius: 0; color: #c98d34; background: transparent; box-shadow: none;
+  text-transform: uppercase; letter-spacing: var(--sh-track); transition: background-color .12s, color .12s;
+}
+html[data-rfs-style="shelter"] #rfs-bar.inhome .tb-seg button:hover { --ink: #ffb642; color: #ffb642; background: rgba(255, 182, 66, .08); }
+html[data-rfs-style="shelter"] #rfs-bar.inhome .tb-seg button.on { --ink: #140c02; color: #140c02; background: #e8a33a; }
+/* the search: a dark command line with a ">" prompt glyph colour, amber line on focus */
+html[data-rfs-style="shelter"] #rfs-bar:is(.inhome, .float) .tb-search {
+  height: 32px; border-radius: 3px; border: 1px solid rgba(232, 163, 58, .45);
+  background: #0a0703; box-shadow: inset 0 2px 6px rgba(0, 0, 0, .65); transition: border-color .12s, box-shadow .12s;
+}
+html[data-rfs-style="shelter"] #rfs-bar:is(.inhome, .float) .tb-search:focus-within { border-color: #ffb642; box-shadow: inset 0 2px 6px rgba(0, 0, 0, .65), 0 0 10px rgba(255, 182, 66, .2); }
+html[data-rfs-style="shelter"] #rfs-bar .tb-q { color: #ffcf80; font-size: 14px; caret-color: #ffb642; text-shadow: var(--sh-glow); }
+html[data-rfs-style="shelter"] #rfs-bar .tb-q::placeholder { color: #8a5a1a; text-shadow: none; }
+html[data-rfs-style="shelter"] #rfs-bar .tb-ico svg.rf-ic { stroke: #e8a33a; }
+html[data-rfs-style="shelter"] #rfs-bar .tb-ico svg.rf-ic :is(.f, circle:not(.s)) { fill: none; }
+html[data-rfs-style="shelter"] #rfs-bar .tb-kbd { color: #a87c3e; background: transparent; border-radius: 2px; box-shadow: inset 0 0 0 1px rgba(232, 163, 58, .35); font-family: var(--sh-mono) !important; }
+html[data-rfs-style="shelter"] #rfs-bar .tb-clear { border-radius: 2px; background: rgba(232, 163, 58, .14); }
+html[data-rfs-style="shelter"] #rfs-bar .tb-clear:hover { background: #e8a33a; color: #140c02; }
+/* dropdowns + quick results: a dark screen plate with an amber hairline; the hovered row inverts */
+html[data-rfs-style="shelter"] #rfs-bar :is(.rf-dd-menu, .tb-results) {
+  color: #f0c27a; background: #120d06; border: 1px solid rgba(232, 163, 58, .5); border-radius: 4px; padding: 5px;
+  box-shadow: 0 0 0 3px rgba(35, 35, 26, .95), 0 22px 54px rgba(0, 0, 0, .65);
+}
+html[data-rfs-style="shelter"] #rfs-bar .rf-dd-menu button { color: #f0c27a; border-radius: 2px; }
+html[data-rfs-style="shelter"] #rfs-bar .rf-dd-menu button b { color: #8a5a1a; font-family: var(--sh-mono) !important; font-weight: 400; }
+html[data-rfs-style="shelter"] #rfs-bar .rf-dd-menu button:hover { color: #140c02; background: #e8a33a; }
+html[data-rfs-style="shelter"] #rfs-bar .rf-dd-menu button.on { color: #ffb642; background: rgba(255, 182, 66, .12); box-shadow: inset 0 0 0 1px rgba(255, 182, 66, .5); }
+html[data-rfs-style="shelter"] #rfs-bar .rf-dd-menu button:is(:hover, .on) b { color: inherit; opacity: .75; }
+html[data-rfs-style="shelter"] #rfs-bar .rf-dd-menu button:hover svg.rf-ic { stroke: currentColor; }
+html[data-rfs-style="shelter"] #rfs-bar .pl-item { color: #f0c27a; border-radius: 2px; }
+html[data-rfs-style="shelter"] #rfs-bar :is(.pl-item.sel, .pl-item:hover) { color: #140c02; background: #e8a33a; }
+html[data-rfs-style="shelter"] #rfs-bar :is(.pl-item.sel, .pl-item:hover) .pl-meta { color: #3a2408; }
+html[data-rfs-style="shelter"] #rfs-bar .pl-meta { color: #8a5a1a; font-family: var(--sh-mono) !important; }
+html[data-rfs-style="shelter"] #rfs-bar .pl-tag { color: #e8a33a; background: transparent; border-radius: 2px; box-shadow: inset 0 0 0 1px rgba(232, 163, 58, .4); }
+html[data-rfs-style="shelter"] #rfs-bar .pl-tag.dim { color: #8a5a1a; box-shadow: inset 0 0 0 1px rgba(138, 90, 26, .5); }
+html[data-rfs-style="shelter"] #rfs-bar .pl-sec { color: #c98d34; font-family: var(--sh-mono) !important; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }
+html[data-rfs-lang="ar"][data-rfs-style="shelter"] #rfs-bar .pl-sec { letter-spacing: 0; font-size: 12px; }
+html[data-rfs-style="shelter"] #rfs-bar .pl-foot { color: #8a5a1a; background: transparent; border-top: 1px solid rgba(232, 163, 58, .22); }
+html[data-rfs-style="shelter"] #rfs-bar .pl-foot kbd { color: #f0c27a; background: transparent; border-radius: 2px; box-shadow: inset 0 0 0 1px rgba(232, 163, 58, .35); font-family: var(--sh-mono) !important; }
+/* Ctrl+K anywhere else: the floating search is a screen in an olive rim (no blur: it floats over everything) */
+html[data-rfs-style="shelter"] #rfs-bar.float {
+  background: linear-gradient(180deg, #161008, #0f0b05); border: 1px solid rgba(232, 163, 58, .45); border-radius: 8px;
+  box-shadow: 0 0 0 5px #3a3a2a, 0 0 0 6px #1b1b13, 0 40px 100px rgba(0, 0, 0, .7);
+}
+
+/* ─────────────── store side panels (#rfs-rail / #rfs-data / Quick links): small device screens ─────────────── */
+html[data-rfs-style="shelter"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) section {
+  padding: 8px 0; border: 1px solid rgba(232, 163, 58, .32); border-radius: 6px;
+  background: repeating-linear-gradient(0deg, rgba(255, 182, 66, .015) 0 1px, transparent 1px 3px), #120d06;
+  box-shadow: 0 0 0 3px #3a3a2a, 0 0 0 4px #1b1b13, 0 10px 26px rgba(0, 0, 0, .45);
+}
+html[data-rfs-style="shelter"] #rfs-qmenu section { background: #120d06 !important; }
+/* the section label: CRT caps with the bracketed rule */
+html[data-rfs-style="shelter"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) h4 {
+  margin: 4px 14px 8px; padding: 0 2px 6px; color: #ffb642; background: var(--sh-rule-dim); border: 0;
+  font-family: var(--rf-heading-font) !important; font-size: 19px; font-weight: 400; line-height: 1.05; letter-spacing: .08em; text-transform: uppercase; text-shadow: var(--sh-glow);
+}
+html[data-rfs-lang="ar"][data-rfs-style="shelter"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) h4 { letter-spacing: 0; font-size: 14px; font-weight: 600; line-height: 1.4; }
+html[data-rfs-style="shelter"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) h4 small { color: #8a5a1a; letter-spacing: 0; text-transform: none; text-shadow: none; font-family: var(--sh-mono) !important; font-size: 12px; }
+/* rows: full width; the hovered one inverts like the device list, the current one is boxed */
+html[data-rfs-style="shelter"] :is(#rfs-rail .rr-link, #rfs-qmenu .ql, #rfs-data .rd-row) {
+  border-radius: 2px; margin-inline: 6px; padding-inline: 8px; transition: background-color .12s, color .12s;
+}
+html[data-rfs-style="shelter"] :is(#rfs-rail .rr-link, #rfs-qmenu .ql):hover { background: #e8a33a; color: #140c02 !important; }
+html[data-rfs-style="shelter"] :is(#rfs-rail .rr-link, #rfs-qmenu .ql):hover svg.rf-ic { stroke: currentColor; }
+html[data-rfs-style="shelter"] :is(#rfs-rail .rr-link, #rfs-qmenu .ql).cur { background: rgba(255, 182, 66, .1); box-shadow: inset 0 0 0 1px rgba(255, 182, 66, .55); color: #ffb642 !important; }
+html[data-rfs-style="shelter"] #rfs-rail .rr-app { padding-inline: 14px; }
+html[data-rfs-style="shelter"] #rfs-rail .rr-app img { border-radius: 3px; box-shadow: 0 0 0 1px rgba(232, 163, 58, .35); }
+html[data-rfs-style="shelter"] #rfs-rail .rr-app b { color: #ffb642; text-transform: uppercase; letter-spacing: var(--sh-track); }
+html[data-rfs-style="shelter"] #rfs-rail .rr-own { color: #ffcf80; }
+html[data-rfs-style="shelter"] #rfs-rail .rr-price { color: #ffcf80; font-family: var(--sh-mono) !important; text-shadow: var(--sh-glow); }
+html[data-rfs-style="shelter"] #rfs-rail .rr-price i { color: #140c02; background: linear-gradient(180deg, #ffbf55, #e8a33a); border-radius: 99px; box-shadow: none; text-shadow: none; }
+html[data-rfs-style="shelter"] #rfs-rail .rr-btn {
+  border: 1px solid rgba(232, 163, 58, .55); border-radius: 3px; color: #ffb642 !important; text-transform: uppercase; letter-spacing: var(--sh-track);
+  background: var(--sh-key-bg); box-shadow: var(--sh-key-sh); text-shadow: var(--sh-glow);
+  transition: background-color .12s, color .12s, transform .12s var(--sh-ease);
+}
+html[data-rfs-style="shelter"] #rfs-rail .rr-btn:hover { color: #140c02 !important; background: #e8a33a; border-color: #ffb642; text-shadow: none; box-shadow: var(--sh-key-hi-sh); }
+html[data-rfs-style="shelter"] #rfs-rail .rr-btn:active { transform: translateY(1px); }
+html[data-rfs-style="shelter"] #rfs-rail .rr-btn.go { color: #140c02 !important; background: var(--sh-pri-bg); border-color: #ffc561; box-shadow: var(--sh-pri-sh); text-shadow: none; }
+html[data-rfs-style="shelter"] #rfs-rail .rr-btn.go:hover { background: var(--sh-pri-bg-hi); }
+html[data-rfs-style="shelter"] #rfs-rail .rr-btn.on { color: #ffb642 !important; background: rgba(255, 182, 66, .12); box-shadow: inset 0 0 0 1px #ffb642; }
+html[data-rfs-style="shelter"] #rfs-rail .rr-btn > svg.rf-ic { stroke: currentColor; }
+/* data panel: the live count is a big CRT readout */
+html[data-rfs-style="shelter"] #rfs-data .rd-live { padding-inline: 14px; }
+html[data-rfs-style="shelter"] #rfs-data .rd-live b { font-family: var(--sh-crt) !important; font-size: 40px; font-weight: 400; line-height: 1; color: #ffb642; letter-spacing: .02em; text-shadow: 0 0 10px rgba(255, 182, 66, .4); }
+html[data-rfs-style="shelter"] #rfs-data .rd-live small { color: #a87c3e; }
+html[data-rfs-style="shelter"] #rfs-data .rd-dot { border-radius: 50%; background: #ffb642; box-shadow: 0 0 0 3px rgba(255, 182, 66, .2), 0 0 8px rgba(255, 182, 66, .6); }
+html[data-rfs-style="shelter"] #rfs-data .rd-cc { color: #ffb642; background: transparent; border: 0; border-radius: 2px; box-shadow: inset 0 0 0 1px rgba(232, 163, 58, .45); font-family: var(--sh-mono) !important; }
+html[data-rfs-style="shelter"] #rfs-data :is(.rd-name, .rd-kwd) { color: #f0c27a; }
+html[data-rfs-style="shelter"] #rfs-data .rd-kwd { font-family: var(--sh-mono) !important; }
+html[data-rfs-style="shelter"] #rfs-data .rd-loc { color: #8a5a1a; font-family: var(--sh-mono) !important; }
+html[data-rfs-style="shelter"] #rfs-data .rd-diff { font-family: var(--sh-mono) !important; }
+html[data-rfs-style="shelter"] #rfs-data .rd-diff.lo { color: #ffcf80; }
+html[data-rfs-style="shelter"] #rfs-data .rd-diff.hi { color: #d9673a; }
+html[data-rfs-style="shelter"] #rfs-data .rd-tag { color: #e8a33a; background: transparent; border-radius: 2px; box-shadow: inset 0 0 0 1px rgba(232, 163, 58, .4); }
+html[data-rfs-style="shelter"] #rfs-data .rd-row.home { background: rgba(255, 182, 66, .07); box-shadow: inset 0 0 0 1px rgba(255, 182, 66, .3); }
+html[data-rfs-style="shelter"] #rfs-data .rd-row.home .rd-cc { color: #140c02; background: #c98d34; box-shadow: none; }
+html[data-rfs-style="shelter"] #rfs-data .rd-row.best { background: rgba(255, 182, 66, .12); box-shadow: inset 0 0 0 1px rgba(255, 182, 66, .55); }
+html[data-rfs-style="shelter"] #rfs-data .rd-row.best .rd-cc { color: #140c02; background: #ffb642; box-shadow: none; }
+html[data-rfs-style="shelter"] #rfs-data .rd-row.best .rd-tag { color: #140c02; background: #e8a33a; box-shadow: none; }
+html[data-rfs-style="shelter"] #rfs-data :is(.rd-fact, .rd-link) { margin-inline: 14px; border-radius: 3px; background: #0d0a05; border: 1px solid rgba(232, 163, 58, .28); box-shadow: inset 0 2px 6px rgba(0, 0, 0, .5); }
+html[data-rfs-style="shelter"] #rfs-data .rd-link { color: #ffb642; }
+html[data-rfs-style="shelter"] #rfs-data .rd-link:hover { color: #140c02; background: #e8a33a; border-color: #ffb642; }
+/* the header Quick links button: the boxed key */
+html[data-rfs-style="shelter"] #rfs-qbtn {
+  color: #ffb642; border: 1px solid rgba(232, 163, 58, .55); border-radius: 3px; background: var(--sh-key-bg); box-shadow: var(--sh-key-sh);
+  text-transform: uppercase; letter-spacing: var(--sh-track); text-shadow: var(--sh-glow); transition: background-color .12s, color .12s;
+}
+html[data-rfs-style="shelter"] #rfs-qbtn:hover { color: #140c02; background: #e8a33a; border-color: #ffb642; text-shadow: none; }
+html[data-rfs-style="shelter"] #rfs-qbtn svg.rf-ic { stroke: currentColor; }
+html[data-rfs-style="shelter"] #rfs-qbtn svg.rf-ic :is(.f, rect, ellipse, circle:not(.s)) { fill: rgba(255, 182, 66, .16); }
+html[data-rfs-style="shelter"] #rfs-qbtn svg.rf-ic .s { fill: currentColor; }
+
+/* ---- game page: one hierarchy for every section, quiet controls ---- */
+/* section titles ("Content For This Game", "Reviews", "About This Game", events…): the same CRT caps + bracketed rule */
+html.responsive[data-rfs-style="shelter"] :is(.game_area_description h2, .game_area_dlc_section h2, #game_area_description h2, .game_page_autocollapse_ctn h2, .page_content h2.gradientbg, .rightcol h2, .block h2, .early_access_announcements h2) {
+  font-family: var(--rf-heading-font) !important; font-size: 23px !important; font-weight: 400 !important; letter-spacing: var(--rf-heading-spacing) !important; text-transform: uppercase !important;
+  color: #ffb642 !important; text-shadow: var(--sh-glow) !important; border: 0 !important; padding: 0 2px 7px !important; margin: 26px 0 12px !important;
+  background: var(--sh-rule) !important;
+}
+html[data-rfs-lang="ar"][data-rfs-style="shelter"] :is(.game_area_description h2, .game_area_dlc_section h2, #game_area_description h2, .game_page_autocollapse_ctn h2, .page_content h2.gradientbg, .rightcol h2, .block h2, .early_access_announcements h2) { font-size: 17px !important; font-weight: 600 !important; }
+/* outlined Steam links next to them ("View All", "Browse all", "See all updates") → boxed keys */
+html.responsive[data-rfs-style="shelter"] :is(.game_area_dlc_section .note, a.btnv6_white_transparent, .btnv6_white_transparent, .game_area_dlc_section h2 .note) {
+  color: #ffb642 !important; background: var(--sh-key-bg) !important; box-shadow: var(--sh-key-sh) !important; border: 1px solid rgba(232, 163, 58, .55) !important; border-radius: 3px !important;
+  padding: 3px 12px !important; text-shadow: var(--sh-glow) !important;
+}
+html.responsive[data-rfs-style="shelter"] :is(.game_area_dlc_section .note, a.btnv6_white_transparent, .btnv6_white_transparent):hover { color: #140c02 !important; background: #e8a33a !important; border-color: #ffb642 !important; text-shadow: none !important; box-shadow: var(--sh-key-hi-sh) !important; }
+html.responsive[data-rfs-style="shelter"] .btnv6_white_transparent > span { background: none !important; border: 0 !important; color: inherit !important; }
+/* the purchase rows: price, discount and button stay on one line (the discount capsule's margin pushed the button down) */
+html.responsive[data-rfs-style="shelter"] .game_purchase_action .discount_pct,
+html.responsive[data-rfs-style="shelter"] .game_purchase_action .rfs-pct { margin: 0 6px !important; }
+html.responsive[data-rfs-style="shelter"] .game_purchase_action .bundle_base_discount {
+  color: #a87c3e !important; background: transparent !important; border-radius: 0 !important; margin: 0 2px 0 0 !important; font-family: var(--sh-mono) !important;
+}
+/* a purchase row's dark well: price, discount and the button side by side (they wrapped in bundles) */
+html.responsive[data-rfs-style="shelter"] .game_purchase_action_bg { display: inline-flex !important; align-items: center; white-space: nowrap; }
+html.responsive[data-rfs-style="shelter"] .game_purchase_action_bg > * { float: none !important; }
+/* the feature list on the right (Single-player, Achievements…): dark rows with the start bar instead of slate rows */
+html.responsive[data-rfs-style="shelter"] .game_area_details_specs_ctn {
+  background: #120d06 !important; border-radius: 2px !important; margin: 0 0 2px !important; box-shadow: inset 3px 0 0 transparent !important;
+}
+html.responsive[data-rfs-style="shelter"] .game_area_details_specs_ctn:hover { background: #1e160a !important; box-shadow: inset 3px 0 0 #ffb642 !important; }
+html.responsive[dir="rtl"][data-rfs-style="shelter"] .game_area_details_specs_ctn:hover { box-shadow: inset -3px 0 0 #ffb642 !important; }
+html.responsive[data-rfs-style="shelter"] .game_area_details_specs_ctn .label { background: transparent !important; color: #f0c27a !important; }
+html.responsive[data-rfs-style="shelter"] .game_area_details_specs_ctn .icon { background: transparent !important; filter: grayscale(1) sepia(1) saturate(3) hue-rotate(-12deg) brightness(1.1); opacity: .85; }
+/* the screenshot strip's scroll bar: a thin amber rail */
+html.responsive[data-rfs-style="shelter"] :is(.highlight_selector, #highlight_slider, .slider_ctn) { background: transparent !important; }
+html.responsive[data-rfs-style="shelter"] :is(.slider_left, .slider_right) { background: rgba(232, 163, 58, .16) !important; border-radius: 2px !important; }
+html.responsive[data-rfs-style="shelter"] :is(.slider .handle, .slider_bg) { background: rgba(232, 163, 58, .45) !important; border-radius: 2px !important; }
+/* right column lists: the links block and the controller rows as dark rows, amber text, an amber start bar on hover */
+html.responsive[data-rfs-style="shelter"] :is(a.linkbar, #category_block a:not(.game_area_details_specs_ctn)) {
+  background: #120d06 !important; border-radius: 2px !important; margin: 0 0 2px !important; color: #ffb642 !important;
+  box-shadow: inset 3px 0 0 transparent !important;
+}
+html.responsive[data-rfs-style="shelter"] :is(a.linkbar, #category_block a:not(.game_area_details_specs_ctn)):hover { background: #1e160a !important; color: #ffd890 !important; box-shadow: inset 3px 0 0 #ffb642 !important; }
+html.responsive[dir="rtl"][data-rfs-style="shelter"] :is(a.linkbar, #category_block a:not(.game_area_details_specs_ctn)):hover { box-shadow: inset -3px 0 0 #ffb642 !important; }
+html.responsive[data-rfs-style="shelter"] #category_block a * { background-color: transparent !important; }
+/* tags keep the chip colour even inside amber-link areas (the glance box links are amber) */
+html.responsive[data-rfs-style="shelter"] :is(.glance_tags, .glance_ctn) a.app_tag { color: #e8a33a !important; text-decoration: none !important; }
+html.responsive[data-rfs-style="shelter"] :is(.glance_tags, .glance_ctn) a.app_tag:hover { color: #140c02 !important; }
+/* ghost buttons that are not links (webkit.js tags them too) */
+html.responsive[data-rfs-style="shelter"] .rfs-btn2:not(a) {
+  color: #ffb642 !important; background: var(--sh-key-bg) !important; box-shadow: var(--sh-key-sh) !important; border: 1px solid rgba(232, 163, 58, .55) !important; border-radius: 3px !important;
+  padding-inline: 14px !important; text-transform: uppercase; letter-spacing: var(--sh-track); text-shadow: var(--sh-glow); cursor: pointer;
+}
+html.responsive[data-rfs-style="shelter"] .rfs-btn2:not(a):hover { color: #140c02 !important; background: #e8a33a !important; border-color: #ffb642 !important; text-shadow: none; box-shadow: var(--sh-key-hi-sh) !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-rfs-style="shelter"] :is(.DialogButton, .store_capsule, #rfs-bar .tb-btn, #rfs-rail .rr-btn) { transition: none !important; }
+  html[data-rfs-style="shelter"] .store_nav .tab::after { transition: none !important; }
+  html[data-rfs-style="shelter"] .store_capsule:hover { transform: none; }
+}
+
+/* the footer bar under the user box (skin.js), the user box and its title-bar spot */
+html[data-rfs-style="shelter"] { --rf-footer-bg: linear-gradient(180deg, #3a3a2a, #23231a); --rf-footer-line: 2px solid #55553e; --rf-user-radius: 4px; --rf-user-bg: #120d06; --rf-user-bg-hover: #1e1609; --rf-user-border: 1px solid rgba(232, 163, 58, .55); --rf-user-ink: #ffb642; }

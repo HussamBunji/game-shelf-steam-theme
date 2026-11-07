@@ -118,6 +118,7 @@
           <span class="vt-eq-kick">${T('المُجهَّز حاليًا · آخر ما لعبت', 'Equipped · last played')}</span>
           <b class="vt-eq-name" dir="auto">${esc(eq.name)}</b>
           <div class="vt-eq-meta"><span class="vt-tier">${tierName(er)}</span><span>${esc(fmtPlaytime(eq.playtimeMin))}</span>${eq.lastPlayed ? `<span>${esc(fmtAgo(eq.lastPlayed))}</span>` : ''}</div>
+          <div class="vt-eq-ach">${api.achHTML(eq)}</div>
           <div class="vt-eq-acts">
             <button class="vt-btn play" data-act="play">${useLabel(eq, running.has(eq.appid))}</button>
             <button class="vt-btn" data-act="inspect">${ic('info')}${T('افحص', 'Inspect')}</button>
@@ -195,6 +196,11 @@
           if (b.dataset.act === 'play') api.launch(eq);
           else this.inspect(eq, $('.vt-eqslot', el));
         });
+        // achievements are exact once the details are in: repaint just that line
+        const achEl = $('.vt-eq-ach', eqEl);
+        const paintAch = () => { if (achEl.isConnected) { achEl.innerHTML = api.achHTML(eq); achEl.hidden = !achEl.firstChild; } };
+        achEl.hidden = !achEl.firstChild;
+        if (!eq.detailed && api.Data && api.Data.ensureDetails) api.Data.ensureDetails(eq).then(paintAch);
       }
 
       /* ---- rarity chips: filter the bag in place ---- */
@@ -279,6 +285,7 @@
       const state = run ? `<div class="tt-state run">${ic('pulse')}${T('شغّالة الحين', 'Running now')}</div>`
         : g.installed ? `<div class="tt-state ok">${ic('check')}${T('مثبّتة وجاهزة للاستخدام', 'Installed, ready to use')}</div>`
           : `<div class="tt-state no">${ic('download')}${T('غير مثبّتة — نقرة مع Ctrl للتثبيت', 'Not installed — Ctrl+click to install')}</div>`;
+      const ach = api.achHTML(g);
       const tip = this.tip;
       tip.className = 'vt-tip on r' + r;
       tip.innerHTML = `
@@ -290,9 +297,16 @@
         ${g.playtime2wksMin ? `<div class="tt-bonus">+${esc(fmtPlaytime(g.playtime2wksMin))} ${T('آخر أسبوعين', 'in the past two weeks')}</div>` : ''}
         ${row(T('آخر استخدام', 'Last used'), g.lastPlayed ? esc(fmtAgo(g.lastPlayed)) : T('ولا مرة', 'Never'))}
         ${row(T('الحجم', 'Size'), g.installed && g.sizeOnDisk ? esc(fmtSize(g.sizeOnDisk)) : '—')}
+        ${ach ? `<div class="tt-ach">${ach}</div>` : ''}
         ${state}
         <div class="tt-foot">${T('نقرة: افحص · نقرة مع Ctrl: استخدم', 'Click: inspect · Ctrl+click: use')}</div>`;
       this.tw = tip.offsetWidth; this.th = tip.offsetHeight; // measured once per item, not per mouse move
+      // the exact achievement count comes with the details: refill this card once, if it still shows this item
+      if (!g.detailed && api.Data && api.Data.ensureDetails) {
+        api.Data.ensureDetails(g).then(() => {
+          if (tip.classList.contains('on') && (this.hov === s || (this.kf === s && !this.hov))) this.fill(s);
+        });
+      }
     },
     /** beside the cursor, on the reading-forward side, flipped / clamped so it never leaves the window */
     placeAt(x, y) {

@@ -175,6 +175,7 @@
         <p class="mg-deck" dir="auto">${esc(deckFallback(g))}</p>
         <div class="mg-by">${esc(byline(g, ''))}</div>
         <div class="mg-figs">${figs}</div>
+        <div class="mg-ach"${api.gameAch(g) ? '' : ' hidden'}>${achFig(g)}</div>
         <div class="mg-acts">${play}<button class="mg-btn" type="button" data-act="open">${ic('news')}${T('اقرأ القصة', 'Read the story')}</button><button class="mg-btn" type="button" data-act="store">${ic('cart')}${T('صفحة المتجر', 'Store page')}</button></div>
       </div>
     </section>`;
@@ -334,6 +335,18 @@
       + '</article>';
   }
 
+  /** the cover story's completion stat: "24%" in the display face, "12 of 50 achievements" and a hairline red rule
+      that fills from the reading start ('' when the game has none / they are not known yet) */
+  function achFig(g) {
+    const a = api.gameAch(g);
+    if (!a) return '';
+    const done = a.got >= a.total;
+    return `<b>${NUM.format(a.pct)}<small>%</small></b>`
+      + `<span>${esc(T(`${NUM.format(a.got)} من ${NUM.format(a.total)} إنجاز مفتوح`, `${NUM.format(a.got)} of ${NUM.format(a.total)} achievements unlocked`))}`
+      + `${done ? `<em>${T('مكتملة', 'Completed')}</em>` : ''}</span>`
+      + `<i class="mg-ach-rule" aria-hidden="true"><i style="width:${Math.max(a.pct, a.got ? 2 : 0)}%"></i></i>`;
+  }
+
   /* ---------------- painting (images arrive lazily) ---------------- */
   function paintArt(art, g) {
     const header = first(g.images.header);
@@ -346,7 +359,7 @@
     art.classList.toggle('cap', !header);
   }
   function paintCover(el, g) {
-    const img = el.querySelector('.mg-cover-img'), deck = el.querySelector('.mg-deck'), by = el.querySelector('.mg-by');
+    const img = el.querySelector('.mg-cover-img'), deck = el.querySelector('.mg-deck'), by = el.querySelector('.mg-by'), ach = el.querySelector('.mg-ach');
     if (!img) return;
     const paint = () => {
       const u = first(g.images.hero) || (g.detailed ? first(g.images.header) || first(g.images.capsule) : '');
@@ -354,6 +367,8 @@
       if (g.description && deck.dataset.full !== '1') { deck.dataset.full = '1'; deck.textContent = g.description; }
       const dev = g.developers && g.developers[0];
       if (dev && by.dataset.dev !== dev) { by.dataset.dev = dev; by.textContent = byline(g, dev); }
+      const a = api.gameAch(g), key = a ? `${a.got}/${a.total}` : '';
+      if (ach && ach.dataset.k !== key) { ach.dataset.k = key; ach.innerHTML = achFig(g); ach.hidden = !a; } // only the stat, once the exact counts arrive
     };
     paint();
     if (!g.detailed) api.Data.ensureDetails(g).then(() => { if (img.isConnected) paint(); });

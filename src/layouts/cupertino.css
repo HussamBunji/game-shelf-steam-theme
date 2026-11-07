@@ -327,3 +327,21 @@ html[data-rfs-lang="en"] #rfs-sheet[data-layout="cupertino"] { --cu-track: -.022
   margin: 0 4px; font-size: 14px; line-height: 1.65; color: rgba(235, 235, 245, .78);
   display: -webkit-box; -webkit-line-clamp: 7; -webkit-box-orient: vertical; overflow: hidden;
 }
+
+/* achievements — hero chip with a thin activity-style ring, and the sheet's big-number stat with a hairline bar */
+#rfs[data-layout="cupertino"] .cu-achc { gap: 7px; padding-inline: 8px 11px; font-variant-numeric: tabular-nums; }
+#rfs[data-layout="cupertino"] .cu-achc .cu-ring {
+  flex: none; width: 15px; height: 15px; border-radius: 50%;
+  background: conic-gradient(var(--cu-ach, #ffd60a) calc(var(--p) * 1%), rgba(255, 255, 255, .18) 0);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2.5px), #000 calc(100% - 2px));
+}
+#rfs[data-layout="cupertino"] .cu-achc bdi small { font-size: .88em; font-weight: 500; color: var(--cu-l2); }
+#rfs[data-layout="cupertino"] .cu-achc em { font-style: normal; font-weight: 500; color: var(--cu-l2); }
+#rfs[data-layout="cupertino"] .cu-achc.done { --cu-ach: #30d158; }
+#rfs[data-layout="cupertino"] .cu-achc.done em { color: #30d158; }
+#rfs-sheet[data-layout="cupertino"] .cu-stat.ach b span { font-size: .7em; font-weight: 600; color: var(--cu-l2); }
+#rfs-sheet[data-layout="cupertino"] .cu-stat .cu-bar {
+  position: relative; display: block; width: min(110px, 80%); height: 3px; border-radius: 99px; overflow: hidden; background: rgba(255, 255, 255, .14);
+}
+#rfs-sheet[data-layout="cupertino"] .cu-stat .cu-bar > i { position: absolute; inset-block: 0; inset-inline-start: 0; border-radius: inherit; background: #ffd60a; }
+#rfs-sheet[data-layout="cupertino"] .cu-stat.ach.done .cu-bar > i { background: #30d158; }

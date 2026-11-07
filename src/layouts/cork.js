@@ -147,6 +147,26 @@
     const dx = r.left + r.width / 2 - (rc.left + rc.width / 2), dy = r.top + r.height / 2 - (rc.top + rc.height / 2);
     return { dx, dy, s, rot, t: `translate(${dx.toFixed(1)}px, ${dy.toFixed(1)}px) rotate(${rot}deg) scale(${s.toFixed(4)})` };
   }
+  /** achievements as a kraft price tag: trophy · 12/50 · 24% (or '' when the game has none) */
+  function achTag(g) {
+    const a = api.gameAch ? api.gameAch(g) : null;
+    if (!a) return '';
+    const label = T(`الإنجازات: ${NUM.format(a.got)} من ${NUM.format(a.total)} (${a.pct}%)`, `Achievements: ${NUM.format(a.got)} of ${NUM.format(a.total)} (${a.pct}%)`);
+    return { done: a.got >= a.total, label, sig: `${a.got}/${a.total}`, a,
+      html: `${ic('trophy')}<b>${NUM.format(a.got)}<small>/${NUM.format(a.total)}</small></b><em>${NUM.format(a.pct)}%</em>` };
+  }
+  /** the polaroid's back: the achievements written on the snapshot's caption strip, with a pencil-drawn bar */
+  function snapAch(snap, g) {
+    const t = achTag(g);
+    let box = snap.querySelector('.ckv-ach');
+    if (!t) { if (box) box.remove(); return; }
+    if (!box) { box = document.createElement('div'); box.className = 'ckv-ach'; snap.append(box); }
+    if (box.dataset.sig === t.sig) return;
+    box.dataset.sig = t.sig;
+    box.classList.toggle('done', t.done);
+    box.title = t.label;
+    box.innerHTML = `${ic('trophy')}<b>${NUM.format(t.a.got)}<small>/${NUM.format(t.a.total)}</small></b><span class="ckv-ach-bar"><i style="width:${Math.max(t.a.pct, t.a.got ? 2 : 0)}%"></i></span><em>${NUM.format(t.a.pct)}%</em>`;
+  }
   const FRONT_SCALE = 1.55; // the front side, held up in the middle before it turns over
   const FRONT_REST = `rotate(-1.5deg) scale(${FRONT_SCALE})`;
 
@@ -154,12 +174,12 @@
     fixedHeight: false,
     dockInside: true,
     list: [], nodes: [], starts: [], lens: [], boardOf: [],
-    cur: -1, curId: 0, ring: null, hov: null, sp: null, byKey: false,
+    cur: -1, curId: 0, ring: null, hov: null, sp: null, byKey: false, tagEl: null,
 
     render(games) {
       const L = Layout;
       const keepId = L.ring ? L.curId : 0;
-      L.ring = null; L.cur = -1; L.curId = 0; L.hov = null;
+      L.ring = null; L.cur = -1; L.curId = 0; L.hov = null; L.tagEl = null;
       const groups = groupGames(games);
       const running = api.running();
       const sort = api.state.sort;
@@ -227,7 +247,8 @@
         L.hov = c;
         fullCap(c);
         const g = L.list[+c.dataset.i];
-        if (g && !g.detailed && api.Data) api.Data.ensureDetails(g);
+        L.tag(c, g);
+        if (g && !g.detailed && api.Data) api.Data.ensureDetails(g).then(() => { if (L.hov === c || L.ring === c) L.tag(c, g); });
         api.sfx('tick');
       });
 
@@ -237,6 +258,19 @@
         const j = list.findIndex(g => g.appid === keepId);
         if (j >= 0) L.focus(j, false);
       }
+    },
+
+    /** ONE paper tag for the whole board: it is tied to the hovered / keyboard-focused polaroid (shown by CSS there)
+        and only rewritten when it moves to another game or the numbers change */
+    tag(c, g) {
+      const L = Layout;
+      const t = g ? achTag(g) : '';
+      if (!t) { if (L.tagEl && L.tagEl.parentElement === c) L.tagEl.remove(); return; }
+      let el = L.tagEl;
+      if (!el) { el = L.tagEl = document.createElement('span'); el.className = 'ck-ach'; el.setAttribute('aria-hidden', 'true'); }
+      const sig = g.appid + ':' + t.sig;
+      if (el.dataset.sig !== sig) { el.dataset.sig = sig; el.innerHTML = t.html; el.classList.toggle('done', t.done); el.title = t.label; }
+      if (el.parentElement !== c) c.append(el);
     },
 
     source(appid) {
@@ -274,6 +308,9 @@
         + '</dl></div><div class="ckv-foot"></div></div></div></div>';
       const card = sheet.querySelector('.ckv-card'), dim = sheet.firstElementChild;
       for (const a of card.querySelectorAll('.art')) a.style.setProperty('--img', cssUrl(img));
+      const snap = sheet.querySelector('.ckv-snap');
+      snapAch(snap, g);
+      if (!g.detailed && api.Data) api.Data.ensureDetails(g).then(() => { if (snap.isConnected) snapAch(snap, g); });
       const acts = api.gameActions(g);
       sheet.querySelector('.ckv-foot').append(acts);
 
@@ -345,6 +382,9 @@
       if (!L.ring) return;
       L.ring.classList.toggle('kf', true);
       fullCap(L.ring);
+      const g = L.list[j];
+      L.tag(L.ring, g);
+      if (g && !g.detailed && api.Data) { const c = L.ring; api.Data.ensureDetails(g).then(() => { if (L.ring === c) L.tag(c, g); }); }
       if (scroll) L.ring.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     },
     /** columns of the polaroid grid (every board has the same width, so one grid tells) */

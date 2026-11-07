@@ -14,7 +14,6 @@ const THEMES = [
   { id: 'classic', en: 'Classic Shelf', ar: 'الرف الكلاسيكي', den: 'A 3D wooden bookcase; cases open like CDs', dar: 'رف خشب ثلاثي الأبعاد، والعلب تنفتح مثل CD', lib: 1, store: 1 },
   { id: 'glass', en: 'Glass Gallery', ar: 'المعرض الزجاجي', den: 'A practical dashboard with glass cards', dar: 'لوحة عملية: كمّل اللعب وكروت زجاجية', lib: 1, store: 1 },
   { id: 'neon', en: 'Neon Coverflow', ar: 'نيون كوفر فلو', den: 'A 3D carousel with neon lighting', dar: 'دوّار ثلاثي الأبعاد بإضاءة نيون', lib: 1, store: 1 },
-  { id: 'original', en: 'Steam Original', ar: 'ستيم الأصلي', den: 'Stock Steam plus the Themes button and store panels', dar: 'ستيم مثل ما هو، مع زر الثيمات ولوحات المتجر', lib: 0, store: 1 },
   { id: 'terminal', en: 'Terminal', ar: 'الطرفية', den: 'Your library as a green-on-black command table', dar: 'مكتبتك كجدول أوامر أخضر على أسود', lib: 1, store: 1 },
   { id: 'vault', en: "Adventurer's Vault", ar: 'خزنة المغامر', den: 'Your games as rarity-framed loot', dar: 'ألعابك أغراض نادرة في حقيبة', lib: 1, store: 1 },
   { id: 'vinyl', en: 'Vinyl Records', ar: 'متجر الأسطوانات', den: 'A 70s record store with a turntable', dar: 'جو السبعينات: أسطوانات ومشغّل', lib: 1, store: 1 },
@@ -23,6 +22,8 @@ const THEMES = [
   { id: 'magazine', en: 'Magazine', ar: 'المجلة', den: 'An editorial magazine layout', dar: 'غلاف مجلة وأعمدة', lib: 1, store: 1 },
   { id: 'cupertino', en: 'Cupertino Dark', ar: 'كوبرتينو الداكن', den: 'The dark Mac / TV-app look', dar: 'أسلوب الماك الداكن وزر تشغيل أبيض', lib: 1, store: 1 },
   { id: 'cyberpunk', en: 'Cyberpunk', ar: 'سايبربنك', den: 'Cyberpunk atmosphere in eye-friendly tones', dar: 'أجواء سايبربنك بألوان مريحة للعين', lib: 0, store: 1 },
+  { id: 'shelter', en: 'Shelter OS', ar: 'الملجأ', den: 'A retro wrist computer with an amber CRT', dar: 'جهاز ذراع قديم بشاشة كهرمانية', lib: 0, store: 0 },
+  { id: 'original', en: 'Steam Original', ar: 'ستيم الأصلي', den: 'Stock Steam plus the Themes button and store panels', dar: 'ستيم مثل ما هو، مع زر الثيمات ولوحات المتجر', lib: 0, store: 1 },
   { id: 'space', en: 'SpaceTheme', ar: 'SpaceTheme', den: 'The popular dark community theme (MIT)', dar: 'ثيم المجتمع المشهور، داكن ومرتب (MIT)', lib: 1, store: 1, extra: 1 },
   { id: 'material', en: 'Material You', ar: 'Material You', den: "Google's Material 3 design (MIT)", dar: 'تصميم Material 3 من Google (MIT)', lib: 0, store: 0, extra: 1 },
 ];

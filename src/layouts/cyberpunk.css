@@ -424,3 +424,16 @@ html[data-rfs-lang="ar"] #rfs-sheet[data-layout="cyberpunk"] .cp-label { font-si
   margin: 0; font-size: 14px; line-height: 1.7; color: #c9c6bd;
   display: -webkit-box; -webkit-line-clamp: 8; -webkit-box-orient: vertical; overflow: hidden;
 }
+
+/* achievements — a TROPHIES readout in the target strip and a plate in the dossier, both with a segmented
+   brass meter (fills from the reading start; 10 cells drawn by one gradient, no extra elements) */
+#rfs[data-layout="cyberpunk"] .cp-ach b span { color: #6d7782; }
+#rfs[data-layout="cyberpunk"] .cp-ach b em { font-style: normal; color: #e3c274; }
+#rfs[data-layout="cyberpunk"] .cp-ach.done b em { color: #8fd8db; }
+:is(#rfs, #rfs-sheet)[data-layout="cyberpunk"] .cp-meter {
+  position: relative; display: block; height: 4px; margin-top: 5px; min-width: 70px; overflow: hidden; background: rgba(154, 163, 173, .22);
+  -webkit-mask: repeating-linear-gradient(var(--cp-end, to right), #000 0 calc(10% - 2px), transparent calc(10% - 2px) 10%);
+}
+:is(#rfs, #rfs-sheet)[data-layout="cyberpunk"] .cp-meter > i { position: absolute; inset-block: 0; inset-inline-start: 0; background: #d9b45a; }
+:is(#rfs, #rfs-sheet)[data-layout="cyberpunk"] .done .cp-meter > i { background: #5fc4c8; }
+#rfs-sheet[data-layout="cyberpunk"] .cp-stat.ach .cp-meter { margin-top: 7px; height: 5px; }

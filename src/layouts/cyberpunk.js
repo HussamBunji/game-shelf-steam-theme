@@ -51,6 +51,21 @@
   /** a mono readout: tiny label above, value below */
   const ro = (k, v, cls) => `<div class="cp-ro${cls ? ' ' + cls : ''}"><small>${esc(k)}</small><b dir="auto">${esc(v)}</b></div>`;
 
+  /** achievements as a HUD readout: TROPHIES · 12/50 · 24% over a segmented meter (filled in by paintHero) */
+  function achRo(g) {
+    const a = api.gameAch ? api.gameAch(g) : null;
+    if (!a) return '';
+    const label = T(`الإنجازات: ${NUM.format(a.got)} من ${NUM.format(a.total)} (${a.pct}%)`, `Achievements: ${NUM.format(a.got)} of ${NUM.format(a.total)} (${a.pct}%)`);
+    return `<div class="cp-ro cp-ach${a.got >= a.total ? ' done' : ''}" data-k="${a.got}/${a.total}" title="${esc(label)}"><small>${esc(T('الإنجازات', 'TROPHIES'))}</small>`
+      + `<b dir="ltr">${NUM.format(a.got)}<span>/${NUM.format(a.total)}</span> <em>${a.pct}%</em></b><i class="cp-meter"><i style="width:${a.pct}%"></i></i></div>`;
+  }
+  /** the dossier's achievements plate: the fact text plus the same segmented meter */
+  function achCell(g, idx) {
+    const a = api.gameAch ? api.gameAch(g) : null;
+    if (!a) return '';
+    const v = T(`${NUM.format(a.got)} من ${NUM.format(a.total)} (${a.pct}%)`, `${NUM.format(a.got)} / ${NUM.format(a.total)} (${a.pct}%)`);
+    return `<div class="cp-stat ach${a.got >= a.total ? ' done' : ''}"><small><i>${pad(idx, 2)}</i>${esc(T('الإنجازات', 'Achievements'))}</small><b dir="auto" title="${esc(v)}">${esc(v)}</b><i class="cp-meter"><i style="width:${a.pct}%"></i></i></div>`;
+  }
   /** the featured target panel */
   function heroHTML(g, run) {
     const status = run ? ['st-run', T('شغّالة', 'RUNNING')] : g.installed ? ['st-ok', T('مثبتة', 'INSTALLED')] : ['st-off', T('غير مثبتة', 'NOT INSTALLED')];
@@ -58,6 +73,7 @@
       ro(T('الساعات', 'HOURS'), g.playtimeMin ? fmtPlaytime(g.playtimeMin) : '—'),
       ro(T('آخر تشغيل', 'LAST RUN'), g.lastPlayed ? fmtAgo(g.lastPlayed) : '—'),
       ro(T('الحجم', 'SIZE'), g.installed && g.sizeOnDisk ? fmtSize(g.sizeOnDisk) : '—'),
+      achRo(g),
       ro(T('الحالة', 'STATUS'), status[1], status[0]),
     ].join('');
     const kick = run ? T('الهدف شغّال الحين', 'TARGET ACTIVE') : g.lastPlayed ? T('آخر هدف', 'FEATURED TARGET') : T('من مكتبتك', 'FROM YOUR LIBRARY');
@@ -83,6 +99,14 @@
     </section>`;
   }
   function paintHero(hero, g) {
+    // achievements: exact once the details arrive — swap only that readout, and only if the numbers changed
+    const A = api.gameAch ? api.gameAch(g) : null, key = A ? `${A.got}/${A.total}` : '';
+    const cur = $('.cp-ach', hero);
+    if (key !== (cur ? cur.dataset.k : '')) {
+      const h = achRo(g);
+      if (cur) { if (h) cur.outerHTML = h; else cur.remove(); }
+      else if (h) { const st = $('.cp-strip > .cp-ro:last-child', hero); if (st) st.insertAdjacentHTML('beforebegin', h); }
+    }
     const big = first(g.images.hero) || first(g.images.header); // the page's one big image
     const art = $('.cp-hero-art', hero);
     if (big && art && hero._bg !== big) { hero._bg = big; art.style.backgroundImage = cssUrl(big); }
@@ -322,7 +346,8 @@
       const desc = api.gameDesc(g);
       const genres = (g.genres || []).slice(0, 6);
       const kick = run ? T('شغّالة الحين', 'RUNNING NOW') : g.installed ? T('متصلة / مثبتة', 'ONLINE / INSTALLED') : T('الأرشيف', 'ARCHIVE');
-      const cells = facts.map(([k, v], i) => `<div class="cp-stat"><small><i>${pad(i + 1, 2)}</i>${esc(k)}</small><b dir="auto" title="${esc(v)}">${esc(v)}</b></div>`).join('');
+      const ACH = T('الإنجازات', 'Achievements');
+      const cells = facts.map(([k, v], i) => k === ACH ? achCell(g, i + 1) : `<div class="cp-stat"><small><i>${pad(i + 1, 2)}</i>${esc(k)}</small><b dir="auto" title="${esc(v)}">${esc(v)}</b></div>`).join('');
       const tags = genres.map(x => `<span class="cp-chip" dir="auto">${esc(x)}</span>`).join('');
       const lbl = (n, text) => `<h4 class="cp-label"><i>${pad(n, 2)}</i>${esc(text)}</h4>`;
       let n = 0;
@@ -351,6 +376,13 @@
         </div>`;
       const card = $('.cp-card', sheet);
       $('.cp-acts-slot', card).replaceWith(api.gameActions(g));
+      // details still on the way: add / correct the achievements plate when they land (this dossier only)
+      if (!g.detailed && api.Data && api.Data.ensureDetails) api.Data.ensureDetails(g).then(() => {
+        if (!card.isConnected) return;
+        const old = $('.cp-stat.ach', card), box = $('.cp-stats', card);
+        if (old) { const h = achCell(g, +old.querySelector('small i').textContent || 3); if (h) old.outerHTML = h; }
+        else if (box) { const h = achCell(g, box.children.length + 1); if (h) box.insertAdjacentHTML('beforeend', h); }
+      });
       const art = $('.cp-ban-art', card);
       const big = first(g.images.hero) || first(g.images.header);
       if (big) art.style.backgroundImage = cssUrl(big);
