@@ -306,7 +306,6 @@
     { value: 'Classic Shelf', sid: 'classic', layout: 'shelf', name: T('الرف الكلاسيكي', 'Classic Shelf'), desc: T('رف خشب ثلاثي الأبعاد — تتمشى بين الرفوف والعلب تنفتح مثل CD', 'A 3D wooden bookcase — walk along the shelves and open each case like a CD') },
     { value: 'Glass Gallery', sid: 'glass', layout: 'gallery', name: T('المعرض الزجاجي', 'Glass Gallery'), desc: T('لوحة عملية: كمّل اللعب + كروت زجاجية + فلاتر', 'A practical dashboard: continue playing, glass cards and filters') },
     { value: 'Neon Coverflow', sid: 'neon', layout: 'coverflow', name: T('نيون كوفر فلو', 'Neon Coverflow'), desc: T('دوّار ثلاثي الأبعاد بانعكاسات وإضاءة نيون', 'A 3D carousel with reflections and neon lighting') },
-    { value: 'Steam Original', sid: 'original', layout: 'original', name: T('ستيم الأصلي', 'Steam Original'), desc: T('ستيم مثل ما هو بدون أي تعديل — يبقى زر الثيمات ولوحة الأرقام بالمتجر', 'Steam exactly as Valve ships it — only the Themes button and the store stats panel stay') },
     { value: 'Terminal', sid: 'terminal', layout: 'terminal', name: T('الطرفية', 'Terminal'), desc: T('مكتبتك كجدول أوامر بالأسود والأخضر — تتنقل بالأسهم وتفتح بـ Enter', 'Your library as a green-on-black command table — arrow keys to move, Enter to open') },
     { value: 'RPG Vault', sid: 'vault', layout: 'vault', name: T('خزنة المغامر', 'Adventurer\'s Vault'), desc: T('ألعابك أغراض في حقيبة — إطار كل لعبة حسب ساعاتك: عادي، نادر، أسطوري', 'Your games as inventory loot — each frame shows its rarity by your hours played') },
     { value: 'Vinyl Records', sid: 'vinyl', layout: 'vinyl', name: T('متجر الأسطوانات', 'Vinyl Records'), desc: T('جو السبعينات: أغلفة أسطوانات ومشغّل "يشتغل الحين" لآخر لعبة', '70s record store: album sleeves and a "Now Playing" turntable for your last game') },
@@ -315,7 +314,8 @@
     { value: 'Magazine', sid: 'magazine', layout: 'magazine', name: T('المجلة', 'Magazine'), desc: T('غلاف مجلة: آخر لعبة قصة الغلاف، والباقي أعمدة وقوائم بأرقام كبيرة', 'An editorial magazine: your last game is the cover story, the rest are columns and charts') },
     { value: 'Cupertino Dark', sid: 'cupertino', layout: 'cupertino', name: T('كوبرتينو الداكن', 'Cupertino Dark'), desc: T('أسلوب الماك والتلفزيون الداكن: زجاج معتم، زوايا ناعمة وزر تشغيل أبيض', 'The dark Mac / TV-app look: dark glass, soft corners and a white Play button') },
     { value: 'Cyberpunk', sid: 'cyberpunk', layout: 'cyberpunk', name: T('سايبربنك', 'Cyberpunk'), desc: T('أجواء سايبربنك بألوان مريحة للعين وزوايا مقصوصة', 'Cyberpunk atmosphere in eye-friendly tones, angular HUD panels') },
-    // extra community themes (MIT): page 2 — optional in the installer
+    // page 2: Steam as Valve ships it, then the extra community themes (MIT) — optional in the installer
+    { value: 'Steam Original', sid: 'original', layout: 'original', name: T('ستيم الأصلي', 'Steam Original'), desc: T('ستيم مثل ما هو بدون أي تعديل — يبقى زر الثيمات ولوحة الأرقام بالمتجر', 'Steam exactly as Valve ships it — only the Themes button and the store stats panel stay') },
     { value: 'SpaceTheme', sid: 'space', layout: 'space', name: 'SpaceTheme', desc: T('ثيم المجتمع المشهور (SpaceTheme، رخصة MIT) — داكن ومرتب، مع لوحات الأرقام والأيقونات حقتنا', 'The popular community theme (SpaceTheme, MIT) — dark and modular, plus our stats panels and icons') },
     { value: 'Material You', sid: 'material', layout: 'material', name: 'Material You', desc: T('تصميم Material 3 من Google (Material Theme، رخصة MIT) — أسطح ناعمة وزوايا دائرية', 'Google\'s Material 3 design (Material Theme, MIT) — soft tonal surfaces and round corners') },
   ];
@@ -531,6 +531,11 @@
         <h2>${ic('palette')}${T('اختر تصميم الثيم', 'Choose a theme design')}</h2>
         <div class="tp-lang" role="group" aria-label="${T('لغة الواجهة', 'Interface language')}">${ic('globe')}<button data-lang="ar" lang="ar" class="${LTR ? '' : 'on'}" aria-pressed="${!LTR}">العربية</button><button data-lang="en" lang="en" class="${LTR ? 'on' : ''}" aria-pressed="${LTR}">English</button></div>
         <p>${T('كل تصميم يغيّر الصفحة الرئيسية وشكل ستيم كله والمتجر. التطبيق ياخذ ثواني (ستيم يعيد تحميل الواجهة).', 'Each design changes the home page, the look of all of Steam, and the store. Applying takes a few seconds (Steam reloads its interface).')}</p>
+      </div>
+      <div class="tp-upd" hidden>
+        <span class="tp-upd-ic">${ic('download')}</span>
+        <div class="tp-upd-t"><b></b><span>${T('فيه ثيمات وإصلاحات جديدة. حمّل التحديث وشغّله، وتنحفظ اختياراتك.', 'New themes and fixes are out. Download the update and run it; your choices are kept.')}</span></div>
+        <button class="tp-upd-go" type="button">${T('حمّل التحديث', 'Get the update')}</button>
       </div>
       <div class="tp-grid">
         ${STYLES.map(s => `
@@ -1575,6 +1580,50 @@
     toast(T('تم تحميل الثيم', 'Theme added'), 1800);
     Themes.apply(card.dataset.value);
   }
+  /* update notice: twice a day the theme asks GitHub for the latest release and compares it with its own version
+     (skin.json "version" = the release tag). Newer → a dot on THEMES in Steam's top bar and a banner in this picker
+     whose button opens the download page in the browser. */
+  const REPO = 'yousf612-alwazzan/game-shelf-steam-theme';
+  const DOWNLOAD_PAGE = 'https://yousf612-alwazzan.github.io/game-shelf-steam-theme/';
+  const Updater = {
+    cur: '', latest: '',
+    newer() {
+      const p = v => String(v || '').replace(/^v/i, '').split('.').map(n => parseInt(n, 10) || 0);
+      const a = p(this.latest), b = p(this.cur);
+      if (!this.latest || !this.cur) return false;
+      for (let i = 0; i < 3; i++) { if ((a[i] || 0) !== (b[i] || 0)) return (a[i] || 0) > (b[i] || 0); }
+      return false;
+    },
+    async check() {
+      try {
+        const sk = await (await fetch(themeBase + 'skin.json', { cache: 'no-store' })).json();
+        this.cur = String((sk && sk.version) || '');
+        let c = null;
+        try { c = JSON.parse(store.get('update', 'null')); } catch (e) { c = null; }
+        if (c && c.v && Date.now() - c.t < 12 * 3600e3) this.latest = c.v;
+        else {
+          const r = await fetch(`https://api.github.com/repos/${REPO}/releases/latest`, { headers: { Accept: 'application/vnd.github+json' } });
+          if (r.ok) {
+            const j = await r.json();
+            this.latest = String(j.tag_name || '').replace(/^v/i, '');
+            store.set('update', JSON.stringify({ t: Date.now(), v: this.latest }));
+          }
+        }
+      } catch (e) { /* offline: try again next start */ }
+      this.paint();
+    },
+    paint() {
+      const on = this.newer();
+      if (on) navTheme.dataset.upd = '1'; else delete navTheme.dataset.upd;
+      navTheme.title = on ? T(`فيه تحديث جديد (${this.latest})`, `Update available (${this.latest})`) : T('غيّر تصميم الثيم', 'Change the theme design');
+      const b = picker.querySelector('.tp-upd');
+      b.hidden = !on;
+      if (on) b.querySelector('b').textContent = T(`تحديث جديد متوفر: ${this.latest} (عندك ${this.cur})`, `Update available: ${this.latest} (you have ${this.cur})`);
+    },
+    open() { try { SteamAPI.steamUrl('steam://openurl_external/' + DOWNLOAD_PAGE); } catch (e) { /* ignore */ } },
+  };
+  setTimeout(() => Updater.check(), 8000);
+
   /* pages: 12 cards (3 rows x 4) per page; more installed themes → arrows + "1 / 2" (and ← → keys) */
   const Pager = {
     page: 0, SIZE: 12,
@@ -1601,6 +1650,7 @@
       picker.querySelectorAll('.tp-card').forEach(c => c.classList.toggle('cur', c.dataset.sid === curStyle()));
       Pager.toCurrent();
       installedStyles().then(() => Pager.toCurrent());
+      Updater.paint();
       picker.classList.add('on');
       Overlay.push('themes');
       sfx('tick');
@@ -1698,6 +1748,7 @@
   picker.addEventListener('click', e => {
     const lb = e.target.closest('.tp-lang button');
     if (lb) { if (!lb.classList.contains('on')) Lang.set(lb.dataset.lang); return; }
+    if (e.target.closest('.tp-upd-go')) { Updater.open(); return; }
     const pg = e.target.closest('.tp-pg');
     if (pg) { Pager.step(pg.classList.contains('next') ? 1 : -1); return; }
     const card = e.target.closest('.tp-card');
