@@ -1,7 +1,7 @@
 {
   "name": "Game Shelf — رف الألعاب",
   "author": "Yousef (yousf612-alwazzan)",
-  "description": "Fifteen looks for Steam — Classic Shelf, Glass Gallery, Neon Coverflow, Terminal, RPG Vault, Vinyl Records, Corkboard, Retro Arcade, Magazine, Cupertino Dark, Cyberpunk, Shelter OS, Steam Original, plus SpaceTheme and Material You (MIT). Store stats panels, Ctrl+K search, full Arabic or English.",
+  "description": "Sixteen looks for Steam — Classic Shelf, Glass Gallery, Neon Coverflow, Terminal, RPG Vault, Vinyl Records, Corkboard, Retro Arcade, Magazine, Cupertino Dark, Cyberpunk, Shelter OS, Crossbar, Steam Original, plus SpaceTheme and Material You (MIT). Store stats panels, Ctrl+K search, full Arabic or English.",
   "version": "1.0.1",
   "header_image": "https://raw.githubusercontent.com/SteamClientHomebrew/Millennium/main/assets/header.png",
   "splash_image": "https://raw.githubusercontent.com/SteamClientHomebrew/Millennium/main/assets/header.png",
@@ -171,6 +171,16 @@
             ],
             "src": "src/styles/shelter.css"
           }
+        },
+        "Crossbar": {
+          "TargetCss": {
+            "affects": [
+              ".*",
+              "https://.*\\.steampowered\\.com(/.*)?",
+              "https://steamcommunity\\.com(/.*)?"
+            ],
+            "src": "src/styles/xmb.css"
+          }
         }
       }
     },
@@ -248,6 +258,11 @@
       "MatchRegexString": "https://steamcommunity\\.com(/.*)?",
       "TargetCss": "src/css/webkit.css",
       "TargetJs": "src/js/webkit.js"
+    },
+    {
+      "MatchRegexString": "^Steam Big Picture Mode$",
+      "TargetCss": "src/css/bigpicture.css",
+      "TargetJs": "src/js/bigpicture.js"
     }
   ]
 }

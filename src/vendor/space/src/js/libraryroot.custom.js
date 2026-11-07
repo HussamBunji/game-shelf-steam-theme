@@ -539,8 +539,13 @@ syncUserPanelWidth();
 // Steam itself only restores whole percentages, so the exact width is kept in an own key.
 const sidebarWidthKey = 'st-sidebar-width';
 
+// localStorage can be null while a window is being (re)created (e.g. leaving Big Picture): a throw here took the whole library page down
+const sidebarStore = () => { try { return window.localStorage || null; } catch (e) { return null; } };
+
 const getSidebarWidth = () => {
-    const width = parseFloat(localStorage.getItem(sidebarWidthKey) ?? localStorage.getItem('GameListWidthPercentage'));
+    const ls = sidebarStore();
+    if (!ls) return null;
+    const width = parseFloat(ls.getItem(sidebarWidthKey) ?? ls.getItem('GameListWidthPercentage'));
     return Number.isNaN(width) ? null : width;
 };
 
@@ -564,8 +569,9 @@ const applySidebarWidth = body => {
 };
 
 const saveSidebarWidth = (body, width) => {
-    localStorage.setItem(sidebarWidthKey, width);
-    localStorage.setItem('GameListWidthPercentage', width);
+    const ls = sidebarStore();
+    ls?.setItem(sidebarWidthKey, width);
+    ls?.setItem('GameListWidthPercentage', width);
     getLibraryInstance(body)?.setState({ nListWidthPercentage: width });
 };
 
@@ -653,11 +659,20 @@ const saveSidebarWidth = (body, width) => {
 
     const patchDownloadsPage = downloadsPage => {
         const proto = downloadsPage.prototype;
-        const { render, componentDidMount, componentDidUpdate, componentWillUnmount } = proto;
+        // The class lives in the shared Steam UI context and outlives this window: when the main window is
+        // re-created (leaving Big Picture, a closed + reopened window) the new window patches it again. Wrapping the
+        // previous window's wrapper chained a dead window into every render (its localStorage is null → the whole
+        // page crashed), so every window wraps Steam's original methods, kept once on the prototype.
+        const original = proto.__stOriginal ??= {
+            render: proto.render, componentDidMount: proto.componentDidMount,
+            componentDidUpdate: proto.componentDidUpdate, componentWillUnmount: proto.componentWillUnmount,
+        };
+        const { render, componentDidMount, componentDidUpdate, componentWillUnmount } = original;
+        const alive = () => { try { return !window.closed && !!window.localStorage; } catch (e) { return false; } };
 
         proto.render = function (...args) {
             const result = render.apply(this, args);
-            if (this.props.bInGamepadUI || !libraryParts) return result;
+            if (this.props.bInGamepadUI || !libraryParts || !alive()) return result;
 
             this.stSidebarElements ??= createSidebarElements();
             return React.createElement(React.Fragment, null, result, ReactDOM.createPortal(renderSidebar(), this.stSidebarElements.sidebar));

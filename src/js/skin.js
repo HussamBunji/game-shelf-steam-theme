@@ -147,7 +147,7 @@
      Original keeps Valve's. */
   const U = 'html:not([data-rfs-style="material"]):not([data-rfs-style="original"])';
   const FOOT = 'html:is([data-rfs-style="arcade"], [data-rfs-style="terminal"], [data-rfs-style="vinyl"], [data-rfs-style="classic"], [data-rfs-style="cyberpunk"], [data-rfs-style="shelter"])';
-  const HEAD = 'html:is([data-rfs-style="glass"], [data-rfs-style="magazine"], [data-rfs-style="vault"], [data-rfs-style="cork"], [data-rfs-style="neon"], [data-rfs-style="space"], [data-rfs-style="cupertino"])';
+  const HEAD = 'html:is([data-rfs-style="glass"], [data-rfs-style="magazine"], [data-rfs-style="vault"], [data-rfs-style="cork"], [data-rfs-style="neon"], [data-rfs-style="space"], [data-rfs-style="cupertino"], [data-rfs-style="xmb"])';
   urule`${FOOT} ${C('TitleBarControls')} {
     position: fixed !important; inset: auto 0 0 0 !important; z-index: 900; display: flex !important;
     flex-direction: row !important; align-items: center !important; justify-content: flex-start !important;
@@ -162,6 +162,9 @@
     width: auto !important; max-width: none !important; height: 100% !important; gap: 6px !important; margin: 0 28px 0 0 !important; padding: 0 !important;
     background: none !important; border: 0 !important; box-shadow: none !important; -webkit-app-region: no-drag; }`;
   urule`${U} ${C('TitleBarControls')} > * { flex: 0 0 auto !important; width: auto !important; }`;
+  /* Steam's bottom bar (download progress) floated over the home designs' corner: the Downloads button next to the
+     user name replaces it (shelf.js paintDownloads) */
+  urule`${U} ${C('BottomBarContainer')} { display: none !important; }`;
   /* SpaceTheme hides the box on pages without its game list (body:not(:has(list)) → visibility: hidden): we took the
      list off the store and the home design, which made the user name vanish there — it shows on every page */
   urule`${U} ${C('TitleBarControls')} { visibility: visible !important; }`;
@@ -173,7 +176,7 @@
     border-radius: var(--rf-user-radius, var(--rf-radius)) !important; box-shadow: var(--rf-user-shadow, none) !important; }`;
   urule`${U} ${C('TitleBarControls')} ${C('AccountMenu')}:hover { background: var(--rf-user-bg-hover, ${A}.2)) !important; }`;
   urule`${U} ${C('TitleBarControls')} ${C('AccountMenu')} .avatarHolder { margin: 0 !important; }`;
-  urule`${U} ${C('TitleBarControls')} .userpanel-buttoncontainer > :not(#rfs-family), ${U} ${C('TitleBarControls')} .userpanel-buttoncontainer :is(button, [class*="Button"]) {
+  urule`${U} ${C('TitleBarControls')} .userpanel-buttoncontainer > :not(#rfs-family):not(#rfs-dl), ${U} ${C('TitleBarControls')} .userpanel-buttoncontainer :is(button, [class*="Button"]) {
     width: 32px !important; min-width: 32px !important; height: 32px !important; padding: 0 !important; }`;
   /* SpaceTheme builds the settings button itself: its inner box was 28 px and top-aligned — the same 32 px as the rest */
   urule`${U} ${C('TitleBarControls')} .userpanel-buttoncontainer .st-steam-settings > * {
@@ -182,6 +185,139 @@
     border-radius: var(--rf-user-radius, var(--rf-radius)) !important; }`;
   /* the sidebar no longer needs the empty space it kept at the bottom for the box */
   urule`${U} ._3x1HklzyDs4TEjACrRO2tB ._1ijTaXJJA5YWl_fW2IxcaT { margin-bottom: 12px !important; }`;
+
+  /* ---------------- Downloads page, install / settings dialogs, toggles, sliders, checkboxes ----------------
+     Steam paints these in its own blue (#1a9fff, #47bfff → #1a44c2) and green (#59bf40); SpaceTheme leaves most of
+     them alone. urule = active under the SpaceTheme base too. Everything comes from the style's variables; a style
+     reshapes them through --rf-dl-* hooks (styles/*.css) where it needs its own shape. */
+  const DLP = k => C(k, 'DownloadsPage', 'RemoveAllButton');   // downloads page
+  const DLG = k => C(k, 'DownloadGraphWrapper', 'GraphBarDownload'); // downloads header: hero + graph
+  const BTN = `background: var(--rf-dl-btn-bg, ${A}.12)) !important; color: var(--rf-dl-btn-ink, var(--rf-text)) !important;
+    border: var(--rf-dl-btn-border, 1px solid ${A}.32)) !important; border-radius: var(--rf-dl-btn-radius, var(--rf-radius)) !important;
+    box-shadow: var(--rf-dl-btn-shadow, none) !important; transition: background .15s, border-color .15s, color .15s !important;`;
+  const BTN_HI = `background: var(--rf-dl-btn-bg-hover, ${A}.24)) !important; border-color: ${A}.6) !important; color: var(--rf-dl-btn-ink-hover, var(--rf-text)) !important;`;
+  const PRI = `background: var(--rf-dl-pri-bg, linear-gradient(135deg, var(--rf-accent), var(--rf-accent-2))) !important; color: var(--rf-accent-ink) !important;
+    border: var(--rf-dl-pri-border, 0) !important; border-radius: var(--rf-dl-btn-radius, var(--rf-radius)) !important; box-shadow: var(--rf-dl-pri-shadow, 0 4px 16px ${A}.28)) !important; clip-path: var(--rf-dl-clip, none);`;
+  // page + header: the hero band keeps the game art, our panel colours instead of the blue wash
+  urule`${U} ${DLP('DownloadsPage')} { background: transparent !important; }`;
+  urule`${U} ${DLP('TopSection')} { background: var(--rf-dl-head-bg, linear-gradient(180deg, var(--rf-panel-2), var(--rf-panel))) !important;
+    border-bottom: 1px solid var(--rf-border) !important; border-radius: var(--rf-dl-head-radius, 0) !important; }`;
+  urule`${U} ${DLG('HeroAndLogo')}${DLG('Empty')} { background: var(--rf-dl-hero-empty, linear-gradient(to right, ${A}.34) 0%, ${A}.08) 100%)) !important; }`;
+  urule`${U} ${DLG('HeroAndLogo')} ${DLG('HeroGradient')} { background: linear-gradient(to right, transparent 15%, var(--rf-panel) 92%) !important; }`;
+  urule`${U} ${DLG('DownloadGraph')} ${DLG('Gradient')} { background-image: linear-gradient(to right, var(--rf-panel) 0%, var(--rf-panel) 35%, transparent 55%) !important; }`;
+  urule`${U} ${DLG('DownloadGraph')} :is(${DLG('GraphBarWrapper')}, ${DLG('GraphBarDownload')}) { color: ${A}.55) !important; }`;
+  urule`${U} ${DLG('DownloadGraph')} ${DLG('GraphBarWrapper')}:hover ${DLG('GraphBar')} { color: var(--rf-accent) !important; }`;
+  urule`${U} ${DLG('DownloadGraph')} ${DLG('GraphLine')} { stroke: var(--rf-accent-2) !important; }`;
+  urule`${U} :is(${DLG('LegendRow')}, ${DLG('DownloadGraphLegend')}) ${DLG('Network')} svg { color: var(--rf-accent) !important; }`;
+  urule`${U} :is(${DLG('LegendRow')}, ${DLG('DownloadGraphLegend')}) ${DLG('Disk')} { background-color: var(--rf-accent-2) !important; }`;
+  urule`${U} ${DLG('Stat')}, ${U} ${DLG('Label')} { color: var(--rf-text-dim) !important; }`;
+  urule`${U} ${DLG('Figure')} { color: var(--rf-text) !important; }`;
+  urule`${U} ${DLG('LanPeer')}:hover ${DLG('LanPeerHostName')} { color: var(--rf-accent) !important; }`;
+  urule`:where(${U} ${DLG('SettingsButton')}, ${U} ${DLP('SettingsButton')}) { ${BTN} }`;
+  urule`:where(${U} ${DLG('SettingsButton')}:hover, ${U} ${DLP('SettingsButton')}:hover) { ${BTN_HI} }`;
+  // section headings + rules
+  urule`${U} ${DLP('SectionTitle')} ${DLP('Title')} { color: var(--rf-text) !important; font-family: var(--rf-heading-font) !important;
+    text-transform: var(--rf-heading-case) !important; letter-spacing: var(--rf-heading-spacing) !important; }`;
+  urule`${U} ${DLP('SectionTitle')} ${DLP('Count')} { color: var(--rf-accent) !important; }`;
+  urule`${U} ${DLP('SectionTitle')} ${DLP('Rule')} { background: var(--rf-dl-rule, linear-gradient(to right, ${A}.55), ${A}.06))) !important; height: 1px !important; }`;
+  urule`${U} ${DLP('SectionDivider')} { background-color: var(--rf-border) !important; }`;
+  // rows
+  urule`${U} ${DLP('SectionItem')} { border-radius: var(--rf-radius) !important; transition: background-color .15s !important; }`;
+  urule`${U} ${DLP('SectionItem')}:hover, ${U} ${DLP('SectionItem')}${DLP('Dragging')} { background-color: ${A}.08) !important; }`;
+  urule`${U} ${DLP('SectionItem')}${DLP('Active')} { background-color: var(--rf-card) !important; box-shadow: inset 3px 0 0 var(--rf-accent) !important; }`;
+  urule`${U} ${DLP('Section')}${DLP('Active')}${DLP('Empty')}, ${U} ${DLP('Section')}${DLP('Active')}${DLP('Empty')} ${DLP('RightSection')} { background-color: transparent !important; }`;
+  urule`${U} ${DLP('SectionItem')} :is(${DLP('PatchNotes')}, ${DLP('PatchNotes')} *) { color: var(--rf-accent) !important; fill: currentColor; }`;
+  urule`${U} ${DLP('SectionItem')} ${DLP('PatchNotes')}:hover { color: var(--rf-text) !important; }`;
+  urule`${U} ${DLP('AutoUpdateHours')}${DLP('IsViewingLocalClient')}:hover :is(${DLP('UpdateHours')}), ${U} ${DLP('AutoUpdateHours')}${DLP('IsViewingLocalClient')}:hover${DLP('NoHours')},
+    ${U} ${DLP('Throttle')}:hover ${DLP('ThrottleValue')}, ${U} ${DLP('ManagingRemoteClientName')} { color: var(--rf-accent) !important; }`;
+  urule`${U} ${DLP('ContentType')} ${DLP('Check')} { color: var(--rf-accent) !important; }`;
+  // progress bars (row + active item)
+  urule`${U} ${DLP('SectionItemStatus')} ${DLP('ProgressBar')} { background-color: ${A}.14) !important; border-radius: 99px !important; overflow: hidden !important; }`;
+  urule`${U} ${DLP('SectionItemStatus')} ${DLP('ProgressBar')} div { background: linear-gradient(90deg, var(--rf-accent), var(--rf-accent-2)) !important; }`;
+  urule`${U} ${DLP('SectionItemStatus')} ${DLP('ProgressBar')}${DLP('Network')} div { background: ${A}.5) !important; }`;
+  urule`${U} ${DLP('SectionItemStatus')} ${DLP('ProgressBar')}${DLP('Disk')} div { background: var(--rf-accent-2) !important; }`;
+  urule`${U} ${DLP('SectionItemStatus')} ${DLP('ProgressBar')}${DLP('NotActive')} div { background: var(--rf-text-dim) !important; opacity: .5; }`;
+  urule`${U} ${DLP('LocalNetworkTransferBar')} { background: var(--rf-accent) !important; color: var(--rf-accent-ink) !important; }`;
+  // buttons: row icon buttons, Clear All, pause/resume, remote-client switch, Play
+  urule`:where(${U} ${DLP('SectionItem')} ${DLP('Button')}.DialogButton, ${U} ${DLP('SectionItem')} ${DLP('Button')}.DialogButton:enabled) { ${BTN} }`;
+  urule`:where(${U} ${DLP('SectionItem')} ${DLP('Button')}.DialogButton:enabled:hover, ${U} ${DLP('SectionItem')}:hover ${DLP('Button')}.DialogButton:enabled:hover) { ${BTN_HI} }`;
+  urule`${U} ${DLP('SectionItem')} ${DLP('Button')}.DialogButton svg { color: currentColor !important; }`;
+  urule`:where(${U} ${DLP('SectionItem')}${DLP('Active')} ${DLP('Button')}.DialogButton:enabled:not(${DLP('RemoveFromQueue')}), ${U} ${DLP('SectionItem')}${DLP('Active')} ${DLP('Button')}.DialogButton:enabled:not(${DLP('RemoveFromQueue')}):hover) { ${PRI} }`;
+  urule`:where(${U} ${DLP('RemoveAllButton')}${DLP('RemoveAllButton')}.DialogButton, ${U} ${DLP('RemoveAllButton')}${DLP('RemoveAllButton')}.DialogButton:enabled) { ${BTN} }`;
+  urule`:where(${U} ${DLP('RemoveAllButton')}${DLP('RemoveAllButton')}.DialogButton:enabled:hover) { ${BTN_HI} }`;
+  urule`:where(${U} ${DLP('PauseResumeButton')}, ${U} ${DLP('PauseResumeButton')}:enabled) { ${BTN} }`;
+  urule`:where(${U} ${DLP('PauseResumeButton')}:enabled:hover) { ${BTN_HI} }`;
+  urule`:where(${U} ${DLP('RemoteClientDownloadsSelector')} ${DLP('RemoteClientDropDownContainer')}, ${U} ${DLP('RemoteClientDownloadsSelector')}${DLP('Green')} ${DLP('RemoteClientDropDownContainer')}) { ${PRI} }`;
+  urule`${U} ${DLP('SectionItem')} ${DLP('PlayButton')}, ${U} ${DLP('SectionItem')} ${DLP('PlayButton')}.DialogButton:enabled {
+    background: var(--rf-dl-play-bg, linear-gradient(135deg, var(--rf-play-1), var(--rf-play-2))) !important; color: var(--rf-play-ink) !important;
+    border: 0 !important; border-radius: var(--rf-dl-btn-radius, var(--rf-radius)) !important; box-shadow: 0 4px 16px rgba(var(--rf-glow), .3) !important; clip-path: var(--rf-dl-clip, none); }`;
+  urule`${U} ${DLP('SectionItem')} ${DLP('PlayButton')} :is(svg, svg *) { color: var(--rf-play-ink) !important; fill: var(--rf-play-ink) !important; }`;
+  urule`${U} ${DLP('SectionItem')} ${DLP('PlayButton')}:hover { filter: brightness(1.08) !important; }`;
+  // the library-style Play button Steam reuses on the completed rows
+  urule`${U} ${DLP('SectionItem')} ${C('PlayButtonContainer', 'PlayButton')}, ${U} ${DLP('SectionItem')} ${C('PlayButton', 'PlayButtonContainer')} {
+    background: var(--rf-dl-play-bg, linear-gradient(135deg, var(--rf-play-1), var(--rf-play-2))) !important; color: var(--rf-play-ink) !important;
+    border-radius: var(--rf-dl-btn-radius, var(--rf-radius)) !important; box-shadow: none !important; }`;
+  urule`${U} ${DLP('SectionItem')} ${C('PlayButton', 'PlayButtonContainer')} :is(svg, svg *, ${C('ButtonText', 'PlayButton')}) { color: var(--rf-play-ink) !important; fill: var(--rf-play-ink) !important; }`;
+
+  // left game list: "42%" label + the progress ring on the app icon (Steam: #74d1ff)
+  const GL = k => C(k, 'GameListEntryContainer', 'DownloadProgress');
+  urule`${U} ${GL('GameListEntryContainer')} ${GL('DownloadProgress')} { color: var(--rf-accent) !important; }`;
+  urule`${U} ${GL('Running')} ${GL('DownloadProgress')} { color: var(--rf-play-1) !important; }`;
+  urule`${U} ${GL('AppIconDownloading')} svg${GL('DownloadProgressSVG')}${GL('DownloadProgressSVG')}${GL('DownloadProgressSVG')} circle { stroke: var(--rf-accent) !important; }`;
+
+  /* install dialog: the drive list (Steam: selected row #1a9fff, focus white) */
+  const FS = k => C(k, 'FolderSelector', 'FolderOption');
+  urule`${U} ${FS('FolderOption')} { background: var(--rf-card) !important; color: var(--rf-text) !important; border: 1px solid var(--rf-border) !important;
+    border-radius: var(--rf-dl-btn-radius, var(--rf-radius)) !important; transition: background .12s, border-color .12s !important; clip-path: var(--rf-dl-clip, none); }`;
+  urule`${U} ${FS('FolderOption')}:hover { background: ${A}.12) !important; border-color: ${A}.4) !important; color: var(--rf-text) !important; }`;
+  urule`${U} ${FS('FolderOption')}${FS('Focused')} { background: ${A}.16) !important; color: var(--rf-text) !important; outline: 1px solid ${A}.6) !important; }`;
+  urule`${U} ${FS('FolderOption')}${FS('Active')}, ${U} ${FS('FolderOption')}${FS('Active')}:hover {
+    background: var(--rf-dl-sel-bg, linear-gradient(90deg, ${A}.30), ${A}.12))) !important; color: var(--rf-text) !important;
+    border-color: var(--rf-accent) !important; box-shadow: inset 3px 0 0 var(--rf-accent), 0 0 0 1px ${A}.25) !important; }`;
+  urule`${U} ${FS('FolderOption')}${FS('Active')} ${FS('FreeSpace')}, ${U} ${FS('FolderOption')}${FS('Active')} ${FS('FolderFlagStar')} { color: var(--rf-accent) !important; }`;
+  urule`${U} ${FS('FolderOption')} ${FS('FolderName')}${FS('NoSpace')} { color: var(--rf-text-dim) !important; }`;
+  urule`${U} ${FS('Header')}, ${U} ${FS('DiskSpace')} { color: var(--rf-text-dim) !important; }`;
+  urule`${U} ${FS('AppToInstall')} { background: var(--rf-card) !important; border-radius: var(--rf-radius) !important; }`;
+
+  /* settings windows (Steam Settings, game Properties): page list, title, toggles, sliders, radio + checkboxes */
+  const PS = k => C(k, 'PagedSettingsDialog_PageListItem', 'PageListItem_Title');
+  urule`${U} ${PS('PagedSettingsDialog_Title')} { color: var(--rf-accent) !important; font-family: var(--rf-heading-font) !important;
+    text-transform: var(--rf-heading-case) !important; letter-spacing: var(--rf-heading-spacing) !important; }`;
+  urule`${U} ${PS('PagedSettingsDialog_PageListItem')} { border-radius: var(--rf-radius) !important; transition: background .12s, color .12s !important; }`;
+  urule`${U} ${PS('PagedSettingsDialog_PageListItem')}:hover:not(${PS('Active')}), ${U} ${PS('PagedSettingsDialog_PageListItem')}:hover:not(${PS('Active')}) ${PS('PageListItem_Icon')} {
+    color: var(--rf-text) !important; background: ${A}.08) !important; }`;
+  urule`${U} ${PS('PagedSettingsDialog_PageListItem')}${PS('Active')}, ${U} ${PS('PagedSettingsDialog_PageListItem')}:focus {
+    background: var(--rf-dl-sel-bg, linear-gradient(90deg, ${A}.26), ${A}.04))) !important; color: var(--rf-accent) !important;
+    border-left: 0 !important; box-shadow: inset 3px 0 0 var(--rf-accent) !important; }`;
+  urule`${U} ${PS('PagedSettingsDialog_PageListItem')}${PS('Active')} ${PS('PageListItem_Icon')} { color: var(--rf-accent) !important; }`;
+  urule`${U} ${PS('PageListSeparator')} { background: var(--rf-border) !important; }`;
+  urule`${U} ${C('ToggleRail', 'ToggleSwitch', 'Field')}::before { background: linear-gradient(90deg, var(--rf-accent), var(--rf-accent-2)) !important; }`;
+  urule`${U} ${C('ToggleSwitch', 'ToggleRow')}${C('On', 'ToggleRow')} { background: var(--rf-accent) !important; background-image: none !important; }`;
+  urule`${U} ${C('ToggleRail', 'ToggleRow')}${C('Highlight', 'ToggleRow')} { background-color: ${A}.35) !important; }`;
+  urule`${U} ${C('SliderTrack', 'SliderHandle')} { --left-track-color: var(--rf-accent) !important; }`;
+  urule`${U} ${C('SliderNotchTick', 'SliderHandle')}${C('TickActive', 'SliderHandle')} { background-color: var(--rf-accent) !important; }`;
+  urule`${U} ${C('CompoundSliderSubSliderLabelInternal')} { color: var(--rf-accent) !important; }`;
+  urule`${U} ${C('Active', 'RadioButton')} ${C('RadioButton', 'Active')} { box-shadow: inset 0 0 0 5px var(--rf-accent) !important; }`;
+  urule`${U} .AppProperties .DialogBody ${C('BlueHighlight')} { color: var(--rf-accent) !important; }`;
+  /* stable global controls (unhashed): checkbox, ON/OFF toggle field, round checkbox, primary button — in :where(), so a style's own .DialogCheckbox / .DialogButton look still wins */
+  urules.push(`
+    :where(${U} .DialogCheckbox) { background-color: rgba(0, 0, 0, .3) !important; box-shadow: inset 0 0 0 1px ${A}.35) !important; border-radius: var(--rf-dl-check-radius, 4px) !important; }
+    :where(${U} .DialogCheckbox_Container:hover .DialogCheckbox:not(.Disabled), ${U} .DialogCheckbox:hover:not(.Disabled)) { box-shadow: inset 0 0 0 1px ${A}.75) !important; background-color: ${A}.1) !important; }
+    ${U} .DialogCheckbox.Active { background: var(--rf-accent) !important; box-shadow: 0 0 0 1px var(--rf-accent), 0 0 10px ${A}.35) !important; }
+    ${U} .DialogCheckbox .SVGIcon_DialogCheck path { stroke: var(--rf-accent-ink) !important; }
+    ${U} .DialogCheckbox .SVGIcon_DialogCheck stop { stop-color: var(--rf-accent-ink) !important; }
+    :where(${U} .DialogToggleField_Control) { background: rgba(0, 0, 0, .3) !important; border: 1px solid var(--rf-border) !important; border-radius: var(--rf-radius) !important; }
+    :where(${U} .DialogToggleField_Option:hover:not(.Active)) { background: ${A}.14) !important; }
+    :where(${U} .DialogToggleField_Option.Active:not(.Off)) { background: var(--rf-accent) !important; color: var(--rf-accent-ink) !important; }
+    :where(${U} .DialogToggleField_Option.Off.Active) { background: var(--rf-panel-3, var(--rf-panel-2)) !important; color: var(--rf-text) !important; }
+    :where(${U} .DialogRoundCheckboxField_Control .DialogRoundCheckboxField_InnerCircle) { background: var(--rf-accent) !important; box-shadow: 0 0 8px ${A}.5) !important; }
+    :where(${U} button.DialogButton.Primary, ${U} button.DialogButton.Primary:enabled) { background: var(--rf-dl-pri-bg, linear-gradient(135deg, var(--rf-accent), var(--rf-accent-2))) !important;
+      background-size: auto !important; color: var(--rf-accent-ink) !important; border-radius: var(--rf-dl-btn-radius, var(--rf-radius)) !important; }
+    :where(${U} button.DialogButton.Primary:enabled:hover) { filter: brightness(1.1) !important; color: var(--rf-accent-ink) !important; }
+  `);
+  /* context menus (incl. the Downloads row menu): Steam's focused row is a near-white bar, its update rows blue */
+  urule`${U} ${C('contextMenuItem')}:hover, ${U} ${C('contextMenuItem')}${C('active', 'contextMenuItem')}, ${U} ${C('contextMenuItem')}${C('Focused', 'contextMenuItem')} {
+    background: ${A}.2) !important; color: var(--rf-text) !important; box-shadow: inset 3px 0 0 var(--rf-accent) !important; }`;
 
   /* ---------------- in-client browser URL bar (store / community) ---------------- */
   rule`${C('URLBar')} { background: var(--rf-topbar) !important; border-bottom: 1px solid ${A}.18) !important; }`;
@@ -278,7 +414,7 @@
      becomes visible (and every few seconds while visible), and swaps the sheet if they differ. */
   (function followStyle() {
     if (!/steamloopback\.host$/.test(location.host)) return;
-    const STYLE_IDS = { 'Classic Shelf': 'classic', 'Neon Coverflow': 'neon', 'Glass Gallery': 'glass', 'Steam Original': 'original', 'SpaceTheme': 'space', 'Material You': 'material', 'Terminal': 'terminal', 'RPG Vault': 'vault', 'Vinyl Records': 'vinyl', 'Corkboard': 'cork', 'Retro Arcade': 'arcade', 'Magazine': 'magazine', 'Cupertino Dark': 'cupertino', 'Cyberpunk': 'cyberpunk', 'Shelter OS': 'shelter' };
+    const STYLE_IDS = { 'Classic Shelf': 'classic', 'Neon Coverflow': 'neon', 'Glass Gallery': 'glass', 'Steam Original': 'original', 'SpaceTheme': 'space', 'Material You': 'material', 'Terminal': 'terminal', 'RPG Vault': 'vault', 'Vinyl Records': 'vinyl', 'Corkboard': 'cork', 'Retro Arcade': 'arcade', 'Magazine': 'magazine', 'Cupertino Dark': 'cupertino', 'Cyberpunk': 'cyberpunk', 'Shelter OS': 'shelter', 'Crossbar': 'xmb' };
     const api = ctx.MILLENNIUM_API;
     if (!api || !api.ffi) return;
     let busy = false;

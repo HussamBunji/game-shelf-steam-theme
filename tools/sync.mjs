@@ -7,7 +7,7 @@ import { connect } from './cdp.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const DEST = 'C:/Program Files (x86)/Steam/millennium/themes/rf-shelf';
-const STYLE = { classic: 'Classic Shelf', neon: 'Neon Coverflow', glass: 'Glass Gallery', original: 'Steam Original', space: 'SpaceTheme', material: 'Material You', terminal: 'Terminal', vault: 'RPG Vault', vinyl: 'Vinyl Records', cork: 'Corkboard', arcade: 'Retro Arcade', magazine: 'Magazine', cupertino: 'Cupertino Dark', cyberpunk: 'Cyberpunk', shelter: 'Shelter OS' }[process.argv[2] || ''];
+const STYLE = { classic: 'Classic Shelf', neon: 'Neon Coverflow', glass: 'Glass Gallery', original: 'Steam Original', space: 'SpaceTheme', material: 'Material You', terminal: 'Terminal', vault: 'RPG Vault', vinyl: 'Vinyl Records', cork: 'Corkboard', arcade: 'Retro Arcade', magazine: 'Magazine', cupertino: 'Cupertino Dark', cyberpunk: 'Cyberpunk', shelter: 'Shelter OS', xmb: 'Crossbar' }[process.argv[2] || ''];
 
 await import('./build.mjs');
 rmSync(path.join(DEST, 'src'), { recursive: true, force: true });

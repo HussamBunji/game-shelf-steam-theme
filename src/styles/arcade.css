@@ -744,3 +744,6 @@ html[data-rfs-style="arcade"] { --rf-footer-bg: #0b0620; --rf-footer-line: 2px s
   --rfp-field: #0b0922;
   --rfp-wl-title: 13px;
 }
+
+/* downloads page + install / settings dialogs (skin.js --rf-dl-* hooks): square pixel keys, a solid selection bar, dotted section rules */
+html[data-rfs-style="arcade"] { --rf-dl-btn-radius: 0; --rf-dl-check-radius: 0; --rf-dl-sel-bg: #2e2794; --rf-dl-hero-empty: repeating-linear-gradient(90deg, rgba(255, 212, 0, .16) 0 6px, transparent 6px 12px), linear-gradient(90deg, #2e2794, #110e2e); --rf-dl-rule: repeating-linear-gradient(90deg, #ffd400 0 4px, transparent 4px 8px); --rf-dl-pri-shadow: 0 -2px 0 0 #000, 0 2px 0 0 #000, -2px 0 0 0 #000, 2px 0 0 0 #000, 0 5px 0 0 rgba(0, 0, 0, .5); --rf-dl-head-bg: linear-gradient(180deg, #1d1750, #110e2e); }

@@ -331,6 +331,7 @@
     { value: 'Cupertino Dark', sid: 'cupertino', layout: 'cupertino', name: T('كوبرتينو الداكن', 'Cupertino Dark'), desc: T('أسلوب الماك والتلفزيون الداكن: زجاج معتم، زوايا ناعمة وزر تشغيل أبيض', 'The dark Mac / TV-app look: dark glass, soft corners and a white Play button') },
     { value: 'Cyberpunk', sid: 'cyberpunk', layout: 'cyberpunk', name: T('سايبربنك', 'Cyberpunk'), desc: T('أجواء سايبربنك بألوان مريحة للعين وزوايا مقصوصة', 'Cyberpunk atmosphere in eye-friendly tones, angular HUD panels') },
     { value: 'Shelter OS', sid: 'shelter', layout: 'shelter', name: T('الملجأ', 'Shelter OS'), desc: T('ملجأ أخضر وجهاز ذراع ترفعه بيدك لما تفتح لعبة', 'A green shelter terminal with a wrist computer you raise to open a game') },
+    { value: 'Crossbar', sid: 'xmb', layout: 'xmb', name: T('الكونسول', 'Crossbar'), desc: T('قائمة كونسول بأيقونات أفقية وقائمة ألعاب عمودية فوق موجة متحركة', 'A console menu: a row of categories, a column of games, over a flowing wave') },
     // page 2: Steam as Valve ships it, then the extra community themes (MIT) — optional in the installer
     { value: 'Steam Original', sid: 'original', layout: 'original', name: T('ستيم الأصلي', 'Steam Original'), desc: T('ستيم مثل ما هو بدون أي تعديل — يبقى زر الثيمات ولوحة الأرقام بالمتجر', 'Steam exactly as Valve ships it — only the Themes button and the store stats panel stay') },
     { value: 'SpaceTheme', sid: 'space', layout: 'space', name: 'SpaceTheme', desc: T('ثيم المجتمع المشهور (SpaceTheme، رخصة MIT) — داكن ومرتب، مع لوحات الأرقام والأيقونات حقتنا', 'The popular community theme (SpaceTheme, MIT) — dark and modular, plus our stats panels and icons') },
@@ -1959,12 +1960,44 @@
   }
   famBtn.addEventListener('click', e => { e.stopPropagation(); toggleFamily(); });
   famBtn.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleFamily(); } });
+  /* ---- Downloads: a button next to the user name in every theme. The home designs hide Steam's left list and its
+     bottom bar (where the download progress lived), so this is the way to the Downloads page — with live progress. */
+  const dlBtn = document.createElement('div');
+  dlBtn.id = 'rfs-dl'; dlBtn.setAttribute('role', 'button'); dlBtn.tabIndex = 0;
+  dlBtn.innerHTML = `${ic('download')}<span class="lbl"></span><b class="pct"></b><i class="bar"><i></i></i>`;
+  const openDownloads = () => { sfx('tick'); try { SteamAPI.navigate('/library/downloads'); } catch (e) { /* ignore */ } };
+  dlBtn.addEventListener('click', e => { e.stopPropagation(); openDownloads(); });
+  dlBtn.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openDownloads(); } });
+  let dlKey = '';
+  function paintDownloads() {
+    let pct = -1, state = '', queued = 0;
+    try {
+      const ds = SteamAPI.ctx().downloadsStore;
+      const ov = ds && (typeof ds.LocalDownloadOverview === 'function' ? ds.LocalDownloadOverview() : ds.LocalDownloadOverview);
+      const q = ds && (typeof ds.QueuedTransfers === 'function' ? ds.QueuedTransfers() : ds.QueuedTransfers);
+      queued = (q && q.length) || 0;
+      if (ov && ov.update_appid && ov.update_state && ov.update_state !== 'None') { pct = ov.overall_percent_complete || 0; state = ov.paused ? 'paused' : 'active'; }
+    } catch (e) { /* store not ready */ }
+    const on = /^\/library\/downloads/.test(SteamAPI.route());
+    const key = [LANG, pct, state, queued, on].join('|');
+    if (key === dlKey) return;
+    dlKey = key;
+    dlBtn.classList.toggle('busy', pct >= 0);
+    dlBtn.classList.toggle('paused', state === 'paused');
+    dlBtn.classList.toggle('on', on);
+    dlBtn.querySelector('.lbl').textContent = T('التنزيلات', 'Downloads');
+    dlBtn.querySelector('.pct').textContent = pct >= 0 ? pct + '%' : (queued ? NUM.format(queued) : '');
+    dlBtn.querySelector('.bar > i').style.width = (pct >= 0 ? pct : 0) + '%';
+    dlBtn.title = pct >= 0 ? T(`جاري التنزيل ${pct}% — افتح صفحة التنزيلات`, `Downloading ${pct}% — open Downloads`) : T('صفحة التنزيلات والتحديثات', 'Downloads and updates');
+  }
   function placeFamily() {
     const tb = SteamAPI.titleControls();
     if (!tb) return;
     const box = tb.querySelector('.userpanel-buttoncontainer') || tb;
+    if (dlBtn.parentElement !== box) box.appendChild(dlBtn);
     if (famBtn.parentElement !== box) box.appendChild(famBtn);
     paintFamily();
+    paintDownloads();
   }
   function placeBar(onHome, panel) {
     // the nav row rarely changes: re-place THEMES once a second (or at once if Steam re-rendered the row)

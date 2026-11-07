@@ -26,6 +26,8 @@ const STYLES = [
     descAr: 'أجواء سايبربنك بألوان مريحة للعين وزوايا مقصوصة', descEn: 'Cyberpunk atmosphere in eye-friendly tones, angular HUD panels' },
   { id: 'shelter', value: 'Shelter OS', ar: 'الملجأ', en: 'Shelter OS',
     descAr: 'ملجأ أخضر وجهاز ذراع ترفعه بيدك', descEn: 'A green shelter terminal with a raise-to-view wrist computer' },
+  { id: 'xmb', value: 'Crossbar', ar: 'الكونسول', en: 'Crossbar',
+    descAr: 'قائمة كونسول فوق موجة متحركة', descEn: 'A console menu over a flowing wave' },
   { id: 'original', value: 'Steam Original', ar: 'ستيم الأصلي', en: 'Steam Original',
     descAr: 'ستيم مثل ما هو، مع زر الثيمات ولوحات المتجر', descEn: 'Stock Steam plus the Themes button and store panels' },
   /* extra community themes (MIT), not selected by default */

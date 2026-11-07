@@ -640,3 +640,6 @@ html[data-rfs-style="magazine"] { --rf-footer-bg: #0a0a0a; --rf-footer-line: 2px
 }
 html[data-rfs-page="wishlist"][data-rfs-style="magazine"][data-rfs-wlview="cards"] [data-rfs-wl="row"] { box-shadow: inset 0 -3px 0 #e63b2e, inset 0 0 0 1px rgba(239, 230, 214, .12) !important; }
 html[data-rfs-page="wishlist"][data-rfs-style="magazine"][data-rfs-wlview="cards"] [data-rfs-wl="row"]:hover { transform: none; background: #222 !important; }
+
+/* downloads page + install / settings dialogs (skin.js --rf-dl-* hooks): square, editorial red rule */
+html[data-rfs-style="magazine"] { --rf-dl-btn-radius: 0; --rf-dl-check-radius: 0; --rf-dl-rule: linear-gradient(90deg, var(--rf-accent) 0 40px, rgba(239, 230, 214, .2) 40px 100%); --rf-dl-pri-shadow: none; }

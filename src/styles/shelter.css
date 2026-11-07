@@ -838,3 +838,6 @@ html[data-rfs-style="shelter"] :is(.ChatTabs, .chatTabSet) .chatTab.ActiveTab { 
 
 /* the footer bar under the user box (skin.js), the user box and its title-bar spot */
 html[data-rfs-style="shelter"] { --rf-footer-bg: linear-gradient(180deg, #3a3a2a, #23231a); --rf-footer-line: 2px solid #55553e; --rf-user-radius: 4px; --rf-user-bg: #04110a; --rf-user-bg-hover: #08190f; --rf-user-border: 1px solid rgba(24, 220, 110, .55); --rf-user-ink: #1bff80; }
+
+/* downloads page + install / settings dialogs (skin.js --rf-dl-* hooks): device keys, phosphor selection, scanline header */
+html[data-rfs-style="shelter"] { --rf-dl-btn-radius: 3px; --rf-dl-check-radius: 2px; --rf-dl-sel-bg: linear-gradient(90deg, rgba(27, 255, 128, .2), rgba(27, 255, 128, .05)); --rf-dl-hero-empty: repeating-linear-gradient(180deg, rgba(27, 255, 128, .07) 0 1px, transparent 1px 3px), linear-gradient(90deg, rgba(27, 255, 128, .22), rgba(4, 17, 10, .2)); --rf-dl-head-bg: linear-gradient(180deg, #08190f, #04110a); --rf-dl-rule: linear-gradient(90deg, rgba(27, 255, 128, .6), rgba(27, 255, 128, .05)); --rf-dl-pri-shadow: 0 0 12px rgba(27, 255, 128, .3); --rf-dl-play-bg: linear-gradient(180deg, #4dff9c, #18c060); }

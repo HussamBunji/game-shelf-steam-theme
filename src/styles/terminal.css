@@ -704,3 +704,6 @@ html[data-rfs-lang="ar"][data-rfs-style="terminal"] { --rfp-head-track: 0; }
 html[data-rfs-page="wishlist"][data-rfs-style="terminal"] [data-rfs-wl="title"] a::before,
 html.responsive[data-rfs-style="terminal"] .friend_block_v2 .friend_block_content::before { content: '> '; color: #39ff88; }
 html[data-rfs-page="wishlist"][data-rfs-style="terminal"] [data-rfs-wl="row"]:hover { box-shadow: inset 3px 0 0 #39ff88, inset 0 0 0 1px rgba(57, 255, 136, .45) !important; }
+
+/* downloads page + install / settings dialogs (skin.js --rf-dl-* hooks): square, dashed rules, a flat green selection */
+html[data-rfs-style="terminal"] { --rf-dl-btn-radius: 0; --rf-dl-check-radius: 0; --rf-dl-sel-bg: rgba(57, 255, 136, .14); --rf-dl-hero-empty: repeating-linear-gradient(180deg, rgba(57, 255, 136, .06) 0 1px, transparent 1px 3px), linear-gradient(90deg, rgba(57, 255, 136, .16), transparent); --rf-dl-rule: repeating-linear-gradient(90deg, rgba(57, 255, 136, .6) 0 6px, transparent 6px 10px); --rf-dl-pri-shadow: none; }

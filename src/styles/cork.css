@@ -872,3 +872,6 @@ html[data-rfs-page="wishlist"][data-rfs-style="cork"][data-rfs-wlview="cards"] [
   content: ''; position: absolute; top: -5px; left: calc(50% - 7px); z-index: 3; width: 14px; height: 14px; border-radius: 50%; pointer-events: none;
   background: radial-gradient(circle at 35% 30%, #ffb19c, #d9472f 55%, #8f2a1a); box-shadow: 0 3px 4px rgba(0, 0, 0, .55);
 }
+
+/* downloads page + install / settings dialogs (skin.js --rf-dl-* hooks) */
+html[data-rfs-style="cork"] { --rf-dl-btn-radius: 3px; --rf-dl-check-radius: 3px; }

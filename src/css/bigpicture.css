@@ -1,0 +1,188 @@
+/* ===================================================================
+   Game Shelf — Big Picture Mode (the console / TV window, "Steam Big Picture Mode")
+
+   Every style already defines its look as --rf-* variables (src/styles/<id>.css, loaded in this window too).
+   This file only maps those variables onto Big Picture. Steam's hashed class names are resolved at runtime by
+   src/js/bigpicture.js, which also:
+     - writes the rules that need those names into <style id="rfs-bpm">,
+     - re-tints every Steam-blue colour of Big Picture's own CSS with the theme accent (<style id="rfs-bpm-tint">),
+     - sets html.rfs-bpm[data-rfs-bpm="on" | "neutral" | "off"]:
+         on      = the style has a Big Picture version (modes 'both' / 'bpm')
+         neutral = a desktop-only style is active: its colours, but a plain font / radius
+         off     = Steam Original: Big Picture stays exactly as Valve ships it (only the Themes button remains)
+     - adds the Themes button + picker (#rfs-bpm-tbtn, #rfs-bpm-picker).
+   =================================================================== */
+
+/* ---------- derived variables (one place for the on / neutral difference) ---------- */
+html.rfs-bpm {
+  --bpm-acc: var(--rf-accent, #1a9fff);
+  --bpm-acc-rgb: var(--rf-accent-rgb, 26, 159, 255);
+  --bpm-acc2: var(--rf-accent-2, var(--bpm-acc));
+  --bpm-ink: var(--rf-accent-ink, #fff);
+  --bpm-bg: var(--rf-bg, #0e141b);
+  --bpm-bgimg: var(--rf-bg-img, none);
+  --bpm-panel: var(--rf-panel, #1a1f27);
+  --bpm-panel2: var(--rf-panel-2, var(--bpm-panel));
+  --bpm-card: var(--rf-card, rgba(255, 255, 255, .05));
+  --bpm-card-border: var(--rf-card-border, 1px solid rgba(255, 255, 255, .08));
+  --bpm-text: var(--rf-text, #fff);
+  --bpm-dim: var(--rf-text-dim, rgba(255, 255, 255, .6));
+  --bpm-glow: var(--rf-glow, var(--bpm-acc-rgb));
+  --bpm-head: var(--rf-heading-font, var(--rf-font-ui, inherit));
+  --bpm-case: var(--rf-heading-case, none);
+  --bpm-spacing: var(--rf-heading-spacing, normal);
+  --bpm-r: var(--rf-radius, 6px);
+  --bpm-rl: var(--rf-radius-lg, 10px);
+  --bpm-play-1: var(--rf-play-1, #70d61d);
+  --bpm-play-2: var(--rf-play-2, var(--bpm-play-1));
+  --bpm-play-ink: var(--rf-play-ink, #fff);
+}
+html.rfs-bpm[data-rfs-bpm="neutral"] {
+  --bpm-head: var(--rf-font-ui, inherit);
+  --bpm-case: none;
+  --bpm-spacing: normal;
+  --bpm-r: 6px;
+  --bpm-rl: 10px;
+}
+
+/* ---------- desktop-only pieces must never show in Big Picture ---------- */
+html.rfs-bpm :is(#rfs, #rfs-bar, #rfs-sheet, #rfs-themes, #rfs-qbtn, #rfs-qmenu, #rfs-family, #rfs-dl, #rfs-rail, #rfs-data, .rf-dock) { display: none !important; }
+
+/* ---------- global surfaces ---------- */
+html.rfs-bpm:not([data-rfs-bpm="off"]) body { background: var(--bpm-bgimg), var(--bpm-bg) !important; }
+html.rfs-bpm:not([data-rfs-bpm="off"]) ::selection { background: rgba(var(--bpm-acc-rgb), .35); }
+
+/* stable global classes Big Picture shares with the desktop */
+html.rfs-bpm:not([data-rfs-bpm="off"]) .DialogButton { border-radius: var(--bpm-r) !important; }
+html.rfs-bpm:not([data-rfs-bpm="off"]) .DialogButton.gpfocus,
+html.rfs-bpm:not([data-rfs-bpm="off"]) .DialogButton:enabled:focus {
+  background: linear-gradient(135deg, var(--bpm-acc), var(--bpm-acc2)) !important; color: var(--bpm-ink) !important;
+  box-shadow: 0 0 18px rgba(var(--bpm-glow), .45) !important; }
+html.rfs-bpm:not([data-rfs-bpm="off"]) .DialogButton.gpfocus svg { fill: var(--bpm-ink) !important; }
+html.rfs-bpm:not([data-rfs-bpm="off"]) .DialogInput { border-radius: var(--bpm-r) !important; }
+html.rfs-bpm:not([data-rfs-bpm="off"]) .DialogInput:focus { border-color: rgba(var(--bpm-acc-rgb), .8) !important; box-shadow: 0 0 0 3px rgba(var(--bpm-acc-rgb), .22) !important; }
+html.rfs-bpm:not([data-rfs-bpm="off"]) .DialogHeader { font-family: var(--bpm-head) !important; text-transform: var(--bpm-case); letter-spacing: var(--bpm-spacing); }
+html.rfs-bpm:not([data-rfs-bpm="off"]) ::-webkit-scrollbar-thumb { background: rgba(var(--bpm-acc-rgb), .3); border-radius: 8px; }
+
+/* ===================================================================
+   Themes button in the top bar (next to search / notifications / clock / avatar)
+   =================================================================== */
+#rfs-bpm-tbtn {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  height: 30px; margin: 5px 8px 5px 2px; padding: 0 10px; box-sizing: border-box;
+  border-radius: var(--bpm-r); cursor: pointer; color: var(--bpm-text);
+  background: rgba(var(--bpm-acc-rgb), .12); border: 1px solid rgba(var(--bpm-acc-rgb), .35);
+  font: 600 12px/1 var(--bpm-head, inherit) !important; text-transform: var(--bpm-case); letter-spacing: var(--bpm-spacing);
+  transition: background .15s, box-shadow .15s, transform .15s; flex: 0 0 auto; white-space: nowrap;
+}
+#rfs-bpm-tbtn svg { width: 16px; height: 16px; flex: 0 0 auto; }
+#rfs-bpm-tbtn svg .a { fill: var(--bpm-acc); }
+#rfs-bpm-tbtn svg .b { fill: var(--bpm-acc2); }
+#rfs-bpm-tbtn svg .c { fill: var(--bpm-text); opacity: .85; }
+#rfs-bpm-tbtn:hover { background: rgba(var(--bpm-acc-rgb), .24); }
+#rfs-bpm-tbtn.rfs-ff {
+  background: linear-gradient(135deg, var(--bpm-acc), var(--bpm-acc2)); color: var(--bpm-ink); border-color: transparent;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, .85), 0 0 18px rgba(var(--bpm-glow), .6); transform: scale(1.05);
+}
+#rfs-bpm-tbtn.rfs-ff svg .a, #rfs-bpm-tbtn.rfs-ff svg .b, #rfs-bpm-tbtn.rfs-ff svg .c { fill: var(--bpm-ink); opacity: 1; }
+/* Steam's own focus stays on the avatar while our button holds the (simulated) focus: hide it */
+html.rfs-bpm.rfs-ff-on .gpfocus:not(#rfs-bpm-tbtn) { outline-color: transparent !important; box-shadow: none !important; background-color: transparent !important; }
+
+/* the extra entry at the end of the main (guide / F1) menu */
+.rfs-bpm-mitem { position: relative; display: flex; align-items: center; gap: 18px; height: 48px; padding: 0 24px; cursor: pointer;
+  color: var(--bpm-dim); font-size: 16px; box-sizing: border-box; border-top: 1px solid rgba(var(--bpm-acc-rgb), .14); margin-top: 6px; }
+.rfs-bpm-mitem svg { width: 20px; height: 20px; flex: 0 0 auto; }
+#rfs-bpm-mitem svg { width: 22px; height: 22px; }
+#rfs-bpm-mitem svg .a { fill: var(--bpm-acc); } #rfs-bpm-mitem svg .b { fill: var(--bpm-acc2); } #rfs-bpm-mitem svg .c { fill: currentColor; }
+.rfs-bpm-mitem-native { border-top: 1px solid rgba(var(--bpm-acc-rgb), .18); margin-top: 6px; cursor: pointer; }
+.rfs-bpm-mitem-native.rfs-ff > *, .rfs-bpm-mitem-native:hover > * { color: var(--bpm-text) !important; background: linear-gradient(90deg, rgba(var(--bpm-acc-rgb), .3), rgba(var(--bpm-acc-rgb), .06)) !important; box-shadow: inset 4px 0 0 var(--bpm-acc) !important; }
+.rfs-bpm-mitem-native[dir="rtl"].rfs-ff > * { box-shadow: inset -4px 0 0 var(--bpm-acc) !important; }
+.rfs-bpm-mitem.rfs-ff, .rfs-bpm-mitem:hover { color: var(--bpm-text); background: rgba(var(--bpm-acc-rgb), .2); box-shadow: inset 4px 0 0 var(--bpm-acc); }
+.rfs-bpm-mitem[dir="rtl"].rfs-ff { box-shadow: inset -4px 0 0 var(--bpm-acc); }
+
+/* ===================================================================
+   Theme picker overlay (gamepad / keyboard / mouse)
+   =================================================================== */
+#rfs-bpm-picker {
+  position: fixed; inset: 0; z-index: 2147483000; display: none; flex-direction: column;
+  padding: 34px 48px 22px; box-sizing: border-box; color: var(--bpm-text);
+  background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(var(--bpm-acc-rgb), .16), transparent 70%), rgba(0, 0, 0, .94);
+  font-family: var(--rf-font-ui, inherit);
+}
+#rfs-bpm-picker.on { display: flex; animation: rfs-bpm-in .22s ease-out; }
+@keyframes rfs-bpm-in { from { opacity: 0; transform: scale(1.02); } to { opacity: 1; transform: none; } }
+#rfs-bpm-picker * { box-sizing: border-box; }
+#rfs-bpm-picker .bp-head { display: flex; align-items: flex-end; gap: 16px; margin-bottom: 20px; }
+#rfs-bpm-picker .bp-title { display: flex; align-items: center; gap: 14px; flex: 1 1 auto; min-width: 0; }
+#rfs-bpm-picker .bp-title svg { width: 34px; height: 34px; flex: 0 0 auto; }
+#rfs-bpm-picker .bp-title svg .a { fill: var(--bpm-acc); } #rfs-bpm-picker .bp-title svg .b { fill: var(--bpm-acc2); } #rfs-bpm-picker .bp-title svg .c { fill: var(--bpm-text); }
+#rfs-bpm-picker .bp-title b { display: block; font: 700 28px/1.1 var(--bpm-head) !important; text-transform: var(--bpm-case); letter-spacing: var(--bpm-spacing); }
+#rfs-bpm-picker .bp-title small { display: block; margin-top: 4px; font-size: 14px; color: var(--bpm-dim); }
+#rfs-bpm-picker .bp-pages { display: flex; align-items: center; gap: 10px; font-size: 14px; color: var(--bpm-dim); }
+#rfs-bpm-picker .bp-dots { display: flex; gap: 6px; }
+#rfs-bpm-picker .bp-dots i { width: 9px; height: 9px; border-radius: 50%; background: rgba(255, 255, 255, .22); }
+#rfs-bpm-picker .bp-dots i.on { background: var(--bpm-acc); box-shadow: 0 0 8px rgba(var(--bpm-glow), .7); }
+#rfs-bpm-picker .bp-arrow { display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; border-radius: var(--bpm-r);
+  background: rgba(255, 255, 255, .07); border: 1px solid rgba(255, 255, 255, .12); cursor: pointer; color: var(--bpm-text); }
+#rfs-bpm-picker .bp-arrow svg { width: 16px; height: 16px; fill: currentColor; }
+#rfs-bpm-picker .bp-arrow:hover { background: rgba(var(--bpm-acc-rgb), .25); }
+#rfs-bpm-picker .bp-arrow.dis { opacity: .3; pointer-events: none; }
+#rfs-bpm-picker[dir="rtl"] .bp-arrow svg { transform: scaleX(-1); }
+
+#rfs-bpm-picker .bp-grid { flex: 1 1 auto; min-height: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 18px; }
+#rfs-bpm-picker .bp-card {
+  position: relative; display: flex; flex-direction: column; min-height: 0; overflow: hidden; cursor: pointer;
+  border-radius: calc(var(--c-r) + 4px); background: var(--c-panel); border: 1px solid rgba(255, 255, 255, .08);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, .45); transition: transform .16s ease-out, box-shadow .16s, border-color .16s;
+}
+#rfs-bpm-picker .bp-card.sel { transform: scale(1.035); border-color: var(--bpm-acc); z-index: 2;
+  box-shadow: 0 0 0 3px var(--bpm-acc), 0 0 30px rgba(var(--bpm-glow), .55), 0 14px 34px rgba(0, 0, 0, .55); }
+#rfs-bpm-picker .bp-card.dis { cursor: default; }
+#rfs-bpm-picker .bp-card.dis .bp-prev, #rfs-bpm-picker .bp-card.dis .bp-meta b, #rfs-bpm-picker .bp-card.dis .bp-meta p { opacity: .42; filter: grayscale(.6); }
+
+/* the miniature: a tiny Big Picture home in that style's own colours */
+#rfs-bpm-picker .bp-prev { position: relative; flex: 1 1 auto; min-height: 70px; overflow: hidden; background: var(--c-bg); }
+#rfs-bpm-picker .bp-prev i { position: absolute; display: block; }
+#rfs-bpm-picker .bp-prev .pv-glow { inset: 0; background: radial-gradient(ellipse 80% 60% at 30% 0%, color-mix(in srgb, var(--c-acc) 22%, transparent), transparent 70%); }
+#rfs-bpm-picker .bp-prev .pv-top { left: 0; right: 0; top: 0; height: 12%; background: color-mix(in srgb, var(--c-panel) 85%, transparent); border-bottom: 1px solid color-mix(in srgb, var(--c-acc) 30%, transparent); }
+#rfs-bpm-picker .bp-prev .pv-top::after { content: ''; position: absolute; right: 6%; top: 30%; width: 18%; height: 40%; border-radius: 99px; background: color-mix(in srgb, var(--c-text) 45%, transparent); }
+#rfs-bpm-picker .bp-prev .pv-cap { top: 22%; height: 46%; width: 18%; border-radius: var(--c-r); background: color-mix(in srgb, var(--c-text) 12%, var(--c-panel)); }
+#rfs-bpm-picker .bp-prev .pv-cap.c1 { left: 6%; width: 34%; background: linear-gradient(135deg, color-mix(in srgb, var(--c-acc) 55%, var(--c-panel)), color-mix(in srgb, var(--c-acc2) 45%, var(--c-bg))); box-shadow: 0 0 0 2px var(--c-acc), 0 0 12px color-mix(in srgb, var(--c-acc) 60%, transparent); }
+#rfs-bpm-picker .bp-prev .pv-cap.c2 { left: 44%; }
+#rfs-bpm-picker .bp-prev .pv-cap.c3 { left: 65%; }
+#rfs-bpm-picker .bp-prev .pv-cap.c4 { left: 86%; }
+#rfs-bpm-picker .bp-prev .pv-play { left: 6%; bottom: 13%; width: 20%; height: 12%; border-radius: var(--c-r); background: var(--c-play); }
+#rfs-bpm-picker .bp-prev .pv-tab { bottom: 15%; height: 8%; width: 12%; border-radius: 99px; background: color-mix(in srgb, var(--c-text) 25%, transparent); }
+#rfs-bpm-picker .bp-prev .pv-tab.t1 { left: 40%; background: var(--c-acc); }
+#rfs-bpm-picker .bp-prev .pv-tab.t2 { left: 55%; }
+#rfs-bpm-picker .bp-prev .pv-tab.t3 { left: 70%; }
+
+#rfs-bpm-picker .bp-meta { flex: 0 0 auto; padding: 10px 12px 12px; background: color-mix(in srgb, var(--c-panel) 92%, #000); border-top: 2px solid var(--c-acc); }
+#rfs-bpm-picker .bp-meta .bp-row { display: flex; align-items: center; gap: 8px; min-width: 0; }
+#rfs-bpm-picker .bp-meta b { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 16px; font-weight: 700; color: var(--c-text); }
+#rfs-bpm-picker .bp-meta p { margin: 4px 0 0; font-size: 12px; line-height: 1.35; color: color-mix(in srgb, var(--c-text) 62%, transparent);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+#rfs-bpm-picker .bp-sw { display: flex; gap: 4px; margin-top: 8px; }
+#rfs-bpm-picker .bp-sw i { flex: 1 1 0; height: 6px; border-radius: 3px; }
+#rfs-bpm-picker .bp-tag { flex: 0 0 auto; padding: 3px 8px; border-radius: 99px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+#rfs-bpm-picker .bp-tag.cur { background: var(--c-acc); color: var(--c-ink); }
+#rfs-bpm-picker .bp-tag.desk { background: rgba(255, 255, 255, .1); color: rgba(255, 255, 255, .7); border: 1px solid rgba(255, 255, 255, .18); }
+
+#rfs-bpm-picker .bp-foot { display: flex; align-items: center; gap: 22px; margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(255, 255, 255, .1); font-size: 13px; color: var(--bpm-dim); }
+#rfs-bpm-picker .bp-foot .sp { flex: 1 1 auto; }
+#rfs-bpm-picker .bp-hint { display: flex; align-items: center; gap: 7px; white-space: nowrap; cursor: pointer; }
+#rfs-bpm-picker .bp-hint kbd { display: inline-flex; align-items: center; justify-content: center; min-width: 24px; height: 22px; padding: 0 6px; border-radius: 5px;
+  font: 700 11px/1 var(--rf-font-ui, inherit); background: var(--bpm-text); color: var(--bpm-bg); }
+#rfs-bpm-picker .bp-hint kbd.pad { border-radius: 50%; min-width: 22px; padding: 0; }
+#rfs-bpm-picker .bp-hint kbd.pad.a { background: #4fbf5a; color: #fff; } #rfs-bpm-picker .bp-hint kbd.pad.b { background: #e0534a; color: #fff; }
+#rfs-bpm-picker .bp-hint kbd.bump { border-radius: 6px 6px 3px 3px; }
+#rfs-bpm-picker .bp-busy { display: none; position: absolute; inset: 0; align-items: center; justify-content: center; flex-direction: column; gap: 14px;
+  background: rgba(0, 0, 0, .7); font-size: 18px; z-index: 5; }
+#rfs-bpm-picker.busy .bp-busy { display: flex; }
+#rfs-bpm-picker .bp-spin { width: 38px; height: 38px; border-radius: 50%; border: 3px solid rgba(var(--bpm-acc-rgb), .25); border-top-color: var(--bpm-acc); animation: rfs-bpm-spin .8s linear infinite; }
+@keyframes rfs-bpm-spin { to { transform: rotate(360deg); } }
+
+#rfs-bpm-toast { position: fixed; left: 50%; bottom: 64px; z-index: 2147483001; transform: translateX(-50%); padding: 10px 18px; border-radius: var(--bpm-r);
+  background: var(--bpm-panel); color: var(--bpm-text); border: 1px solid rgba(var(--bpm-acc-rgb), .45); box-shadow: 0 10px 30px rgba(0, 0, 0, .5);
+  font-size: 15px; opacity: 0; transition: opacity .2s; pointer-events: none; }
+#rfs-bpm-toast.on { opacity: 1; }

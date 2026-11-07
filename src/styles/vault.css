@@ -619,3 +619,6 @@ html[data-rfs-style="vault"] { --rf-footer-bg: linear-gradient(180deg, #211a14, 
   --rfp-glass: rgba(26, 21, 17, .86);
   --rfp-field: #120e0b;
 }
+
+/* downloads page + install / settings dialogs (skin.js --rf-dl-* hooks): gilded rules, bronze selection */
+html[data-rfs-style="vault"] { --rf-dl-btn-radius: 3px; --rf-dl-check-radius: 2px; --rf-dl-rule: linear-gradient(90deg, #c9a24e, rgba(201, 162, 78, .08)); --rf-dl-sel-bg: linear-gradient(90deg, rgba(201, 162, 78, .28), rgba(201, 162, 78, .06)); }

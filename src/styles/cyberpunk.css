@@ -766,3 +766,6 @@ html[data-rfs-style="cyberpunk"] { --rf-footer-bg: #0b0f16; --rf-footer-line: 1p
 html[data-rfs-page="wishlist"][data-rfs-style="cyberpunk"] [data-rfs-wl="row"],
 html.responsive[data-rfs-style="cyberpunk"] :is(.profile_customization, .invite_section_ctn, .profile_friends.title_bar) { clip-path: var(--cp-notch); }
 html[data-rfs-page="wishlist"][data-rfs-style="cyberpunk"] [data-rfs-wl="row"]:hover { box-shadow: inset 0 0 0 1px rgba(95, 196, 200, .6) !important; }
+
+/* downloads page + install / settings dialogs (skin.js --rf-dl-* hooks): notched corners, gold selection with a teal hairline */
+html[data-rfs-style="cyberpunk"] { --rf-dl-btn-radius: 0; --rf-dl-check-radius: 0; --rf-dl-clip: var(--cp-notch-s); --rf-dl-sel-bg: linear-gradient(90deg, rgba(217, 180, 90, .26), rgba(95, 196, 200, .08)); --rf-dl-hero-empty: linear-gradient(100deg, rgba(217, 180, 90, .3) 0%, rgba(95, 196, 200, .12) 60%, transparent 100%); --rf-dl-rule: linear-gradient(90deg, #d9b45a 0 24px, rgba(217, 180, 90, .25) 24px 100%); --rf-dl-pri-shadow: none; }

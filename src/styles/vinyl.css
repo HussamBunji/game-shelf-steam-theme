@@ -615,3 +615,6 @@ html[data-rfs-page="wishlist"][data-rfs-style="vinyl"][data-rfs-wlview="cards"] 
   content: ''; position: absolute; inset-inline: 0; bottom: 0; height: 4px; pointer-events: none;
   background: linear-gradient(90deg, #e8742a 0 33.3%, #c9452f 33.3% 66.6%, #e3b23c 66.6%);
 }
+
+/* downloads page + install / settings dialogs (skin.js --rf-dl-* hooks): soft pill-ish rows, warm amber selection */
+html[data-rfs-style="vinyl"] { --rf-dl-btn-radius: 12px; --rf-dl-check-radius: 6px; --rf-dl-sel-bg: linear-gradient(90deg, rgba(232, 116, 42, .3), rgba(227, 178, 60, .08)); --rf-dl-hero-empty: radial-gradient(ellipse 60% 120% at 10% 50%, rgba(232, 116, 42, .38), transparent 70%), linear-gradient(90deg, rgba(36, 24, 16, .6), transparent); --rf-dl-rule: linear-gradient(90deg, rgba(227, 178, 60, .6), rgba(227, 178, 60, .04)); }
