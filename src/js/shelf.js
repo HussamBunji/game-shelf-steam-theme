@@ -279,7 +279,9 @@
      state   (store = localStorage wrapper, defined with the helpers above)
      ================================================================= */
   const state = {
-    enabled: store.get('enabled', '1') === '1',
+    // the home design is always on: the old "Original home" switch left people without the design (and looking for
+    // the Themes button); Steam's own look is the "Steam Original" style in the picker instead
+    enabled: true,
     sort: store.get('sort', 'recent'),
     view: store.get('view', 'spines'),
     sound: store.get('sound', '1') === '1',
@@ -503,8 +505,6 @@
       <div class="tb-seg tb-view"><button data-v="spines" title="${T('ظهور العلب', 'Case spines')}">${ic('spines')}<span class="tb-lbl">${T('ظهور', 'Spines')}</span></button><button data-v="covers" title="${T('أغلفة', 'Covers')}">${ic('grid')}<span class="tb-lbl">${T('أغلفة', 'Covers')}</span></button></div>
       <button class="tb-btn tb-news" title="${T('أظهر / أخفِ آخر تحديثات ألعابك (What\'s New)', 'Show / hide the latest updates for your games (What\'s New)')}">${ic('news')}</button>
       <button class="tb-btn tb-snd" title="${T('الصوت', 'Sound')}"></button>
-      <button class="tb-btn tb-off" title="${T('ارجع لصفحة Home الأصلية لستيم', 'Back to Steam\'s original Home page')}">${ic('undo')}<span class="tb-lbl">${T('الواجهة الأصلية', 'Original home')}</span></button>
-      <button class="tb-btn tb-on" title="${T('رجّع تصميم الثيم للصفحة الرئيسية', 'Bring the theme design back to the home page')}">${ic('library')}<span class="tb-lbl">${T('رجّع الرف', 'Restore shelf')}</span></button>
     </div>
     <button class="tb-btn tb-theme" title="${T('غيّر تصميم الثيم', 'Change the theme design')}">${ic('palette')}<span class="tb-lbl">${T('الثيمات', 'Themes')}</span></button>`;
 
@@ -1242,8 +1242,6 @@
     state.view = b.dataset.v; store.set('view', state.view); sfx('tick'); render();
   });
   $('.tb-snd', bar).addEventListener('click', () => { state.sound = !state.sound; store.set('sound', state.sound ? '1' : '0'); updateBar(); });
-  $('.tb-off', bar).addEventListener('click', () => setEnabled(false));
-  $('.tb-on', bar).addEventListener('click', () => setEnabled(true));
   $('.tb-theme', bar).addEventListener('click', () => Themes.open());
   $('.tb-news', bar).addEventListener('click', () => { state.news = !state.news; store.set('news', state.news ? '1' : '0'); sfx('tick'); placement.key = ''; tick(true); });
   const dds = [...bar.querySelectorAll('.rf-dd')];
