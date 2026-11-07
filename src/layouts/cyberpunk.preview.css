@@ -1,0 +1,99 @@
+/* ═══ Cyberpunk (سايبربنك) — THEMES picker card: a tiny netrunner HUD ═══
+   pv-a = the angular featured-target panel (::before title + data strip, ::after the brass JACK IN slab + a ghost slab;
+   brackets and a reticle in its background), pv-b = the angular filter bar, pv-c = a section header with its ruled line,
+   pv-i × 12 = two rows of angular data shards (brass top rules = installed, cyan = archive), one with the focus frame.
+   Plain CSS shapes, no images. */
+#rfs-themes .tp-cyberpunk {
+  background:
+    repeating-linear-gradient(0deg, rgba(230, 225, 214, .025) 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse 60% 50px at 12% -10px, rgba(217, 180, 90, .14), transparent 75%),
+    radial-gradient(ellipse 50% 50px at 95% -10px, rgba(95, 196, 200, .1), transparent 75%),
+    #0b0f16;
+}
+/* the featured target */
+#rfs-themes .tp-cyberpunk .pv-a {
+  left: 6%; top: 8px; width: 88%; height: 56px;
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+  background:
+    /* brackets */
+    linear-gradient(#d9b45a, #d9b45a) 3px 3px / 6px 1px no-repeat,
+    linear-gradient(#d9b45a, #d9b45a) 3px 3px / 1px 6px no-repeat,
+    linear-gradient(#d9b45a, #d9b45a) calc(100% - 3px) calc(100% - 3px) / 6px 1px no-repeat,
+    linear-gradient(#d9b45a, #d9b45a) calc(100% - 3px) calc(100% - 3px) / 1px 6px no-repeat,
+    /* the static reticle */
+    radial-gradient(circle at 80% 50%, transparent 0 1.5px, rgba(95, 196, 200, .7) 1.5px 2.3px, transparent 2.3px 7px, rgba(95, 196, 200, .55) 7px 7.8px, transparent 7.8px),
+    linear-gradient(rgba(95, 196, 200, .5), rgba(95, 196, 200, .5)) 80% 50% / 22px 1px no-repeat,
+    /* shade at the start, art at the end */
+    linear-gradient(90deg, rgba(11, 15, 22, .95) 0%, rgba(11, 15, 22, .6) 38%, transparent 70%),
+    linear-gradient(0deg, rgba(11, 15, 22, .8), transparent 55%),
+    radial-gradient(ellipse 40% 90% at 78% 35%, #3c6f7a 0%, transparent 70%),
+    radial-gradient(ellipse 30% 70% at 96% 85%, #7a3d5c 0%, transparent 70%),
+    radial-gradient(ellipse 30% 60% at 58% 15%, #6b5a33 0%, transparent 70%),
+    linear-gradient(160deg, #1f2a3c, #0f141d);
+  box-shadow: inset 0 0 0 1px rgba(217, 180, 90, .45);
+}
+#rfs-themes .tp-cyberpunk .pv-a::before { /* title + the mono data strip with a brass start tick */
+  content: ''; position: absolute; left: 8px; top: 11px; width: 54px; height: 16px;
+  background:
+    linear-gradient(#e6e1d6, #e6e1d6) 0 0 / 72% 5px no-repeat,
+    linear-gradient(#d9b45a, #d9b45a) 0 10px / 2px 5px no-repeat,
+    linear-gradient(90deg, rgba(154, 163, 173, .55) 0 30%, transparent 30% 35%, rgba(154, 163, 173, .55) 35% 62%, transparent 62% 67%, rgba(95, 196, 200, .7) 67% 92%, transparent 92%) 4px 11px / calc(100% - 4px) 3px no-repeat,
+    linear-gradient(rgba(11, 15, 22, .8), rgba(11, 15, 22, .8)) 0 10px / 100% 5px no-repeat;
+}
+#rfs-themes .tp-cyberpunk .pv-a::after { /* the brass slab + a ghost slab */
+  content: ''; position: absolute; left: 8px; top: 34px; width: 52px; height: 11px;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 3px), calc(100% - 3px) 100%, 0 100%);
+  background:
+    linear-gradient(#d9b45a, #d9b45a) 0 0 / 27px 100% no-repeat,
+    linear-gradient(rgba(11, 15, 22, .9), rgba(11, 15, 22, .9)) 31px 1px / 20px 9px no-repeat,
+    linear-gradient(rgba(217, 180, 90, .65), rgba(217, 180, 90, .65)) 30px 0 / 22px 100% no-repeat;
+}
+/* the filter bar */
+#rfs-themes .tp-cyberpunk .pv-b {
+  left: 6%; top: 71px; width: 88%; height: 11px;
+  clip-path: polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px));
+  background:
+    linear-gradient(#d9b45a, #d9b45a) 3px 3px / 1.5px 5px no-repeat,
+    linear-gradient(#0b0f16, #0b0f16) 3px 3px / 38% 5px no-repeat,
+    linear-gradient(90deg, rgba(217, 180, 90, .3) 0 22%, transparent 22% 26%, #d9b45a 26% 48%, transparent 48% 52%, rgba(217, 180, 90, .3) 52% 74%, transparent 74% 78%, rgba(95, 196, 200, .4) 78%) calc(38% + 8px) 3px / calc(62% - 12px) 5px no-repeat,
+    #121822;
+  box-shadow: inset 0 0 0 1px rgba(217, 180, 90, .42);
+}
+/* the section header: brass index chip, title, the ruled line with a cyan end cap */
+#rfs-themes .tp-cyberpunk .pv-c {
+  left: 6%; top: 88px; width: 88%; height: 3px;
+  background:
+    linear-gradient(#d9b45a, #d9b45a) 0 0 / 7px 3px no-repeat,
+    linear-gradient(#e6e1d6, #e6e1d6) 10px 0 / 20px 3px no-repeat,
+    linear-gradient(#5fc4c8, #5fc4c8) 100% 0 / 3px 3px no-repeat,
+    linear-gradient(90deg, rgba(217, 180, 90, .55), rgba(154, 163, 173, .2) 45%) 34px 1px / calc(100% - 38px) 1px no-repeat;
+}
+/* the data shards: art on top, a title line, a brass (installed) or cyan (archive) top rule */
+#rfs-themes .tp-cyberpunk .pv-i {
+  --rule: #d9b45a;
+  --art: linear-gradient(135deg, #2f4a63, #121822);
+  top: 96px; left: calc(6% + var(--i) * 14.88%); width: 13.6%; height: 22px;
+  clip-path: polygon(0 0, calc(100% - 4px) 0, 100% 4px, 100% 100%, 4px 100%, 0 calc(100% - 4px));
+  background:
+    linear-gradient(var(--rule), var(--rule)) 0 0 / 42% 1.5px no-repeat,
+    linear-gradient(rgba(230, 225, 214, .72), rgba(230, 225, 214, .72)) 3px 16px / 58% 2px no-repeat,
+    var(--art) 0 0 / 100% 13px no-repeat,
+    #121822;
+  box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .22);
+}
+#rfs-themes .tp-cyberpunk .pv-i:nth-child(n+10) { --rule: #5fc4c8; top: 124px; left: calc(6% + (var(--i) - 6) * 14.88%); }
+/* tile art: muted dark gradients, each a little different */
+#rfs-themes .tp-cyberpunk .pv-i:nth-child(4n+1) { --art: radial-gradient(circle at 70% 30%, #4f8f96, transparent 65%), linear-gradient(135deg, #22394a, #10161f); }
+#rfs-themes .tp-cyberpunk .pv-i:nth-child(4n+2) { --art: radial-gradient(circle at 30% 60%, #a8874a, transparent 65%), linear-gradient(135deg, #3d3322, #12110d); }
+#rfs-themes .tp-cyberpunk .pv-i:nth-child(4n+3) { --art: radial-gradient(circle at 60% 40%, #8a4d6c, transparent 65%), linear-gradient(135deg, #3a2232, #120c12); }
+#rfs-themes .tp-cyberpunk .pv-i:nth-child(4n) { --art: radial-gradient(circle at 45% 35%, #5a6a82, transparent 65%), linear-gradient(135deg, #253042, #0e131b); }
+/* the focused shard (--i:1): lifted, a cyan frame, full-width rule */
+#rfs-themes .tp-cyberpunk .pv-i:nth-child(5) {
+  z-index: 1; transform: translateY(-1px);
+  background:
+    linear-gradient(#5fc4c8, #5fc4c8) 0 0 / 100% 1.5px no-repeat,
+    linear-gradient(#e6e1d6, #e6e1d6) 3px 16px / 58% 2px no-repeat,
+    var(--art) 0 0 / 100% 13px no-repeat,
+    #182130;
+  box-shadow: inset 0 0 0 1px #5fc4c8;
+}

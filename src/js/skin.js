@@ -146,7 +146,7 @@
      Colours come from --rf-footer-* / --rf-user-* in styles/*.css. Material You keeps its own toolbar; Steam
      Original keeps Valve's. */
   const U = 'html:not([data-rfs-style="material"]):not([data-rfs-style="original"])';
-  const FOOT = 'html:is([data-rfs-style="arcade"], [data-rfs-style="terminal"], [data-rfs-style="vinyl"], [data-rfs-style="classic"])';
+  const FOOT = 'html:is([data-rfs-style="arcade"], [data-rfs-style="terminal"], [data-rfs-style="vinyl"], [data-rfs-style="classic"], [data-rfs-style="cyberpunk"])';
   const HEAD = 'html:is([data-rfs-style="glass"], [data-rfs-style="magazine"], [data-rfs-style="vault"], [data-rfs-style="cork"], [data-rfs-style="neon"], [data-rfs-style="space"], [data-rfs-style="cupertino"])';
   urule`${FOOT} ${C('TitleBarControls')} {
     position: fixed !important; inset: auto 0 0 0 !important; z-index: 900; display: flex !important;

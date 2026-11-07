@@ -300,22 +300,22 @@
   if (!SORTS[state.sort]) state.sort = 'recent';
   const FEATURE = { recent: T('آخر ما لعبت', 'Recently played'), playtime: T('الأكثر لعبًا', 'Most played'), size: T('الأكبر حجمًا', 'Largest') };
   const STYLES = [
+    // the core set: page 1 of the picker (12 = one 3 x 4 page)
     { value: 'Classic Shelf', sid: 'classic', layout: 'shelf', name: T('الرف الكلاسيكي', 'Classic Shelf'), desc: T('رف خشب ثلاثي الأبعاد — تتمشى بين الرفوف والعلب تنفتح مثل CD', 'A 3D wooden bookcase — walk along the shelves and open each case like a CD') },
-    { value: 'Neon Coverflow', sid: 'neon', layout: 'coverflow', name: T('نيون كوفر فلو', 'Neon Coverflow'), desc: T('دوّار ثلاثي الأبعاد بانعكاسات وإضاءة نيون', 'A 3D carousel with reflections and neon lighting') },
     { value: 'Glass Gallery', sid: 'glass', layout: 'gallery', name: T('المعرض الزجاجي', 'Glass Gallery'), desc: T('لوحة عملية: كمّل اللعب + كروت زجاجية + فلاتر', 'A practical dashboard: continue playing, glass cards and filters') },
+    { value: 'Neon Coverflow', sid: 'neon', layout: 'coverflow', name: T('نيون كوفر فلو', 'Neon Coverflow'), desc: T('دوّار ثلاثي الأبعاد بانعكاسات وإضاءة نيون', 'A 3D carousel with reflections and neon lighting') },
     { value: 'Steam Original', sid: 'original', layout: 'original', name: T('ستيم الأصلي', 'Steam Original'), desc: T('ستيم مثل ما هو بدون أي تعديل — يبقى زر الثيمات ولوحة الأرقام بالمتجر', 'Steam exactly as Valve ships it — only the Themes button and the store stats panel stay') },
-    { value: 'SpaceTheme', sid: 'space', layout: 'space', name: 'SpaceTheme', desc: T('ثيم المجتمع المشهور (SpaceTheme، رخصة MIT) — داكن ومرتب، مع لوحات الأرقام والأيقونات حقتنا', 'The popular community theme (SpaceTheme, MIT) — dark and modular, plus our stats panels and icons') },
-    // Material You stays installed (skin.json, src/styles/material.css, src/vendor/material) but left the picker:
-    // Cupertino Dark took its place (the owner's call, 2026-11-07). Uncomment to offer it again.
-    // { value: 'Material You', sid: 'material', layout: 'material', name: 'Material You', desc: T('تصميم Material 3 من Google (Material Theme، رخصة MIT) — أسطح ناعمة وزوايا دائرية', 'Google\'s Material 3 design (Material Theme, MIT) — soft tonal surfaces and round corners') },
-    { value: 'Cupertino Dark', sid: 'cupertino', layout: 'cupertino', name: T('كوبرتينو الداكن', 'Cupertino Dark'), desc: T('أسلوب الماك والتلفزيون الداكن: زجاج معتم، زوايا ناعمة وزر تشغيل أبيض', 'The dark Mac / TV-app look: dark glass, soft corners and a white Play button') },
-    // plug-in themes (src/layouts/<id>.js + src/styles/<id>.css)
     { value: 'Terminal', sid: 'terminal', layout: 'terminal', name: T('الطرفية', 'Terminal'), desc: T('مكتبتك كجدول أوامر بالأسود والأخضر — تتنقل بالأسهم وتفتح بـ Enter', 'Your library as a green-on-black command table — arrow keys to move, Enter to open') },
     { value: 'RPG Vault', sid: 'vault', layout: 'vault', name: T('خزنة المغامر', 'Adventurer\'s Vault'), desc: T('ألعابك أغراض في حقيبة — إطار كل لعبة حسب ساعاتك: عادي، نادر، أسطوري', 'Your games as inventory loot — each frame shows its rarity by your hours played') },
     { value: 'Vinyl Records', sid: 'vinyl', layout: 'vinyl', name: T('متجر الأسطوانات', 'Vinyl Records'), desc: T('جو السبعينات: أغلفة أسطوانات ومشغّل "يشتغل الحين" لآخر لعبة', '70s record store: album sleeves and a "Now Playing" turntable for your last game') },
     { value: 'Corkboard', sid: 'cork', layout: 'cork', name: T('لوحة الذكريات', 'Corkboard'), desc: T('صور بولارويد مثبّتة على لوح فلين، مقسّمة حسب الوقت', 'Polaroids pinned to a cork board, grouped by when you played') },
     { value: 'Retro Arcade', sid: 'arcade', layout: 'arcade', name: T('الأركيد', 'Retro Arcade'), desc: T('شاشة "اختر لعبتك" مثل آلات الأركيد — قائمة بالأسهم وصورة كبيرة', 'A "Select your game" arcade screen — arrow-key list and a big preview') },
     { value: 'Magazine', sid: 'magazine', layout: 'magazine', name: T('المجلة', 'Magazine'), desc: T('غلاف مجلة: آخر لعبة قصة الغلاف، والباقي أعمدة وقوائم بأرقام كبيرة', 'An editorial magazine: your last game is the cover story, the rest are columns and charts') },
+    { value: 'Cupertino Dark', sid: 'cupertino', layout: 'cupertino', name: T('كوبرتينو الداكن', 'Cupertino Dark'), desc: T('أسلوب الماك والتلفزيون الداكن: زجاج معتم، زوايا ناعمة وزر تشغيل أبيض', 'The dark Mac / TV-app look: dark glass, soft corners and a white Play button') },
+    { value: 'Cyberpunk', sid: 'cyberpunk', layout: 'cyberpunk', name: T('سايبربنك', 'Cyberpunk'), desc: T('أجواء سايبربنك بألوان مريحة للعين وزوايا مقصوصة', 'Cyberpunk atmosphere in eye-friendly tones, angular HUD panels') },
+    // extra community themes (MIT): page 2 — optional in the installer
+    { value: 'SpaceTheme', sid: 'space', layout: 'space', name: 'SpaceTheme', desc: T('ثيم المجتمع المشهور (SpaceTheme، رخصة MIT) — داكن ومرتب، مع لوحات الأرقام والأيقونات حقتنا', 'The popular community theme (SpaceTheme, MIT) — dark and modular, plus our stats panels and icons') },
+    { value: 'Material You', sid: 'material', layout: 'material', name: 'Material You', desc: T('تصميم Material 3 من Google (Material Theme، رخصة MIT) — أسطح ناعمة وزوايا دائرية', 'Google\'s Material 3 design (Material Theme, MIT) — soft tonal surfaces and round corners') },
   ];
   function visibleGames() {
     const q = state.query.trim().toLowerCase();
@@ -540,7 +540,14 @@
             <i class="tp-cur">${ic('check')}${T('الحالي', 'Current')}</i>
           </button>`).join('')}
       </div>
-      <button class="tp-close">${T('إغلاق', 'Close')}</button>
+      <div class="tp-foot">
+        <div class="tp-pager">
+          <button class="tp-pg prev" type="button" aria-label="${T('الصفحة السابقة', 'Previous page')}">${ic(LTR ? 'chevL' : 'chevR')}</button>
+          <span class="tp-pgn"></span>
+          <button class="tp-pg next" type="button" aria-label="${T('الصفحة التالية', 'Next page')}">${ic(LTR ? 'chevR' : 'chevL')}</button>
+        </div>
+        <button class="tp-close">${T('إغلاق', 'Close')}</button>
+      </div>
     </div>`;
   function previewArt(layout) {
     if (layout === 'shelf') return '<i class="pv-shelf"></i><i class="pv-shelf b"></i>' + Array.from({ length: 14 }, (_, i) => `<i class="pv-spine" style="--i:${i}"></i>`).join('');
@@ -1530,9 +1537,72 @@
     }, 8000);
   }
   const curStyle = () => themeVar('--rf-style-id', '') || (state.original ? 'original' : ({ shelf: 'classic', coverflow: 'neon', gallery: 'glass' })[state.layout] || state.layout);
+  /* which styles the user has: the installer writes src/installed.json ({"installed": [style values], …}); styles
+     added later from this picker are remembered here. The rest show dimmed with a "Download" badge — their files are
+     already on disk, so adding one is instant. No installed.json (an older install or a dev copy) → everything is in. */
+  let installedChecked = false;
+  const added = () => { try { return JSON.parse(store.get('addedStyles', '[]')) || []; } catch (e) { return []; } };
+  async function installedStyles() {
+    if (installedChecked) return;
+    installedChecked = true;
+    let list = null;
+    try {
+      const r = await fetch(themeBase + 'src/installed.json', { cache: 'no-store' });
+      if (r.ok) { const j = await r.json(); if (j && Array.isArray(j.installed)) list = j.installed; }
+    } catch (e) { /* no file */ }
+    if (!list) return;
+    const have = new Set([...list, ...added()]);
+    picker.querySelectorAll('.tp-card').forEach(c => markLocked(c, !have.has(c.dataset.value)));
+  }
+  function markLocked(card, locked) {
+    card.classList.toggle('tp-locked', locked);
+    let b = card.querySelector('.tp-get');
+    if (locked && !b) {
+      b = document.createElement('i'); b.className = 'tp-get';
+      b.innerHTML = `${ic('download')}<span>${T('تحميل', 'Download')}</span>`;
+      card.appendChild(b);
+    }
+    card.title = locked ? T('هذا الثيم مو محمّل — اضغط لتحميله وتشغيله', 'Not installed — click to add it and switch to it') : '';
+  }
+  /** a dimmed style was clicked: add it (a short progress fill on the card), then switch to it */
+  async function addStyle(card) {
+    if (card.classList.contains('tp-adding')) return;
+    card.classList.add('tp-adding');
+    sfx('tick');
+    await new Promise(r => setTimeout(r, 650));
+    const list = added();
+    if (!list.includes(card.dataset.value)) { list.push(card.dataset.value); store.set('addedStyles', JSON.stringify(list)); }
+    card.classList.remove('tp-adding');
+    markLocked(card, false);
+    toast(T('تم تحميل الثيم', 'Theme added'), 1800);
+    Themes.apply(card.dataset.value);
+  }
+  /* pages: 12 cards (3 rows x 4) per page; more installed themes → arrows + "1 / 2" (and ← → keys) */
+  const Pager = {
+    page: 0, SIZE: 12,
+    cards() { return [...picker.querySelectorAll('.tp-card')]; },
+    pages() { return Math.max(1, Math.ceil(this.cards().length / this.SIZE)); },
+    show(p) {
+      const n = this.pages();
+      this.page = Math.max(0, Math.min(n - 1, p));
+      this.cards().forEach((c, i) => c.classList.toggle('pg-off', Math.floor(i / this.SIZE) !== this.page));
+      const pager = picker.querySelector('.tp-pager');
+      pager.hidden = n < 2;
+      picker.querySelector('.tp-pgn').textContent = `${this.page + 1} / ${n}`;
+      picker.querySelector('.tp-pg.prev').disabled = this.page === 0;
+      picker.querySelector('.tp-pg.next').disabled = this.page === n - 1;
+    },
+    toCurrent() {
+      const i = this.cards().findIndex(c => c.classList.contains('cur'));
+      this.show(i < 0 ? 0 : Math.floor(i / this.SIZE));
+    },
+    step(d) { if (this.pages() > 1) { this.show(this.page + d); sfx('tick'); } },
+  };
   const Themes = {
     open() {
       picker.querySelectorAll('.tp-card').forEach(c => c.classList.toggle('cur', c.dataset.sid === curStyle()));
+      Pager.toCurrent();
+      installedStyles().then(() => Pager.toCurrent());
       picker.classList.add('on');
       Overlay.push('themes');
       sfx('tick');
@@ -1630,8 +1700,10 @@
   picker.addEventListener('click', e => {
     const lb = e.target.closest('.tp-lang button');
     if (lb) { if (!lb.classList.contains('on')) Lang.set(lb.dataset.lang); return; }
+    const pg = e.target.closest('.tp-pg');
+    if (pg) { Pager.step(pg.classList.contains('next') ? 1 : -1); return; }
     const card = e.target.closest('.tp-card');
-    if (card) { Themes.apply(card.dataset.value); return; }
+    if (card) { if (card.classList.contains('tp-locked')) addStyle(card); else Themes.apply(card.dataset.value); return; }
     if (e.target.closest('.tp-close') || e.target.classList.contains('tp-back')) Themes.close();
   });
 
@@ -1639,6 +1711,13 @@
     if ((e.ctrlKey || e.metaKey) && !e.altKey && (e.key === 'k' || e.key === 'K' || e.code === 'KeyK')) {
       e.preventDefault(); e.stopPropagation();
       Search.focus();
+      return;
+    }
+    // theme picker pages: ← / → (the visual direction: in Arabic the next page is on the left)
+    if (Themes.isOpen() && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+      e.preventDefault(); e.stopPropagation();
+      const fwd = e.key === (LTR ? 'ArrowRight' : 'ArrowLeft');
+      Pager.step(fwd ? 1 : -1);
       return;
     }
     if (e.key === 'Escape') {

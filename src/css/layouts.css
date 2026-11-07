@@ -8,6 +8,7 @@
 @import url("../layouts/arcade.preview.css");
 @import url("../layouts/magazine.preview.css");
 @import url("../layouts/cupertino.preview.css");
+@import url("../layouts/cyberpunk.preview.css");
 /* ===================================================================
    رف الألعاب — the three non-shelf home designs + home embedding
    =================================================================== */
@@ -460,3 +461,36 @@ html[data-rfs-native] :is(#rfs-bar, #rfs-themes, #rfs-toast) * { font-family: va
 /* in the title bar there is room for the shield and its light only (the name is in the tooltip) */
 html:is([data-rfs-style="glass"], [data-rfs-style="magazine"], [data-rfs-style="vault"], [data-rfs-style="cork"], [data-rfs-style="neon"], [data-rfs-style="space"], [data-rfs-style="cupertino"], [data-rfs-style="material"], [data-rfs-style="original"]) #rfs-family { padding: 0 8px; }
 html:is([data-rfs-style="glass"], [data-rfs-style="magazine"], [data-rfs-style="vault"], [data-rfs-style="cork"], [data-rfs-style="neon"], [data-rfs-style="space"], [data-rfs-style="cupertino"], [data-rfs-style="material"], [data-rfs-style="original"]) #rfs-family .lbl { display: none; }
+
+/* picker pages (shelf.js Pager): a fixed 3 x 4 grid per page, arrows + "1 / 2" when there are more themes */
+#rfs-themes .tp-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+#rfs-themes .tp-card.pg-off { display: none !important; }
+#rfs-themes .tp-foot { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 18px; }
+#rfs-themes .tp-foot .tp-close { margin-top: 0; }
+#rfs-themes .tp-pager { display: inline-flex; align-items: center; gap: 10px; }
+#rfs-themes .tp-pager[hidden] { display: none; }
+#rfs-themes .tp-pg {
+  width: 38px; height: 38px; display: grid; place-items: center; padding: 0; cursor: pointer;
+  border-radius: 50%; border: 1px solid rgba(var(--acc-rgb), .35); background: rgba(var(--acc-rgb), .1); color: var(--ink);
+  transition: background .15s, border-color .15s, transform .15s;
+}
+#rfs-themes .tp-pg:hover:not(:disabled) { background: rgba(var(--acc-rgb), .24); border-color: var(--rf-accent); transform: scale(1.06); }
+#rfs-themes .tp-pg:disabled { opacity: .3; cursor: default; }
+#rfs-themes .tp-pg > svg.rf-ic { margin: 0; width: 18px; height: 18px; }
+#rfs-themes .tp-pgn { min-width: 46px; text-align: center; font: 700 13px var(--font); color: var(--muted); font-variant-numeric: tabular-nums; }
+@media (max-width: 1100px) { #rfs-themes .tp-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+/* styles not installed yet (shelf.js installedStyles): dimmed, a "Download" badge; clicking adds and applies them */
+#rfs-themes .tp-card.tp-locked .tp-prev, #rfs-themes .tp-card.tp-locked .tp-meta { opacity: .38; filter: grayscale(.85); transition: opacity .2s, filter .2s; }
+#rfs-themes .tp-card.tp-locked:hover .tp-prev, #rfs-themes .tp-card.tp-locked:hover .tp-meta { opacity: .7; filter: grayscale(.3); }
+#rfs-themes .tp-get {
+  position: absolute; top: 10px; inset-inline-end: 10px; display: inline-flex; align-items: center; gap: 6px; font-style: normal;
+  padding: 5px 11px; border-radius: 99px; font: 700 12px var(--font); color: var(--rf-accent-ink, #111); background: var(--rf-accent);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .45);
+}
+#rfs-themes .tp-get > svg.rf-ic { width: 14px; height: 14px; margin: 0; stroke: currentColor; }
+#rfs-themes .tp-card.tp-adding::after {
+  content: ''; position: absolute; left: 0; bottom: 0; height: 4px; width: 100%; background: var(--rf-accent);
+  transform-origin: left; animation: rfs-add .65s ease-out forwards;
+}
+@keyframes rfs-add { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+

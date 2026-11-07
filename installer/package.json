@@ -1,0 +1,80 @@
+{
+  "name": "game-shelf-installer",
+  "productName": "Game Shelf Installer",
+  "version": "1.0.0",
+  "description": "Installer for the Game Shelf (رف الألعاب) Millennium theme for Steam",
+  "author": "Yousef (yousf612-alwazzan)",
+  "license": "MIT",
+  "main": "main.js",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "test": "node test/run-install-test.mjs",
+    "icon": "node scripts/make-icon.mjs",
+    "screens": "node test/screenshots.mjs",
+    "dist": "electron-builder --win nsis portable"
+  },
+  "build": {
+    "appId": "app.gameshelf.installer",
+    "productName": "Game Shelf Installer",
+    "copyright": "Copyright (c) 2026 Yousef",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "src/**/*",
+      "renderer/**/*",
+      "assets/**/*",
+      "build/icon.png",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "../skin.json",
+        "to": "theme/skin.json"
+      },
+      {
+        "from": "../src",
+        "to": "theme/src",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "win": {
+      "icon": "build/icon.ico",
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "perMachine": false,
+      "createDesktopShortcut": true,
+      "shortcutName": "Game Shelf Installer",
+      "artifactName": "GameShelf-Installer-Setup-${version}.${ext}"
+    },
+    "portable": {
+      "artifactName": "GameShelf-Installer-Portable-${version}.${ext}"
+    }
+  },
+  "dependencies": {
+    "@fontsource/ibm-plex-sans-arabic": "^5.3.0",
+    "@fontsource/inter": "^5.3.0",
+    "adm-zip": "^0.6.1"
+  },
+  "devDependencies": {
+    "electron": "^45.2.3",
+    "electron-builder": "^26.18.0",
+    "png-to-ico": "^3.0.2"
+  },
+  "allowScripts": {
+    "electron@45.2.3": true,
+    "electron-winstaller@5.4.0": true
+  }
+}

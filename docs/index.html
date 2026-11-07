@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Game Shelf: 14 new looks for your Steam library</title>
+<meta name="description" content="Give your Steam library and store a new look. Download the free installer, run it, pick your themes. Windows 10/11, Arabic and English.">
+<meta name="theme-color" content="#0b0e14">
+<link rel="canonical" href="https://yousf612-alwazzan.github.io/game-shelf-steam-theme/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Game Shelf">
+<meta property="og:title" content="Game Shelf: 14 new looks for your Steam library">
+<meta property="og:description" content="A wooden bookcase, a neon carousel, a record store, an arcade screen and more. Free installer for Windows. Arabic and English.">
+<meta property="og:url" content="https://yousf612-alwazzan.github.io/game-shelf-steam-theme/">
+<meta property="og:image" content="https://yousf612-alwazzan.github.io/game-shelf-steam-theme/site/img/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The Classic Shelf theme: a Steam library shown as a wooden bookcase full of game cases">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ar_AR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Game Shelf: 14 new looks for your Steam library">
+<meta name="twitter:description" content="Free installer for Windows. Download, run, pick your themes.">
+<meta name="twitter:image" content="https://yousf612-alwazzan.github.io/game-shelf-steam-theme/site/img/og.jpg">
+<link rel="icon" href="site/img/icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="site/css/style.css">
+<link rel="preload" as="image" href="site/img/classic-library.jpg">
+<script>
+  /* pick the language before first paint: saved choice, else the browser language */
+  (function () {
+    var l = null;
+    try { l = localStorage.getItem('gs-lang'); } catch (e) {}
+    var q = /[?&]lang=(ar|en)/.exec(location.search); if (q) l = q[1];
+    if (l !== 'ar' && l !== 'en') l = /^ar\b/i.test(navigator.language || '') ? 'ar' : 'en';
+    document.documentElement.lang = l; document.documentElement.dir = l === 'ar' ? 'rtl' : 'ltr';
+  })();
+</script>
+</head>
+<body>
+<a class="skip" href="#main" data-i18n="skip">Skip to content</a>
+
+<!-- SVG sprite: every icon on the page -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-logo" viewBox="0 0 32 32"><rect x="3" y="5" width="5" height="20" rx="1.2" fill="currentColor" opacity=".55"/><rect x="9.5" y="3" width="5" height="22" rx="1.2" fill="currentColor" opacity=".8"/><rect x="16" y="6" width="5" height="19" rx="1.2" fill="currentColor"/><rect x="22.6" y="4.5" width="5" height="20.5" rx="1.2" transform="rotate(8 25 15)" fill="currentColor" opacity=".7"/><rect x="2" y="26" width="28" height="3" rx="1.2" fill="currentColor"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-windows" viewBox="0 0 24 24"><path d="M3 5.5 10.5 4.4v7.1H3zM11.6 4.2 21 3v8.5h-9.4zM3 12.6h7.5v7.1L3 18.6zM11.6 12.6H21V21l-9.4-1.3z" fill="currentColor"/></symbol>
+  <symbol id="i-run" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 8.5h18" stroke="currentColor" stroke-width="2"/><path d="m10 11.5 4.5 2.75L10 17z" fill="currentColor"/></symbol>
+  <symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18c1.2 0 1.8-.8 1.8-1.7 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-.9.8-1.6 1.7-1.6H17a4 4 0 0 0 4-4C21 6.6 17 3 12 3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="7.5" cy="11" r="1.4" fill="currentColor"/><circle cx="10" cy="7.3" r="1.4" fill="currentColor"/><circle cx="14.6" cy="7.3" r="1.4" fill="currentColor"/><circle cx="17.2" cy="11" r="1.4" fill="currentColor"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.2 4.2L19 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-github" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a10 10 0 0 0-3.2 19.5c.5.1.7-.2.7-.5v-1.7c-2.8.6-3.4-1.3-3.4-1.3-.4-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.6 2.4 1.1 3 .8.1-.6.3-1.1.6-1.3-2.2-.3-4.6-1.1-4.6-5 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.8 1a9.6 9.6 0 0 1 5 0c1.9-1.3 2.8-1 2.8-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.9-2.4 4.7-4.6 4.9.4.3.7.9.7 1.9V21c0 .3.2.6.7.5A10 10 0 0 0 12 2z"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z" fill="none" stroke="currentColor" stroke-width="1.9"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+  <symbol id="i-expand" viewBox="0 0 24 24"><path d="M9 4H4v5M15 4h5v5M9 20H4v-5M15 20h5v-5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="9" cy="9.5" r="1.8" fill="currentColor"/><path d="m4 18 5.5-5.5 4 4 2.5-2.5L20 18" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 5 6v5.5c0 4.4 3 8.2 7 9.5 4-1.3 7-5.1 7-9.5V6z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><path d="m9 12 2.2 2.2L15.5 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-steam" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="15" cy="9.5" r="2.6" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="9" cy="15.2" r="1.9" fill="currentColor"/><path d="m10.3 14.2 2.6-2.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="i-free" viewBox="0 0 24 24"><path d="M20.5 13.2 13.2 20.5a1.8 1.8 0 0 1-2.5 0L3.5 13.3V3.5h9.8l7.2 7.2a1.8 1.8 0 0 1 0 2.5z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><circle cx="8" cy="8" r="1.6" fill="currentColor"/></symbol>
+</svg>
+
+<header class="top">
+  <div class="wrap top__in">
+    <a class="brand" href="#top" aria-label="Game Shelf">
+      <span class="brand__mark"><svg><use href="#i-logo"/></svg></span>
+      <span class="brand__name" data-i18n="brand">Game Shelf</span>
+    </a>
+    <nav class="top__nav" aria-label="Main" data-i18n-aria="navLabel">
+      <a href="#how" data-i18n="navHow">How it works</a>
+      <a href="#themes" data-i18n="navThemes">Themes</a>
+      <a href="#faq" data-i18n="navFaq">Questions</a>
+    </nav>
+    <div class="top__end">
+      <button class="lang" type="button" id="langBtn" aria-label="Switch language">
+        <svg><use href="#i-globe"/></svg><span id="langLabel">العربية</span>
+      </button>
+      <a class="btn btn--sm js-dl" href="#" data-i18n-aria="dlAria">
+        <svg><use href="#i-download"/></svg><span data-i18n="dlShort">Download</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <!-- 1. HERO -->
+  <section class="hero" id="top">
+    <div class="hero__glow" aria-hidden="true"></div>
+    <div class="wrap hero__in">
+      <div class="hero__copy">
+        <p class="eyebrow"><span class="dot" aria-hidden="true"></span><span data-i18n="eyebrow">A theme pack for Steam</span></p>
+        <h1 class="hero__title" data-i18n-html="heroTitle">Give your Steam library <em>a new look</em></h1>
+        <p class="hero__lead" data-i18n="heroLead">Turn your games into a wooden bookcase, a neon carousel, a record store or an arcade screen. 14 looks for the library and the store, in Arabic and English.</p>
+        <div class="hero__cta">
+          <a class="btn btn--xl js-dl" href="#" data-i18n-aria="dlAria">
+            <span class="btn__icon"><svg><use href="#i-windows"/></svg></span>
+            <span class="btn__text"><strong data-i18n="dlBig">Download for Windows</strong><small data-i18n="dlSub">Free installer, about one minute</small></span>
+            <svg class="btn__arrow"><use href="#i-download"/></svg>
+          </a>
+          <a class="link-sub js-releases" href="#"><span data-i18n="allReleases">All releases</span><svg><use href="#i-chev"/></svg></a>
+        </div>
+        <ul class="facts" aria-label="Requirements" data-i18n-aria="factsLabel">
+          <li><svg><use href="#i-windows"/></svg><span data-i18n="fWin">Windows 10/11</span></li>
+          <li><svg><use href="#i-free"/></svg><span data-i18n="fFree">Free</span></li>
+          <li><svg><use href="#i-steam"/></svg><span data-i18n="fSteam">Needs Steam</span></li>
+        </ul>
+      </div>
+      <div class="hero__art">
+        <div class="screen" id="heroScreen">
+          <div class="screen__bar" aria-hidden="true"><i></i><i></i><i></i><span id="heroName">Classic Shelf</span></div>
+          <div class="screen__view">
+            <img id="heroImg" src="site/img/classic-library.jpg" width="1280" height="648" alt="" fetchpriority="high">
+          </div>
+        </div>
+        <div class="hero__dots" id="heroDots" role="group" aria-label="Preview"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. HOW IT WORKS -->
+  <section class="sec" id="how" aria-labelledby="howTitle">
+    <div class="wrap">
+      <header class="sec__head">
+        <p class="kicker" data-i18n="howKicker">Three steps</p>
+        <h2 id="howTitle" data-i18n="howTitle">How it works</h2>
+      </header>
+      <ol class="steps">
+        <li class="step">
+          <span class="step__num">1</span>
+          <span class="step__icon"><svg><use href="#i-download"/></svg></span>
+          <h3 data-i18n="s1t">Download</h3>
+          <p data-i18n="s1p">Click the big button above. You get one small file.</p>
+        </li>
+        <li class="step">
+          <span class="step__num">2</span>
+          <span class="step__icon"><svg><use href="#i-run"/></svg></span>
+          <h3 data-i18n="s2t">Run the installer</h3>
+          <p data-i18n="s2p">Open the file. It also installs Millennium, the free open-source loader, if you don't have it, then restarts Steam for you.</p>
+        </li>
+        <li class="step">
+          <span class="step__num">3</span>
+          <span class="step__icon"><svg><use href="#i-palette"/></svg></span>
+          <h3 data-i18n="s3t">Choose your themes</h3>
+          <p data-i18n="s3p">Tick the looks you like. Switch between them any time from the THEMES button in Steam.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 3. THEMES -->
+  <section class="sec sec--alt" id="themes" aria-labelledby="themesTitle">
+    <div class="wrap">
+      <header class="sec__head">
+        <p class="kicker" data-i18n="thKicker">The gallery</p>
+        <h2 id="themesTitle" data-i18n="thTitle">Pick your look</h2>
+        <p class="sec__lead" data-i18n="thLead">12 Game Shelf themes plus 2 extra community themes. Click any card to see the library and the store.</p>
+      </header>
+      <ul class="grid" id="grid"></ul>
+    </div>
+  </section>
+
+  <!-- 4. FAQ -->
+  <section class="sec" id="faq" aria-labelledby="faqTitle">
+    <div class="wrap wrap--narrow">
+      <header class="sec__head">
+        <p class="kicker" data-i18n="faqKicker">Good to know</p>
+        <h2 id="faqTitle" data-i18n="faqTitle">Questions</h2>
+      </header>
+      <div class="faq" id="faqList"></div>
+    </div>
+  </section>
+
+  <!-- closing call to action -->
+  <section class="cta-end">
+    <div class="wrap cta-end__in">
+      <div>
+        <h2 data-i18n="endTitle">Ready for a new look?</h2>
+        <p data-i18n="endLead">Download, run, pick your themes. That's it.</p>
+      </div>
+      <a class="btn btn--lg js-dl" href="#" data-i18n-aria="dlAria">
+        <span class="btn__icon"><svg><use href="#i-windows"/></svg></span>
+        <span data-i18n="dlBig">Download for Windows</span>
+      </a>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot__in">
+    <div class="foot__brand">
+      <span class="brand__mark"><svg><use href="#i-logo"/></svg></span>
+      <div>
+        <strong data-i18n="brand">Game Shelf</strong>
+        <p data-i18n="footNote">Not affiliated with Valve. Steam is a trademark of Valve Corporation.</p>
+      </div>
+    </div>
+    <div class="foot__links">
+      <a class="js-repo" href="#"><svg><use href="#i-github"/></svg><span data-i18n="footGithub">Source on GitHub</span></a>
+      <a class="js-license" href="#" data-i18n="footLicense">MIT license</a>
+    </div>
+    <p class="foot__credits" data-i18n-html="credits">Includes <a href="https://github.com/SpaceTheme/Steam" rel="noopener">SpaceTheme</a> and <a href="https://github.com/kuska1/Material-Theme" rel="noopener">Material Theme</a>, both MIT licensed. Theme loader: <a href="https://github.com/SteamClientHomebrew/Millennium" rel="noopener">Millennium</a>.</p>
+  </div>
+</footer>
+
+<!-- lightbox -->
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-labelledby="lbTitle" hidden>
+  <div class="lb__backdrop" data-close></div>
+  <div class="lb__panel">
+    <header class="lb__head">
+      <div class="lb__info">
+        <h3 id="lbTitle"></h3>
+        <p id="lbDesc"></p>
+      </div>
+      <div class="tabs" role="tablist" aria-label="View">
+        <button type="button" role="tab" class="tab" id="tabLib" data-view="library" data-i18n="tabLib">Library</button>
+        <button type="button" role="tab" class="tab" id="tabStore" data-view="store" data-i18n="tabStore">Store</button>
+      </div>
+      <button type="button" class="icon-btn" data-close aria-label="Close" data-i18n-aria="close"><svg><use href="#i-close"/></svg></button>
+    </header>
+    <div class="lb__stage">
+      <button type="button" class="lb__nav lb__nav--prev" id="lbPrev" aria-label="Previous theme" data-i18n-aria="prev"><svg><use href="#i-chev"/></svg></button>
+      <figure class="lb__fig" id="lbFig"></figure>
+      <button type="button" class="lb__nav lb__nav--next" id="lbNext" aria-label="Next theme" data-i18n-aria="next"><svg><use href="#i-chev"/></svg></button>
+    </div>
+    <footer class="lb__foot"><span id="lbCount"></span><span class="lb__keys" data-i18n="keys">Use the arrow keys to browse, Esc to close</span></footer>
+  </div>
+</div>
+
+<script src="site/app.js" defer></script>
+</body>
+</html>

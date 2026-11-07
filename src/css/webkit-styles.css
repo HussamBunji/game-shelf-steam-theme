@@ -6153,6 +6153,757 @@ html.responsive[data-rfs-style="cupertino"] .rfs-btn2:not(a) {
 html[data-rfs-style="cupertino"] { --rf-user-radius: 99px; --rf-user-bg: rgba(120, 120, 128, .24); --rf-user-bg-hover: rgba(120, 120, 128, .36); --rf-user-border: 0; --rf-user-ink: #fff; }
 
 
+/* ═══ Theme — Cyberpunk (سايبربنك) ═══
+   Home: a netrunner HUD — a wide angular "featured target" panel, one angular filter bar, then every game as an
+   angular data shard in two sections (ONLINE / INSTALLED, ARCHIVE).  Chrome: Night City after dark, but easy on the
+   eyes — a deep blue-charcoal page, muted brass amber for the main action, desaturated cyan for links and focus, a
+   soft rose used sparingly; clipped corners, 1 px HUD lines, small corner brackets and tiny mono data labels.
+   No neon glare: glows are low-alpha, the scanlines are barely there, no infinite animations. */
+html[data-rfs-style="cyberpunk"] {
+  /* layout base: SpaceTheme (MIT, src/vendor/space) — its sidebar, search, centred store/library;
+     this style supplies the colours below, its own fonts, home design, icons and the HUD rules further down */
+  --rf-vendor: space;
+  --rf-vendor-skip: options/fonts/, options/general/alwaysShowSidebar;
+  --rf-style-id: cyberpunk;
+  --rf-layout: cyberpunk;
+
+  /* fonts (Latin first, Arabic second — each script picks its own): Chakra Petch (angular, reads well at 13 px) +
+     Cairo for the UI and headings; JetBrains Mono for the small data readouts (Arabic in them falls back to Cairo) */
+  --rf-font-ui: 'Chakra Petch', 'Cairo', 'Segoe UI', sans-serif;
+  --rf-font-gf: "family=Chakra+Petch:wght@400;500;600;700&family=Cairo:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600";
+  --rf-heading-font: 'Chakra Petch', 'Cairo', 'Segoe UI', sans-serif;
+  --rf-heading-case: uppercase;
+  --rf-heading-spacing: .06em;
+
+  /* this style's own tokens (also used by src/layouts/cyberpunk.css) */
+  --cp-bg: #0b0f16;
+  --cp-1: #121822;           /* panels */
+  --cp-2: #182130;           /* raised / inputs */
+  --cp-3: #1f2a3c;           /* hover */
+  --cp-text: #e6e1d6;        /* warm off-white */
+  --cp-dim: #9aa3ad;
+  --cp-mute: #6d7782;
+  --cp-amber: #d9b45a;       /* soft brass — never full-saturation yellow */
+  --cp-amber-2: #c9a24a;
+  --cp-amber-hi: #e3c274;
+  --cp-ink: #15120b;         /* text on amber */
+  --cp-cyan: #5fc4c8;
+  --cp-teal: #4aa8b0;
+  --cp-cyan-hi: #8fd8db;
+  --cp-rose: #c45c8a;
+  --cp-rose-2: #b0507e;
+  --cp-line: rgba(154, 163, 173, .18);
+  --cp-line-a: rgba(217, 180, 90, .38);
+  --cp-line-c: rgba(95, 196, 200, .6);
+  --cp-track: .06em;         /* Latin tracking for caps labels (0 in Arabic, set below) */
+  --cp-mono: 'JetBrains Mono', 'Cairo', ui-monospace, 'Consolas', monospace;
+  --cp-ease: cubic-bezier(.2, .7, .2, 1);
+  /* clipped-corner shapes (physical corners: top-right + bottom-left for panels, bottom-right notch for buttons) */
+  --cp-clip-s: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+  --cp-clip-m: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+  --cp-notch: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%);
+  --cp-notch-s: polygon(0 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%);
+  /* the ghost button: a faint brass fill, a 1 px line (inset shadow) and the notch's diagonal drawn as a gradient */
+  --cp-ghost-bg: linear-gradient(to bottom right, transparent calc(50% - 1px), rgba(217, 180, 90, .6) calc(50% - 1px) 50%, transparent 50%) right bottom / 8px 8px no-repeat border-box, rgba(217, 180, 90, .06);
+  --cp-ghost-bg-hi: linear-gradient(to bottom right, transparent calc(50% - 1px), rgba(95, 196, 200, .85) calc(50% - 1px) 50%, transparent 50%) right bottom / 8px 8px no-repeat border-box, rgba(95, 196, 200, .13);
+  --cp-ghost-line: inset 0 0 0 1px rgba(217, 180, 90, .42);
+  --cp-ghost-line-hi: inset 0 0 0 1px rgba(95, 196, 200, .8);
+  /* the tag: the same idea in cyan, with a 5 px notch */
+  --cp-tag-bg: linear-gradient(to bottom right, transparent calc(50% - 1px), rgba(95, 196, 200, .4) calc(50% - 1px) 50%, transparent 50%) right bottom / 5px 5px no-repeat border-box, rgba(95, 196, 200, .07);
+  --cp-tag-bg-hi: linear-gradient(to bottom right, transparent calc(50% - 1px), rgba(95, 196, 200, .85) calc(50% - 1px) 50%, transparent 50%) right bottom / 5px 5px no-repeat border-box, rgba(95, 196, 200, .18);
+  /* the corner brackets for panels that must not be clipped (they hold menus): 2 px brass L's in the four corners */
+  --cp-brk:
+    linear-gradient(rgba(217, 180, 90, .7), rgba(217, 180, 90, .7)) left top / 12px 2px no-repeat,
+    linear-gradient(rgba(217, 180, 90, .7), rgba(217, 180, 90, .7)) left top / 2px 12px no-repeat,
+    linear-gradient(rgba(217, 180, 90, .7), rgba(217, 180, 90, .7)) right top / 12px 2px no-repeat,
+    linear-gradient(rgba(217, 180, 90, .7), rgba(217, 180, 90, .7)) right top / 2px 12px no-repeat,
+    linear-gradient(rgba(217, 180, 90, .7), rgba(217, 180, 90, .7)) left bottom / 12px 2px no-repeat,
+    linear-gradient(rgba(217, 180, 90, .7), rgba(217, 180, 90, .7)) left bottom / 2px 12px no-repeat,
+    linear-gradient(rgba(217, 180, 90, .7), rgba(217, 180, 90, .7)) right bottom / 12px 2px no-repeat,
+    linear-gradient(rgba(217, 180, 90, .7), rgba(217, 180, 90, .7)) right bottom / 2px 12px no-repeat;
+
+  /* icons: brass to cyan strokes, square caps; icon tiles are dark angular plates with a brass hairline */
+  --rf-ic-1: #d9b45a;
+  --rf-ic-2: #5fc4c8;
+  --rf-ic-fill: rgba(95, 196, 200, .14);
+  --rf-ic-sw: 1.8;
+  --rf-ic-glow: none;
+  --rf-ict-bg: linear-gradient(135deg, #1f2a3c, #121822 60%);
+  --rf-ict-border: 1px solid rgba(217, 180, 90, .32);
+  --rf-ict-radius: 0px;
+  --rf-ict-shadow: inset 0 1px 0 rgba(230, 225, 214, .06), 0 2px 6px rgba(0, 0, 0, .5);
+  --rf-ict-shadow-hi: inset 0 0 0 1px rgba(95, 196, 200, .7), 0 0 10px rgba(95, 196, 200, .14);
+  --rf-ict-1: #d9b45a;
+  --rf-ict-2: #5fc4c8;
+  --rf-ict-fill: rgba(217, 180, 90, .14);
+  --rf-ict-glow: none;
+
+  /* surfaces: deep blue-charcoal, a faint brass haze top-start, a faint cyan haze top-end, barely-there scanlines */
+  --rf-bg: #0b0f16;
+  --rf-bg-img:
+    repeating-linear-gradient(0deg, rgba(230, 225, 214, .014) 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse 60% 420px at 12% -80px, rgba(217, 180, 90, .07), transparent 70%),
+    radial-gradient(ellipse 55% 380px at 95% -60px, rgba(95, 196, 200, .06), transparent 70%),
+    radial-gradient(ellipse 140% 100% at 50% 40%, transparent 60%, rgba(0, 0, 0, .35) 100%);
+  --rf-panel: #121822;
+  --rf-panel-2: #182130;
+  --rf-panel-3: #1f2a3c;
+  --rf-border: rgba(154, 163, 173, .18);
+  --rf-text: #e6e1d6;
+  --rf-text-dim: #9aa3ad;
+  --rf-accent: #d9b45a;
+  --rf-accent-2: #5fc4c8;
+  --rf-accent-rgb: 217, 180, 90;
+  --rf-accent-ink: #15120b;
+  /* "play" = the brass slab with dark type */
+  --rf-play-1: #d9b45a;
+  --rf-play-2: #c9a24a;
+  --rf-play-ink: #15120b;
+  --rf-glow: 217, 180, 90;
+
+  /* chrome shape: square — the angles come from clipped corners, not radii */
+  --rf-radius: 0px;
+  --rf-radius-lg: 0px;
+  --rf-topbar: linear-gradient(#111722, #0d121a);
+  --rf-topbar-line: linear-gradient(90deg, rgba(217, 180, 90, .55) 0 22%, rgba(154, 163, 173, .16) 22% 78%, rgba(95, 196, 200, .5) 78%);
+  --rf-sidebar: #0d121a;
+  --rf-card: #121822;
+  --rf-card-border: 1px solid rgba(154, 163, 173, .18);
+  --rf-card-hover-shadow: 0 0 0 1px rgba(95, 196, 200, .6), 0 10px 26px rgba(0, 0, 0, .55);
+  --rf-blur: 0px;
+
+  --rf-led-rgb: 95, 196, 200;
+  --rf-plate-1: #d9b45a;
+  --rf-plate-2: #b8933f;
+  --rf-plate-ink: #15120b;
+}
+/* Arabic letters must not be spaced apart: the caps tracking is for Latin only */
+html[data-rfs-style="cyberpunk"][data-rfs-lang="ar"] { --rf-heading-spacing: 0; --cp-track: 0; }
+
+/* SpaceTheme's colour slots (blue-charcoal surfaces, brass accent, square corners).
+   :root:root outranks SpaceTheme's own root.css. No Steam blue: its "blue" and "green" become teal shades. */
+html[data-rfs-style="cyberpunk"][data-rfs-style] {
+  --st-accent-1: 217, 180, 90;
+  --st-accent-2: 227, 194, 116;
+  --st-background: 11, 15, 22;
+  --st-color-1: 13, 18, 26;
+  --st-color-2: 24, 33, 48;
+  --st-color-3: 18, 24, 34;
+  --st-color-4: 31, 42, 60;
+  --st-color-5: 52, 64, 82;
+  --st-color-6: 38, 49, 66;
+  --st-green: 54, 128, 126;
+  --st-green-hover: 66, 150, 147;
+  --st-blue: 54, 128, 134;
+  --st-blue-hover: 74, 168, 176;
+  --st-red: 176, 80, 126;
+  --st-red-hover: 196, 92, 138;
+  --st-yellow: 217, 180, 90;
+  --st-yellow-hover: 227, 194, 116;
+  --st-border-radius: 0px;
+}
+
+/* ─────────────── Steam windows (stable class names only) ─────────────── */
+html[data-rfs-style="cyberpunk"] ::selection { background: rgba(95, 196, 200, .34); color: #fff; }
+html[data-rfs-style="cyberpunk"] body { -webkit-font-smoothing: antialiased; }
+
+/* buttons: angular ghost slabs (a notch at the bottom-right, brass hairline); the main step is a brass slab */
+html[data-rfs-style="cyberpunk"] .DialogButton {
+  border: 0 !important; border-radius: 0 !important; color: #e6e1d6 !important; font-weight: 600 !important;
+  text-transform: uppercase; letter-spacing: var(--cp-track) !important; text-shadow: none !important;
+  background: var(--cp-ghost-bg) !important; box-shadow: var(--cp-ghost-line) !important;
+  clip-path: var(--cp-notch);
+  transition: background-color .15s, color .15s, transform .15s var(--cp-ease) !important;
+}
+html[data-rfs-style="cyberpunk"] .DialogButton:not(:disabled):not(.Disabled):hover { color: #fff !important; background: var(--cp-ghost-bg-hi) !important; box-shadow: var(--cp-ghost-line-hi) !important; }
+html[data-rfs-style="cyberpunk"] .DialogButton:not(:disabled):not(.Disabled):active { transform: translateY(1px); }
+html[data-rfs-style="cyberpunk"] .DialogButton:is(.Primary, .Green) { color: #15120b !important; background: #d9b45a !important; box-shadow: none !important; }
+html[data-rfs-style="cyberpunk"] .DialogButton:is(.Primary, .Green):not(:disabled):not(.Disabled):hover { color: #15120b !important; background: #e3c274 !important; box-shadow: none !important; }
+html[data-rfs-style="cyberpunk"] .DialogButton:is(:disabled, .Disabled) { opacity: .45 !important; }
+/* clip-path hides outlines, so keyboard focus is an inner cyan line */
+html[data-rfs-style="cyberpunk"] .DialogButton:focus-visible { outline: 0 !important; box-shadow: inset 0 0 0 2px #5fc4c8 !important; }
+
+/* text fields: square, near-black, a hairline; focus = a cyan line */
+html[data-rfs-style="cyberpunk"] .DialogInput {
+  border-radius: 0 !important; color: #e6e1d6 !important; background-color: #0b0f16 !important;
+  border: 1px solid rgba(154, 163, 173, .26) !important; box-shadow: none !important;
+}
+html[data-rfs-style="cyberpunk"] .DialogInput:focus { border-color: #5fc4c8 !important; box-shadow: 0 0 0 1px rgba(95, 196, 200, .3) !important; }
+html[data-rfs-style="cyberpunk"] .DialogInput::placeholder { color: #6d7782 !important; }
+html[data-rfs-style="cyberpunk"] .DialogDropDown {
+  border-radius: 0 !important; color: #e6e1d6 !important; background: #182130 !important;
+  border: 1px solid rgba(154, 163, 173, .22) !important; box-shadow: none !important;
+}
+html[data-rfs-style="cyberpunk"] .DialogDropDown:hover { background: #1f2a3c !important; border-color: rgba(217, 180, 90, .45) !important; }
+html[data-rfs-style="cyberpunk"] .DialogCheckbox { border-radius: 0 !important; }
+
+/* scrollbars: thin square brass rails */
+html[data-rfs-style="cyberpunk"] *::-webkit-scrollbar { width: 10px; height: 10px; }
+html[data-rfs-style="cyberpunk"] *::-webkit-scrollbar-thumb {
+  border-radius: 0 !important; background-color: rgba(217, 180, 90, .26) !important;
+  border: 3px solid transparent !important; background-clip: padding-box !important;
+}
+html[data-rfs-style="cyberpunk"] *::-webkit-scrollbar-thumb:hover { background-color: rgba(217, 180, 90, .5) !important; }
+html[data-rfs-style="cyberpunk"] *::-webkit-scrollbar-track { background: transparent !important; }
+html[data-rfs-style="cyberpunk"] *::-webkit-scrollbar-corner { background: transparent !important; }
+
+/* our toast + theme picker */
+html[data-rfs-style="cyberpunk"] #rfs-toast { background: var(--cp-brk), #121822; border: 0; border-radius: 0; color: #e6e1d6; box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .2), 0 18px 44px rgba(0, 0, 0, .6); }
+html[data-rfs-style="cyberpunk"] #rfs-themes .tp-box { background: var(--cp-brk), linear-gradient(180deg, #141b26, #10151e 260px); border-radius: 0; box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .18), 0 40px 100px rgba(0, 0, 0, .7); }
+html[data-rfs-style="cyberpunk"] #rfs-themes .tp-head h2 { font-weight: 700; letter-spacing: var(--rf-heading-spacing); text-transform: uppercase; }
+
+/* ═══════════════ store, community and help pages: the netrunner HUD ═══════════════
+   Web pages carry html.responsive (Steam's own windows don't), so the page rules below are scoped
+   html.responsive[data-rfs-style="cyberpunk"] and never reach the library.
+   One vocabulary everywhere: every heading = caps + hairline + a brass segment at its start; every panel = a dark
+   plate with a hairline and brass corner brackets; every buy button = a brass slab with a notch; every secondary
+   button = a ghost slab with a notch; every tag = a small cyan ghost; every discount = a muted brass capsule;
+   every arrow = the same angular plate with a brass chevron; links are cyan. No Steam blue, no blur. */
+
+/* ---- 1. the page ---- */
+html.responsive[data-rfs-style="cyberpunk"] {
+  --standard-root-background: #0b0f16;
+  background-color: #0b0f16 !important;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(230, 225, 214, .012) 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse 60% 480px at 10% -120px, rgba(217, 180, 90, .07), transparent 70%),
+    radial-gradient(ellipse 55% 420px at 95% -100px, rgba(95, 196, 200, .055), transparent 70%) !important;
+}
+html.responsive[data-rfs-style="cyberpunk"] body { color: #c9c6bd; font-variant-numeric: tabular-nums; }
+html.responsive[data-rfs-style="cyberpunk"] :is(.react_landing_background, .SaleBackground:not([style*="url"]), .page_content_ctn, .home_page_body_ctn, .home_page_content) { background-color: transparent !important; }
+/* the game page keeps its own art (Steam fades it out); only the colour under it turns charcoal */
+html.responsive[data-rfs-style="cyberpunk"] .game_page_background { background-color: #0b0f16 !important; }
+
+/* ---- 2. titles: caps, a hairline under, a brass segment at the start ---- */
+html.responsive[data-rfs-style="cyberpunk"] :is(.home_title, .home_section_title, .home_page_content > h2, .home_page_content h2.home_title, .pagesubheader, .pageheader, .page_content > h2,
+  .game_purchase_options_editions_header_title, .game_area_dlc_section > h2, #game_area_description > h2:first-child, #game_area_reviews > h2,
+  .large_title, .discussion_primary_header, .help_intro_text, .market_header_text h1, .game_area_purchase_game > h1) {
+  font-family: var(--rf-heading-font) !important; font-weight: 600 !important; letter-spacing: var(--rf-heading-spacing) !important;
+  text-transform: uppercase !important; text-shadow: none !important; color: #e6e1d6 !important; border: 0 !important;
+  background: none !important;
+}
+html.responsive[data-rfs-style="cyberpunk"] :is(.home_title, .home_section_title, .home_page_content > h2, .pagesubheader, .large_title) {
+  font-size: 20px !important; line-height: 1.25 !important; margin-bottom: 14px !important; padding-bottom: 8px !important;
+  background: linear-gradient(#d9b45a, #d9b45a) left bottom / 40px 2px no-repeat, linear-gradient(rgba(154, 163, 173, .18), rgba(154, 163, 173, .18)) left bottom / 100% 1px no-repeat !important;
+}
+html.responsive[dir="rtl"][data-rfs-style="cyberpunk"] :is(.home_title, .home_section_title, .home_page_content > h2, .pagesubheader, .large_title) {
+  background: linear-gradient(#d9b45a, #d9b45a) right bottom / 40px 2px no-repeat, linear-gradient(rgba(154, 163, 173, .18), rgba(154, 163, 173, .18)) right bottom / 100% 1px no-repeat !important;
+}
+html.responsive[data-rfs-style="cyberpunk"] .apphub_AppName {
+  font-family: var(--rf-heading-font) !important; font-weight: 700 !important; font-size: 30px !important; line-height: 1.12 !important;
+  letter-spacing: var(--rf-heading-spacing) !important; text-transform: uppercase !important; color: #e6e1d6 !important; text-shadow: none !important;
+}
+html.responsive[data-rfs-style="cyberpunk"] .game_area_purchase_game h2.title { font-size: 17px !important; font-weight: 600 !important; letter-spacing: var(--rf-heading-spacing) !important; color: #e6e1d6 !important; text-transform: uppercase !important; }
+/* small labels (side blocks, footer columns): mono data labels in cyan */
+html.responsive[data-rfs-style="cyberpunk"] :is(.block_header, .rightbox_content_header, #footer h3) {
+  font-family: var(--cp-mono) !important; color: #5fc4c8 !important; font-size: 11px !important; font-weight: 500 !important;
+  letter-spacing: .14em !important; text-transform: uppercase !important; background: none !important; border: 0 !important;
+}
+html[data-rfs-lang="ar"][data-rfs-style="cyberpunk"] :is(.block_header, .rightbox_content_header, #footer h3) { letter-spacing: 0 !important; font-size: 12px !important; }
+html.responsive[data-rfs-style="cyberpunk"] :is(h2.bb_tag, .bb_h1, .bb_h2, .bb_h3) { color: #e6e1d6 !important; font-weight: 600 !important; text-transform: uppercase !important; letter-spacing: var(--rf-heading-spacing) !important; }
+/* the editions header's Steam rule image goes; a hairline instead */
+html.responsive[data-rfs-style="cyberpunk"] .game_purchase_options_editions_header { background: none !important; border-bottom: 1px solid rgba(154, 163, 173, .18) !important; }
+
+/* ---- 3. the store bar: a dark plate with brackets (no clip: it holds the tab menus); tabs get a brass underline ---- */
+html.responsive[data-rfs-style="cyberpunk"] :is(.store_nav_area, #store_nav_area) .store_nav_bg {
+  background: var(--cp-brk), linear-gradient(90deg, rgba(217, 180, 90, .06), transparent 30%), #121822 !important;
+  border: 0 !important; border-radius: 0 !important;
+  box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .18), 0 14px 34px rgba(0, 0, 0, .45) !important;
+}
+html.responsive[data-rfs-style="cyberpunk"] .store_nav .tab {
+  position: relative; background: transparent !important; border-radius: 0 !important; box-shadow: none !important;
+}
+html.responsive[data-rfs-style="cyberpunk"] .store_nav .tab > span,
+html.responsive[data-rfs-style="cyberpunk"] .store_nav .tab .pulldown > span {
+  color: #9aa3ad !important; font-weight: 600 !important; text-transform: uppercase !important; letter-spacing: var(--cp-track) !important;
+  transition: color .15s !important;
+}
+html.responsive[data-rfs-style="cyberpunk"] .store_nav .tab::after {
+  content: ''; position: absolute; inset-inline: 10px; bottom: 5px; height: 2px; background: #d9b45a;
+  transform: scaleX(0); transition: transform .2s var(--cp-ease); pointer-events: none;
+}
+html.responsive[data-rfs-style="cyberpunk"] .store_nav .tab:is(:hover, .focus, .active)::after { transform: none; }
+html.responsive[data-rfs-style="cyberpunk"] .store_nav .tab:is(:hover, .focus, .active) > span,
+html.responsive[data-rfs-style="cyberpunk"] .store_nav .tab:is(:hover, .focus, .active) .pulldown > span { color: #e3c274 !important; }
+html.responsive[data-rfs-style="cyberpunk"] :is(.store_nav .searchbox, #store_search .searchbox) {
+  border-radius: 0 !important; background-color: #0b0f16 !important; border: 1px solid rgba(154, 163, 173, .24) !important; box-shadow: none !important;
+}
+html.responsive[data-rfs-style="cyberpunk"] :is(.store_nav .searchbox, #store_search .searchbox):focus-within { border-color: #5fc4c8 !important; box-shadow: 0 0 0 1px rgba(95, 196, 200, .3) !important; }
+html.responsive[data-rfs-style="cyberpunk"] #store_nav_search_term { color: #e6e1d6 !important; background: transparent !important; font-family: var(--rf-font-ui) !important; }
+html.responsive[data-rfs-style="cyberpunk"] #store_nav_search_term::placeholder { color: #6d7782 !important; }
+/* the tab menus: a dark plate, brass hairline; the hovered row gets a cyan start bar */
+html.responsive[data-rfs-style="cyberpunk"] .popup_block_new .popup_body {
+  background: #121822 !important; border: 0 !important; border-radius: 0 !important; padding: 5px !important;
+  box-shadow: inset 0 0 0 1px rgba(217, 180, 90, .3), 0 22px 54px rgba(0, 0, 0, .65) !important;
+}
+html.responsive[data-rfs-style="cyberpunk"] .popup_body .popup_menu_item { border-radius: 0; color: #e6e1d6 !important; border-inline-start: 2px solid transparent; }
+html.responsive[data-rfs-style="cyberpunk"] .popup_body .popup_menu_item:hover { background: rgba(95, 196, 200, .12) !important; color: #fff !important; border-inline-start-color: #5fc4c8; }
+
+/* ---- 4. capsules and carousels: clipped corners, a hairline frame that turns cyan on hover ---- */
+html.responsive[data-rfs-style="cyberpunk"] .store_main_capsule {
+  border-radius: 0 !important; overflow: hidden; background: #121822 !important; clip-path: var(--cp-clip-m);
+  box-shadow: inset 0 0 0 1px rgba(217, 180, 90, .22), 0 20px 50px rgba(0, 0, 0, .55) !important;
+}
+html.responsive[data-rfs-style="cyberpunk"] .store_main_capsule .info { background: linear-gradient(180deg, #151c27, #121822) !important; box-shadow: inset 1px 0 0 rgba(154, 163, 173, .14) !important; }
+html.responsive[data-rfs-style="cyberpunk"] .store_main_capsule .app_name { color: #e6e1d6 !important; font-weight: 700 !important; text-transform: uppercase; letter-spacing: var(--cp-track); }
+html.responsive[data-rfs-style="cyberpunk"] .store_capsule {
+  border-radius: 0 !important; overflow: hidden; background: #121822 !important; clip-path: var(--cp-clip-s); /* Steam positions it (its flags sit inside) */
+  box-shadow: none !important; transition: transform .18s var(--cp-ease) !important;
+}
+/* the frame is an overlay (the art would cover an inset line): hairline + the two diagonals */
+html.responsive[data-rfs-style="cyberpunk"] .store_capsule::after {
+  content: ''; position: absolute; inset: 0; z-index: 3; pointer-events: none; border: 1px solid rgba(154, 163, 173, .2);
+  background:
+    linear-gradient(to top right, transparent calc(50% - 1px), rgba(154, 163, 173, .2) calc(50% - 1px) 50%, transparent 50%) right top / 8px 8px no-repeat border-box,
+    linear-gradient(to bottom left, transparent calc(50% - 1px), rgba(154, 163, 173, .2) calc(50% - 1px) 50%, transparent 50%) left bottom / 8px 8px no-repeat border-box;
+}
+html.responsive[data-rfs-style="cyberpunk"] .store_capsule:hover { transform: translateY(-2px); }
+html.responsive[data-rfs-style="cyberpunk"] .store_capsule:hover::after {
+  border-color: rgba(95, 196, 200, .75);
+  background:
+    linear-gradient(to top right, transparent calc(50% - 1px), rgba(95, 196, 200, .75) calc(50% - 1px) 50%, transparent 50%) right top / 8px 8px no-repeat border-box,
+    linear-gradient(to bottom left, transparent calc(50% - 1px), rgba(95, 196, 200, .75) calc(50% - 1px) 50%, transparent 50%) left bottom / 8px 8px no-repeat border-box;
+}
+html.responsive[data-rfs-style="cyberpunk"] .store_capsule img { border-radius: 0 !important; }
+html.responsive[data-rfs-style="cyberpunk"] :is(.carousel_container .carousel_items, .home_discount_games_ctn, .carousel__slider) { background: transparent !important; box-shadow: none !important; }
+/* carousel arrows — ONE shape everywhere: a 40 px angular plate (clipped top-right / bottom-left, brass hairline)
+   with a brass chevron, centred in Steam's own hit area (old carousels: a 45×122 .arrow; React: a full-height button).
+   The plate and the chevron are pseudo-elements; Steam's own arrow art is hidden. */
+html.responsive[data-rfs-style="cyberpunk"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button) {
+  background: none !important; box-shadow: none !important; border: 0 !important; border-radius: 0 !important; opacity: 1 !important;
+}
+html.responsive[data-rfs-style="cyberpunk"] .carousel_container .arrow > div,
+html.responsive[data-rfs-style="cyberpunk"] :is(.carousel__back-button, .carousel__next-button) > svg { opacity: 0 !important; }
+html.responsive[data-rfs-style="cyberpunk"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button)::before,
+html.responsive[data-rfs-style="cyberpunk"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button)::after {
+  content: ''; position: absolute; top: 50%; left: 50%; width: 40px; height: 40px; margin: -20px 0 0 -20px; pointer-events: none; box-sizing: border-box;
+}
+html.responsive[data-rfs-style="cyberpunk"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button)::before {
+  clip-path: var(--cp-clip-s); border: 1px solid rgba(217, 180, 90, .55);
+  background:
+    linear-gradient(to top right, transparent calc(50% - 1px), rgba(217, 180, 90, .55) calc(50% - 1px) 50%, transparent 50%) right top / 8px 8px no-repeat border-box,
+    linear-gradient(to bottom left, transparent calc(50% - 1px), rgba(217, 180, 90, .55) calc(50% - 1px) 50%, transparent 50%) left bottom / 8px 8px no-repeat border-box,
+    rgba(14, 19, 28, .9);
+  transition: transform .15s var(--cp-ease);
+}
+html.responsive[data-rfs-style="cyberpunk"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button)::after {
+  background: center / 16px 16px no-repeat;
+}
+html.responsive[data-rfs-style="cyberpunk"] :is(.carousel_container .arrow.left, .carousel__back-button)::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d9b45a' stroke-width='2.4' stroke-linecap='square' stroke-linejoin='miter'%3E%3Cpath d='M15 5l-7 7 7 7'/%3E%3C/svg%3E");
+}
+html.responsive[data-rfs-style="cyberpunk"] :is(.carousel_container .arrow.right, .carousel__next-button)::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d9b45a' stroke-width='2.4' stroke-linecap='square' stroke-linejoin='miter'%3E%3Cpath d='M9 5l7 7-7 7'/%3E%3C/svg%3E");
+}
+/* hover: the plate fills with a cyan tint and its hairline turns cyan */
+html.responsive[data-rfs-style="cyberpunk"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button):hover::before {
+  border-color: rgba(95, 196, 200, .85); transform: translateX(1px);
+  background:
+    linear-gradient(to top right, transparent calc(50% - 1px), rgba(95, 196, 200, .85) calc(50% - 1px) 50%, transparent 50%) right top / 8px 8px no-repeat border-box,
+    linear-gradient(to bottom left, transparent calc(50% - 1px), rgba(95, 196, 200, .85) calc(50% - 1px) 50%, transparent 50%) left bottom / 8px 8px no-repeat border-box,
+    rgba(28, 46, 56, .94);
+}
+html.responsive[data-rfs-style="cyberpunk"] :is(.carousel__back-button, .carousel__next-button):disabled { opacity: 0 !important; pointer-events: none; }
+/* the featured carousel (wide mode): its arrow hit areas cover the side previews — the plates sit at the main
+   capsule's edges instead of floating over the previews */
+html.responsive[data-rfs-style="cyberpunk"] .carousel_wide_mode .carousel_container .arrow.left::before,
+html.responsive[data-rfs-style="cyberpunk"] .carousel_wide_mode .carousel_container .arrow.left::after { left: auto; right: 0; margin: -20px 0 0 0; }
+html.responsive[data-rfs-style="cyberpunk"] .carousel_wide_mode .carousel_container .arrow.right::before,
+html.responsive[data-rfs-style="cyberpunk"] .carousel_wide_mode .carousel_container .arrow.right::after { left: 0; margin: -20px 0 0 0; }
+/* Arabic (RTL): Steam swaps the arrows' sides (next sits on the left), so each chevron points outward the other way
+   and the featured carousel's plates hug the main capsule from the mirrored side */
+html[dir="rtl"][data-rfs-style="cyberpunk"] :is(.carousel_container .arrow.left, .carousel__back-button)::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d9b45a' stroke-width='2.4' stroke-linecap='square' stroke-linejoin='miter'%3E%3Cpath d='M9 5l7 7-7 7'/%3E%3C/svg%3E");
+}
+html[dir="rtl"][data-rfs-style="cyberpunk"] :is(.carousel_container .arrow.right, .carousel__next-button)::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d9b45a' stroke-width='2.4' stroke-linecap='square' stroke-linejoin='miter'%3E%3Cpath d='M15 5l-7 7 7 7'/%3E%3C/svg%3E");
+}
+html[dir="rtl"][data-rfs-style="cyberpunk"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button):hover::before { transform: translateX(-1px); }
+html.responsive[dir="rtl"][data-rfs-style="cyberpunk"] .carousel_wide_mode .carousel_container .arrow.left::before,
+html.responsive[dir="rtl"][data-rfs-style="cyberpunk"] .carousel_wide_mode .carousel_container .arrow.left::after { left: 0; right: auto; }
+html.responsive[dir="rtl"][data-rfs-style="cyberpunk"] .carousel_wide_mode .carousel_container .arrow.right::before,
+html.responsive[dir="rtl"][data-rfs-style="cyberpunk"] .carousel_wide_mode .carousel_container .arrow.right::after { left: auto; right: 0; }
+/* "See More" links of the React rows (webkit.js tags them .rfs-btn2): the same ghost slab as every secondary button */
+html.responsive[data-rfs-style="cyberpunk"] a.rfs-btn2 {
+  color: #e6e1d6 !important; background: var(--cp-ghost-bg) !important; box-shadow: var(--cp-ghost-line) !important;
+  border-radius: 0 !important; border: 0 !important; clip-path: var(--cp-notch); padding-inline: 14px !important; font-weight: 600 !important;
+  text-transform: uppercase; letter-spacing: var(--cp-track);
+}
+html.responsive[data-rfs-style="cyberpunk"] a.rfs-btn2:hover { color: #fff !important; background: var(--cp-ghost-bg-hi) !important; box-shadow: var(--cp-ghost-line-hi) !important; }
+/* the carousel page dots: short square dashes; the current one brass */
+html.responsive[data-rfs-style="cyberpunk"] .carousel_container .carousel_thumbs > div { border-radius: 0 !important; background: rgba(154, 163, 173, .3) !important; }
+html.responsive[data-rfs-style="cyberpunk"] .carousel_container .carousel_thumbs > div.focus { background: #d9b45a !important; }
+
+/* ---- 5. tab lists: dark rows, a brass start bar on hover; the home tab strip is a HUD segment bar ---- */
+html.responsive[data-rfs-style="cyberpunk"] .tab_item {
+  position: relative; border: 0 !important; border-radius: 0 !important; background: #121822 !important; box-shadow: none !important;
+  margin-bottom: 2px !important; transition: background-color .15s !important;
+}
+html.responsive[data-rfs-style="cyberpunk"] .tab_item::before {
+  content: ''; position: absolute; inset-block: 0; inset-inline-start: 0; width: 2px; z-index: 2; background: transparent; pointer-events: none;
+}
+html.responsive[data-rfs-style="cyberpunk"] .tab_item:is(:hover, .focus) { background: #182130 !important; }
+html.responsive[data-rfs-style="cyberpunk"] .tab_item:is(:hover, .focus)::before { background: #d9b45a; }
+html.responsive[data-rfs-style="cyberpunk"] .tab_item .tab_item_cap img { border-radius: 0; }
+html.responsive[data-rfs-style="cyberpunk"] :is(.tab_item_name, .search_name .title, .market_listing_item_name, .forum_topic_name) { color: #e6e1d6 !important; font-weight: 600 !important; }
+html.responsive[data-rfs-style="cyberpunk"] :is(.tab_item_details, .tab_item_top_tags, .search_released, .market_listing_game_name) { color: #9aa3ad !important; }
+html.responsive[data-rfs-style="cyberpunk"] .tabs_menu_ctn { background: none !important; border: 0 !important; box-shadow: none !important; }
+html.responsive[data-rfs-style="cyberpunk"] .home_tabs_row {
+  padding: 0 !important; border-radius: 0 !important; background: transparent !important; border: 0 !important;
+  box-shadow: inset 0 -1px 0 rgba(154, 163, 173, .18) !important;
+}
+html.responsive[data-rfs-style="cyberpunk"] .home_tabs_row .home_tab { margin: 0 !important; }
+html.responsive[data-rfs-style="cyberpunk"] .home_tabs_row .home_tab .tab_content {
+  border-radius: 0 !important; color: #9aa3ad !important; background: transparent !important; box-shadow: none !important; border: 0 !important;
+  font-weight: 600 !important; text-transform: uppercase !important; letter-spacing: var(--cp-track) !important;
+}
+html.responsive[data-rfs-style="cyberpunk"] .home_tabs_row .home_tab:hover .tab_content { color: #e6e1d6 !important; background: rgba(154, 163, 173, .06) !important; }
+html.responsive[data-rfs-style="cyberpunk"] .home_tabs_row .home_tab.active .tab_content {
+  color: #e3c274 !important; background: rgba(217, 180, 90, .08) !important; box-shadow: inset 0 -2px 0 #d9b45a !important;
+}
+html.responsive[data-rfs-style="cyberpunk"] :is(.tab_preview_container, .home_rightcol .tab_preview) {
+  background: var(--cp-brk), #121822 !important; border-radius: 0 !important; box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .16) !important;
+}
+/* search results and other repeated rows: the same dark rows with the start bar */
+html.responsive[data-rfs-style="cyberpunk"] :is(.search_result_row, .game_area_dlc_row, .market_listing_row, .badge_row, .forum_topic, .help_wizard_button) {
+  position: relative; border: 0 !important; border-radius: 0 !important; background: #121822 !important; box-shadow: none !important;
+  margin-bottom: 2px !important; transition: background-color .15s !important;
+}
+html.responsive[data-rfs-style="cyberpunk"] :is(.search_result_row, .game_area_dlc_row, .market_listing_row, .badge_row, .forum_topic, .help_wizard_button)::before {
+  content: ''; position: absolute; inset-block: 0; inset-inline-start: 0; width: 2px; z-index: 2; background: transparent; pointer-events: none;
+}
+html.responsive[data-rfs-style="cyberpunk"] :is(.search_result_row, .game_area_dlc_row, .market_listing_row, .badge_row, .forum_topic, .help_wizard_button):hover { background: #182130 !important; }
+html.responsive[data-rfs-style="cyberpunk"] :is(.search_result_row, .game_area_dlc_row, .market_listing_row, .badge_row, .forum_topic, .help_wizard_button):hover::before { background: #d9b45a; }
+html.responsive[data-rfs-style="cyberpunk"] :is(.badge_row, .help_wizard_button) { box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .14) !important; margin-bottom: 8px !important; }
+
+/* ---- 6. cards and side blocks: dark plates, hairline, brass corner brackets ---- */
+html.responsive[data-rfs-style="cyberpunk"] :is(.block.search_collapse_block, .rightcol .block, .block.responsive_apppage_details_right, .block.responsive_apppage_details_left,
+  .rightbox, .market_search_sidebar_contents, .apphub_StoreInfoHeader, .steam_curators_block, .profile_customization) {
+  border: 0 !important; border-radius: 0 !important; background: var(--cp-brk), #121822 !important;
+  box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .15), 0 14px 34px rgba(0, 0, 0, .4) !important;
+}
+html.responsive[data-rfs-style="cyberpunk"] :is(.block .block_content, .rightcol .block .block_content) { background: transparent !important; }
+/* the game page header: highlights + the glance panel */
+html.responsive[data-rfs-style="cyberpunk"] #game_highlights { border-radius: 0; overflow: hidden; background: var(--cp-brk), #121822 !important; box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .15), 0 24px 60px rgba(0, 0, 0, .55) !important; }
+html.responsive[data-rfs-style="cyberpunk"] #game_highlights :is(.highlight_ctn, .rightcol, .leftcol) { background: transparent !important; }
+html.responsive[data-rfs-style="cyberpunk"] .glance_ctn { background: transparent !important; }
+html.responsive[data-rfs-style="cyberpunk"] .game_header_image_full { border-radius: 0; clip-path: var(--cp-clip-s); }
+html.responsive[data-rfs-style="cyberpunk"] :is(.glance_ctn .subtitle, .dev_row .subtitle, .release_date .subtitle) {
+  color: #6d7782 !important; font-family: var(--cp-mono) !important; font-size: 10.5px !important; text-transform: uppercase !important; letter-spacing: .1em !important;
+}
+html[data-rfs-lang="ar"][data-rfs-style="cyberpunk"] :is(.glance_ctn .subtitle, .dev_row .subtitle, .release_date .subtitle) { letter-spacing: 0 !important; font-size: 11.5px !important; }
+html.responsive[data-rfs-style="cyberpunk"] .highlight_strip_item { border-radius: 0; overflow: hidden; }
+html.responsive[data-rfs-style="cyberpunk"] .highlight_strip_item.focus { outline: 1px solid #d9b45a; outline-offset: 1px; }
+/* each edition: a dark plate with brackets; its price + button sit on a darker strip with a brass start tick */
+html.responsive[data-rfs-style="cyberpunk"] .game_area_purchase_game {
+  border: 0 !important; border-radius: 0 !important; padding: 18px 22px 26px !important;
+  background: var(--cp-brk), linear-gradient(90deg, rgba(217, 180, 90, .045), transparent 40%), #121822 !important;
+  box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .15), 0 14px 34px rgba(0, 0, 0, .4) !important;
+}
+html.responsive[data-rfs-style="cyberpunk"] .game_purchase_action_bg {
+  border-radius: 0 !important; padding: 3px !important; padding-inline-start: 12px !important;
+  background: #0b0f16 !important; box-shadow: inset 0 0 0 1px rgba(217, 180, 90, .3) !important;
+  border-inline-start: 2px solid #d9b45a !important;
+}
+html.responsive[data-rfs-style="cyberpunk"] .game_purchase_action_bg :is(.game_purchase_price, .price) {
+  color: #e6e1d6 !important; background: transparent !important; font-family: var(--cp-mono) !important; font-weight: 600 !important; font-size: 13.5px !important;
+}
+html.responsive[data-rfs-style="cyberpunk"] .game_purchase_action_bg :is(.discount_block, .discount_prices) { background: transparent !important; box-shadow: none !important; }
+html.responsive[data-rfs-style="cyberpunk"] .btn_addtocart { border-radius: 0; }
+
+/* ---- 7. buttons: buy + main step = a brass slab with a notch; the rest = ghost slabs that turn cyan ---- */
+html.responsive[data-rfs-style="cyberpunk"] :is(.btn_green_steamui, .btn_blue_steamui, .btnv6_blue_hoverfade, .btnv6_grey_black, .btn_grey_steamui, .btnv6_white_transparent,
+  .btn_grey_black, .btn_grey_white_innerfade, .btn_darkblue_white_innerfade, .btn_green_white_innerfade, .btnv6_lightblue_blue, .btn_profile_action, .help_site_button) {
+  border: 0 !important; border-radius: 0 !important; text-shadow: none !important; clip-path: var(--cp-notch);
+  transition: background-color .15s, color .15s, transform .15s var(--cp-ease) !important;
+}
+html.responsive[data-rfs-style="cyberpunk"] :is(.btn_green_steamui, .btn_blue_steamui, .btnv6_blue_hoverfade, .btnv6_grey_black, .btn_grey_steamui, .btnv6_white_transparent,
+  .btn_grey_black, .btn_grey_white_innerfade, .btn_darkblue_white_innerfade, .btn_green_white_innerfade, .btnv6_lightblue_blue, .btn_profile_action):not(.btn_disabled):active { transform: translateY(1px); }
+html.responsive[data-rfs-style="cyberpunk"] :is(.btn_green_steamui, .btn_blue_steamui, .btnv6_blue_hoverfade, .btnv6_grey_black, .btn_grey_steamui, .btnv6_white_transparent,
+  .btn_grey_black, .btn_grey_white_innerfade, .btn_darkblue_white_innerfade, .btn_green_white_innerfade, .btnv6_lightblue_blue, .btn_profile_action) > span {
+  background: transparent !important; border: 0 !important; border-radius: 0 !important; color: inherit !important; text-shadow: none !important;
+  font-weight: 600 !important; text-transform: uppercase; letter-spacing: var(--cp-track);
+}
+html.responsive[data-rfs-style="cyberpunk"] :is(.btn_green_steamui, .btn_blue_steamui, .btn_green_white_innerfade) {
+  color: #15120b !important; background: #d9b45a !important; box-shadow: none !important;
+}
+html.responsive[data-rfs-style="cyberpunk"] :is(.btn_green_steamui, .btn_blue_steamui, .btn_green_white_innerfade):not(.btn_disabled):hover { color: #15120b !important; background: #e3c274 !important; }
+html.responsive[data-rfs-style="cyberpunk"] .btn_addtocart .btn_green_steamui > span { padding-inline: 20px !important; }
+html.responsive[data-rfs-style="cyberpunk"] :is(.btnv6_blue_hoverfade, .btnv6_grey_black, .btn_grey_steamui, .btnv6_white_transparent, .btn_grey_black,
+  .btn_grey_white_innerfade, .btn_darkblue_white_innerfade, .btnv6_lightblue_blue, .btn_profile_action, .help_site_button) {
+  color: #e6e1d6 !important; background: var(--cp-ghost-bg) !important; box-shadow: var(--cp-ghost-line) !important;
+}
+html.responsive[data-rfs-style="cyberpunk"] :is(.btnv6_blue_hoverfade, .btnv6_grey_black, .btn_grey_steamui, .btnv6_white_transparent, .btn_grey_black,
+  .btn_grey_white_innerfade, .btn_darkblue_white_innerfade, .btnv6_lightblue_blue, .btn_profile_action, .help_site_button):not(.btn_disabled):hover {
+  color: #fff !important; background: var(--cp-ghost-bg-hi) !important; box-shadow: var(--cp-ghost-line-hi) !important;
+}
+html.responsive[data-rfs-style="cyberpunk"] :is(body.responsive_page, body.v6, #StoreTemplate) .DialogButton:is(.Primary, .Green) { color: #15120b !important; background: #d9b45a !important; }
+
+/* ---- 8. prices: a dark strip; the discount is a muted brass capsule (with a tiny notch) everywhere ---- */
+html.responsive[data-rfs-style="cyberpunk"] .discount_block {
+  border-radius: 0 !important; overflow: hidden; background: #0b0f16 !important; box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .18) !important;
+}
+html.responsive[data-rfs-style="cyberpunk"] .discount_block .discount_pct,
+html.responsive[data-rfs-style="cyberpunk"] .discount_pct,
+html.responsive[data-rfs-style="cyberpunk"] .rfs-pct {
+  color: #e9cd85 !important; background: rgba(217, 180, 90, .17) !important; border-radius: 0 !important; clip-path: var(--cp-notch-s);
+  font-family: var(--cp-mono) !important; font-weight: 600 !important; padding-inline: 7px !important; margin: 4px !important; text-shadow: none !important;
+  box-shadow: inset 0 0 0 1px rgba(217, 180, 90, .35) !important;
+}
+html.responsive[data-rfs-style="cyberpunk"] .discount_block .discount_prices,
+html.responsive[data-rfs-style="cyberpunk"] .discount_prices { background: transparent !important; }
+html.responsive[data-rfs-style="cyberpunk"] .discount_final_price { color: #e6e1d6 !important; font-family: var(--cp-mono) !important; font-weight: 600 !important; }
+html.responsive[data-rfs-style="cyberpunk"] .discount_original_price { color: #6d7782 !important; font-family: var(--cp-mono) !important; }
+/* the React carousels draw their discount with a hashed class (lime box): webkit.js tags every "-NN%" as .rfs-pct,
+   so all discounts on the page are the same capsule; their price box sits on the same dark strip */
+html.responsive[data-rfs-style="cyberpunk"] .rfs-pct { display: inline-flex; align-items: center; line-height: 1.2 !important; padding-block: 3px !important; }
+html.responsive[data-rfs-style="cyberpunk"] .rfs-price { background: #0b0f16 !important; border-radius: 0 !important; box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .18) !important; overflow: hidden; }
+/* tags: small cyan ghosts with a notch — every kind of tag the store draws (game page, deep-dive rows, tab preview, hover card) */
+html.responsive[data-rfs-style="cyberpunk"] :is(.deep_dive_tag, .tab_preview .tags a, .app_tag, .game_hover_box .hover_tag_row > *) {
+  color: #bfd3d4 !important; background: var(--cp-tag-bg) !important; border: 0 !important; border-radius: 0 !important;
+  box-shadow: inset 0 0 0 1px rgba(95, 196, 200, .26) !important; clip-path: var(--cp-notch-s); padding-inline: 9px !important;
+}
+html.responsive[data-rfs-style="cyberpunk"] :is(.deep_dive_tag, .tab_preview .tags a, .app_tag, .game_hover_box .hover_tag_row > *):hover {
+  color: #fff !important; background: var(--cp-tag-bg-hi) !important; box-shadow: inset 0 0 0 1px rgba(95, 196, 200, .7) !important;
+}
+/* "Because you played": the tag panel under each capsule was Steam's blue gradient — a dark plate */
+html.responsive[data-rfs-style="cyberpunk"] .deep_dive_key_tags { background: #121822 !important; box-shadow: inset 0 1px 0 rgba(217, 180, 90, .3) !important; }
+/* the hover card over a game: a dark plate with brackets instead of Steam's slate blue */
+html.responsive[data-rfs-style="cyberpunk"] .game_hover_box {
+  background: var(--cp-brk), #121822 !important; border-radius: 0 !important; border: 0 !important;
+  box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .2), 0 22px 54px rgba(0, 0, 0, .65) !important; color: #c9c6bd !important;
+}
+html.responsive[data-rfs-style="cyberpunk"] .game_hover :is(.hover_arrow_left, .hover_arrow_right) { display: none !important; }
+html.responsive[data-rfs-style="cyberpunk"] .game_hover_box :is(h4, .hover_title) { color: #e6e1d6 !important; text-transform: uppercase; letter-spacing: var(--cp-track); }
+html.responsive[data-rfs-style="cyberpunk"] .game_hover_box :is(.hover_review_summary, .hover_body .hover_review_summary) { background: #0b0f16 !important; border-radius: 0 !important; box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .16) !important; }
+
+/* ---- 9. links: desaturated cyan ---- */
+html.responsive[data-rfs-style="cyberpunk"] :is(.dev_row a, .details_block a, #genresAndManufacturer a, .glance_ctn a, a.all_languages, .game_page_autocollapse_readmore,
+  .breadcrumbs a, .blockbg a, .home_page_content .see_all a, .rightbox a, .profile_count_link a, .whiteLink, .apphub_OtherSiteInfo a) { color: #5fc4c8 !important; }
+html.responsive[data-rfs-style="cyberpunk"] :is(.dev_row a, .details_block a, #genresAndManufacturer a, .glance_ctn a:not(.app_tag), .breadcrumbs a, .rightbox a):hover { color: #8fd8db !important; }
+html.responsive[data-rfs-style="cyberpunk"] .game_page_autocollapse_readmore { background: linear-gradient(180deg, rgba(11, 15, 22, 0), #0b0f16 70%) !important; }
+html.responsive[data-rfs-style="cyberpunk"] .game_review_summary.positive { color: #5fc4c8 !important; }
+html.responsive[data-rfs-style="cyberpunk"] .game_review_summary.mixed { color: #d9b45a !important; }
+
+/* ---- 10. form fields ---- */
+html.responsive[data-rfs-style="cyberpunk"] :is(#term, .searchbar_left input, #help_search_support_input, #findItemsSearchBox, .gray_bevel input, .gray_bevel textarea, textarea.commentthread_textarea, input.dselect_search) {
+  color: #e6e1d6 !important; background: #0b0f16 !important; border: 1px solid rgba(154, 163, 173, .26) !important; border-radius: 0 !important;
+  box-shadow: none !important; font-family: var(--rf-font-ui) !important;
+}
+html.responsive[data-rfs-style="cyberpunk"] :is(#term, #help_search_support_input, #findItemsSearchBox, .gray_bevel input, .gray_bevel textarea, textarea.commentthread_textarea):focus {
+  outline: 0 !important; border-color: #5fc4c8 !important; box-shadow: 0 0 0 1px rgba(95, 196, 200, .3) !important;
+}
+html.responsive[data-rfs-style="cyberpunk"] .gray_bevel { background: transparent !important; box-shadow: none !important; border: 0 !important; }
+
+/* ---- 11. footer: charcoal, a brass hairline on top ---- */
+html.responsive[data-rfs-style="cyberpunk"] #footer { background: #0b0f16 !important; border-top: 1px solid rgba(217, 180, 90, .35) !important; color: #6d7782 !important; }
+html.responsive[data-rfs-style="cyberpunk"] #footer :is(a, a:visited) { color: #9aa3ad !important; }
+html.responsive[data-rfs-style="cyberpunk"] #footer a:hover { color: #5fc4c8 !important; }
+html.responsive[data-rfs-style="cyberpunk"] #footer :is(.rule, hr) { border-color: rgba(154, 163, 173, .18) !important; background: rgba(154, 163, 173, .18) !important; }
+
+/* ─────────────── our filter strip (the angular plate behind it is drawn by the home design CSS) ─────────────── */
+/* buttons: ghost slabs with a notch; the active one is a brass slab */
+html[data-rfs-style="cyberpunk"] #rfs-bar.inhome .tb-btn {
+  --ink: #e6e1d6;
+  height: 30px; border: 0; border-radius: 0; color: #e6e1d6; font-weight: 600; text-transform: uppercase; letter-spacing: var(--cp-track);
+  background: var(--cp-ghost-bg); box-shadow: var(--cp-ghost-line); clip-path: var(--cp-notch);
+  transition: background-color .15s, color .15s, transform .15s var(--cp-ease);
+}
+html[data-rfs-style="cyberpunk"] #rfs-bar.inhome .tb-btn:hover { --ink: #fff; color: #fff; background: var(--cp-ghost-bg-hi); box-shadow: var(--cp-ghost-line-hi); }
+html[data-rfs-style="cyberpunk"] #rfs-bar.inhome .tb-btn:active { transform: translateY(1px); }
+html[data-rfs-style="cyberpunk"] #rfs-bar.inhome :is(.tb-btn.on, .rf-dd.open > .tb-btn) { --ink: #15120b; color: #15120b; background: #d9b45a; box-shadow: none; }
+html[data-rfs-style="cyberpunk"] #rfs-bar.inhome .tb-btn svg.rf-ic { stroke: currentColor; }
+/* toggles: one track of attached segments; the chosen one gets a cyan underline */
+html[data-rfs-style="cyberpunk"] #rfs-bar.inhome .tb-seg { padding: 0; gap: 0; border-radius: 0; background: #0b0f16; box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .22); }
+html[data-rfs-style="cyberpunk"] #rfs-bar.inhome .tb-seg button,
+html[data-rfs-style="cyberpunk"] #rfs-bar.inhome .tb-seg button:is(:first-child, :last-child) {
+  --ink: #9aa3ad;
+  height: 30px; border: 0; border-radius: 0; color: #9aa3ad; font-weight: 600; background: transparent; box-shadow: none;
+  text-transform: uppercase; letter-spacing: var(--cp-track); transition: background-color .15s, color .15s;
+}
+html[data-rfs-style="cyberpunk"] #rfs-bar.inhome .tb-seg button:hover { --ink: #e6e1d6; color: #e6e1d6; background: rgba(154, 163, 173, .08); }
+html[data-rfs-style="cyberpunk"] #rfs-bar.inhome .tb-seg button.on { --ink: #8fd8db; color: #8fd8db; background: rgba(95, 196, 200, .12); box-shadow: inset 0 -2px 0 #5fc4c8; }
+/* the search: a near-black field with a brass start tick, cyan line on focus */
+html[data-rfs-style="cyberpunk"] #rfs-bar:is(.inhome, .float) .tb-search {
+  height: 32px; border-radius: 0; border: 1px solid rgba(154, 163, 173, .24); border-inline-start: 2px solid #d9b45a;
+  background: #0b0f16; box-shadow: none; transition: border-color .15s, box-shadow .15s;
+}
+html[data-rfs-style="cyberpunk"] #rfs-bar:is(.inhome, .float) .tb-search:focus-within { border-color: #5fc4c8; box-shadow: 0 0 0 1px rgba(95, 196, 200, .28); }
+html[data-rfs-style="cyberpunk"] #rfs-bar .tb-q { color: #e6e1d6; font-weight: 500; font-size: 13.5px; }
+html[data-rfs-style="cyberpunk"] #rfs-bar .tb-q::placeholder { color: #6d7782; }
+html[data-rfs-style="cyberpunk"] #rfs-bar .tb-ico svg.rf-ic { stroke: #5fc4c8; }
+html[data-rfs-style="cyberpunk"] #rfs-bar .tb-ico svg.rf-ic :is(.f, circle:not(.s)) { fill: none; }
+html[data-rfs-style="cyberpunk"] #rfs-bar .tb-kbd { color: #9aa3ad; background: transparent; border-radius: 0; box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .3); font-family: var(--cp-mono) !important; font-weight: 500; }
+html[data-rfs-style="cyberpunk"] #rfs-bar .tb-clear { border-radius: 0; background: rgba(154, 163, 173, .12); }
+html[data-rfs-style="cyberpunk"] #rfs-bar .tb-clear:hover { background: rgba(196, 92, 138, .3); color: #fff; }
+/* dropdowns + quick results: a dark plate with a brass hairline; the hovered row gets a cyan start bar */
+html[data-rfs-style="cyberpunk"] #rfs-bar :is(.rf-dd-menu, .tb-results) {
+  color: #e6e1d6; background: #121822; border: 0; border-radius: 0; padding: 5px;
+  box-shadow: inset 0 0 0 1px rgba(217, 180, 90, .32), 0 22px 54px rgba(0, 0, 0, .65);
+}
+html[data-rfs-style="cyberpunk"] #rfs-bar .rf-dd-menu button { color: #e6e1d6; border-radius: 0; border-inline-start: 2px solid transparent; }
+html[data-rfs-style="cyberpunk"] #rfs-bar .rf-dd-menu button b { color: #6d7782; font-family: var(--cp-mono) !important; font-weight: 500; }
+html[data-rfs-style="cyberpunk"] #rfs-bar .rf-dd-menu button:hover { color: #fff; background: rgba(95, 196, 200, .1); border-inline-start-color: #5fc4c8; }
+html[data-rfs-style="cyberpunk"] #rfs-bar .rf-dd-menu button.on { color: #e3c274; background: rgba(217, 180, 90, .1); border-inline-start-color: #d9b45a; }
+html[data-rfs-style="cyberpunk"] #rfs-bar .rf-dd-menu button:is(:hover, .on) b { color: #9aa3ad; }
+html[data-rfs-style="cyberpunk"] #rfs-bar .pl-item { color: #e6e1d6; border-radius: 0; border-inline-start: 2px solid transparent; }
+html[data-rfs-style="cyberpunk"] #rfs-bar :is(.pl-item.sel, .pl-item:hover) { background: rgba(95, 196, 200, .1); border-inline-start-color: #5fc4c8; }
+html[data-rfs-style="cyberpunk"] #rfs-bar :is(.pl-item.sel, .pl-item:hover) .pl-meta { color: #9aa3ad; }
+html[data-rfs-style="cyberpunk"] #rfs-bar .pl-meta { color: #6d7782; font-family: var(--cp-mono) !important; }
+html[data-rfs-style="cyberpunk"] #rfs-bar .pl-tag { color: #bfd3d4; background: rgba(95, 196, 200, .1); border-radius: 0; box-shadow: inset 0 0 0 1px rgba(95, 196, 200, .26); }
+html[data-rfs-style="cyberpunk"] #rfs-bar .pl-tag.dim { color: #9aa3ad; background: transparent; box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .22); }
+html[data-rfs-style="cyberpunk"] #rfs-bar .pl-sec { color: #5fc4c8; font-family: var(--cp-mono) !important; font-size: 10.5px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; }
+html[data-rfs-lang="ar"][data-rfs-style="cyberpunk"] #rfs-bar .pl-sec { letter-spacing: 0; font-size: 11.5px; }
+html[data-rfs-style="cyberpunk"] #rfs-bar .pl-foot { color: #6d7782; background: transparent; border-top: 1px solid rgba(154, 163, 173, .18); }
+html[data-rfs-style="cyberpunk"] #rfs-bar .pl-foot kbd { color: #e6e1d6; background: transparent; border-radius: 0; box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .3); font-family: var(--cp-mono) !important; }
+/* Ctrl+K anywhere else: the floating search is a dark plate with brackets (no blur: it floats over everything) */
+html[data-rfs-style="cyberpunk"] #rfs-bar.float { background: var(--cp-brk), linear-gradient(180deg, #151c27, #10151e); border: 0; border-radius: 0; box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .2), 0 40px 100px rgba(0, 0, 0, .7); }
+
+/* ─────────────── store side panels (#rfs-rail / #rfs-data / Quick links): angular HUD panels ─────────────── */
+html[data-rfs-style="cyberpunk"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) section {
+  padding: 8px 0; border: 1px solid rgba(154, 163, 173, .18); border-radius: 0; clip-path: var(--cp-clip-m);
+  background:
+    linear-gradient(to top right, transparent calc(50% - 1px), rgba(217, 180, 90, .55) calc(50% - 1px) 50%, transparent 50%) right top / 12px 12px no-repeat border-box,
+    linear-gradient(to bottom left, transparent calc(50% - 1px), rgba(154, 163, 173, .3) calc(50% - 1px) 50%, transparent 50%) left bottom / 12px 12px no-repeat border-box,
+    #121822;
+  box-shadow: none;
+}
+html[data-rfs-style="cyberpunk"] #rfs-qmenu section {
+  background:
+    linear-gradient(to top right, transparent calc(50% - 1px), rgba(217, 180, 90, .55) calc(50% - 1px) 50%, transparent 50%) right top / 12px 12px no-repeat border-box,
+    linear-gradient(to bottom left, transparent calc(50% - 1px), rgba(154, 163, 173, .3) calc(50% - 1px) 50%, transparent 50%) left bottom / 12px 12px no-repeat border-box,
+    #121822 !important;
+}
+/* the section label: a mono data label after a brass "//" */
+html[data-rfs-style="cyberpunk"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) h4 {
+  margin: 4px 14px 8px; padding: 0 0 6px; color: #5fc4c8; background: none; border-bottom: 1px solid rgba(154, 163, 173, .14);
+  font-family: var(--cp-mono) !important; font-size: 10.5px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase;
+}
+html[data-rfs-style="cyberpunk"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) h4::before { content: '//'; color: #d9b45a; margin-inline-end: 6px; letter-spacing: 0; }
+html[data-rfs-lang="ar"][data-rfs-style="cyberpunk"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) h4 { letter-spacing: 0; font-size: 12px; }
+html[data-rfs-style="cyberpunk"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) h4 small { color: #6d7782; letter-spacing: 0; text-transform: none; }
+/* rows: full-width, a start bar shows on hover (cyan) and on the current one (brass) */
+html[data-rfs-style="cyberpunk"] :is(#rfs-rail .rr-link, #rfs-qmenu .ql, #rfs-data .rd-row) {
+  border-radius: 0; margin-inline: 0; padding-inline: 14px; border-inline-start: 2px solid transparent; transition: background-color .15s;
+}
+html[data-rfs-style="cyberpunk"] :is(#rfs-rail .rr-link, #rfs-qmenu .ql):hover { background: rgba(95, 196, 200, .08); border-inline-start-color: #5fc4c8; }
+html[data-rfs-style="cyberpunk"] :is(#rfs-rail .rr-link, #rfs-qmenu .ql).cur { background: rgba(217, 180, 90, .1); border-inline-start-color: #d9b45a; color: #e3c274 !important; }
+html[data-rfs-style="cyberpunk"] #rfs-rail .rr-app { padding-inline: 14px; }
+html[data-rfs-style="cyberpunk"] #rfs-rail .rr-app img { border-radius: 0; clip-path: var(--cp-clip-s); }
+html[data-rfs-style="cyberpunk"] #rfs-rail .rr-app b { text-transform: uppercase; letter-spacing: var(--cp-track); }
+html[data-rfs-style="cyberpunk"] #rfs-rail .rr-own { color: #5fc4c8; }
+html[data-rfs-style="cyberpunk"] #rfs-rail .rr-price { color: #e6e1d6; font-family: var(--cp-mono) !important; font-weight: 600; }
+html[data-rfs-style="cyberpunk"] #rfs-rail .rr-price i {
+  color: #e9cd85; background: rgba(217, 180, 90, .17); border-radius: 0; clip-path: var(--cp-notch-s); box-shadow: inset 0 0 0 1px rgba(217, 180, 90, .35);
+}
+html[data-rfs-style="cyberpunk"] #rfs-rail .rr-btn {
+  border: 0; border-radius: 0; color: #e6e1d6 !important; font-weight: 600; text-transform: uppercase; letter-spacing: var(--cp-track);
+  background: var(--cp-ghost-bg); box-shadow: var(--cp-ghost-line); clip-path: var(--cp-notch);
+  transition: background-color .15s, color .15s, transform .15s var(--cp-ease);
+}
+html[data-rfs-style="cyberpunk"] #rfs-rail .rr-btn:hover { color: #fff !important; background: var(--cp-ghost-bg-hi); box-shadow: var(--cp-ghost-line-hi); }
+html[data-rfs-style="cyberpunk"] #rfs-rail .rr-btn:active { transform: translateY(1px); }
+html[data-rfs-style="cyberpunk"] #rfs-rail .rr-btn.go { color: #15120b !important; background: #d9b45a; box-shadow: none; }
+html[data-rfs-style="cyberpunk"] #rfs-rail .rr-btn.go:hover { background: #e3c274; }
+html[data-rfs-style="cyberpunk"] #rfs-rail .rr-btn.on { color: #8fd8db !important; background: rgba(95, 196, 200, .12); box-shadow: var(--cp-ghost-line-hi); }
+html[data-rfs-style="cyberpunk"] #rfs-rail .rr-btn > svg.rf-ic { stroke: currentColor; }
+/* data panel: the live count is a big brass mono readout */
+html[data-rfs-style="cyberpunk"] #rfs-data .rd-live { padding-inline: 14px; }
+html[data-rfs-style="cyberpunk"] #rfs-data .rd-live b { font-family: var(--cp-mono) !important; font-size: 26px; font-weight: 600; color: #e3c274; letter-spacing: 0; }
+html[data-rfs-style="cyberpunk"] #rfs-data .rd-live small { color: #9aa3ad; }
+html[data-rfs-style="cyberpunk"] #rfs-data .rd-dot { border-radius: 0; background: #5fc4c8; box-shadow: 0 0 0 3px rgba(95, 196, 200, .2); }
+html[data-rfs-style="cyberpunk"] #rfs-data .rd-cc { color: #e6e1d6; background: #182130; border: 0; border-radius: 0; box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .2); font-family: var(--cp-mono) !important; }
+html[data-rfs-style="cyberpunk"] #rfs-data :is(.rd-name, .rd-kwd) { color: #e6e1d6; }
+html[data-rfs-style="cyberpunk"] #rfs-data .rd-kwd { font-family: var(--cp-mono) !important; font-weight: 600; }
+html[data-rfs-style="cyberpunk"] #rfs-data .rd-loc { color: #6d7782; font-family: var(--cp-mono) !important; }
+html[data-rfs-style="cyberpunk"] #rfs-data .rd-diff { font-family: var(--cp-mono) !important; }
+html[data-rfs-style="cyberpunk"] #rfs-data .rd-diff.lo { color: #5fc4c8; }
+html[data-rfs-style="cyberpunk"] #rfs-data .rd-diff.hi { color: #d07fa2; }
+html[data-rfs-style="cyberpunk"] #rfs-data .rd-tag { color: #bfd3d4; background: rgba(95, 196, 200, .1); border-radius: 0; box-shadow: inset 0 0 0 1px rgba(95, 196, 200, .3); }
+html[data-rfs-style="cyberpunk"] #rfs-data .rd-row.home { background: rgba(95, 196, 200, .07); border-inline-start-color: #5fc4c8; }
+html[data-rfs-style="cyberpunk"] #rfs-data .rd-row.home .rd-cc { color: #0b0f16; background: #5fc4c8; box-shadow: none; }
+html[data-rfs-style="cyberpunk"] #rfs-data .rd-row.best { background: rgba(217, 180, 90, .08); border-inline-start-color: #d9b45a; }
+html[data-rfs-style="cyberpunk"] #rfs-data .rd-row.best .rd-cc { color: #15120b; background: #d9b45a; box-shadow: none; }
+html[data-rfs-style="cyberpunk"] #rfs-data .rd-row.best .rd-tag { color: #e9cd85; background: rgba(217, 180, 90, .17); box-shadow: inset 0 0 0 1px rgba(217, 180, 90, .35); }
+html[data-rfs-style="cyberpunk"] #rfs-data :is(.rd-fact, .rd-link) { margin-inline: 14px; border-radius: 0; background: #0b0f16; border: 1px solid rgba(154, 163, 173, .18); box-shadow: none; }
+html[data-rfs-style="cyberpunk"] #rfs-data .rd-link { color: #5fc4c8; }
+html[data-rfs-style="cyberpunk"] #rfs-data .rd-link:hover { color: #8fd8db; background: #182130; border-color: rgba(95, 196, 200, .6); }
+/* the header Quick links button: the ghost slab */
+html[data-rfs-style="cyberpunk"] #rfs-qbtn {
+  color: #e6e1d6; border: 0; border-radius: 0; background: var(--cp-ghost-bg); box-shadow: var(--cp-ghost-line); clip-path: var(--cp-notch);
+  text-transform: uppercase; letter-spacing: var(--cp-track); transition: background-color .15s, color .15s;
+}
+html[data-rfs-style="cyberpunk"] #rfs-qbtn:hover { color: #fff; background: var(--cp-ghost-bg-hi); box-shadow: var(--cp-ghost-line-hi); }
+html[data-rfs-style="cyberpunk"] #rfs-qbtn svg.rf-ic { stroke: currentColor; }
+html[data-rfs-style="cyberpunk"] #rfs-qbtn svg.rf-ic :is(.f, rect, ellipse, circle:not(.s)) { fill: rgba(217, 180, 90, .16); }
+html[data-rfs-style="cyberpunk"] #rfs-qbtn svg.rf-ic .s { fill: currentColor; }
+
+/* ---- game page: one hierarchy for every section, quiet controls ---- */
+/* section titles ("Content For This Game", "Reviews", "About This Game", events…): the same caps + hairline + brass segment */
+html.responsive[data-rfs-style="cyberpunk"] :is(.game_area_description h2, .game_area_dlc_section h2, #game_area_description h2, .game_page_autocollapse_ctn h2, .page_content h2.gradientbg, .rightcol h2, .block h2, .early_access_announcements h2) {
+  font-family: var(--rf-heading-font) !important; font-size: 17px !important; font-weight: 600 !important; letter-spacing: var(--rf-heading-spacing) !important; text-transform: uppercase !important;
+  color: #e6e1d6 !important; border: 0 !important; padding: 0 0 8px !important; margin: 26px 0 12px !important;
+  background: linear-gradient(#d9b45a, #d9b45a) left bottom / 32px 2px no-repeat, linear-gradient(rgba(154, 163, 173, .18), rgba(154, 163, 173, .18)) left bottom / 100% 1px no-repeat !important;
+}
+html.responsive[dir="rtl"][data-rfs-style="cyberpunk"] :is(.game_area_description h2, .game_area_dlc_section h2, #game_area_description h2, .game_page_autocollapse_ctn h2, .page_content h2.gradientbg, .rightcol h2, .block h2, .early_access_announcements h2) {
+  background: linear-gradient(#d9b45a, #d9b45a) right bottom / 32px 2px no-repeat, linear-gradient(rgba(154, 163, 173, .18), rgba(154, 163, 173, .18)) right bottom / 100% 1px no-repeat !important;
+}
+/* outlined Steam links next to them ("View All", "Browse all", "See all updates") → ghost slabs */
+html.responsive[data-rfs-style="cyberpunk"] :is(.game_area_dlc_section .note, a.btnv6_white_transparent, .btnv6_white_transparent, .game_area_dlc_section h2 .note) {
+  color: #e6e1d6 !important; background: var(--cp-ghost-bg) !important; box-shadow: var(--cp-ghost-line) !important; border: 0 !important; border-radius: 0 !important;
+  clip-path: var(--cp-notch); padding: 3px 12px !important; text-shadow: none !important;
+}
+html.responsive[data-rfs-style="cyberpunk"] :is(.game_area_dlc_section .note, a.btnv6_white_transparent, .btnv6_white_transparent):hover { color: #fff !important; background: var(--cp-ghost-bg-hi) !important; box-shadow: var(--cp-ghost-line-hi) !important; }
+html.responsive[data-rfs-style="cyberpunk"] .btnv6_white_transparent > span { background: none !important; border: 0 !important; color: inherit !important; }
+/* the purchase rows: price, discount and button stay on one line (the discount capsule's margin pushed the button down) */
+html.responsive[data-rfs-style="cyberpunk"] .game_purchase_action .discount_pct,
+html.responsive[data-rfs-style="cyberpunk"] .game_purchase_action .rfs-pct { margin: 0 6px 0 0 !important; }
+html.responsive[data-rfs-style="cyberpunk"] .game_purchase_action .bundle_base_discount {
+  color: #9aa3ad !important; background: transparent !important; border-radius: 0 !important; margin: 0 2px 0 0 !important; font-family: var(--cp-mono) !important; font-weight: 500 !important;
+}
+/* a purchase row's dark strip: price, discount and the button side by side (they wrapped in bundles) */
+html.responsive[data-rfs-style="cyberpunk"] .game_purchase_action_bg { display: inline-flex !important; align-items: center; white-space: nowrap; }
+html.responsive[data-rfs-style="cyberpunk"] .game_purchase_action_bg > * { float: none !important; }
+/* the feature list on the right (Single-player, Achievements…): dark rows with the start bar instead of slate rows */
+html.responsive[data-rfs-style="cyberpunk"] .game_area_details_specs_ctn {
+  background: #121822 !important; border-radius: 0 !important; margin: 0 0 1px !important; box-shadow: inset 2px 0 0 transparent !important;
+}
+html.responsive[data-rfs-style="cyberpunk"] .game_area_details_specs_ctn:hover { background: #182130 !important; box-shadow: inset 2px 0 0 #5fc4c8 !important; }
+html.responsive[dir="rtl"][data-rfs-style="cyberpunk"] .game_area_details_specs_ctn:hover { box-shadow: inset -2px 0 0 #5fc4c8 !important; }
+html.responsive[data-rfs-style="cyberpunk"] .game_area_details_specs_ctn .label { background: transparent !important; color: #e6e1d6 !important; }
+html.responsive[data-rfs-style="cyberpunk"] .game_area_details_specs_ctn .icon { background: transparent !important; filter: grayscale(1) brightness(1.5); opacity: .8; }
+/* the screenshot strip's scroll bar: a thin square rail */
+html.responsive[data-rfs-style="cyberpunk"] :is(.highlight_selector, #highlight_slider, .slider_ctn) { background: transparent !important; }
+html.responsive[data-rfs-style="cyberpunk"] :is(.slider_left, .slider_right) { background: rgba(154, 163, 173, .16) !important; border-radius: 0 !important; }
+html.responsive[data-rfs-style="cyberpunk"] :is(.slider .handle, .slider_bg) { background: rgba(217, 180, 90, .35) !important; border-radius: 0 !important; }
+/* right column lists: the links block and the controller rows as dark rows, cyan text, a brass start bar on hover */
+html.responsive[data-rfs-style="cyberpunk"] :is(a.linkbar, #category_block a:not(.game_area_details_specs_ctn)) {
+  background: #121822 !important; border-radius: 0 !important; margin: 0 0 1px !important; color: #5fc4c8 !important;
+  box-shadow: inset 2px 0 0 transparent !important;
+}
+html.responsive[data-rfs-style="cyberpunk"] :is(a.linkbar, #category_block a:not(.game_area_details_specs_ctn)):hover { background: #182130 !important; color: #8fd8db !important; box-shadow: inset 2px 0 0 #d9b45a !important; }
+html.responsive[dir="rtl"][data-rfs-style="cyberpunk"] :is(a.linkbar, #category_block a:not(.game_area_details_specs_ctn)):hover { box-shadow: inset -2px 0 0 #d9b45a !important; }
+html.responsive[data-rfs-style="cyberpunk"] #category_block a * { background-color: transparent !important; }
+/* tags keep the tag colour even inside cyan-link areas (the glance box links are cyan) */
+html.responsive[data-rfs-style="cyberpunk"] :is(.glance_tags, .glance_ctn) a.app_tag { color: #bfd3d4 !important; }
+html.responsive[data-rfs-style="cyberpunk"] :is(.glance_tags, .glance_ctn) a.app_tag:hover { color: #fff !important; }
+/* ghost buttons that are not links (webkit.js tags them too) */
+html.responsive[data-rfs-style="cyberpunk"] .rfs-btn2:not(a) {
+  color: #e6e1d6 !important; background: var(--cp-ghost-bg) !important; box-shadow: var(--cp-ghost-line) !important; border-radius: 0 !important; border: 0 !important;
+  clip-path: var(--cp-notch); padding-inline: 14px !important; font-weight: 600 !important; text-transform: uppercase; letter-spacing: var(--cp-track); cursor: pointer;
+}
+html.responsive[data-rfs-style="cyberpunk"] .rfs-btn2:not(a):hover { color: #fff !important; background: var(--cp-ghost-bg-hi) !important; box-shadow: var(--cp-ghost-line-hi) !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-rfs-style="cyberpunk"] :is(.DialogButton, .store_capsule, #rfs-bar .tb-btn, #rfs-rail .rr-btn) { transition: none !important; }
+  html[data-rfs-style="cyberpunk"] .store_nav .tab::after { transition: none !important; }
+  html[data-rfs-style="cyberpunk"] .store_capsule:hover { transform: none; }
+}
+
+/* the footer bar under the user box (skin.js), the user box and its title-bar spot */
+html[data-rfs-style="cyberpunk"] { --rf-footer-bg: #0b0f16; --rf-footer-line: 1px solid rgba(217, 180, 90, .35); --rf-user-radius: 0; --rf-user-bg: rgba(217, 180, 90, .08); --rf-user-bg-hover: rgba(95, 196, 200, .14); --rf-user-border: 1px solid rgba(217, 180, 90, .4); --rf-user-ink: #e6e1d6; }
+
+
 /* ===================================================================
    رف الألعاب — theme icons (library window + store/community pages)
    One SVG set (shelf.js / webkit.js), dressed differently by every theme through the
