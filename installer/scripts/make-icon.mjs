@@ -1,4 +1,5 @@
-// Generates build/icon.png (256x256) and build/icon.ico: a shelf glyph on a violet rounded square.
+// Generates build/icon.png (256x256) and build/icon.ico: the amber shelf mark on a warm near-black rounded square
+// (the same mark as the website favicon, docs/site/img/icon.svg).
 // Pure Node rasterizer (4x4 supersampling) + png-to-ico.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -14,16 +15,14 @@ function render(N) {
   const S = 4; // supersampling
   const px = new Float32Array(N * N * 4);
   const u = N / 32; // design grid is 32x32 (same as the in-app logo)
-  // shape list: [x, y, w, h, r, color[r,g,b,a], rotateDeg?]
-  const white = (a) => [255, 255, 255, a];
+  // shape list: [x, y, w, h, r, color[r,g,b,a], rotateDeg?] — icon.svg's bars, mapped through translate(4 4) scale(.75)
+  const amber = (a) => [242, 177, 76, a];
   const shapes = [
-    [7, 8, 3.2, 10, 1, white(0.95)],
-    [11.4, 6.5, 3.2, 11.5, 1, white(0.8)],
-    [16, 9, 3.2, 9, 1, white(0.95), -12],
-    [20.8, 8, 3.2, 10, 1, white(0.7)],
-    [5.5, 19.5, 21, 2.4, 1.2, white(1)],
-    [7, 23, 3.2, 2.6, 0.8, white(0.55)],
-    [21.8, 23, 3.2, 2.6, 0.8, white(0.55)],
+    [6.25, 7.75, 3.75, 15, 0.9, amber(0.55)],
+    [11.125, 6.25, 3.75, 16.5, 0.9, amber(0.8)],
+    [16, 8.5, 3.75, 14.25, 0.9, amber(1)],
+    [20.95, 7.375, 3.75, 15.375, 0.9, amber(0.7), 8],
+    [5.5, 23.5, 21, 2.25, 0.9, amber(1)],
   ];
   const inRRect = (x, y, rx, ry, w, h, r) => {
     const cx = Math.min(Math.max(x, rx + r), rx + w - r);
@@ -35,12 +34,11 @@ function render(N) {
     for (let sj = 0; sj < S; sj++) for (let si = 0; si < S; si++) {
       const gx = (i + (si + 0.5) / S) / u, gy = (j + (sj + 0.5) / S) / u;
       let c = [0, 0, 0, 0];
-      if (inRRect(gx, gy, 1, 1, 30, 30, 8)) {
-        const t = (gx + gy - 2) / 60; // diagonal gradient #8b9bff -> #b57bff
-        c = [139 + (181 - 139) * t, 155 + (123 - 155) * t, 255, 1];
-        // soft top highlight
-        const hl = Math.max(0, 1 - (gy - 1) / 14) * 0.12;
-        c = [c[0] + (255 - c[0]) * hl, c[1] + (255 - c[1]) * hl, c[2], 1];
+      if (inRRect(gx, gy, 0, 0, 32, 32, 7)) {
+        c = [21, 18, 14, 1]; // #15120e
+        // a faint warm lift toward the top, like light on a shelf
+        const hl = Math.max(0, 1 - gy / 20) * 0.05;
+        c = [c[0] + (242 - c[0]) * hl, c[1] + (177 - c[1]) * hl, c[2] + (76 - c[2]) * hl, 1];
         for (const [x, y, w, h, r, col, rot] of shapes) {
           let qx = gx, qy = gy;
           if (rot) {

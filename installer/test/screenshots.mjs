@@ -81,50 +81,69 @@ async function runLang(lang) {
     const click = (sel) => ev(`(() => { const el = document.querySelector(${JSON.stringify(sel)}); if (!el) throw new Error('no ${sel.replace(/'/g, '')}'); el.click(); return true; })()`);
     const key = (k) => ev(`document.dispatchEvent(new KeyboardEvent('keydown', { key: ${JSON.stringify(k)}, bubbles: true }))`);
 
+    const active = (name) => `document.querySelector('.screen[data-screen="${name}"]').classList.contains('is-active')`;
+    const imgsReady = (sel) => ev(`Promise.all([...document.querySelectorAll(${JSON.stringify(sel)})].map(i => Promise.race([i.decode().catch(() => 0), new Promise(r => setTimeout(r, 3000))]))).then(() => true)`);
+
     await waitFor(`document.body.classList.contains('is-ready')`);
     await ev(`document.fonts.ready.then(() => true)`);
-    if (lang === 'en') await click('#welcomeLang [data-lang="en"]');
+    if (lang === 'en') await click('#tbLang');
+    await imgsReady('#wall img');
+    await sleep(1200);
     await shot('1-welcome');
 
     await click('#startBtn');
     await waitFor(`!!document.querySelector('#consentChk')`);
+    await sleep(500);
     await shot('2-check');
 
     await click('#consentChk');
     await click('#checkNext');
-    await waitFor(`document.querySelector('.screen[data-screen="themes"]').classList.contains('is-active')`);
-    await ev(`Promise.all([...document.images].filter(i => i.closest('#grid')).slice(0, 9).map(i => Promise.race([i.decode().catch(() => 0), new Promise(r => setTimeout(r, 3000))]))).then(() => true)`);
-    await shot('3-gallery');
-    await ev(`document.querySelector('.gallery-body').scrollTop = 99999`);
-    await shot('3b-gallery-community');
-    await ev(`document.querySelector('.gallery-body').scrollTop = 0`);
-
-    await click('[data-preview="0"]');
-    await waitFor(`document.querySelector('#lbFrame').classList.contains('is-in')`);
-    await shot('4-lightbox');
-    // no library image: original (index 3)
-    await key(lang === 'ar' ? 'ArrowLeft' : 'ArrowRight');
-    await key(lang === 'ar' ? 'ArrowLeft' : 'ArrowRight');
-    await key(lang === 'ar' ? 'ArrowLeft' : 'ArrowRight');
-    await waitFor(`document.querySelector('#lbFrame').classList.contains('is-in')`);
-    await shot('4b-lightbox-store-only');
-    await key('Escape');
-    await sleep(300);
-
-    // choose a default and start the install
-    await ev(`(() => { const s = document.querySelector('#defaultSel'); s.value = 'Cupertino Dark'; s.dispatchEvent(new Event('change')); return true; })()`);
-    await click('#installBtn');
-    await waitFor(`parseInt(document.querySelector('.task-pct')?.textContent || '0') >= 45 || document.querySelectorAll('.task.is-done').length > 0`, 30000);
-    await shot('5-install-progress');
-    await waitFor(`document.querySelector('.screen[data-screen="done"]').classList.contains('is-active')`, 90000);
+    await waitFor(active('themes'));
+    await imgsReady('#grid img, #vstage img');
     await sleep(700);
-    await shot('6-done');
+    await shot('3-themes');
+
+    // browse with the keyboard to Neon Coverflow, switch to the store view
+    const fwd = lang === 'ar' ? 'ArrowLeft' : 'ArrowRight';
+    await key(fwd); await key(fwd);
+    await sleep(200);
+    await click('#vTabs [data-tab="store"]');
+    await imgsReady('#vstage img');
+    await sleep(800);
+    await shot('3b-themes-store');
+
+    // the community group: SpaceTheme (not selected by default), then include it and make it the default
+    const spaceI = await ev(`[...document.querySelectorAll('#grid .fitem')].findIndex(el => el.querySelector('.fname').textContent.includes('SpaceTheme'))`);
+    await click(`#grid .fitem:nth-child(1) .fthumb`); // reset (first item)
+    await click(`.fgroup-extra .fitem:nth-child(1) .fthumb`);
+    await imgsReady('#vstage img');
+    await sleep(900);
+    await shot('3c-themes-community');
+    console.log('  spaceTheme index', spaceI);
+
+    // choose Cupertino Dark as the default, then install
+    await ev(`(() => { const el = [...document.querySelectorAll('#grid .fitem')].find(x => x.querySelector('.fname').textContent.match(/Cupertino|كوبرتينو/)); el.querySelector('.fthumb').click(); return true; })()`);
+    await sleep(300);
+    await click('#vMakeDefault');
+    await sleep(300);
+    await click('#installBtn');
+    try { await waitFor(`parseInt(document.querySelector('.task-pct')?.textContent || '0') >= 45 || document.querySelectorAll('.task.is-done').length > 0`, 60000); }
+    catch (e) { await shot('debug'); console.log(await ev(`document.querySelector('#log').innerText + ' | ' + document.querySelector('#taskList').innerText`)); throw e; }
+    await shot('4-install-progress');
+    await click('#drawerBtn');
+    await sleep(400);
+    await shot('4b-install-details');
+    await waitFor(active('done'), 90000);
+    await imgsReady('#doneFrame img');
+    await sleep(1400);
+    await shot('5-done');
 
     // uninstall confirm (from welcome)
-    await ev(`(() => { document.querySelector('.screen.is-active').classList.remove('is-active'); document.querySelector('.screen[data-screen="welcome"]').classList.add('is-active'); return true; })()`);
+    await ev(`(() => { document.querySelector('.screen.is-active').classList.remove('is-active'); document.querySelector('.screen[data-screen="welcome"]').classList.add('is-active'); document.querySelector('#app').dataset.screen = 'welcome'; return true; })()`);
+    await sleep(500);
     await click('#uninstallLink');
-    await sleep(300);
-    await shot('7-uninstall-confirm');
+    await sleep(400);
+    await shot('6-uninstall-confirm');
     c.close();
 
     // sanity: the fake folder now has Millennium + the theme
@@ -138,4 +157,8 @@ async function runLang(lang) {
 
 fs.mkdirSync(outDir, { recursive: true });
 const langs = process.argv.slice(2).length ? process.argv.slice(2) : ['ar', 'en'];
-for (const l of langs) { console.log('lang', l); await runLang(l); }
+for (const l of langs) {
+  console.log('lang', l);
+  for (const f of fs.readdirSync(outDir)) if (f.startsWith(l + '-') && f.endsWith('.png')) fs.unlinkSync(path.join(outDir, f));
+  await runLang(l);
+}

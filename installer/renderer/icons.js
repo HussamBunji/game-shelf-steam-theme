@@ -3,19 +3,12 @@
   const s = (body, extra = '') =>
     `<svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false" ${extra}>${body}</svg>`;
   const ICONS = {
-    logo: `<svg viewBox="0 0 32 32" width="1em" height="1em" aria-hidden="true" focusable="false">
-      <defs><linearGradient id="lg-a" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8b9bff"/><stop offset="1" stop-color="#b57bff"/></linearGradient></defs>
-      <rect x="1" y="1" width="30" height="30" rx="8" fill="url(#lg-a)"/>
-      <rect x="7" y="8" width="3.2" height="10" rx="1" fill="#fff" opacity=".95"/>
-      <rect x="11.4" y="6.5" width="3.2" height="11.5" rx="1" fill="#fff" opacity=".8"/>
-      <rect x="16" y="9" width="3.2" height="9" rx="1" fill="#fff" opacity=".95" transform="rotate(-12 17.6 13.5)"/>
-      <rect x="20.8" y="8" width="3.2" height="10" rx="1" fill="#fff" opacity=".7"/>
-      <rect x="5.5" y="19.5" width="21" height="2.4" rx="1.2" fill="#fff"/>
-      <rect x="7" y="23" width="3.2" height="2.6" rx=".8" fill="#fff" opacity=".55"/>
-      <rect x="21.8" y="23" width="3.2" height="2.6" rx=".8" fill="#fff" opacity=".55"/></svg>`,
+    logo: `<svg viewBox="0 0 32 32" width="1em" height="1em" aria-hidden="true" focusable="false"><rect x="3" y="5" width="5" height="20" rx="1.2" fill="currentColor" opacity=".55"/><rect x="9.5" y="3" width="5" height="22" rx="1.2" fill="currentColor" opacity=".8"/><rect x="16" y="6" width="5" height="19" rx="1.2" fill="currentColor"/><rect x="22.6" y="4.5" width="5" height="20.5" rx="1.2" transform="rotate(8 25 15)" fill="currentColor" opacity=".7"/><rect x="2" y="26" width="28" height="3" rx="1.2" fill="currentColor"/></svg>`,
+    chev: s('<path d="M9 5l7 7-7 7"/>', 'stroke-width="2"'),
+    star: s('<path d="M12 3.8l2.5 5.1 5.6.8-4 3.9.9 5.6-5-2.6-5 2.6.9-5.6-4-3.9 5.6-.8L12 3.8z"/>', 'stroke-width="1.7"'),
     x: s('<path d="M6 6l12 12M18 6L6 18"/>'),
     minimize: s('<path d="M6 12h12"/>'),
-    check: s('<path d="M5 12.5l4.5 4.5L19 7.5"/>', 'stroke-width="2.6"'),
+    check: s('<path d="M5 12.5l4.2 4.2L19 7"/>', 'stroke-width="2.4"'),
     checkBig: s('<path d="M5 12.5l4.5 4.5L19 7.5"/>', 'stroke-width="2.4"'),
     checkAll: s('<rect x="3.5" y="3.5" width="17" height="17" rx="4"/><path d="M8 12.2l2.8 2.8L16.2 9.4"/>'),
     square: s('<rect x="3.5" y="3.5" width="17" height="17" rx="4"/>'),

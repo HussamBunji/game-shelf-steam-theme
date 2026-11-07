@@ -4,10 +4,17 @@
   <meta charset="utf-8">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; font-src 'self'; style-src 'self'; script-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
   <title>Game Shelf Installer</title>
-  <link rel="stylesheet" href="../node_modules/@fontsource/inter/latin-400.css">
-  <link rel="stylesheet" href="../node_modules/@fontsource/inter/latin-500.css">
-  <link rel="stylesheet" href="../node_modules/@fontsource/inter/latin-600.css">
-  <link rel="stylesheet" href="../node_modules/@fontsource/inter/latin-700.css">
+  <!-- fonts are bundled from node_modules (no network at runtime) -->
+  <link rel="stylesheet" href="../node_modules/@fontsource-variable/bricolage-grotesque/opsz.css">
+  <link rel="stylesheet" href="../node_modules/@fontsource/instrument-serif/latin-400.css">
+  <link rel="stylesheet" href="../node_modules/@fontsource/instrument-serif/latin-400-italic.css">
+  <link rel="stylesheet" href="../node_modules/@fontsource/jetbrains-mono/latin-400.css">
+  <link rel="stylesheet" href="../node_modules/@fontsource/jetbrains-mono/latin-500.css">
+  <link rel="stylesheet" href="../node_modules/@fontsource/inter-tight/latin-400.css">
+  <link rel="stylesheet" href="../node_modules/@fontsource/inter-tight/latin-500.css">
+  <link rel="stylesheet" href="../node_modules/@fontsource/inter-tight/latin-600.css">
+  <link rel="stylesheet" href="../node_modules/@fontsource/inter-tight/latin-700.css">
+  <link rel="stylesheet" href="../node_modules/@fontsource-variable/readex-pro/wght.css">
   <link rel="stylesheet" href="../node_modules/@fontsource/ibm-plex-sans-arabic/400.css">
   <link rel="stylesheet" href="../node_modules/@fontsource/ibm-plex-sans-arabic/500.css">
   <link rel="stylesheet" href="../node_modules/@fontsource/ibm-plex-sans-arabic/600.css">
@@ -15,218 +22,229 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="app" id="app">
+  <div class="app" id="app" data-screen="welcome">
+
+    <!-- custom title bar: brand · step progress · language · window buttons -->
     <header class="titlebar">
       <div class="tb-brand">
         <span class="tb-mark" data-icon="logo"></span>
-        <span class="tb-title" data-i18n="appTitle"></span>
+        <span class="tb-name" data-i18n="productName"></span>
+        <span class="tb-ver" id="tbVer">Installer</span>
         <span class="tb-badge" id="fakeBadge" hidden data-i18n="testMode"></span>
       </div>
+
+      <nav class="progress-nav" aria-label="Steps">
+        <ol class="steps" id="steps"></ol>
+        <span class="steps-rule" aria-hidden="true"><i id="stepsFill"></i></span>
+      </nav>
+
       <div class="tb-actions">
-        <div class="seg seg-sm" role="group" data-i18n-label="uiLanguage" id="tbLang">
-          <button type="button" data-lang="ar">ع</button>
-          <button type="button" data-lang="en">EN</button>
-        </div>
+        <button type="button" class="tb-lang" id="tbLang" data-i18n-label="uiLanguage">
+          <span data-icon="globe"></span><span class="tb-lang-label" id="tbLangLabel"></span>
+        </button>
+        <span class="tb-sep" aria-hidden="true"></span>
         <button type="button" class="tb-btn" data-win="minimize" data-i18n-label="minimize"><span data-icon="minimize"></span></button>
         <button type="button" class="tb-btn tb-close" data-win="close" data-i18n-label="close"><span data-icon="x"></span></button>
       </div>
     </header>
 
-    <aside class="rail">
-      <div class="rail-head">
-        <div class="rail-logo" data-icon="logo"></div>
-        <div>
-          <div class="rail-name" data-i18n="productName"></div>
-          <div class="rail-sub" data-i18n="productSub"></div>
-        </div>
-      </div>
-      <ol class="steps" id="steps"></ol>
-      <div class="rail-foot">
-        <span data-icon="shield"></span>
-        <span data-i18n="railSafe"></span>
-      </div>
-    </aside>
-
     <main class="stage" id="stage">
-      <!-- 1. Welcome -->
-      <section class="screen" data-screen="welcome">
-        <div class="welcome">
-          <div class="welcome-copy">
-            <span class="eyebrow"><span data-icon="sparkle"></span><span data-i18n="welcomeEyebrow"></span></span>
-            <h1 class="hero-title"><span data-i18n="productName"></span></h1>
-            <p class="hero-alt" data-i18n="productAlt"></p>
-            <p class="hero-pitch" data-i18n="pitch"></p>
-            <ul class="feature-list">
-              <li><span class="fi fi-a" data-icon="layers"></span><span data-i18n="feat1"></span></li>
-              <li><span class="fi fi-b" data-icon="globe"></span><span data-i18n="feat2"></span></li>
-              <li><span class="fi fi-c" data-icon="chart"></span><span data-i18n="feat3"></span></li>
-            </ul>
-            <div class="welcome-actions">
-              <button type="button" class="btn btn-primary btn-lg" id="startBtn">
-                <span data-i18n="start"></span><span class="flip" data-icon="arrowRight"></span>
-              </button>
-              <div class="seg" role="group" data-i18n-label="uiLanguage" id="welcomeLang">
-                <button type="button" data-lang="ar"><span data-icon="globe"></span>العربية</button>
-                <button type="button" data-lang="en">English</button>
-              </div>
+
+      <!-- 0. Welcome: the drifting wall -->
+      <section class="screen screen-welcome" data-screen="welcome">
+        <div class="hero-bg" aria-hidden="true">
+          <div class="wall"><div class="wall-plane" id="wall"></div></div>
+          <div class="hero-wash"></div>
+          <div class="hero-shade"></div>
+        </div>
+
+        <div class="hero-in">
+          <p class="over"><span data-i18n="welcomeEyebrow"></span><span class="over-rule" aria-hidden="true"></span><span data-i18n="overCount"></span></p>
+          <h1 class="hero-title"><span class="hero-line" data-i18n="heroTitle"></span><em class="hero-accent" data-i18n="heroAccent"></em></h1>
+          <p class="hero-lead" data-i18n="pitch"></p>
+          <div class="hero-actions">
+            <button type="button" class="btn btn-primary btn-lg" id="startBtn">
+              <span data-i18n="start"></span><span class="flip" data-icon="arrowRight"></span>
+            </button>
+            <div class="hero-meta">
+              <span data-i18n="startMeta"></span>
+              <button type="button" class="ulink" id="uninstallLink"><span data-i18n="uninstallLink"></span></button>
             </div>
-            <button type="button" class="link-btn" id="uninstallLink"><span data-icon="trash"></span><span data-i18n="uninstallLink"></span></button>
           </div>
-          <div class="welcome-art" aria-hidden="true" id="welcomeArt"></div>
+          <p class="facts">
+            <span data-i18n="feat1"></span><i aria-hidden="true"></i><span data-i18n="feat2"></span><i aria-hidden="true"></i><span data-i18n="feat3"></span>
+          </p>
+        </div>
+
+        <div class="now" aria-live="off">
+          <span class="now-label" data-i18n="nowLabel"></span>
+          <span class="now-name" id="nowName"></span>
+          <span class="now-bar" aria-hidden="true"><i id="nowBar"></i></span>
         </div>
       </section>
 
-      <!-- 2. Check -->
-      <section class="screen" data-screen="check">
-        <div class="screen-head">
-          <span class="eyebrow" data-i18n="step2Eyebrow"></span>
-          <h2 data-i18n="checkTitle"></h2>
-          <p class="sub" data-i18n="checkSub"></p>
+      <!-- 1. Check -->
+      <section class="screen screen-check" data-screen="check">
+        <div class="split">
+          <header class="split-head">
+            <p class="label"><span class="label-n">01</span><span data-i18n="stepCheck"></span></p>
+            <h2 class="h2"><span data-i18n="checkTitle"></span><em data-i18n="checkAccent"></em></h2>
+            <p class="lead" data-i18n="checkSub"></p>
+          </header>
+          <div class="split-body">
+            <div class="checks" id="checkList"></div>
+            <div class="notice" id="checkNotice" hidden></div>
+          </div>
         </div>
-        <div class="screen-body">
-          <div class="check-list" id="checkList"></div>
-          <div class="notice" id="checkNotice" hidden></div>
-        </div>
-        <div class="screen-foot">
+        <footer class="foot">
           <button type="button" class="btn btn-ghost" data-go="welcome"><span class="flip" data-icon="arrowLeft"></span><span data-i18n="back"></span></button>
           <div class="foot-spacer"></div>
-          <button type="button" class="btn btn-secondary" id="recheckBtn"><span data-icon="refresh"></span><span data-i18n="checkAgain"></span></button>
+          <button type="button" class="btn btn-quiet" id="recheckBtn"><span data-icon="refresh"></span><span data-i18n="checkAgain"></span></button>
           <button type="button" class="btn btn-primary" id="checkNext"><span data-i18n="continue"></span><span class="flip" data-icon="arrowRight"></span></button>
-        </div>
+        </footer>
       </section>
 
-      <!-- 3. Themes -->
-      <section class="screen" data-screen="themes">
-        <div class="screen-head head-row">
-          <div>
-            <span class="eyebrow" data-i18n="step3Eyebrow"></span>
-            <h2 data-i18n="themesTitle"></h2>
-            <p class="sub" data-i18n="themesSub"></p>
-          </div>
-        </div>
-        <div class="toolbar">
-          <div class="tool-group">
-            <span class="count-pill" id="selCount"></span>
-            <button type="button" class="btn btn-chip" id="selAll"><span data-icon="checkAll"></span><span data-i18n="selectAll"></span></button>
-            <button type="button" class="btn btn-chip" id="selNone"><span data-icon="square"></span><span data-i18n="selectNone"></span></button>
-          </div>
-          <div class="tool-group">
-            <label class="field">
-              <span class="field-label" data-i18n="defaultTheme"></span>
-              <span class="select-wrap"><select id="defaultSel"></select><span class="select-chev" data-icon="chevronDown"></span></span>
-            </label>
-            <div class="field">
-              <span class="field-label" data-i18n="themeLanguage"></span>
-              <div class="seg seg-sm" role="group" id="themeLang">
-                <button type="button" data-tlang="Arabic">العربية</button>
-                <button type="button" data-tlang="English">English</button>
-              </div>
+      <!-- 2. Themes: showcase stage + filmstrip -->
+      <section class="screen screen-themes" data-screen="themes">
+        <div class="show">
+          <div class="viewer" id="viewer">
+            <div class="vstage" id="vstage">
+              <div class="vlayer" data-layer="a"></div>
+              <div class="vlayer" data-layer="b"></div>
+              <span class="vdefault" id="vDefault" hidden><span data-icon="star"></span><span data-i18n="defaultTag"></span></span>
+              <p class="vkeys" aria-hidden="true"><kbd>&larr;</kbd><kbd>&rarr;</kbd><span data-i18n="keysBrowse"></span><kbd class="kbd-wide">Space</kbd><span data-i18n="keysSelect"></span></p>
             </div>
           </div>
+
+          <aside class="panel">
+            <p class="vmeta"><span id="vIndex">01 / 16</span><span class="vgroup" id="vGroup"></span></p>
+            <h2 class="vname" id="vName" aria-live="polite"></h2>
+            <p class="vdesc" id="vDesc"></p>
+
+            <div class="vctrl">
+              <div class="toggle" role="group" id="vTabs">
+                <button type="button" class="toggle-b" data-tab="library" data-i18n="tabLibrary"></button>
+                <button type="button" class="toggle-b" data-tab="store" data-i18n="tabStore"></button>
+              </div>
+              <div class="arrows">
+                <button type="button" class="arrow arrow-prev" id="vPrev" data-i18n-label="previous"><span data-icon="chev"></span></button>
+                <button type="button" class="arrow" id="vNext" data-i18n-label="next"><span data-icon="chev"></span></button>
+              </div>
+            </div>
+
+            <button type="button" class="include" id="vInclude" aria-pressed="false">
+              <span class="include-box"><span data-icon="check"></span></span>
+              <span class="include-text"><span class="include-t" data-i18n="includeStyle"></span><span class="include-s" id="vIncludeSub"></span></span>
+            </button>
+            <button type="button" class="ulink make-default" id="vMakeDefault"><span data-icon="star"></span><span data-i18n="makeDefault"></span></button>
+
+            <div class="panel-rule" aria-hidden="true"></div>
+
+            <div class="opt">
+              <span class="opt-label" data-i18n="defaultTheme"></span>
+              <span class="opt-value" id="defaultName"></span>
+            </div>
+            <div class="opt">
+              <span class="opt-label" data-i18n="themeLanguage"></span>
+              <div class="toggle toggle-sm" role="group" id="themeLang">
+                <button type="button" class="toggle-b" data-tlang="Arabic" lang="ar">العربية</button>
+                <button type="button" class="toggle-b" data-tlang="English" lang="en">English</button>
+              </div>
+            </div>
+          </aside>
         </div>
-        <div class="screen-body gallery-body">
-          <div class="groups" id="grid"></div>
+
+        <div class="strip">
+          <div class="film" id="grid"></div>
         </div>
-        <div class="screen-foot">
+
+        <footer class="foot">
           <button type="button" class="btn btn-ghost" data-go="check"><span class="flip" data-icon="arrowLeft"></span><span data-i18n="back"></span></button>
-          <label class="check-inline">
-            <input type="checkbox" id="openSteamChk" checked>
-            <span class="cbox" data-icon="check"></span>
+          <label class="sw">
+            <input type="checkbox" id="openSteamChk" class="sr" checked>
+            <span class="switch" aria-hidden="true"><i></i></span>
             <span data-i18n="openSteamWhenDone"></span>
           </label>
           <div class="foot-spacer"></div>
+          <div class="sel-tools">
+            <span class="sel-count" id="selCount"></span>
+            <button type="button" class="tlink" id="selAll"><span data-i18n="selectAll"></span></button>
+            <span class="dot-sep" aria-hidden="true"></span>
+            <button type="button" class="tlink" id="selNone"><span data-i18n="selectNone"></span></button>
+          </div>
           <span class="foot-hint" id="selHint" data-i18n="selectOne" hidden></span>
-          <button type="button" class="btn btn-primary" id="installBtn"><span data-icon="download"></span><span data-i18n="install"></span></button>
-        </div>
+          <button type="button" class="btn btn-primary" id="installBtn"><span data-icon="download"></span><span data-i18n="install"></span><span class="btn-count" id="installCount"></span></button>
+        </footer>
       </section>
 
-      <!-- 4. Install -->
-      <section class="screen" data-screen="install">
-        <div class="screen-head">
-          <span class="eyebrow" data-i18n="step4Eyebrow"></span>
-          <h2 id="installTitle"></h2>
-          <p class="sub" id="installSub"></p>
-        </div>
-        <div class="screen-body install-body">
-          <div class="progress-card">
-            <div class="progress-top">
-              <span class="progress-label" id="progLabel"></span>
-              <span class="progress-pct" id="progPct">0%</span>
+      <!-- 3. Install -->
+      <section class="screen screen-install" data-screen="install">
+        <div class="inst">
+          <header class="inst-head">
+            <div>
+              <p class="label"><span class="label-n" id="installN">03</span><span id="installLabel"></span></p>
+              <h2 class="h2"><span id="installTitle"></span><em id="installAccent"></em></h2>
+              <p class="lead" id="installSub"></p>
             </div>
-            <div class="progress"><div class="progress-fill" id="progFill"></div></div>
-          </div>
-          <div class="install-cols">
-            <ol class="task-list" id="taskList"></ol>
-            <div class="log-card">
-              <div class="log-head"><span data-icon="terminal"></span><span data-i18n="details"></span></div>
-              <pre class="log" id="log" aria-live="polite"></pre>
-            </div>
-          </div>
+            <div class="pct" aria-hidden="true"><span id="progPct">0</span><small>%</small></div>
+          </header>
+
+          <div class="bar" id="bar"><i id="progFill"></i></div>
+          <p class="bar-label"><span id="progLabel"></span></p>
+
+          <ol class="timeline" id="taskList"></ol>
+
           <div class="notice notice-err" id="installError" hidden></div>
+
+          <div class="drawer" id="drawer">
+            <button type="button" class="drawer-btn" id="drawerBtn" aria-expanded="false" aria-controls="logWrap">
+              <span data-icon="terminal"></span><span data-i18n="details"></span><span class="drawer-n" id="logCount"></span><span class="drawer-chev" data-icon="chevronDown"></span>
+            </button>
+            <div class="drawer-body" id="logWrap"><div><pre class="log" id="log" aria-live="polite"></pre></div></div>
+          </div>
         </div>
-        <div class="screen-foot">
+        <footer class="foot">
+          <span class="foot-note" id="installNote"><span data-icon="shield"></span><span data-i18n="railSafe"></span></span>
           <div class="foot-spacer"></div>
           <button type="button" class="btn btn-ghost" id="errBack" hidden><span class="flip" data-icon="arrowLeft"></span><span data-i18n="back"></span></button>
           <button type="button" class="btn btn-primary" id="retryBtn" hidden><span data-icon="refresh"></span><span data-i18n="retry"></span></button>
-        </div>
+        </footer>
       </section>
 
-      <!-- 5. Done -->
-      <section class="screen" data-screen="done">
+      <!-- 4. Done -->
+      <section class="screen screen-done" data-screen="done">
         <div class="done">
-          <div class="done-badge"><span data-icon="checkBig"></span></div>
-          <h2 id="doneTitle"></h2>
-          <p class="sub" id="doneText"></p>
-          <div class="tip" id="doneTip">
-            <div class="tip-art" aria-hidden="true">
-              <span>STORE</span><span>LIBRARY</span><span>COMMUNITY</span><span class="on">THEMES</span>
+          <div class="done-copy">
+            <p class="label"><span class="label-n done-n"><span data-icon="check"></span></span><span id="doneLabel"></span></p>
+            <h2 class="done-title"><span id="doneTitle"></span><em id="doneAccent"></em></h2>
+            <p class="lead" id="doneText"></p>
+
+            <div class="tip" id="doneTip">
+              <div class="tip-bar" aria-hidden="true">
+                <span>STORE</span><span>LIBRARY</span><span>COMMUNITY</span><span class="on">THEMES</span>
+              </div>
+              <p class="tip-line"><span class="tip-n">A</span><span data-i18n="tip"></span></p>
+              <p class="tip-line"><span class="tip-n">B</span><span data-i18n="tipBigPicture"></span></p>
             </div>
-            <div class="tip-text"><span class="tip-icon" data-icon="lightbulb"></span><span data-i18n="tip"></span></div>
+
+            <div class="done-actions">
+              <button type="button" class="btn btn-primary btn-lg" id="openSteamBtn"><span data-icon="play"></span><span data-i18n="openSteam"></span></button>
+              <button type="button" class="btn btn-light btn-lg" data-win="close"><span data-i18n="finish"></span></button>
+            </div>
           </div>
-          <div class="done-actions">
-            <button type="button" class="btn btn-primary btn-lg" id="openSteamBtn"><span data-icon="play"></span><span data-i18n="openSteam"></span></button>
-            <button type="button" class="btn btn-secondary btn-lg" data-win="close"><span data-i18n="finish"></span></button>
-          </div>
+          <figure class="done-art" id="doneArt">
+            <div class="done-frame" id="doneFrame"></div>
+            <figcaption class="done-cap"><span data-i18n="doneCaption"></span><b id="doneStyle"></b></figcaption>
+          </figure>
         </div>
       </section>
     </main>
   </div>
 
-  <!-- Lightbox -->
-  <div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-labelledby="lbName">
-    <div class="lb-panel">
-      <div class="lb-head">
-        <div class="lb-titles">
-          <div class="lb-name" id="lbName"></div>
-          <div class="lb-desc" id="lbDesc"></div>
-        </div>
-        <div class="seg" role="tablist" id="lbTabs">
-          <button type="button" role="tab" data-tab="library"><span data-icon="grid"></span><span data-i18n="tabLibrary"></span></button>
-          <button type="button" role="tab" data-tab="store"><span data-icon="bag"></span><span data-i18n="tabStore"></span></button>
-        </div>
-        <button type="button" class="icon-btn" id="lbClose" data-i18n-label="close"><span data-icon="x"></span></button>
-      </div>
-      <div class="lb-stage">
-        <button type="button" class="lb-nav lb-prev" id="lbPrev" data-i18n-label="previous"><span class="flip" data-icon="chevronLeft"></span></button>
-        <div class="lb-frame" id="lbFrame"></div>
-        <button type="button" class="lb-nav lb-next" id="lbNext" data-i18n-label="next"><span class="flip" data-icon="chevronRight"></span></button>
-      </div>
-      <div class="lb-foot">
-        <span class="lb-note" id="lbNote"></span>
-        <span class="lb-pos" id="lbPos"></span>
-        <label class="check-inline">
-          <input type="checkbox" id="lbSel">
-          <span class="cbox" data-icon="check"></span>
-          <span data-i18n="includeStyle"></span>
-        </label>
-      </div>
-    </div>
-  </div>
-
   <!-- Confirm dialog -->
   <div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <div class="modal-card">
-      <div class="modal-icon" id="modalIcon"></div>
+      <p class="label modal-label"><span class="label-n" id="modalIcon"></span><span data-i18n="uninstallLabel"></span></p>
       <h3 id="modalTitle"></h3>
       <p id="modalText"></p>
       <div class="modal-actions">

@@ -1,17 +1,21 @@
 /* ═══ Crossbar (الكونسول) — library home design ═══
-   A console cross-media bar. A row of CATEGORY icons across the upper third (Recent, Installed, All games, Most
-   played, Genres); the chosen one sits in the focus column with its label, and ← / → slide the row (one transform).
-   Under it, the cross: a vertical column of that category's games — the focused one large and glowing at a fixed
-   focus position just under the icon, the ones before it fading upward above the row, the rest below. ↑ / ↓,
-   PgUp / PgDn, Home / End, the mouse wheel and clicks move it; every game is reachable (All games = the whole
-   filtered library, and the search fills it). Behind everything: a deep gradient (a preset or the month's colour,
-   picked with the swatches in the header) and ONE slowly animated SVG of luminous ribbon waves; the focused game's
-   art cross-fades faintly behind the waves. The end side shows the focused game's info and the key hints; the top
-   end a clock with the date. Opening a game: an "options" panel slides in from the end edge.
+   A console cross-media bar. A row of CATEGORY icons across the upper third (Search, Recent, Installed, All games,
+   Most played, Genres, Options); the chosen one sits in the focus column with its label, and ← / → slide the row (one
+   transform). Under it, the cross: a vertical column of that category's entries — the focused one large and glowing at
+   a fixed focus position just under the icon, the ones before it fading upward above the row, the rest below. ↑ / ↓,
+   PgUp / PgDn, Home / End, the mouse wheel and clicks move it; every game is reachable (All games = the whole filtered
+   library). Search is a console field: the Search icon (or Ctrl+K, or simply typing a letter) shows one large rounded
+   field over the wave with an on-screen key row, and the column shows the matches live. It drives the core's real
+   search box (#rfs-bar .tb-q), which lives in that field; the rest of the strip (library, sort, genre, sound, What's
+   New, background colour, theme designs) is reached as console Options: the Options icon (or F2) lists them, and Enter
+   opens a console option menu from the end edge (↑ / ↓, Enter, Esc). The header is only the clock and the date.
+   Behind everything: a deep gradient (a preset or the month's colour) and ONE SVG of luminous ribbons whose shape keeps
+   flowing (≤ 30 fps, paused while hidden, while a game is open or off the home page; still with reduced motion).
+   The focused game's art cross-fades faintly behind the waves. Opening a game: an "options" panel from the end edge.
    Rules followed (docs/THEME-KIT.md): only a window of ~20 rows exists in the DOM (4 elements each), images via
    api.lazy with the small header art, the hero image once (the faded backdrop), transforms only on those rows and the
-   category row, the waves are the one large animation (paused while the window is hidden, off with reduced motion),
-   DOM writes only in render() and on input (plus the clock's text once a minute). */
+   category row, the waves are the one large animation, DOM writes only in render() and on input (plus the wave frames
+   and the clock's text once a minute). */
 (function () {
   'use strict';
   const api = window.__rfsLayoutApi;
@@ -20,6 +24,15 @@
   const LTR = api.LTR;
   const EASE = 'cubic-bezier(.22,.7,.2,1)';
   const reduced = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } };
+  const bar = () => document.getElementById('rfs-bar');
+  /* ---- sound: the engine lives in xmb-audio.js next to this file (ambience track + synthesised menu sounds, both
+     off by default). Crossbar's own toggles are the authority for its sounds; the core's sfx() is not used here. */
+  const AUDIO = ((document.currentScript && document.currentScript.src) || '').replace(/xmb\.js(\?.*)?$/, 'xmb-audio.js');
+  if (AUDIO && /xmb-audio\.js/.test(AUDIO) && !document.querySelector('script[data-xmb-audio]')) {
+    const s = document.createElement('script'); s.src = AUDIO; s.dataset.xmbAudio = '1'; document.head.appendChild(s);
+  }
+  const XA = () => window.__xmbAudio || null;
+  const sfx = k => { const a = XA(); if (a) a.play(k); };
 
   /* ---- colour: six presets + "the month" (the console changed its colour each month). [top, middle, bottom, glow rgb] */
   const TINTS = {
@@ -57,47 +70,87 @@
     crimson: T('عنابي', 'Crimson'), amber: T('كهرماني', 'Amber'), graphite: T('رمادي', 'Graphite'),
   };
 
-  /* ---- the ribbon waves: one SVG, three ribbons (a translucent band + a bright line + thin strands), each a seamless
-     repeat that drifts sideways; the drift's phase follows the clock, so a re-render never makes the waves jump */
-  const VW = 1440, VH = 900;
-  function ribbon(P, base, a1, a2, p1, p2, th, t1, p3) {
-    const k = 2 * Math.PI / P, W = VW * 2, step = 16, top = [], bot = [];
-    for (let x = 0; x <= W; x += step) {
-      const y = base + a1 * Math.sin(k * x + p1) + a2 * Math.sin(2 * k * x + p2);
-      top.push([x, y]); bot.push([x, y + th + t1 * Math.sin(k * x + p3)]);
-    }
-    const line = (pts, dy = 0) => pts.map((p, i) => (i ? 'L' : 'M') + p[0] + ' ' + (p[1] + dy).toFixed(1)).join('');
-    const mid = top.map((p, i) => [p[0], (p[1] + bot[i][1]) / 2]);
-    const band = line(top) + bot.slice().reverse().map(p => 'L' + p[0] + ' ' + p[1].toFixed(1)).join('') + 'Z';
-    return { band, top: line(top), bot: line(bot), mid: line(mid) };
-  }
+  /* ---- the ribbon waves: ONE SVG, six paths (two ribbons, each a translucent band between two flowing edges, a bright
+     edge line with one soft glow copy, plus two thin strands inside the front ribbon). Every edge is a sum of three
+     travelling sine waves going different ways at different speeds, so the shape keeps morphing; the band's thickness
+     is its own travelling wave, so the ribbon twists where it crosses zero. Time is the page clock, so a re-render
+     never makes the waves jump. Drawn at ≤ 30 fps; idle (no frames) while hidden, a game is open or off the home page. */
+  const VW = 1440, VH = 900, TAU = Math.PI * 2;
   const RIBBONS = [
-    { r: ribbon(1440, 520, 62, 18, 0.4, 1.3, 70, 34, 2.1), dur: 96, rev: false, bob: 17 },
-    { r: ribbon(720, 590, 40, 12, 2.2, 0.2, 46, 22, 0.9), dur: 132, rev: true, bob: 23 },
-    { r: ribbon(1440, 650, 48, 22, 4.1, 2.6, 30, 16, 1.7), dur: 168, rev: false, bob: 29 },
+    { base: 540, a: [64, 30, 14], k: [1, 2.3, 3.7], w: [.21, -.33, .17], p: [.4, 1.9, 3.1], th: 58, tk: 1.4, tw: -.26, tp: 2.0, to: .3 },
+    { base: 612, a: [42, 22, 10], k: [.8, 1.9, 3.1], w: [-.13, .19, -.27], p: [2.2, .3, 1.1], th: 36, tk: 1.7, tw: .18, tp: .7, to: .55 },
   ];
-  function waveSVG() {
-    const now = performance.now() / 1000;
-    const g = RIBBONS.map((w, i) => `<g class="xb-wb" style="animation-duration:${w.bob}s;animation-delay:-${(now % (w.bob * 2)).toFixed(2)}s">`
-      + `<g class="xb-wd${w.rev ? ' rev' : ''}" style="animation-duration:${w.dur}s;animation-delay:-${(now % w.dur).toFixed(2)}s">`
-      + `<path class="band b${i}" d="${w.r.band}"/>`
-      + `<path class="glow" d="${w.r.top}"/>`
-      + `<path class="line" d="${w.r.top}"/>`
-      + `<path class="strand" d="${w.r.mid}"/>`
-      + `<path class="strand dim" d="${w.r.bot}"/>`
-      + '</g></g>').join('');
-    return `<svg class="xb-wave${document.hidden ? ' paused' : ''}" viewBox="0 0 ${VW} ${VH}" preserveAspectRatio="none" aria-hidden="true" focusable="false">`
-      + '<defs><linearGradient id="xbw-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/>'
-      + '<stop offset=".5" stop-color="#fff" stop-opacity=".11"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>'
-      + g + '</svg>';
+  function edgeY(r, x, t) {
+    const X = x * TAU / VW;
+    return r.base + r.a[0] * Math.sin(r.k[0] * X + r.w[0] * t + r.p[0]) + r.a[1] * Math.sin(r.k[1] * X + r.w[1] * t + r.p[1])
+      + r.a[2] * Math.sin(r.k[2] * X + r.w[2] * t + r.p[2]);
   }
-  // the one wave pauses while Steam's window is hidden (Steam keeps the page alive in the tray)
-  document.addEventListener('visibilitychange', () => {
-    const s = document.querySelector('#rfs .xb-wave');
-    if (s) s.classList.toggle('paused', document.hidden);
-  });
+  const thick = (r, x, t) => r.th * (Math.sin(r.tk * x * TAU / VW + r.tw * t + r.tp) + r.to);
+  /** a smooth path through points (quadratic curves through the midpoints) */
+  function smooth(pts, start) {
+    let d = (start || 'M') + pts[0][0] + ' ' + pts[0][1].toFixed(1);
+    for (let i = 1; i < pts.length - 1; i++) {
+      const mx = (pts[i][0] + pts[i + 1][0]) / 2, my = (pts[i][1] + pts[i + 1][1]) / 2;
+      d += 'Q' + pts[i][0] + ' ' + pts[i][1].toFixed(1) + ' ' + mx + ' ' + my.toFixed(1);
+    }
+    const l = pts[pts.length - 1];
+    return d + 'L' + l[0] + ' ' + l[1].toFixed(1);
+  }
+  function waveFrame(t) {
+    const out = {};
+    RIBBONS.forEach((r, n) => {
+      const top = [], bot = [], s1 = [], s2 = [];
+      for (let x = -60; x <= VW + 60; x += 40) {
+        const y = edgeY(r, x, t), d = thick(r, x, t);
+        top.push([x, y]); bot.push([x, y + d]);
+        if (!n) {
+          s1.push([x, y + d * (.36 + .1 * Math.sin(x * TAU / VW * 2.2 + t * .41))]);
+          s2.push([x, y + d * (.7 + .08 * Math.sin(x * TAU / VW * 1.6 - t * .29 + 1.3))]);
+        }
+      }
+      out['b' + n] = smooth(top) + smooth(bot.slice().reverse(), 'L') + 'Z';
+      out['l' + n] = smooth(top);
+      if (!n) { out.s1 = smooth(s1); out.s2 = smooth(s2); }
+    });
+    return out;
+  }
+  function waveSVG() {
+    const f = waveFrame(performance.now() / 1000);
+    return `<svg class="xb-wave" viewBox="0 0 ${VW} ${VH}" preserveAspectRatio="none" aria-hidden="true" focusable="false">`
+      + '<defs><linearGradient id="xbw-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".02"/>'
+      + '<stop offset=".45" stop-color="#fff" stop-opacity=".15"/><stop offset="1" stop-color="#fff" stop-opacity=".01"/></linearGradient></defs>'
+      + `<path class="band b1" data-w="b1" d="${f.b1}"/><path class="line l1" data-w="l1" d="${f.l1}"/>`
+      + `<path class="band b0" data-w="b0" d="${f.b0}"/><use class="glow" href="#xbw-l0"/><path id="xbw-l0" class="line l0" data-w="l0" d="${f.l0}"/>`
+      + `<path class="strand" data-w="s1" d="${f.s1}"/><path class="strand dim" data-w="s2" d="${f.s2}"/></svg>`;
+  }
+  const Wave = {
+    svg: null, paths: null, raf: 0, idle: 0, last: 0,
+    attach(svg) {
+      this.svg = svg; this.paths = {};
+      for (const p of svg.querySelectorAll('[data-w]')) this.paths[p.dataset.w] = p;
+      this.kick();
+    },
+    kick() { if (!this.raf && !this.idle && this.svg) this.raf = requestAnimationFrame(this.frame); },
+    frame(ts) {
+      const W = Wave;
+      W.raf = 0;
+      if (!W.svg || !W.svg.isConnected) { W.svg = null; return; }   // the design was replaced: stop
+      if (reduced()) return;                                         // reduced motion: the still frame stays
+      if (document.hidden || api.openId != null || !api.root.classList.contains('on')) {
+        W.idle = setTimeout(() => { W.idle = 0; W.kick(); }, 700);   // idle: check again now and then, no frames
+        return;
+      }
+      if (ts - W.last >= 33) {
+        W.last = ts;
+        const f = waveFrame(ts / 1000);
+        for (const k in W.paths) W.paths[k].setAttribute('d', f[k]);
+      }
+      W.raf = requestAnimationFrame(W.frame);
+    },
+  };
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) Wave.kick(); });
 
-  /* ---- clock + date at the top end (the only timer: one text write a minute, skipped while hidden) */
+  /* ---- clock + date at the top end (one text write a minute, skipped while hidden) */
   const LOC = LTR ? 'en-US' : 'ar-u-nu-latn';
   const fmtT = (() => { try { return new Intl.DateTimeFormat(LOC, { hour: 'numeric', minute: '2-digit' }); } catch (e) { return null; } })();
   const fmtD = (() => { try { return new Intl.DateTimeFormat(LOC, { weekday: 'short', day: 'numeric', month: 'short' }); } catch (e) { return null; } })();
@@ -112,32 +165,59 @@
     c._k = key;
     c.firstElementChild.textContent = t; c.lastElementChild.textContent = d;
   }
-  /** the signed-in name, best effort (Steam has no stable API for it; hidden when unknown) */
-  function userName() {
-    const ctxs = [];
-    try { if (window.opener) ctxs.push(window.opener); } catch (e) { /* cross-origin */ }
-    ctxs.push(window);
-    for (const c of ctxs) {
-      try {
-        const n = (c.friendStore && c.friendStore.self && c.friendStore.self.persona && c.friendStore.self.persona.m_strPlayerName)
-          || (c.App && c.App.m_CurrentUser && (c.App.m_CurrentUser.strPersonaName || c.App.m_CurrentUser.strAccountName));
-        if (n) return String(n);
-      } catch (e) { /* not there */ }
-    }
-    return '';
-  }
 
   /* ---- the categories */
   const CATS = [
+    { id: 'search', icon: 'search', name: T('البحث', 'Search') },
     { id: 'recent', icon: 'clock', name: T('الأخيرة', 'Recent') },
     { id: 'installed', icon: 'drive', name: T('المثبتة', 'Installed') },
     { id: 'all', icon: 'library', name: T('كل الألعاب', 'All games') },
     { id: 'top', icon: 'fire', name: T('الأكثر لعباً', 'Most played') },
     { id: 'genres', icon: 'tag', name: T('الأنواع', 'Genres') },
+    { id: 'options', icon: 'sliders', name: T('الخيارات', 'Options') },
   ];
+  /* ---- the console Options (everything the old filter strip did) */
+  const OPTS = [
+    { id: 'source', icon: 'library', name: T('المكتبة', 'Library'), menu: true },
+    { id: 'sort', icon: 'sort', name: T('الترتيب', 'Sort by'), menu: true },
+    { id: 'genre', icon: 'tag', name: T('النوع', 'Genre'), menu: true },
+    { id: 'tint', icon: 'palette', name: T('لون الخلفية', 'Background colour'), menu: true },
+    { id: 'news', icon: 'news', name: T('آخر تحديثات ألعابك', 'What\'s New'), menu: false },
+    { id: 'amb', icon: 'volume', name: T('أجواء الخلفية', 'Background ambience'), menu: false },
+    { id: 'msfx', icon: 'pulse', name: T('أصوات القائمة', 'Menu sounds'), menu: false },
+    { id: 'themes', icon: 'sparkle', name: T('تصاميم الثيم', 'Theme designs'), menu: false },
+  ];
+  const ON = T('شغّال', 'On'), OFF = T('طافي', 'Off');
   const countGames = n => T(
     n === 1 ? 'لعبة وحدة' : n === 2 ? 'لعبتين' : n >= 3 && n <= 10 ? `${NUM.format(n)} ألعاب` : `${NUM.format(n)} لعبة`,
     `${NUM.format(n)} ${n === 1 ? 'game' : 'games'}`);
+  const txt = sel => { const b = bar(), e = b && b.querySelector(sel); return e ? e.textContent.trim() : ''; };
+  /** an option's current value, as the strip shows it */
+  function optValue(id) {
+    const st = api.state;
+    if (id === 'sort') { const b = bar() && bar().querySelector(`.tb-sort .rf-dd-menu button[data-v="${st.sort}"]`); return b ? b.textContent.trim() : txt('.tb-sort-name'); }
+    if (id === 'source') return txt('.tb-src-name');
+    if (id === 'genre') return st.genre || T('كل الأنواع', 'All genres');
+    if (id === 'tint') return TINT_NAMES[tintId()];
+    if (id === 'news') return st.news ? ON : OFF;
+    if (id === 'amb') return XA() && XA().amb ? ON : OFF;
+    if (id === 'msfx') return XA() && XA().sfx ? ON : OFF;
+    return T('اختر شكل ستيم كله', 'Choose the look of all of Steam');
+  }
+  /** the choices of a strip dropdown (opening it fills the menu; it is closed again at once) */
+  function ddChoices(cls, attr) {
+    const b = bar(), dd = b && b.querySelector('.' + cls);
+    if (!dd) return [];
+    if (cls !== 'tb-sort') { const btn = dd.querySelector('.rf-dd-btn'); if (btn) { btn.click(); dd.classList.remove('open'); } }
+    return [...dd.querySelectorAll('.rf-dd-menu button')].map(x => {
+      const n = x.querySelector('b');
+      return { v: x.getAttribute(attr) || '', label: (x.firstChild && x.firstChild.nodeType === 3 ? x.firstChild.textContent : x.textContent).trim(), n: n ? n.textContent : '', on: x.classList.contains('on') };
+    });
+  }
+  function ddPick(cls, attr, v) {
+    const b = bar(), x = b && [...b.querySelectorAll(`.${cls} .rf-dd-menu button`)].find(y => (y.getAttribute(attr) || '') === v);
+    if (x) x.click();
+  }
 
   /** the thin second line of a row: hours · last played (· not installed) */
   function subLine(g, run) {
@@ -147,21 +227,21 @@
     if (!g.installed) bits.push(T('غير مثبتة', 'Not installed'));
     return bits.join(' · ');
   }
+  const OSK = 'abcdefghijklmnopqrstuvwxyz'.split('');
 
   const Layout = {
     fixedHeight: true,
     dockInside: true,
-    el: null, list: null, row: null, info: null, art: null, clock: null,
+    el: null, list: null, row: null, info: null, art: null, clock: null, om: null,
     lists: {}, cat: 'recent', sel: 0, selBy: {}, pool: new Map(), G: null,
     lastQ: '', lastGenre: '', wheelAcc: 0, wheelT: 0, artUrl: '', artTok: 0, settle: 0,
 
     render(games, w, h) {
-      this.pool = new Map();
-      const running = api.running();
+      this.pool = new Map(); this.om = null;
       const st = api.state;
       const q = (st.query || '').trim().toLowerCase();
 
-      // the category lists (all follow the strip's search + genre; Genres counts ignore the genre filter)
+      // the category lists (all follow the search + genre; Genres counts ignore the genre filter)
       const recent = games.filter(g => g.lastPlayed > 0).sort((a, b) => b.lastPlayed - a.lastPlayed).slice(0, 40);
       const top = games.filter(g => g.playtimeMin > 0).sort((a, b) => b.playtimeMin - a.playtimeMin).slice(0, 100);
       const counts = new Map();
@@ -171,51 +251,54 @@
       }
       const genres = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 40).map(([t, n]) => ({ genre: t, n }));
       if (st.genre) genres.unshift({ genre: '', n: (st.games || []).length, clear: true });
+      const all = games.map(g => ({ g }));
       this.lists = {
-        recent: recent.map(g => ({ g })), installed: games.filter(g => g.installed).map(g => ({ g })),
-        all: games.map(g => ({ g })), top: top.map(g => ({ g })), genres,
+        search: all, recent: recent.map(g => ({ g })), installed: games.filter(g => g.installed).map(g => ({ g })),
+        all, top: top.map(g => ({ g })), genres, options: OPTS.map(o => ({ opt: o })),
       };
-      // a new search (or genre) shows its matches in All games, from the first one
-      if ((q && q !== this.lastQ) || (st.genre && st.genre !== this.lastGenre)) { this.cat = 'all'; this.selBy.all = null; }
+      // a new search shows its matches under Search; a new genre in All games — from the first one
+      if (q && q !== this.lastQ) { this.cat = 'search'; this.selBy.search = null; }
+      else if (st.genre && st.genre !== this.lastGenre) { this.cat = 'all'; this.selBy.all = null; }
       this.lastQ = q; this.lastGenre = st.genre || '';
       if (!this.lists[this.cat]) this.cat = 'recent';
-      if (this.cat === 'recent' && !recent.length && !q) this.cat = 'all';
+      if (this.cat === 'recent' && !recent.length) this.cat = 'all';
 
       // geometry: the focus column, the category row in the upper third, the focus row just under its label
       const narrow = w < 1100, tiny = w < 860;
       const pitch = narrow ? 112 : 128;
       const fx = Math.round(Math.min(300, Math.max(150, w * (narrow ? .19 : .17))));
-      const catY = Math.max(150, Math.round(h * .27));
+      const catY = Math.max(176, Math.round(h * .29));
       const G = this.G = { w, h, pitch, fx, catY, focusY: catY + 118, above: catY - 14, rowH: 62, selH: 84, gap: 20 };
       G.below = Math.max(3, Math.ceil((h - G.focusY - G.selH) / G.rowH) + 1);
       const iw = tiny ? 0 : Math.round(Math.min(420, Math.max(290, w * .27)));
       const lw = Math.max(260, (tiny ? w - 32 : w - iw - 56 - 40) - (fx - 88));
 
-      const tid = tintId();
       const el = div('xb' + (narrow ? ' narrow' : '') + (tiny ? ' tiny' : ''));
       el.style.height = h + 'px';
       el.style.setProperty('--fx', fx + 'px'); el.style.setProperty('--pitch', pitch + 'px'); el.style.setProperty('--cat-y', catY + 'px');
       el.style.setProperty('--focus-y', G.focusY + 'px'); el.style.setProperty('--iw', iw + 'px'); el.style.setProperty('--lw', lw + 'px');
-      applyTint(el, tid);
-      const sw = ['month', ...Object.keys(TINTS)].map(id => `<button type="button" class="xb-swb${id === tid ? ' on' : ''}" data-tint="${id}" title="${esc(TINT_NAMES[id])}" aria-label="${esc(TINT_NAMES[id])}" aria-pressed="${id === tid}" style="--c:${tintOf(id)[0]}">${id === 'month' ? ic('calendar') : ''}</button>`).join('');
+      applyTint(el, tintId());
       const [ct, cd] = clockText();
-      const who = userName();
       const cats = CATS.map((c, i) => {
         const n = this.lists[c.id].filter(x => !x.clear).length;
-        return `<button type="button" class="xb-cat" data-c="${c.id}" data-k="${i}" aria-label="${esc(c.name)}"><span class="ico">${ic(c.icon)}</span><span class="lb">${esc(c.name)}</span><small>${esc(c.id === 'genres' ? NUM.format(n) : countGames(n))}</small></button>`;
+        const sub = c.id === 'options' ? 'F2' : c.id === 'genres' ? NUM.format(n) : c.id === 'search' ? (q ? countGames(n) : 'Ctrl K') : countGames(n);
+        return `<button type="button" class="xb-cat" data-c="${c.id}" data-k="${i}" aria-label="${esc(c.name)}"><span class="ico">${ic(c.icon)}</span><span class="lb">${esc(c.name)}</span><small dir="auto">${esc(sub)}</small></button>`;
       }).join('');
+      const keys = OSK.map(k => `<button type="button" class="xb-k" data-k="${k}" tabindex="-1">${k}</button>`).join('')
+        + `<button type="button" class="xb-k wide" data-k=" " tabindex="-1">${esc(T('مسافة', 'Space'))}</button>`
+        + `<button type="button" class="xb-k wide" data-k="back" tabindex="-1" aria-label="${esc(T('حذف', 'Delete'))}">${ic(LTR ? 'chevL' : 'chevR')}${esc(T('حذف', 'Delete'))}</button>`;
+      const kbd = k => `<kbd>${esc(k)}</kbd>`;
       el.innerHTML = `<div class="xb-bg" aria-hidden="true"><div class="xb-art"></div>${waveSVG()}</div>
-        <header class="xb-top">
+        <header class="xb-top"><div class="xb-clock" aria-label="${esc(T('الساعة', 'Clock'))}"><b dir="ltr">${esc(ct)}</b><span>${esc(cd)}</span></div></header>
+        <div class="xb-search" role="search" aria-label="${esc(T('البحث في ألعابك', 'Search your games'))}">
           <div class="rf-dock" data-rfs-dock></div>
-          <div class="xb-sys">
-            <div class="xb-sw" role="group" aria-label="${esc(T('لون الخلفية', 'Background colour'))}">${sw}</div>
-            ${who ? `<span class="xb-user" dir="auto" title="${esc(who)}">${ic('users')}<b>${esc(who)}</b></span>` : ''}
-            <div class="xb-clock" aria-label="${esc(T('الساعة', 'Clock'))}"><b dir="ltr">${esc(ct)}</b><span>${esc(cd)}</span></div>
-          </div>
-        </header>
+          <div class="xb-osk" aria-hidden="true">${keys}</div>
+          <div class="xb-hint"><span>${kbd('↓')}${esc(T('النتائج', 'Results'))}</span><span>${kbd('Enter')}${esc(T('فتح أول لعبة', 'Open the first'))}</span><span>${kbd('Esc')}${esc(T('مسح', 'Clear'))}</span></div>
+        </div>
         <nav class="xb-cats" aria-label="${esc(T('الفئات', 'Categories'))}"><div class="xb-row">${cats}</div></nav>
         <div class="xb-list" role="listbox" aria-label="${esc(T('الألعاب', 'Games'))}"></div>
-        ${iw ? '<aside class="xb-info" aria-live="polite"></aside>' : ''}`;
+        ${iw ? '<aside class="xb-info" aria-live="polite"></aside>' : ''}
+        <div class="xb-om" role="dialog" hidden></div>`;
 
       this.el = el;
       this.list = $('.xb-list', el);
@@ -224,30 +307,51 @@
       this.art = $('.xb-art', el);
       this.clock = $('.xb-clock', el);
       // keep the backdrop art across re-renders (no flash while typing a search)
-      if (this.artUrl) { this.art.style.backgroundImage = cssUrl(this.artUrl); this.art.style.opacity = ''; this.art.classList.toggle('on', true); }
+      if (this.artUrl) { this.art.style.backgroundImage = cssUrl(this.artUrl); this.art.classList.toggle('on', true); }
 
       // restore the place in this category
       this.sel = this.indexOf(this.cat, this.selBy[this.cat]);
+      el.classList.toggle('searching', this.cat === 'search');
       this.paintCats(false);
       this.place();
       this.focusChanged(false);
 
       el.addEventListener('click', e => this.onClick(e));
       el.addEventListener('wheel', e => this.onWheel(e), { passive: false });
+      // the real search box lives in the field: focusing it (Ctrl+K, Tab, a click) is choosing Search
+      el.addEventListener('focusin', e => { if (e.target.matches && e.target.matches('.tb-q') && this.cat !== 'search') this.setCat('search'); });
+      // the on-screen keys must not take the focus away from the field
+      el.addEventListener('mousedown', e => { if (e.target.closest('.xb-k, .xb-omi')) e.preventDefault(); });
 
       api.stage.replaceChildren(el);
+      Wave.attach($('.xb-wave', el));
       if (!clockTimer) clockTimer = setInterval(paintClock, 15000);
+      // the strip writes its labels right after this render: the Options rows read them then
+      if (this.cat === 'options') Promise.resolve().then(() => this.refreshOpts());
     },
 
     /* ---------- state helpers ---------- */
     cur() { return this.lists[this.cat] || []; },
+    keyOf(x) { return x ? (x.g ? String(x.g.appid) : x.opt ? 'o:' + x.opt.id : 'g:' + x.genre) : null; },
     indexOf(cat, key) {
       const L = this.lists[cat] || [];
       if (key == null) return 0;
-      const i = L.findIndex(x => (x.g ? String(x.g.appid) : 'g:' + x.genre) === key);
+      const i = L.findIndex(x => this.keyOf(x) === key);
       return i < 0 ? 0 : i;
     },
-    keyOf(x) { return x ? (x.g ? String(x.g.appid) : 'g:' + x.genre) : null; },
+    input() { const b = bar(); return b ? b.querySelector('.tb-q') : null; },
+    setQuery(v) {
+      const i = this.input();
+      if (!i) return;
+      i.value = v;
+      i.dispatchEvent(new Event('input', { bubbles: true }));
+    },
+    focusSearch() {
+      const i = this.input();
+      if (!i) return;
+      i.focus({ preventScroll: true });
+      try { const n = i.value.length; i.setSelectionRange(n, n); } catch (e) { /* fine */ }
+    },
 
     /* ---------- the category row ---------- */
     paintCats(anim) {
@@ -259,17 +363,23 @@
     },
     setCat(id) {
       if (id === this.cat || !this.lists[id]) return;
+      this.closeMenu();
       this.selBy[this.cat] = this.keyOf(this.cur()[this.sel]);
+      // leaving Search leaves its text behind (the other categories show the whole library again)
+      if (this.cat === 'search') { const i = this.input(); if (i && i.value) { this.setQuery(''); if (document.activeElement === i) i.blur(); } }
       this.cat = id;
       this.sel = this.indexOf(id, this.selBy[id]);
-      api.sfx('tick');
+      sfx('cat');
+      this.el.classList.toggle('searching', id === 'search');
       this.paintCats(true);
       // the column is rebuilt for the new category and drops in softly
       this.list.replaceChildren(); this.pool = new Map();
       this.place();
       if (!reduced()) this.list.animate([{ opacity: 0, transform: 'translateY(-10px)' }, { opacity: 1, transform: 'none' }], { duration: 260, easing: EASE });
       this.focusChanged(true);
+      if (id === 'options') this.refreshOpts();
     },
+    stepCat(d) { const i = CATS.findIndex(c => c.id === this.cat) + d; if (CATS[i]) this.setCat(CATS[i].id); },
 
     /* ---------- the column: only a window of rows around the focus exists ---------- */
     yOf(i) {
@@ -280,7 +390,7 @@
     },
     makeRow(i, x) {
       const r = document.createElement('div');
-      r.className = 'xb-it' + (x.g ? '' : ' gen') + (x.g && api.running().has(x.g.appid) ? ' running' : '') + (x.g && !x.g.installed ? ' ni' : '');
+      r.className = 'xb-it' + (x.g ? '' : ' gen') + (x.opt ? ' opt' : '') + (x.g && api.running().has(x.g.appid) ? ' running' : '') + (x.g && !x.g.installed ? ' ni' : '');
       r.dataset.i = i;
       r.setAttribute('role', 'option');
       if (x.g) {
@@ -290,12 +400,20 @@
         r.innerHTML = `<div class="art"></div><div class="tx"><b class="t" dir="auto" title="${esc(g.name)}">${esc(g.name)}</b><span class="h">${esc(subLine(g, api.running().has(g.appid)))}${ach}</span></div>`;
         const art = r.firstElementChild;
         lazy(r, gg => { const u = cssUrl(first(gg.images.header) || first(gg.images.capsule)); if (art._u !== u) { art._u = u; art.style.setProperty('--img', u); } });
+      } else if (x.opt) {
+        r.dataset.opt = x.opt.id;
+        r.innerHTML = `<div class="art">${ic(x.opt.icon)}</div><div class="tx"><b class="t">${esc(x.opt.name)}</b><span class="h" dir="auto">${esc(optValue(x.opt.id))}</span></div>`;
       } else {
         const on = !x.clear && api.state.genre === x.genre;
         r.classList.toggle('on', on);
         r.innerHTML = `<div class="art">${ic(x.clear ? 'layers' : 'tag')}</div><div class="tx"><b class="t" dir="auto">${esc(x.clear ? T('كل الأنواع', 'All genres') : x.genre)}</b><span class="h">${esc(x.clear ? T('شيل فلتر النوع', 'Clear the genre filter') : countGames(x.n))}</span></div>`;
       }
       return r;
+    },
+    refreshOpts() {
+      if (this.cat !== 'options' || !this.el || !this.el.isConnected) return;
+      for (const r of this.pool.values()) { const h = r.dataset.opt && r.querySelector('.h'); if (h) h.textContent = optValue(r.dataset.opt); }
+      this.paintInfo(this.cur()[this.sel]);
     },
     place() {
       const L = this.cur(), n = L.length, s = this.sel, G = this.G;
@@ -326,10 +444,10 @@
       const n = this.cur().length;
       if (!n) return;
       i = Math.max(0, Math.min(n - 1, i));
-      if (i === this.sel) return;
+      if (i === this.sel) { if (sound) sfx('edge'); return; }
       this.sel = i;
       this.selBy[this.cat] = this.keyOf(this.cur()[i]);
-      if (sound) api.sfx('tick');
+      if (sound) sfx('tick');
       this.place();
       this.focusChanged(true);
     },
@@ -339,7 +457,7 @@
       const x = this.cur()[this.sel];
       this.paintInfo(x);
       clearTimeout(this.settle);
-      if (!x || !x.g) { this.setArt(''); return; }
+      if (!x || !x.g) { if (!x || !x.opt) this.setArt(''); return; }
       const g = x.g;
       // the big art + details only once the focus rests (holding ↓ must not load a hero image per row)
       this.settle = setTimeout(() => {
@@ -384,6 +502,13 @@
       const kick = `<span class="xb-kick">${esc(catName)}${pos ? `<i dir="ltr">${esc(pos)}</i>` : ''}</span>`;
       const kbd = k => `<kbd>${esc(k)}</kbd>`;
       if (!x) { box.innerHTML = kick; return; }
+      if (x.opt) {
+        const o = x.opt;
+        box.innerHTML = `${kick}<h2>${esc(o.name)}</h2>
+          <dl class="xb-facts"><div><dt>${ic(o.icon)}${esc(T('الحالي', 'Current'))}</dt><dd dir="auto">${esc(optValue(o.id))}</dd></div></dl>
+          <div class="xb-hint"><span>${kbd('Enter')}${esc(o.menu ? T('اختيار', 'Choose') : o.id === 'themes' ? T('فتح', 'Open') : T('تبديل', 'Toggle'))}</span><span>${kbd('F2')}${esc(T('الخيارات', 'Options'))}</span></div>`;
+        return;
+      }
       if (!x.g) {
         const sum = (api.state.games || []).filter(g => x.clear || (g.genres || []).includes(x.genre)).reduce((m, g) => m + (g.playtimeMin || 0), 0);
         box.innerHTML = `${kick}<h2 dir="auto">${esc(x.clear ? T('كل الأنواع', 'All genres') : x.genre)}</h2>
@@ -408,32 +533,115 @@
         <div class="xb-hint"><span>${kbd('Enter')}${esc(T('فتح', 'Open'))}</span><span>${kbd('Ctrl')}<em>+</em>${kbd('Enter')}${esc(g.installed ? T('تشغيل', 'Play') : T('تثبيت', 'Install'))}</span></div>`;
     },
 
+    /* ---------- the console option menu (from the end edge): ↑ / ↓, Enter, Esc ---------- */
+    openMenu(id) {
+      const o = OPTS.find(x => x.id === id);
+      let items = [];
+      if (id === 'sort') items = ddChoices('tb-sort', 'data-v').map(c => ({ ...c, on: c.v === api.state.sort, n: '' }));
+      else if (id === 'source') items = ddChoices('tb-src', 'data-id');
+      else if (id === 'genre') items = ddChoices('tb-genre', 'data-g');
+      else if (id === 'tint') { const cur = tintId(); items = ['month', ...Object.keys(TINTS)].map(k => ({ v: k, label: TINT_NAMES[k], on: k === cur, c: tintOf(k)[0] })); }
+      if (!o || !items.length) return;
+      const box = $('.xb-om', this.el);
+      const i0 = Math.max(0, items.findIndex(c => c.on));
+      box.innerHTML = `<div class="xb-om-h">${ic(o.icon)}<b>${esc(o.name)}</b></div>
+        <div class="xb-om-list">${items.map((c, i) => `<button type="button" class="xb-omi${c.on ? ' on' : ''}${i === i0 ? ' sel' : ''}" data-i="${i}" tabindex="-1">${c.c ? `<i class="sw" style="--c:${c.c}"></i>` : '<i class="dot"></i>'}<span dir="auto">${esc(c.label)}</span>${c.n ? `<b>${esc(c.n)}</b>` : ''}</button>`).join('')}</div>
+        <div class="xb-hint"><span><kbd>Enter</kbd>${esc(T('اختيار', 'Choose'))}</span><span><kbd>Esc</kbd>${esc(T('رجوع', 'Back'))}</span></div>`;
+      box.hidden = false;
+      this.om = { id, items, i: i0, box };
+      this.el.classList.toggle('om-on', true);
+      sfx('slide');
+      const sel = box.querySelector('.xb-omi.sel'); if (sel) sel.scrollIntoView({ block: 'nearest' });
+      if (!reduced()) box.animate([{ transform: `translateX(${LTR ? 40 : -40}px)`, opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 260, easing: EASE });
+    },
+    closeMenu() {
+      if (!this.om) return;
+      const box = this.om.box;
+      this.om = null;
+      box.hidden = true; box.replaceChildren();
+      this.el.classList.toggle('om-on', false);
+    },
+    menuGo(i) {
+      const m = this.om;
+      if (!m) return;
+      i = Math.max(0, Math.min(m.items.length - 1, i));
+      if (i === m.i) return;
+      const bs = m.box.querySelectorAll('.xb-omi');
+      bs[m.i].classList.toggle('sel', false); bs[i].classList.toggle('sel', true);
+      m.i = i; bs[i].scrollIntoView({ block: 'nearest' });
+      sfx('tick');
+    },
+    menuPick(i) {
+      const m = this.om;
+      if (!m) return;
+      const c = m.items[i];
+      this.closeMenu();
+      if (!c) return;
+      if (m.id === 'tint') {
+        try { localStorage.setItem(TINT_KEY, c.v); } catch (e) { /* private */ }
+        applyTint(this.el, c.v); sfx('confirm'); this.refreshOpts();
+      } else if (m.id === 'sort') { sfx('confirm'); ddPick('tb-sort', 'data-v', c.v); }
+      else if (m.id === 'source') { sfx('confirm'); ddPick('tb-src', 'data-id', c.v); }
+      else if (m.id === 'genre') { sfx('confirm'); ddPick('tb-genre', 'data-g', c.v); }
+    },
+    menuKey(e) {
+      const k = e.key, m = this.om;
+      const back = LTR ? 'ArrowLeft' : 'ArrowRight';
+      if (k === 'ArrowDown') this.menuGo(m.i + 1);
+      else if (k === 'ArrowUp') this.menuGo(m.i - 1);
+      else if (k === 'PageDown') this.menuGo(m.i + 8);
+      else if (k === 'PageUp') this.menuGo(m.i - 8);
+      else if (k === 'Home') this.menuGo(0);
+      else if (k === 'End') this.menuGo(m.items.length - 1);
+      else if (k === 'Enter' || k === ' ' || k === 'Spacebar') this.menuPick(m.i);
+      else if (k === 'Escape' || k === 'Backspace' || k === back) { this.closeMenu(); sfx('close'); }
+      else if (e.ctrlKey || e.altKey || e.metaKey) return false;
+      return true;
+    },
+    optAct(id) {
+      const o = OPTS.find(x => x.id === id);
+      if (!o) return;
+      if (o.menu) { this.openMenu(id); return; }
+      if (id === 'amb' || id === 'msfx') { const a = XA(); if (a) { if (id === 'amb') a.setAmb(!a.amb); else a.setSfx(!a.sfx); } this.refreshOpts(); return; }
+      const b = bar(), btn = b && b.querySelector(id === 'news' ? '.tb-news' : id === 'sound' ? '.tb-snd' : '.tb-theme');
+      if (btn) btn.click();
+      if (id !== 'themes') Promise.resolve().then(() => this.refreshOpts());
+    },
+
     /* ---------- input ---------- */
     activate(x, play) {
       if (!x) return;
+      if (x.opt) { this.optAct(x.opt.id); return; }
       if (!x.g) {
         api.state.genre = x.clear ? '' : x.genre;
         if (!x.clear) { this.cat = 'all'; this.selBy.all = null; }
-        api.sfx('tick');
+        sfx('tick');
         api.rerender();
         return;
       }
       if (play) { api.launch(x.g); return; }
       api.openGame(x.g, this.source(x.g.appid));
     },
+    type(k) {
+      const i = this.input();
+      if (!i) return;
+      const v = k === 'back' ? i.value.slice(0, -1) : i.value + k;
+      this.focusSearch();
+      this.setQuery(v);
+      sfx('tick');
+    },
     onClick(e) {
       if (e.target.closest('#rfs-bar')) return;
-      const sw = e.target.closest('.xb-swb');
-      if (sw) {
-        const id = sw.dataset.tint;
-        try { localStorage.setItem(TINT_KEY, id); } catch (err) { /* private */ }
-        applyTint(this.el, id);
-        for (const b of sw.parentElement.children) { const on = b === sw; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); }
-        api.sfx('tick');
+      if (this.om) {
+        const it = e.target.closest('.xb-omi');
+        if (it) this.menuPick(+it.dataset.i);
+        else if (!e.target.closest('.xb-om')) this.closeMenu();
         return;
       }
+      const k = e.target.closest('.xb-k');
+      if (k) { this.type(k.dataset.k); return; }
       const c = e.target.closest('.xb-cat');
-      if (c) { this.setCat(c.dataset.c); return; }
+      if (c) { this.setCat(c.dataset.c); if (c.dataset.c === 'search') this.focusSearch(); return; }
       const r = e.target.closest('.xb-it');
       if (!r || e.detail > 1) return;
       const i = +r.dataset.i;
@@ -441,7 +649,7 @@
       this.activate(this.cur()[i], false);
     },
     onWheel(e) {
-      if (e.target.closest('#rfs-bar, .xb-info, .rf-dd-menu')) return;
+      if (e.target.closest('#rfs-bar, .xb-info, .rf-dd-menu, .xb-search')) return;
       e.preventDefault();
       const horiz = e.shiftKey || Math.abs(e.deltaX) > Math.abs(e.deltaY);
       const d = horiz ? (e.deltaX || e.deltaY) : e.deltaY;
@@ -452,27 +660,35 @@
       if (Math.abs(this.wheelAcc) < 48) return;
       const dir = this.wheelAcc > 0 ? 1 : -1;
       this.wheelAcc = 0;
-      if (horiz) { const k = CATS.findIndex(c => c.id === this.cat) + dir; if (CATS[k]) this.setCat(CATS[k].id); }
+      if (this.om) this.menuGo(this.om.i + dir);
+      else if (horiz) this.stepCat(dir);
       else this.go(this.sel + dir);
     },
     /** ← / → categories (visual direction: in Arabic the next one is on the left), ↑ / ↓ PgUp / PgDn Home / End the
-        column, Enter opens, Ctrl+Enter / Space plays */
+        column, Enter opens / chooses, Ctrl+Enter / Space plays, F2 = Options, any letter = Search */
     key(e) {
       if (e.altKey || e.metaKey || !this.el || !this.el.isConnected) return false;
+      if (this.om) return this.menuKey(e);
       const k = e.key, L = this.cur();
+      if (k === 'F2') { this.setCat('options'); return true; }
+      // typing a name anywhere on the home page: the field opens and takes the letter (not handled → it types)
+      if (!e.ctrlKey && k.length === 1 && k !== ' ' && /[\p{L}\p{N}]/u.test(k)) {
+        if (this.cat !== 'search') this.setCat('search');
+        this.focusSearch();
+        return false;
+      }
       if (k === 'Enter' || k === ' ' || k === 'Spacebar') {
         const x = L[this.sel];
-        if (!x) return false;
-        this.activate(x, k !== 'Enter' || e.ctrlKey);
+        if (!x) { if (this.cat === 'search') { this.focusSearch(); return true; } return false; }
+        this.activate(x, x.g && (k !== 'Enter' || e.ctrlKey));
         return true;
       }
       if (e.ctrlKey) return false;
+      if (k === 'Escape' && this.cat === 'search' && api.state.query) { this.setQuery(''); return true; }
       const fwd = LTR ? 'ArrowRight' : 'ArrowLeft', back = LTR ? 'ArrowLeft' : 'ArrowRight';
-      if (k === fwd || k === back) {
-        const i = CATS.findIndex(c => c.id === this.cat) + (k === fwd ? 1 : -1);
-        if (CATS[i]) this.setCat(CATS[i].id);
-        return true;
-      }
+      if (k === fwd || k === back) { this.stepCat(k === fwd ? 1 : -1); return true; }
+      // ↑ on the first result goes back up into the field
+      if (k === 'ArrowUp' && this.cat === 'search' && this.sel === 0) { this.focusSearch(); return true; }
       const page = Math.max(3, this.G.below - 1);
       const to = { ArrowDown: this.sel + 1, ArrowUp: this.sel - 1, PageDown: this.sel + page, PageUp: this.sel - page, Home: 0, End: L.length - 1 }[k];
       if (to == null) return false;
@@ -518,7 +734,7 @@
         const bs = [...panel.querySelectorAll('.rf-act, .xo-x')];
         const i = bs.indexOf(document.activeElement);
         const n = bs[(i < 0 ? 0 : i + (e.key === 'ArrowDown' ? 1 : -1) + bs.length) % bs.length];
-        if (n) { e.preventDefault(); e.stopPropagation(); n.focus(); api.sfx('tick'); }
+        if (n) { e.preventDefault(); e.stopPropagation(); n.focus(); sfx('tick'); }
       });
       const artEl = $('.xo-art', panel);
       const paintArt = () => { const u = first(g.images.hero) || first(g.images.header) || first(g.images.capsule); if (u && artEl._u !== u) { artEl._u = u; artEl.style.backgroundImage = cssUrl(u); } };
@@ -529,7 +745,7 @@
         const a = $('.xo-ach', panel); if (a) a.innerHTML = api.achHTML(g);
         if (!$('.xo-desc', panel)) { const d = api.gameDesc(g); if (d) panel.querySelector('.xo-body').insertAdjacentHTML('beforeend', `<p class="xo-desc" dir="auto">${esc(d)}</p>`); }
       });
-      api.sfx('slide');
+      sfx('slide');
       const off = LTR ? '100%' : '-100%';
       if (!reduced()) {
         await Promise.all([
@@ -549,7 +765,7 @@
       const panel = $('.xo-panel', sheet), shade = $('.xo-shade', sheet);
       if (!panel) return;
       panel.classList.toggle('ready', false);
-      api.sfx('close');
+      sfx('close');
       if (reduced()) return;
       const off = LTR ? '100%' : '-100%', f = { fill: 'forwards' };
       await Promise.all([
