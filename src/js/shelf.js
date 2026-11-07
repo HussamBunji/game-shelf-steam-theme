@@ -16,6 +16,12 @@
 
   const VERSION = '4.0.0';
   const LOG = (...a) => console.log('%c[رف الألعاب]', 'color:#ffb36b', ...a);
+  /* Big Picture: bigpicture.js loads this same engine into the "Steam Big Picture Mode" window, so a theme's home design
+     replaces Big Picture's home too (TV size, gamepad input — see "Big Picture host" near the end). Everything else
+     here (nav THEMES button, filter strip, family / downloads buttons, picker, Arabic tokens) is desktop-only. */
+  const BPM = window.__rfsBpmHost === true || document.title === 'Steam Big Picture Mode';
+  /* the home designs that have a Big Picture version (bigpicture.js STYLES modes 'both'); the rest keep Valve's home */
+  const BPM_LAYOUTS = new Set(['gallery', 'coverflow', 'terminal', 'vault', 'vinyl', 'arcade', 'cupertino', 'cyberpunk', 'shelter', 'xmb']);
 
   /* =================================================================
      1. SteamAPI
@@ -40,12 +46,18 @@
     cls(key, ...hints) { return this.clsAll(key, ...hints)[0] || null; },
     sel(key, ...hints) { const a = this.clsAll(key, ...hints); return a.length ? a.map(k => '.' + k).join(',') : null; },
     el(key, ...hints) { const s = this.sel(key, ...hints); return s ? document.querySelector(s) : null; },
-    route() { try { return this.ctx().MainWindowBrowserManager.m_lastLocation.pathname || ''; } catch (e) { return ''; } },
+    route() {
+      try {
+        if (BPM) return this.ctx().SteamUIStore.WindowStore.GamepadUIMainWindowInstance.m_history.location.pathname || '';
+        return this.ctx().MainWindowBrowserManager.m_lastLocation.pathname || '';
+      } catch (e) { return ''; }
+    },
     isLibraryHome() { return /^\/library\/home/.test(this.route()); },
     onBrowserRoute() { return /^\/browser/.test(this.route()); },
     /** the store/community page is a native browser layer drawn ABOVE our DOM — hide it while a panel of ours is open */
     setBrowserVisible(v) { try { const b = this.ctx().MainWindowBrowserManager.m_browser; if (b && b.SetVisible) b.SetVisible(!!v); } catch (e) { /* ignore */ } },
     rightPanel() {
+      if (BPM) return this.bpmPanel();
       let best = null, bestArea = 0;
       document.querySelectorAll('[class*="RightPanel"]').forEach(el => {
         const r = el.getBoundingClientRect(), a = r.width * r.height;
@@ -54,6 +66,16 @@
       return bestArea > 40000 ? best : null;
     },
     updatesBlock() { return this.el('UpdatesContainer'); },
+    /** Big Picture home: the area between Steam's top bar (search · clock · avatar) and its footer (button hints) */
+    bpmPanel() {
+      const hd = this.el('Header', 'HeaderItem') || this.el('SearchAndTitleContainer');
+      const ft = this.el('BasicFooter');
+      const top = hd ? Math.max(0, Math.round(hd.getBoundingClientRect().bottom)) : 40;
+      const fr = ft ? ft.getBoundingClientRect() : null;
+      const bottom = fr && fr.height ? Math.round(fr.top) : innerHeight;
+      const r = { left: 0, top, width: innerWidth, height: Math.max(200, bottom - top), right: innerWidth, bottom };
+      return { getBoundingClientRect: () => r };
+    },
     titleControls() { return this.el('TitleBarControls'); },
     isGame(a) { try { return a.app_type === 1 && !a.BIsShortcut(); } catch (e) { return false; } },
     /** library sources for the picker: all / installed / favourites / user collections */
@@ -121,7 +143,10 @@
     runningIds() { try { return new Set((this.ctx().SteamUIStore.RunningApps || []).map(a => a.appid)); } catch (e) { return new Set(); } },
     run(ov) { this.ctx().SteamClient.Apps.RunGame(ov.GetGameID(), '', -1, 100); },
     navigate(path) { this.ctx().SteamUIStore.Navigate(path); },
-    openDetails(appid) { this.navigate('/library/app/' + appid); },
+    openDetails(appid) {
+      if (BPM) { try { this.ctx().SteamUIStore.WindowStore.GamepadUIMainWindowInstance.m_Navigator.App(appid); return; } catch (e) { /* fall back */ } }
+      this.navigate('/library/app/' + appid);
+    },
     steamUrl(url) { this.ctx().SteamClient.URL.ExecuteSteamURL(url); },
     /* Millennium theme conditions ("Style", "Language") */
     ffi(name) { const c = this.ctx(); return c && c.MILLENNIUM_API && c.MILLENNIUM_API.ffi ? c.MILLENNIUM_API.ffi('core', name) : null; },
@@ -459,7 +484,7 @@
   const onFirstGesture = () => { gestured = true; };
   window.addEventListener('pointerdown', onFirstGesture, { once: true, capture: true });
   function sfx(kind) {
-    if (!state.sound || !gestured) return;
+    if (!state.sound || !gestured || BPM) return; // Big Picture keeps its own interface sounds
     try {
       if (!ac) {
         ac = new (window.AudioContext || window.webkitAudioContext)();
@@ -584,7 +609,7 @@
   }
 
   function mount() {
-    for (const el of [toastEl, viewer, sheet, picker, bar]) if (!el.isConnected) document.body.appendChild(el);
+    for (const el of BPM ? [toastEl, sheet] : [toastEl, viewer, sheet, picker, bar]) if (!el.isConnected) document.body.appendChild(el);
     iconDefs();
   }
 
@@ -853,6 +878,9 @@
       if (e.key === 'Enter' && this.games[this.cur]) { openGame(this.games[this.cur], this.source(this.games[this.cur].appid)); return true; }
       return false;
     },
+    /** Big Picture: the game X plays (the one in the middle) */
+    padGame() { return (this.games && this.games[this.cur]) || null; },
+    padEl() { return (this.track && this.track.querySelector('.cf-item.center')) || null; },
     node(i) {
       let it = this.nodes.get(i);
       if (it) return it;
@@ -1072,6 +1100,8 @@
       grid.addEventListener('pointerleave', () => { if (this.hov) { this.hov.style.removeProperty('--tx'); this.hov.style.removeProperty('--ty'); this.hov = null; } });
     },
     /** arrow keys walk the cards (reading direction follows the language), Enter opens the one under the cursor */
+    /** Big Picture: the game X plays (the card under the controller cursor) */
+    padGame() { const c = this.grid && this.grid.querySelector('.gl-card.kb'); return (c && byId(c.dataset.appid)) || null; },
     key(e) {
       const n = this.games ? this.games.length : 0;
       if (!n || !this.grid || !this.grid.isConnected) return false;
@@ -1232,14 +1262,14 @@
     root.dataset.layout = state.layout;
     const w = root.clientWidth || 900;
     const keep = keepSearchFocus();
-    if (!lay.dockInside) dockBar(); // strip on top of the design, measured before sizing it
+    if (!lay.dockInside && !BPM) dockBar(); // strip on top of the design, measured before sizing it
     const barH = bar.parentElement === root ? bar.offsetHeight + 22 : 0;
     const h = Math.max(420, (placement.height || 760) - barH);
     // overlay mode (no "What's New" block to sit under): #rfs is a fixed box that scrolls itself, so it keeps the
     // panel's height — 'auto' made it as tall as the whole list and nothing could scroll
     root.style.height = lay.fixedHeight ? (h + barH) + 'px' : placement.mode === 'overlay' ? placement.height + 'px' : 'auto';
     lay.render(visibleGames(), w, h);
-    if (lay.dockInside) dockBar();
+    if (lay.dockInside && !BPM) dockBar(); // Big Picture: no filter strip (a controller can't type into it)
     keep();
     updateBar();
   }
@@ -1432,6 +1462,7 @@
   }
   /** the themed panel covers the home design only — Steam's own navigation stays usable above it */
   function placeSheet() {
+    if (BPM) { Bpm.placeSheet(); return; }
     const p = (root.isConnected && root.classList.contains('on') && SteamAPI.rightPanel()) || null;
     const r = p ? p.getBoundingClientRect() : { left: 0, top: 0, width: innerWidth, height: innerHeight };
     setStyles(sheet, { left: Math.round(r.left) + 'px', top: Math.round(r.top) + 'px', width: Math.round(r.width) + 'px', height: Math.round(r.height) + 'px' });
@@ -1681,7 +1712,7 @@
     },
     open() { try { SteamAPI.steamUrl('steam://openurl_external/' + DOWNLOAD_PAGE); } catch (e) { /* ignore */ } },
   };
-  setTimeout(() => Updater.check(), 8000);
+  if (!BPM) setTimeout(() => Updater.check(), 8000);
 
   /* pages: 12 cards (3 rows x 4) per page; more installed themes → arrows + "1 / 2" (and ← → keys) */
   const Pager = {
@@ -1816,6 +1847,7 @@
   });
 
   const onKey = e => {
+    if (BPM) { Bpm.key(e); return; } // Big Picture: Steam turns every key into its gamepad events, handled there
     if ((e.ctrlKey || e.metaKey) && !e.altKey && (e.key === 'k' || e.key === 'K' || e.code === 'KeyK')) {
       e.preventDefault(); e.stopPropagation();
       Search.focus();
@@ -2048,31 +2080,31 @@
       document.documentElement.toggleAttribute('data-rfs-native', orig); // stock Steam / community theme is in charge
       if (lay !== state.layout && lay !== 'original') {
         if (LAYOUTS[lay] || EXT[lay]) { state.layout = lay; placement.key = ''; }
-        else loadLayout(lay); // a plug-in theme: its module registers itself, then the next tick switches to it
+        else if (!BPM || BPM_LAYOUTS.has(lay)) loadLayout(lay); // a plug-in theme: its module registers itself, then the next tick switches to it
       }
       // language changed behind our back (Millennium settings) → reload the UI once in the new language
       const lang = normLang(themeVar('--rf-lang', ''));
-      if (lang && lang !== LANG) Lang.follow(lang);
+      if (!BPM && lang && lang !== LANG) Lang.follow(lang);
     }
     const panel = SteamAPI.isLibraryHome() ? SteamAPI.rightPanel() : null;
     const want = themeVar('--rf-layout', 'shelf');
     const ready = state.original || want === state.layout || !(want in EXT || extLoading[want]); // don't flash another design while a plug-in loads
-    const show = !!panel && state.enabled && !state.original && ready;
+    const show = !!panel && state.enabled && !state.original && ready &&
+      (!BPM || (want === state.layout && BPM_LAYOUTS.has(state.layout) && document.documentElement.dataset.rfsBpm === 'on'));
     document.documentElement.classList.toggle('rfs-home-on', show);
     // the community theme's styling for Steam's own home is costly (page-wide :has() checks on every change) and
     // pointless while our design covers that page — switch it off then, back on for Steam's own home
     for (const l of document.querySelectorAll('link[data-rfs-part="home"]')) { const m = show ? 'not all' : ''; if (l.media !== m) l.media = m; }
     document.documentElement.classList.toggle('rfs-show-news', state.news);
-    placeBar(SteamAPI.isLibraryHome(), panel);
-    placeFamily();
+    if (!BPM) { placeBar(SteamAPI.isLibraryHome(), panel); placeFamily(); }
     if (panel && show) {
       const pr = panel.getBoundingClientRect();
       const key = [Math.round(pr.width), Math.round(pr.height), state.layout, state.news].join(',');
-      const misplaced = !root.isConnected || (placement.mode === 'embed' && !root.parentElement.hasAttribute('data-rfs-home'));
+      const misplaced = !root.isConnected || (placement.mode === 'embed' && !root.parentElement.hasAttribute('data-rfs-home')) || Bpm.misplaced();
       if (key !== placement.key || force || misplaced) {
         const changed = key !== placement.key;
         placement.key = key;
-        place(panel);
+        if (BPM) Bpm.place(panel); else place(panel);
         if (loaded && (changed || force)) render();
       }
     }
@@ -2082,9 +2114,11 @@
       render();
     } else if (!show && root.classList.contains('on')) {
       root.classList.remove('on'); hideTip();
+      if (BPM) Bpm.off();
       if (current && current.sheet) closeViewer(true); // a theme's own game panel leaves with the home page
     }
-    if (show) Search.focusIfPending();
+    if (show && !BPM) Search.focusIfPending();
+    if (BPM) Bpm.tick(show, panel);
     if (show && loaded && now - lastSigCheck > 5000 && !current) {
       lastSigCheck = now;
       if (Data.sig() !== state.sig) { Data.load(); render(); }
@@ -2119,7 +2153,7 @@
      replace Steam's own interface strings (LocalizationManager tokens, in SharedJSContext) with our translation in
      src/lang/steam-ar.js. Steam re-renders with them; strings we haven't translated simply stay English. */
   (function steamArabic() {
-    if (LANG !== 'ar') return;
+    if (LANG !== 'ar' || BPM) return; // Big Picture shares the desktop's LocalizationManager: already Arabic
     const me = document.querySelector('script[src*="/src/js/shelf.js"]');
     const base = me ? me.src.replace(/src\/js\/shelf\.js.*$/, '') : 'https://millennium.host/v1/themes/rf-shelf/';
     const apply = () => {
@@ -2141,6 +2175,334 @@
     document.head.appendChild(s);
   })();
 
+  /* =================================================================
+     Big Picture host — the theme's home design over Big Picture's home (/library/home), sized for a TV and driven by
+     a controller. Steam's gamepad UI sends no arrow keys: it fires 'vgp_onbuttondown' (detail.button, .is_repeat,
+     .source: 1 gamepad, 2 keyboard) on the element its own focus system has focused. While our design owns the
+     input (Steam's focus sits in the home content we cover), each press becomes the key the layouts already
+     understand (arrows / Enter / Esc / PageUp / PageDown / Ctrl+Enter) and is eaten, so Steam's focus stays put
+     underneath. A direction the design doesn't use moves to the nearest button of the design that way (PLAY, INFO,
+     STORE …), and in a game panel the D-pad walks its buttons. Up at the top of a design and B go on to Steam: its top
+     bar (search, avatar, Themes), side menu and the rest of Big Picture work as before. X plays, Menu (≡ / F9) opens
+     Steam's game page with its options, View (F8) opens friends & chat, Y (F4) the Themes picker. The Steam button
+     (side menu) and quick access never come through here. Big Picture's own interface sounds play for every move.
+     ================================================================= */
+  const Bpm = (() => {
+    const noop = () => {};
+    if (!BPM) return { place: noop, off: noop, tick: noop, placeSheet: noop, key: noop, destroy: noop, misplaced: () => false };
+    const P = { OK: 1, CANCEL: 2, X: 3, Y: 4, LB: 5, RB: 6, LT: 7, RT: 8, UP: 9, DOWN: 10, LEFT: 11, RIGHT: 12, SELECT: 13, START: 14 };
+    const KEY = { [P.UP]: 'ArrowUp', [P.DOWN]: 'ArrowDown', [P.LEFT]: 'ArrowLeft', [P.RIGHT]: 'ArrowRight', [P.OK]: 'Enter', [P.CANCEL]: 'Escape',
+      [P.LB]: 'PageUp', [P.RB]: 'PageDown', [P.LT]: 'Home', [P.RT]: 'End' };
+    const DIR = { [P.UP]: [0, -1], [P.DOWN]: [0, 1], [P.LEFT]: [-1, 0], [P.RIGHT]: [1, 0] };
+    const NAV_KEYS = new Set(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Enter', 'Escape', 'PageUp', 'PageDown', 'Home', 'End', ' ']);
+    const html = document.documentElement;
+    let Z = 1.3, rect = null, padF = null, legendKey = '', zone = 'list', kbd = false, selectDown = 0;
+    const legend = div(); legend.id = 'rfs-bpm-legend';
+    const eat = e => { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); };
+    const zoomOf = () => { const v = parseFloat(getComputedStyle(root).getPropertyValue('--rfs-bpm-zoom')); return v >= 0.6 && v <= 3 ? v : 1.3; };
+    const pickerOpen = () => { try { return !!(window.__rfsBpm && window.__rfsBpm.isOpen && window.__rfsBpm.isOpen()); } catch (e) { return false; } };
+    const gpWin = () => { try { return SteamAPI.ctx().SteamUIStore.WindowStore.GamepadUIMainWindowInstance; } catch (e) { return null; } };
+
+    /* Big Picture's own interface sounds (the theme's synthesised sounds stay off here): the same calls Steam makes
+       when its focus moves. EUIComposition-independent enum from steamui: 24 BasicNav, 25 FailedNav, 21 DefaultOk,
+       15 PagedNavigation, 13 IntoGameDetail, 14 OutOfGameDetail */
+    const SND = { move: 24, fail: 25, ok: 21, page: 15, into: 13, out: 14 };
+    function snd(kind) {
+      try { const a = SteamAPI.ctx().SteamUIStore.m_GamepadUIAudioStore; if (a && a.PlayNavSound) a.PlayNavSound(SND[kind]); } catch (e) { /* no sound */ }
+    }
+
+    /** our design has the controller: on screen, no picker, nothing of Steam's on top of it (dialog, menu, chat,
+        on-screen keyboard), and Steam's own focus sits in the home content we cover (not in its top bar) */
+    function active() {
+      if (!root.classList.contains('on') || !rect || pickerOpen()) return false;
+      try { if (gpWin().m_MenuStore.IsAnySideMenuVisible()) return false; } catch (e) { /* older Steam */ } // main menu / quick access
+      const top = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
+      if (top && !root.contains(top) && !sheet.contains(top)) return false;
+      const f = document.activeElement;
+      if (!f || f === document.body || f === html || root.contains(f) || sheet.contains(f)) return true;
+      const home = SteamAPI.el('BasicHome');
+      if (home && !home.contains(f)) return false;
+      const r = f.getBoundingClientRect();
+      return r.top + r.height / 2 >= rect.top;
+    }
+    /** a key for the layout's own key(e) handler (the same one the desktop keyboard uses) */
+    function send(key, mods = {}, rep = false) {
+      const lay = L();
+      if (!lay.key) return false;
+      const ev = { type: 'keydown', key, code: key, ctrlKey: !!mods.ctrl, shiftKey: !!mods.shift, altKey: false, metaKey: false, repeat: !!rep,
+        target: root, currentTarget: root, preventDefault: noop, stopPropagation: noop, stopImmediatePropagation: noop };
+      try { return !!lay.key(ev); } catch (err) { LOG('pad key failed', err); return false; }
+    }
+    const visible = el => { const r = el.getBoundingClientRect(); return r.width > 2 && r.height > 2 && getComputedStyle(el).visibility !== 'hidden'; };
+    /** the layout's selected game: its element (cursor classes the layouts use) and the game */
+    function selEl() {
+      const lay = L();
+      if (typeof lay.padEl === 'function') { const el = lay.padEl(); if (el) return el; }
+      const list = [...root.querySelectorAll('[data-appid]:is(.kf, .sel, .kb, .cur, .hi)')].filter(visible);
+      return list[0] || null;
+    }
+    function selGame() {
+      const lay = L();
+      if (typeof lay.padGame === 'function') { const g = lay.padGame(); if (g) return g; }
+      const el = selEl();
+      return el ? byId(el.dataset.appid) : null;
+    }
+    /** X: play the game under the cursor (a layout may say which one; otherwise its own Ctrl / Shift + Enter) */
+    function play() {
+      const lay = L();
+      if (typeof lay.padGame === 'function') { const g = lay.padGame(); if (g) { snd('ok'); launch(g); } else snd('fail'); return; }
+      if (send('Enter', { ctrl: true }) || send('Enter', { shift: true })) { snd('ok'); return; }
+      snd('fail');
+    }
+
+    /* ---- spatial focus over buttons (the theme's game panel, and the buttons around a design's game list:
+       PLAY / DETAILS / STORE …). The D-pad goes to the nearest one in that direction; A presses it. */
+    /** scroll every scrolling box between el and box so el is fully in view. scrollIntoView() gets this wrong inside
+        a CSS-zoomed box (it measures the unzoomed size), so the designs' own calls left the cursor half off screen. */
+    function reveal(el, box) {
+      if (!el || !el.isConnected || !box.contains(el)) return;
+      const m = 14;
+      for (let p = el.parentElement; p; p = p.parentElement) {
+        const cs = getComputedStyle(p);
+        const sy = /(auto|scroll)/.test(cs.overflowY) && p.scrollHeight > p.clientHeight + 1;
+        const sx = /(auto|scroll)/.test(cs.overflowX) && p.scrollWidth > p.clientWidth + 1;
+        if (sy || sx) {
+          const er = el.getBoundingClientRect(), pr = p.getBoundingClientRect();
+          if (sy) {
+            if (er.top < pr.top + m || er.height > pr.height - 2 * m) p.scrollTop -= pr.top + m - er.top;
+            else if (er.bottom > pr.bottom - m) p.scrollTop += er.bottom - pr.bottom + m;
+          }
+          if (sx) {
+            if (er.left < pr.left + m) p.scrollLeft -= pr.left + m - er.left;
+            else if (er.right > pr.right - m) p.scrollLeft += er.right - pr.right + m;
+          }
+        }
+        if (p === box) break;
+      }
+    }
+    const revealSoon = () => requestAnimationFrame(() => {
+      if (current && current.sheet) reveal(padF, sheet);
+      else reveal(zone === 'acts' ? padF : selEl(), root);
+    });
+    function setPadF(el) {
+      if (padF === el) return;
+      if (padF) padF.classList.remove('rfs-padf');
+      padF = el || null;
+      if (padF) { padF.classList.add('rfs-padf'); revealSoon(); }
+    }
+    const BTN = 'button, a[href], [data-act], [data-close], [role="button"]';
+    /** buttons of the panel, or of the design outside its game tiles (a tile repeated in a list is the layout's job) */
+    function btns(scope) {
+      const all = [...scope.querySelectorAll(BTN)].filter(b => !b.disabled && visible(b) && !b.closest('.rf-dock, [hidden]'));
+      const own = all.filter(b => !all.some(o => o !== b && o.contains(b)));
+      if (scope === sheet) return own;
+      const sr = scope.getBoundingClientRect(), big = sr.width * sr.height * 0.2;
+      return own.filter(b => {
+        if (b.hasAttribute('data-appid') || b.getAttribute('tabindex') === '-1') return false; // tiles, and helper arrows the design keeps out of tab order
+        const r = b.getBoundingClientRect();
+        if (r.width * r.height > big) return false; // a clickable backdrop (hero art), not a button
+        const it = b.closest('[data-appid]');
+        return !(it && it.parentElement && it.parentElement.querySelectorAll(':scope > [data-appid]').length > 2);
+      });
+    }
+    function nearest(list, from, dx, dy) {
+      const ax = from.left + from.width / 2, ay = from.top + from.height / 2;
+      let best = null, bs = Infinity;
+      for (const b of list) {
+        if (b === padF) continue;
+        const r = b.getBoundingClientRect(), x = r.left + r.width / 2 - ax, y = r.top + r.height / 2 - ay;
+        const main = dx ? x * dx : y * dy, side = dx ? Math.abs(y) : Math.abs(x);
+        if (main <= 4) continue;
+        const sc = main + side * 2.5;
+        if (sc < bs) { bs = sc; best = b; }
+      }
+      return best;
+    }
+    function sheetDefault() {
+      const list = btns(sheet);
+      setPadF(list.find(b => b.matches('[data-act="play"]')) || list.find(b => !b.matches('[data-close]')) || list[0]);
+    }
+    function sheetPad(b) {
+      const d = DIR[b];
+      if (d) {
+        const list = btns(sheet);
+        if (!padF || !padF.isConnected || !list.includes(padF)) { sheetDefault(); snd('move'); return; }
+        const n = nearest(list, padF.getBoundingClientRect(), d[0], d[1]);
+        if (n) { setPadF(n); snd('move'); } else snd('fail');
+        return;
+      }
+      switch (b) {
+        case P.OK: if (!padF || !padF.isConnected) sheetDefault(); if (padF) { snd('ok'); padF.click(); } break;
+        case P.CANCEL: snd('out'); closeViewer(); break;
+        case P.X: { const pb = sheet.querySelector('[data-act="play"]'); if (pb) { snd('ok'); pb.click(); } break; }
+        default: break;
+      }
+    }
+    /** a direction the design's list didn't use: on to the nearest button of the design that way (zone 'acts') */
+    function enterActs(dx, dy) {
+      const list = btns(root);
+      if (!list.length) return false;
+      const from = selEl();
+      const rr = root.getBoundingClientRect();
+      const fr = from ? from.getBoundingClientRect() : { left: rr.left + rr.width / 2, top: rr.top + rr.height / 2, width: 0, height: 0 };
+      let n = nearest(list, fr, dx, dy);
+      if (!n) return false;
+      // the first row of buttons that way: start on its PLAY button when it has one
+      const ax = fr.left + fr.width / 2, ay = fr.top + fr.height / 2;
+      const mainOf = el => { const r = el.getBoundingClientRect(); return dx ? (r.left + r.width / 2 - ax) * dx : (r.top + r.height / 2 - ay) * dy; };
+      const m0 = mainOf(n);
+      const play = list.find(el => el.matches('[data-act="play"], .play, [class*="play"]') && Math.abs(mainOf(el) - m0) < 30);
+      if (play) n = play;
+      zone = 'acts'; setPadF(n); snd('move');
+      return true;
+    }
+    function actsPad(b) {
+      const d = DIR[b];
+      if (d) {
+        const list = btns(root);
+        const n = padF && padF.isConnected ? nearest(list, padF.getBoundingClientRect(), d[0], d[1]) : null;
+        if (n) { setPadF(n); snd('move'); return; }
+        leaveActs(); snd('move'); // nothing further that way: back to the games
+        return;
+      }
+      if (b === P.OK) { if (padF && padF.isConnected) { snd('ok'); padF.click(); } else leaveActs(); return; }
+      if (b === P.CANCEL) { leaveActs(); snd('out'); return; }
+      if (b === P.X) { const g = selGame(); if (g) { snd('ok'); launch(g); } else snd('fail'); }
+    }
+    function leaveActs() { zone = 'list'; setPadF(null); }
+
+    /** ≡ Options: Steam's own game page for the selected game (its full options: properties, manage, achievements …) */
+    function options() {
+      const g = selGame();
+      if (!g) { snd('fail'); return; }
+      snd('into');
+      try { gpWin().m_Navigator.App(g.appid); } catch (e) { SteamAPI.openDetails(g.appid); }
+    }
+    /** View: Big Picture's friends & chat */
+    function friends() { snd('into'); try { gpWin().m_Navigator.Chat(); } catch (e) { /* older Steam */ } }
+
+    function onPad(e) {
+      const d = e.detail || {}, b = d.button;
+      if (!active()) return;
+      if (d.source) kbd = d.source === 2;
+      const rep = !!d.is_repeat;
+      if (b === P.SELECT) { eat(e); if (!rep) selectDown = Date.now(); return; } // View: on release (View + Y stays the picker)
+      if (selectDown) selectDown = -1; // another button while View is held: not "Friends"
+      if (current && current.sheet) { eat(e); if (!busy && (!rep || DIR[b])) sheetPad(b); return; }
+      if (current) { eat(e); if (b === P.CANCEL) closeViewer(); return; }
+      if (b === P.Y) { eat(e); if (!rep && d.source !== 2) { try { window.__rfsBpm.open(); } catch (err) { /* no picker */ } } return; } // keyboard F4: bigpicture.js
+      if (b === P.X) { eat(e); if (!rep) play(); return; }
+      if (b === P.START) { eat(e); if (!rep) options(); return; }
+      if (zone === 'acts') {
+        if (padF && padF.isConnected && root.contains(padF)) { eat(e); actsPad(b); return; }
+        leaveActs();
+      }
+      const k = KEY[b];
+      if (!k) return;
+      if (b === P.OK) {
+        const g = selGame(), lay = L();
+        // A always OPENS (a layout whose Enter plays says how to open instead); X is the one that plays
+        if (rep) { eat(e); return; }
+        if (typeof lay.padOk === 'function' ? lay.padOk() : send(k, {}, rep)) { eat(e); snd(g ? 'into' : 'ok'); return; }
+      } else {
+        const before = DIR[b] ? selEl() : null;
+        if (send(k, {}, rep)) {
+          eat(e);
+          // the design used the press but its cursor didn't move (the edge of a row, the top of a grid): on to the
+          // buttons that way — the hero's PLAY / DETAILS, a side panel's START / INFO …
+          if (before && selEl() === before && enterActs(...DIR[b])) return;
+          snd(b === P.LB || b === P.RB || b === P.LT || b === P.RT ? 'page' : b === P.CANCEL ? 'out' : 'move');
+          revealSoon();
+          return;
+        }
+      }
+      if (DIR[b] && enterActs(...DIR[b])) { eat(e); return; }
+      if (b === P.UP || b === P.CANCEL) return; // top of the design → Steam's top bar (search, avatar, Themes); B → Steam
+      eat(e); snd('fail'); // everything else stays with us, so Steam's hidden focus never wanders
+    }
+    function onPadUp(e) {
+      const d = e.detail || {};
+      if (d.button !== P.SELECT || !selectDown) return;
+      const was = selectDown; selectDown = 0;
+      if (!active()) return;
+      eat(e);
+      if (was > 0 && Date.now() - was < 800) friends();
+    }
+    window.addEventListener('vgp_onbuttondown', onPad, true);
+    window.addEventListener('vgp_onbuttonup', onPadUp, true);
+
+    /* footer hints: controller glyphs, or Steam's keyboard keys when the last press came from the keyboard */
+    const CAP = {
+      pad: { a: 'A', b: 'B', x: 'X', y: 'Y', lb: 'LB', rb: 'RB', st: '≡', vw: '⧉' },
+      kbd: { a: 'Enter', b: 'Esc', x: 'F3', y: 'F4', lb: 'F6', rb: 'F7', st: 'F9', vw: 'F8' },
+    };
+    function paintLegend(show, act) {
+      const sheetOn = !!(current && current.sheet);
+      const mode = sheetOn ? 's' : zone === 'acts' ? 'a' : 'h';
+      const k = !show || !act ? '' : [mode, LANG, kbd ? 'k' : 'p'].join();
+      if (k === legendKey) return;
+      legendKey = k;
+      legend.classList.toggle('on', !!k);
+      if (!k) return;
+      const c = CAP[kbd ? 'kbd' : 'pad'];
+      const h = (cls, cap, txt) => `<span class="lg"><kbd class="${cls}${kbd ? ' key' : ''}">${cap}</kbd>${txt ? `<span>${esc(txt)}</span>` : ''}</span>`;
+      legend.dir = LTR ? 'ltr' : 'rtl';
+      legend.innerHTML = mode === 's'
+        ? `<span class="sp"></span>${h('a', c.a, T('اختيار', 'Select'))}${h('x', c.x, T('تشغيل', 'Play'))}${h('b', c.b, T('رجوع', 'Back'))}`
+        : mode === 'a'
+          ? `<span class="sp"></span>${h('a', c.a, T('اختيار', 'Select'))}${h('b', c.b, T('رجوع للألعاب', 'Back to games'))}`
+          : `${h('bump', c.lb, '')}${h('bump', c.rb, T('صفحة', 'Page'))}${h('menu', c.vw, T('الأصدقاء', 'Friends'))}<span class="sp"></span>${h('a', c.a, T('فتح', 'Open'))}${h('x', c.x, T('تشغيل', 'Play'))}${h('menu', c.st, T('خيارات', 'Options'))}${h('y', c.y, T('الثيمات', 'Themes'))}`;
+    }
+
+    return {
+      host() { return SteamAPI.el('BasicHome') || document.body; },
+      misplaced() { return root.parentElement !== this.host() || (sheet.isConnected && sheet.parentElement !== this.host()); },
+      place(panel) {
+        root.dataset.layout = state.layout;
+        // inside Steam's own home (not <body>): Steam's dialogs, menus and on-screen keyboard still open above us
+        const host = this.host();
+        if (root.parentElement !== host) host.appendChild(root);
+        if (sheet.parentElement !== host) host.appendChild(sheet);
+        root.classList.add('overlay');
+        Z = zoomOf();
+        const r = panel.getBoundingClientRect();
+        rect = r;
+        placement.mode = 'overlay';
+        placement.height = Math.round(r.height / Z);
+        setStyles(root, { zoom: String(Z), left: '0px', top: (r.top / Z).toFixed(2) + 'px', width: (r.width / Z).toFixed(2) + 'px', height: placement.height + 'px', minHeight: '' });
+        // the button hints sit inside Big Picture's footer (absolute, inset 0): it paints above its siblings
+        const ft = SteamAPI.el('BasicFooter');
+        if (ft && legend.parentElement !== ft) ft.appendChild(legend);
+        else if (!ft) legend.remove();
+        if (current && current.sheet) this.placeSheet();
+      },
+      placeSheet() {
+        if (!rect) return;
+        setStyles(sheet, { zoom: String(Z), left: '0px', top: (rect.top / Z).toFixed(2) + 'px', width: (rect.width / Z).toFixed(2) + 'px', height: (rect.height / Z).toFixed(2) + 'px' });
+      },
+      tick(show) {
+        const act = show && active();
+        html.classList.toggle('rfs-bpm-home', show);
+        root.classList.toggle('pad-idle', show && !act);
+        const sheetOn = !!(current && current.sheet);
+        if (sheetOn) { zone = 'list'; if ((!padF || !padF.isConnected || !sheet.contains(padF)) && !busy) sheetDefault(); }
+        else if (zone === 'acts' && (!padF || !padF.isConnected)) leaveActs();
+        else if (zone !== 'acts' && padF) setPadF(null);
+        paintLegend(show, act);
+      },
+      off() { html.classList.remove('rfs-bpm-home'); paintLegend(false, false); leaveActs(); },
+      /** keyboard in Big Picture: Steam already sends each key as a gamepad event (source 2) — don't act twice */
+      key(e) {
+        if (NAV_KEYS.has(e.key) && active()) { e.preventDefault(); e.stopPropagation(); }
+      },
+      destroy() {
+        window.removeEventListener('vgp_onbuttondown', onPad, true);
+        window.removeEventListener('vgp_onbuttonup', onPadUp, true);
+        legend.remove(); html.classList.remove('rfs-bpm-home');
+      },
+    };
+  })();
+
   const tickTimer = setInterval(() => { if (!document.hidden) tick(false); }, 300); // nothing to do while Steam is hidden
 
   /* ---- dev helpers */
@@ -2149,6 +2511,7 @@
     reload: () => { Data.load(); render(); },
     destroy() {
       clearInterval(tickTimer);
+      Bpm.destroy();
       window.removeEventListener('keydown', onKey, true);
       window.removeEventListener('pointerdown', onFirstGesture, true);
       document.removeEventListener('click', onDocClick);
@@ -2156,7 +2519,7 @@
       document.documentElement.classList.remove('rfs-home-on');
       delete document.documentElement.dataset.rfsLang;
       document.querySelectorAll('[data-rfs-hide]').forEach(el => el.removeAttribute('data-rfs-hide'));
-      [root, toastEl, viewer, picker, bar, navWrap].forEach(el => el.remove());
+      [root, toastEl, viewer, sheet, picker, bar, navWrap].forEach(el => el.remove());
     },
   };
   LOG('loaded v' + VERSION);

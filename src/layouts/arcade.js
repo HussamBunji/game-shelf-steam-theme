@@ -438,6 +438,10 @@
       return Math.max(1, Math.floor(r.list.clientHeight / pitch));
     },
 
+    /** Big Picture: the game X plays (the selected row) */
+    padGame() { return (this.r && this.games && this.games[this.cur]) || null; },
+    /** Big Picture: A opens GAME INFO (Enter is START = play here; on a controller X plays) */
+    padOk() { if (!this.r || !this.games[this.cur]) return false; this.info(); return true; },
     /** keyboard: ↑ ↓ move · PgUp PgDn jump a page · Home End · Enter START · Shift+Enter INFO */
     key(e) {
       const r = this.r;

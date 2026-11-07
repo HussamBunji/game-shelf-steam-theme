@@ -46,7 +46,9 @@ html.rfs-bpm[data-rfs-bpm="neutral"] {
 }
 
 /* ---------- desktop-only pieces must never show in Big Picture ---------- */
-html.rfs-bpm :is(#rfs, #rfs-bar, #rfs-sheet, #rfs-themes, #rfs-qbtn, #rfs-qmenu, #rfs-family, #rfs-dl, #rfs-rail, #rfs-data, .rf-dock) { display: none !important; }
+html.rfs-bpm :is(#rfs-bar, #rfs-themes, #rfs-qbtn, #rfs-qmenu, #rfs-family, #rfs-dl, #rfs-rail, #rfs-data, #rfs-viewer, #rfs-navwrap, .rf-dock:not(.rf-merge)) { display: none !important; }
+/* the home design only runs for styles with a Big Picture version (data-rfs-bpm="on") */
+html.rfs-bpm:not([data-rfs-bpm="on"]) :is(#rfs, #rfs-sheet, #rfs-bpm-legend) { display: none !important; }
 
 /* ---------- global surfaces ---------- */
 html.rfs-bpm:not([data-rfs-bpm="off"]) body { background: var(--bpm-bgimg), var(--bpm-bg) !important; }
@@ -186,3 +188,55 @@ html.rfs-bpm.rfs-ff-on .gpfocus:not(#rfs-bpm-tbtn) { outline-color: transparent 
   background: var(--bpm-panel); color: var(--bpm-text); border: 1px solid rgba(var(--bpm-acc-rgb), .45); box-shadow: 0 10px 30px rgba(0, 0, 0, .5);
   font-size: 15px; opacity: 0; transition: opacity .2s; pointer-events: none; }
 #rfs-bpm-toast.on { opacity: 1; }
+
+/* ===================================================================
+   Home designs in Big Picture (src/js/shelf.js "Big Picture host")
+   #rfs covers Big Picture's home between its top bar and its footer. It is zoomed for a TV (CSS zoom, so each
+   layout lays out for a smaller box and every size grows with it): --rfs-bpm-zoom per layout below.
+   =================================================================== */
+html.rfs-bpm #rfs { --rfs-bpm-zoom: 1.3; }
+html.rfs-bpm #rfs[data-layout="terminal"] { --rfs-bpm-zoom: 1.35; }
+html.rfs-bpm #rfs[data-layout="xmb"] { --rfs-bpm-zoom: 1.2; }
+html.rfs-bpm #rfs[data-layout="coverflow"] { --rfs-bpm-zoom: 1.2; }
+html.rfs-bpm #rfs[data-layout="shelter"] { --rfs-bpm-zoom: 1.2; }
+html.rfs-bpm #rfs.overlay { z-index: 20; overflow-x: hidden; scrollbar-width: none; }
+html.rfs-bpm #rfs.overlay::-webkit-scrollbar { width: 0; height: 0; }
+html.rfs-bpm #rfs-sheet { z-index: 21; }
+
+/* the designs' keyboard hint rows: the controller hints in the footer replace them */
+html.rfs-bpm #rfs :is(.ar-keys, .tm-keys, .vy-keys, .vt-hint, .xb-hint),
+html.rfs-bpm #rfs-sheet :is(.arv-hint, .tmv-keys, .xb-hint) { display: none !important; }
+
+/* the controller's cursor inside a theme's game panel */
+html.rfs-bpm :is(#rfs, #rfs-sheet) .rfs-padf {
+  /* inset ring + lift: some themes cut their buttons with clip-path, which would hide an outline */
+  outline: 3px solid var(--bpm-acc) !important; outline-offset: 3px !important;
+  box-shadow: inset 0 0 0 3px var(--bpm-text), 0 0 24px rgba(var(--bpm-glow), .7) !important;
+  transform: translateY(-2px) scale(1.06) !important; filter: brightness(1.15);
+  transition: transform .12s ease-out, box-shadow .12s;
+}
+
+/* button hints over Big Picture's footer while our design has the controller */
+#rfs-bpm-legend {
+  position: absolute; inset: 0; z-index: 20; display: none; align-items: center; gap: 22px; padding: 0 28px; box-sizing: border-box;
+  background-color: var(--bpm-bg); /* opaque: Steam's own hints sit right underneath */
+  background-image: linear-gradient(var(--rf-footer-bg, color-mix(in srgb, var(--bpm-panel) 94%, #000)), var(--rf-footer-bg, color-mix(in srgb, var(--bpm-panel) 94%, #000)));
+  border-top: 1px solid rgba(var(--bpm-acc-rgb), .3);
+  color: var(--bpm-text); font: 600 15px/1 var(--bpm-head, inherit) !important; text-transform: var(--bpm-case); letter-spacing: var(--bpm-spacing);
+}
+#rfs-bpm-legend.on { display: flex; }
+#rfs-bpm-legend .sp { flex: 1 1 auto; }
+#rfs-bpm-legend .lg { display: inline-flex; align-items: center; gap: 9px; white-space: nowrap; }
+#rfs-bpm-legend .lg + .lg { margin-inline-start: 2px; }
+#rfs-bpm-legend kbd {
+  display: inline-flex; align-items: center; justify-content: center; min-width: 26px; height: 26px; padding: 0; border-radius: 50%;
+  font: 800 13px/1 'Segoe UI', sans-serif !important; color: #fff; text-transform: none; letter-spacing: 0;
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, .25), 0 0 0 2px rgba(255, 255, 255, .12);
+}
+#rfs-bpm-legend kbd.a { background: #3fae4f; }
+#rfs-bpm-legend kbd.b { background: #d9483f; }
+#rfs-bpm-legend kbd.x { background: #2f7fe0; }
+#rfs-bpm-legend kbd.y { background: #e0b42a; color: #2a1d00; }
+#rfs-bpm-legend kbd.menu { background: rgba(255, 255, 255, .16); color: var(--bpm-text); font-size: 15px !important; }
+#rfs-bpm-legend kbd.key { min-width: 34px; width: auto; height: 24px; padding: 0 7px; border-radius: 5px; font-size: 12px !important; }
+#rfs-bpm-legend kbd.bump { min-width: 38px; height: 22px; border-radius: 8px 8px 4px 4px; background: var(--bpm-text); color: var(--bpm-bg); font-size: 11px !important; }

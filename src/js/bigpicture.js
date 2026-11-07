@@ -85,6 +85,9 @@
   rule`${R} ${C('BackgroundGlass')} { background: linear-gradient(180deg, color-mix(in srgb, var(--bpm-bg) 70%, transparent), var(--bpm-bg)) !important; }`;
   rule`${R} ${C('Header', 'HeaderItem')} { background: linear-gradient(180deg, color-mix(in srgb, var(--bpm-bg) 88%, transparent), color-mix(in srgb, var(--bpm-bg) 30%, transparent)) !important; }`;
   rule`${R} ${C('HeaderItem')} { color: var(--bpm-text) !important; }`;
+  // our home design is on screen (shelf.js sets .rfs-bpm-home): the top bar sits on the design's own background,
+  // not on Steam's hidden home art
+  rule`html.rfs-bpm.rfs-bpm-home:not([data-rfs-bpm="off"]) ${C('Header', 'HeaderItem')} { background: var(--bpm-bgimg), var(--bpm-bg) !important; border-bottom: 1px solid rgba(var(--bpm-acc-rgb), .18) !important; }`;
   rule`${R} ${C('HeaderItem')} svg { fill: currentColor; }`;
   rule`${R} ${C('HeaderItem')}.gpfocus, ${R} ${C('HeaderItem')}:hover { color: var(--bpm-acc) !important; filter: drop-shadow(0 0 8px rgba(var(--bpm-glow), .6)); }`;
   rule`${R} ${C('Clock', 'HeaderItem')} { font-family: var(--bpm-head) !important; letter-spacing: var(--bpm-spacing); }`;
@@ -675,10 +678,29 @@
   on(window, 'mousedown', e => { if (ff && !ff.el.contains(e.target)) clearFF(); }, true);
 
   /* =================================================================
+     4. Home designs: the desktop engine (src/js/shelf.js + its CSS) runs in this window too. It sees
+        window.__rfsBpmHost, and then only replaces Big Picture's home (/library/home) with the active style's home
+        design, zoomed for a TV and driven by the controller (shelf.js "Big Picture host"). Styles without a Big
+        Picture home (desktop-only ones, Steam Original, SpaceTheme, Material You) keep Valve's home.
+     ================================================================= */
+  function loadHomeEngine() {
+    window.__rfsBpmHost = true;
+    for (const f of ['src/css/shelf.css', 'src/css/layouts.css']) {
+      if (document.querySelector(`link[data-rfs-engine="${f}"]`)) continue;
+      const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = BASE + f; l.dataset.rfsEngine = f;
+      document.head.appendChild(l);
+    }
+    if (window.__rfsShelf || document.querySelector('script[data-rfs-engine]')) return;
+    const s = document.createElement('script'); s.src = BASE + 'src/js/shelf.js'; s.dataset.rfsEngine = '1';
+    document.head.appendChild(s);
+  }
+
+  /* =================================================================
      start + keep up (React re-renders the header; menus open later; Steam adds chunk sheets on navigation)
      ================================================================= */
   html.classList.add('rfs-bpm');
   sync();
+  loadHomeEngine();
   [300, 1000, 2500, 6000].forEach(ms => setTimeout(sync, ms));
   const iv = setInterval(() => {
     if (document.hidden) return;
@@ -702,7 +724,7 @@
   cleanup.push(() => mo.disconnect());
 
   window.__rfsBpm = {
-    rules: rules.length, missing: [...new Set(missing)], modes: MODES, open: openPicker, close: closePicker, sync,
+    rules: rules.length, missing: [...new Set(missing)], modes: MODES, open: openPicker, close: closePicker, isOpen, sync,
     destroy() {
       cleanup.forEach(f => { try { f(); } catch (e) { /* keep going */ } });
       for (const id of ['rfs-bpm-tbtn', 'rfs-bpm-picker', 'rfs-bpm-toast', 'rfs-bpm', 'rfs-bpm-tint']) { const n = document.getElementById(id); if (n) n.remove(); }
