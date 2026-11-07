@@ -504,9 +504,16 @@ html[lang="ar"] .end__title { letter-spacing: 0; line-height: 1.2; font-weight: 
 }
 
 /* ---------- motion preferences ---------- */
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  .col__track, .end__track, .now__bar i, .stage__layer.is-on .stage__img { animation: none !important; }
-  .js .reveal { opacity: 1; transform: none; transition: none; }
-  .stage__layer { transition-duration: .15s; }
+html.still { scroll-behavior: auto; }
+@media all {
+  html.still body { }
+  html.still :is(.col__track, .end__track, .now__bar i, .stage__layer.is-on .stage__img) { animation: none !important; }
+  html.still .js .reveal, html.still.js .reveal { opacity: 1; transform: none; transition: none; }
+  html.still .stage__layer { transition-duration: .15s; }
 }
+
+/* pause / play motion (app.js) */
+.motion-toggle { position: fixed; z-index: 90; bottom: 16px; inset-inline-end: 16px; padding: 7px 13px; border-radius: 99px; cursor: pointer;
+  font: 600 12px var(--mono, ui-monospace, monospace); letter-spacing: .04em; color: rgba(255,255,255,.75);
+  background: rgba(10,9,8,.72); border: 1px solid rgba(255,255,255,.14); backdrop-filter: blur(8px); }
+.motion-toggle:hover { color: #fff; border-color: rgba(255,255,255,.3); }

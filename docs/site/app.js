@@ -151,7 +151,17 @@ const img = (id, view, thumb) => `site/img/${thumb ? 'thumb/' : ''}${id}-${view}
 const views = (th) => [th.lib && 'library', th.store && 'store'].filter(Boolean);
 const byId = (id) => THEMES.find((x) => x.id === id);
 const rtl = () => document.documentElement.dir === 'rtl';
-const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+/* motion plays for everyone (the owner's call) unless the visitor pauses it with the button in the corner;
+   the choice is remembered. `reduced.matches` = "keep things still". */
+const reduced = (() => {
+  let still = false;
+  try { still = localStorage.getItem('gs.still') === '1'; } catch (e) { /* private mode */ }
+  const fns = [];
+  return { get matches() { return still; }, addEventListener(t, f) { fns.push(f); },
+    set(v) { still = v; try { localStorage.setItem('gs.still', v ? '1' : '0'); } catch (e) { /* ignore */ }
+      document.documentElement.classList.toggle('still', v); fns.forEach((f) => { try { f(); } catch (e) { /* keep going */ } }); } };
+})();
+document.documentElement.classList.toggle('still', reduced.matches);
 const pad = (n) => String(n).padStart(2, '0');
 
 /* ===== links ===== */
@@ -406,3 +416,17 @@ applyLang(lang, false);
 observeReveal();
 startFeature();
 reduced.addEventListener?.('change', startFeature);
+
+/* pause / play the page's motion */
+(() => {
+  const b = document.createElement('button');
+  b.type = 'button'; b.className = 'motion-toggle';
+  const paint = () => {
+    const ar = document.documentElement.lang === 'ar';
+    b.textContent = reduced.matches ? (ar ? 'تشغيل الحركة' : 'Play motion') : (ar ? 'إيقاف الحركة' : 'Pause motion');
+    b.setAttribute('aria-pressed', String(reduced.matches));
+  };
+  b.addEventListener('click', () => { reduced.set(!reduced.matches); paint(); if (!reduced.matches) location.reload(); });
+  document.body.appendChild(b); paint();
+  new MutationObserver(paint).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+})();
