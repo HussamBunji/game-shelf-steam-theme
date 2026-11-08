@@ -104,3 +104,10 @@ html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"
 }
 html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) :is(.ChatTabs, .chatTabSet) .chatTab { border-radius: var(--rff-r) var(--rff-r) 0 0 !important; }
 html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) :is(.ChatTabs, .chatTabSet) .chatTab.ActiveTab { box-shadow: inset 0 -2px 0 var(--rf-accent) !important; color: var(--rf-text) !important; }
+/* SpaceTheme pins the chat's date pill to the right end, right under Steam's own "add a friend to this chat" button
+   (1:1 chats): the date was cut off behind it. Centred, like Steam's own divider, it never meets that button. */
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"]) .chatHistory .msg.timeDivision { justify-content: center !important; }
+/* …and its "Got it!" button (pinned to the strip's bottom corner) sat across the hint's dashed frame: the strip keeps
+   a free line under the frame for it */
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"]) .friendlist .quickAccessFriends.emptyQuickAccess { padding-bottom: 32px !important; }
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"]) .friendlist .quickAccessFriends.emptyQuickAccess .quickAccessFriendsMessageDismiss { bottom: 5px !important; inset-inline-end: 8px !important; right: auto; }

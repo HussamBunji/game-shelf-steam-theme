@@ -679,7 +679,8 @@ html[data-rfs-style="xmb"] #rfs-data .rd-row.home .rd-cc { color: #0a1f4d; backg
 html[data-rfs-style="xmb"] #rfs-data .rd-row.best { background: rgba(143, 227, 180, .1); box-shadow: inset 0 0 0 1px rgba(143, 227, 180, .28); }
 html[data-rfs-style="xmb"] #rfs-data .rd-row.best .rd-cc { color: #062b16; background: #8fe3b4; }
 html[data-rfs-style="xmb"] #rfs-data .rd-row.best .rd-tag { color: #8fe3b4; background: rgba(143, 227, 180, .16); }
-html[data-rfs-style="xmb"] #rfs-data :is(.rd-fact, .rd-link) { margin-inline: 16px; border-radius: 12px; background: rgba(4, 14, 38, .5); border: 0; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .12); }
+html[data-rfs-style="xmb"] #rfs-data :is(.rd-fact, .rd-link) { border-radius: 12px; background: rgba(4, 14, 38, .5); border: 0; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .12); }
+html[data-rfs-style="xmb"] #rfs-data .rd-grid { margin-inline: 16px; } /* the inset goes on the grid, not on each cell: per cell it cost 2 × 16px and cut the link names */
 html[data-rfs-style="xmb"] #rfs-data .rd-link { color: #8cc4ff; }
 html[data-rfs-style="xmb"] #rfs-data .rd-link:hover { color: #fff; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .5), 0 0 12px rgba(160, 205, 255, .3); }
 /* the header Quick links button: a glass pill */

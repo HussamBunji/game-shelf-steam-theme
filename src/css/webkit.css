@@ -160,6 +160,7 @@ html[data-rfs-style="original"] #rfs-rail { display: none !important; }
 #rfs-rail .rr-link {
   display: flex; align-items: center; gap: 10px; width: 100%; padding: 5px 6px; border: 0; cursor: pointer; text-align: start;
   border-radius: var(--rf-radius, 8px); background: transparent; color: var(--rf-text, #e6edf3) !important; text-decoration: none; font: inherit;
+  width: -webkit-fill-available; /* a style's side margins (Crossbar, Shelter OS) stay inside the rail: 100% + margins stuck out by 6 px */
 }
 #rfs-rail .rr-link + .rr-link { margin-top: 2px; }
 #rfs-rail .rr-link:hover { background: rgba(var(--rf-accent-rgb), .12); }
@@ -218,6 +219,8 @@ html[data-rfs-style="original"] #rfs-rail { display: none !important; }
 #rfs-data .rd-fact b, #rfs-data .rd-link b { display: block; font-size: 12.5px; text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 #rfs-data .rd-fact small, #rfs-data .rd-link small { display: block; font-size: 10.5px; color: var(--rf-text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 #rfs-data .rd-link { cursor: pointer; }
+/* a link's subtitle ("Price & update history") may take two lines instead of being cut in the narrow / wide-font styles */
+#rfs-data .rd-link small { white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-height: 1.25; }
 #rfs-data .rd-link:hover { background: rgba(var(--rf-accent-rgb), .12); border-color: rgba(var(--rf-accent-rgb), .3); }
 #rfs-data .rd-skel { height: 12px; margin: 9px 4px; border-radius: 6px; background: linear-gradient(90deg, rgba(255,255,255,.05), rgba(255,255,255,.13), rgba(255,255,255,.05)); background-size: 200% 100%; animation: rfs-skel 1.2s linear infinite; }
 @keyframes rfs-skel { to { background-position: -200% 0; } }
@@ -367,7 +370,7 @@ html[dir="rtl"] .carousel_wide_mode .carousel_container .store_main_capsule:is(.
      --rfp-head-rule [1px --rf-border]  the line under a heading      --rfp-link [--rf-accent]   links
      --rfp-chip / --rfp-chip-ink / --rfp-chip-edge / --rfp-chip-radius   tags (when the style has no .app_tag rule)
      --rfp-glass [the card at 84 %]     profile showcases over the owner's own background art
-     --rfp-wl-body [156px]              the text part of a wishlist card
+     --rfp-wl-body [176px]              the text part of a wishlist card
      --rf-wl-view: list                 the wishlist starts as a list instead of cards (the user can switch)
    webkit.js tags the wishlist's hashed React parts (data-rfs-wl=…, see wlTag) and gives its tags / buy button /
    Options + Sort the classes every style already dresses (.app_tag, .btn_green_steamui, .btnv6_blue_hoverfade).
@@ -474,7 +477,7 @@ html[data-rfs-page="wishlist"][data-rfs-wlview="cards"]:not([data-rfs-style="ori
     --k: 2; --gap: 16px; --m: var(--m2, 0);
     --cw: calc((100cqw - (var(--k) - 1) * var(--gap)) / var(--k));
     --art: calc(var(--cw) * 215 / 460);
-    --R: calc(var(--art) + var(--rfp-wl-body, 156px) + var(--gap));
+    --R: calc(var(--art) + var(--rfp-wl-body, 176px) + var(--gap)); /* 176: title + 2 meta lines + the price / Add to Cart capsule */
     height: calc(var(--R) / var(--k)) !important; min-height: 0 !important; padding: 0 !important; box-sizing: border-box;
   }
   & [data-rfs-wl="list"] [data-index] > div {
@@ -482,7 +485,7 @@ html[data-rfs-page="wishlist"][data-rfs-wlview="cards"]:not([data-rfs-style="ori
     top: calc(var(--m) * var(--R) / var(--k) * -1); margin-inline-start: calc(var(--m) * (var(--cw) + var(--gap))) !important;
   }
   & [data-rfs-wl="row"] {
-    display: flex !important; flex-direction: column !important; align-items: stretch !important; position: relative; height: 100% !important; min-height: 0 !important; width: 100% !important;
+    display: flex !important; flex-direction: column !important; align-items: stretch !important; position: relative; height: calc(var(--R) - var(--gap)) !important; min-height: 0 !important; width: 100% !important;
     padding: 0 !important; margin: 0 !important; gap: 0 !important; overflow: hidden !important; box-sizing: border-box;
   }
   & [data-rfs-wl="row"] > * { min-width: 0 !important; max-width: 100% !important; box-sizing: border-box; grid-area: auto !important; align-self: stretch !important; }
@@ -526,6 +529,57 @@ html[data-rfs-page="wishlist"]:not([data-rfs-style="original"], [data-rfs-style=
 html[data-rfs-page="wishlist"] [data-index][data-rfs-m2="1"] { --m2: 1; }
 html[data-rfs-page="wishlist"] [data-index][data-rfs-m3="1"] { --m3: 1; }
 html[data-rfs-page="wishlist"] [data-index][data-rfs-m3="2"] { --m3: 2; }
+
+/* Store game page, a bundle / package box ("Includes 2 items: …" + Bundle info + Purchase): the compact purchase boxes of
+   Crossbar, Cyberpunk, Shelter OS and Cupertino Dark keep the buttons inside the box's bottom corner, which on a bundle
+   ran over its title and item list (and the Windows / Mac icons over the item list). Those boxes get a full row for the
+   buttons under the text, as SpaceTheme's own box does. */
+html.responsive:is([data-rfs-style="xmb"], [data-rfs-style="cyberpunk"], [data-rfs-style="shelter"], [data-rfs-style="cupertino"]) .game_area_purchase_game:has(.btn_packageinfo, .package_contents) {
+  padding-bottom: 78px !important;
+}
+
+/* Arabic store (right-to-left) game page: SpaceTheme pins two things to the RIGHT edge, which is where the text starts
+   in Arabic — the Follow / Ignore buttons (over the game's name) and each edition's price (over "Buy …" and its item
+   list, apart from its own button, which Steam puts on the left). Mirrored, both sit at the left like the buttons. */
+html[data-rfs-lang="ar"]:not([data-rfs-style="original"], [data-rfs-style="material"]) .game_bg.application .queue_overflow_ctn { right: auto !important; left: 0 !important; }
+html[data-rfs-lang="ar"]:not([data-rfs-style="original"], [data-rfs-style="material"]) .game_bg.application .game_description_column :is(.game_purchase_price, .game_purchase_discount) { right: auto; left: 0; }
+/* badges: SpaceTheme pulls the play time 6 px to the left to hide its leading space; in Arabic that space is on the right,
+   so the pull cut the end of "… من الساعات المسجلة" */
+html[data-rfs-lang="ar"]:not([data-rfs-style="original"], [data-rfs-style="material"]) .maincontent .badges_sheet .badge_row .badge_title_stats .badge_title_stats_playtime { margin-left: 0; margin-right: -6px; }
+
+/* Store game page, "Content for this game": SpaceTheme's 26 px "in library" / wishlist badge sits at the top-left of
+   every item, which suits pictures but covered the first letters of the one-line DLC rows ("berpunk 2077 REDmod").
+   On those rows it is smaller, centred on the line, and the row's text starts after it (both directions). */
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"]) body.v6 .game_area_dlc_row:not(.dlc_highlight):has(> .ds_flag) { padding-inline-start: 34px !important; }
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"]) body.v6 .game_area_dlc_row:not(.dlc_highlight) > .ds_flag {
+  top: 50% !important; left: auto !important; right: auto !important; inset-inline-start: 6px !important; transform: translateY(-50%);
+  width: 20px !important; height: 20px !important;
+}
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"]) body.v6 .game_area_dlc_row:not(.dlc_highlight) > .ds_flag::before { font-size: 13px !important; }
+/* …and the DLC total ("9.99 KD") of "Add all DLC to Cart": SpaceTheme lifts every price 38 px above its button, which put
+   this one behind the DLC rows; it sits next to its button instead */
+html[data-rfs-style]:not([data-rfs-style="original"], [data-rfs-style="material"]) .game_bg.application .game_description_column #dlc_purchase_action :is(.game_purchase_price, .game_purchase_discount) {
+  position: static !important; align-self: center;
+}
+
+/* Community home, review cards: Steam lays the comment count ("59") over the end of a long game name and cuts the name
+   dead. The name keeps clear of the count and ends with "…" (wide-font styles lost whole words there). */
+html[data-rfs-style]:not([data-rfs-style="original"]) .apphub_CardContentAuthorBlock:has(.apphub_CardCommentCount) .apphub_CardContentAppName { padding-inline-end: 52px !important; box-sizing: border-box; }
+html[data-rfs-style]:not([data-rfs-style="original"]) .apphub_CardContentAuthorBlock:has(.apphub_CardCommentCount) .apphub_CardContentAppName > a {
+  display: block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  unicode-bidi: plaintext; /* an English name on the Arabic page still loses its END, not its start */
+}
+
+/* The community home's footer is Steam's "compact" one: a small transparent strip of links pinned (sticky) to the
+   window's bottom-left corner. SpaceTheme's footer panel (full store width, centred, filled) and each style's footer
+   dress turned it into a big bar floating over the cards, covering their links. Keep it compact.
+   (Two :not(#…) lift it over the styles' own #footer rules, Arcade's included.) */
+html[data-rfs-style]:not([data-rfs-style="original"]):not(#rfs-x1):not(#rfs-x2) body div#footer.compact {
+  width: fit-content !important; max-width: calc(100vw - 32px) !important; margin: 0 !important; padding: 6px 12px !important;
+  background: none !important; border: 0 !important; box-shadow: none !important; border-radius: 0 !important; backdrop-filter: none !important;
+}
+html[data-rfs-style]:not([data-rfs-style="original"]):not(#rfs-x1):not(#rfs-x2) body div#footer.compact::before,
+html[data-rfs-style]:not([data-rfs-style="original"]):not(#rfs-x1):not(#rfs-x2) body div#footer.compact::after { display: none !important; }
 
 /* ───────── 2. profile (steamcommunity.com/id/… and /profiles/…) ─────────
    The owner's own design stays: background art, animated video, profile theme colours, avatar frame and header

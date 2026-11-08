@@ -272,6 +272,8 @@ html[data-rfs-style="terminal"] :is(.btn_green_steamui, .btn_green_white_innerfa
   background: var(--tw-g) !important; border-color: var(--tw-g) !important;
 }
 html[data-rfs-style="terminal"] :is(.btn_green_steamui, .btn_green_white_innerfade, .btnv6_green_white_innerfade) > span { color: var(--tw-ink) !important; font-weight: 800 !important; }
+/* every button of a store edition box is filled (above) — "Bundle info" too, a blue button whose green label vanished on the fill */
+html[data-rfs-style="terminal"] .btn_addtocart > a > span { color: var(--tw-ink) !important; }
 html[data-rfs-style="terminal"] :is(.btn_green_steamui, .btn_green_white_innerfade, .btnv6_green_white_innerfade):hover { background: var(--tw-a) !important; border-color: var(--tw-a) !important; }
 html[data-rfs-style="terminal"] :is(.btn_green_steamui, .btn_green_white_innerfade, .btnv6_green_white_innerfade):hover > span { color: var(--tw-aink) !important; }
 html[data-rfs-style="terminal"] .btn_darkred_white_innerfade { border-color: rgba(255, 107, 107, .55) !important; }

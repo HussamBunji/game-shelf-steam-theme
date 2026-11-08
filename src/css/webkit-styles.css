@@ -1721,6 +1721,8 @@ html[data-rfs-style="terminal"] :is(.btn_green_steamui, .btn_green_white_innerfa
   background: var(--tw-g) !important; border-color: var(--tw-g) !important;
 }
 html[data-rfs-style="terminal"] :is(.btn_green_steamui, .btn_green_white_innerfade, .btnv6_green_white_innerfade) > span { color: var(--tw-ink) !important; font-weight: 800 !important; }
+/* every button of a store edition box is filled (above) — "Bundle info" too, a blue button whose green label vanished on the fill */
+html[data-rfs-style="terminal"] .btn_addtocart > a > span { color: var(--tw-ink) !important; }
 html[data-rfs-style="terminal"] :is(.btn_green_steamui, .btn_green_white_innerfade, .btnv6_green_white_innerfade):hover { background: var(--tw-a) !important; border-color: var(--tw-a) !important; }
 html[data-rfs-style="terminal"] :is(.btn_green_steamui, .btn_green_white_innerfade, .btnv6_green_white_innerfade):hover > span { color: var(--tw-aink) !important; }
 html[data-rfs-style="terminal"] .btn_darkred_white_innerfade { border-color: rgba(255, 107, 107, .55) !important; }
@@ -3138,6 +3140,9 @@ html.responsive[data-rfs-style="vinyl"] .game_area_purchase_game {
 }
 html[dir="rtl"].responsive[data-rfs-style="vinyl"] .game_area_purchase_game { box-shadow: inset -5px 0 0 #e8742a, inset 0 0 0 1px rgba(243, 230, 207, .08), 0 8px 20px rgba(0, 0, 0, .4) !important; }
 html.responsive[data-rfs-style="vinyl"] .game_area_purchase_game :is(h1, h2.title) { font-size: 21px !important; }
+/* "Add all DLC to Cart" is one element with both classes: the capsule's position: relative here met SpaceTheme's
+   bottom: 12px (meant for the absolute buy row), which lifted it 12 px onto the last DLC row */
+html.responsive[data-rfs-style="vinyl"] .game_purchase_action.game_purchase_action_bg { inset: auto !important; }
 html.responsive[data-rfs-style="vinyl"] .game_purchase_action_bg {
   position: relative; border-radius: 6px 99px 99px 6px !important; padding-inline-start: 22px !important;
   background: repeating-linear-gradient(90deg, rgba(120, 80, 40, .05) 0 1px, transparent 1px 4px), linear-gradient(175deg, #f4e4c0, #dcc08a) !important;
@@ -3960,6 +3965,14 @@ html[data-rfs-style="cork"] :is(.apphub_sectionTab, .group_tab, .market_tab_well
 html[data-rfs-style="cork"] :is(.apphub_sectionTab.active, .group_tab.active, .market_tab_well_tab_active) {
   color: #2b2116 !important; background: linear-gradient(#fff6d6, #ffe68a) !important; box-shadow: inset 0 -2px 0 var(--ck-red) !important;
 }
+/* badges page: inside each paper badge card SpaceTheme lays a dark panel (its raised colour) under the badge name and the
+   "4 of 6 cards collected" text, which the paper's dark ink made unreadable. The panel turns into a faint pencil box. */
+html[data-rfs-style="cork"] .badges_sheet .badge_row .badge_content {
+  background: rgba(96, 64, 32, .07) !important; box-shadow: inset 0 0 0 1px rgba(96, 64, 32, .16) !important; border-radius: 2px !important;
+}
+html[data-rfs-style="cork"] .profile_badges_sortoptions { color: #f3e1c1 !important; } /* "Sort by" sits on the cork itself, not on paper */
+/* store search: the "Sort by" picker is a dark field on the paper search bar: written in the paper's ink it vanished */
+html[data-rfs-style="cork"] .searchbar #sort_by_trigger { background: #fffaf0 !important; color: #2b2116 !important; border: 1px solid rgba(96, 64, 32, .3) !important; box-shadow: none !important; }
 html[data-rfs-style="cork"] .apphub_Card {
   background: linear-gradient(170deg, #fffdf8, #f5eee1) !important; border: 1px solid rgba(96, 64, 32, .2) !important; border-radius: 2px !important;
   padding: 7px 7px 0 !important; box-shadow: 0 8px 14px -8px rgba(30, 15, 4, .7) !important;
@@ -6273,7 +6286,8 @@ html[data-rfs-style="cupertino"] #rfs-data .rd-row.home .rd-cc { background: #0a
 html[data-rfs-style="cupertino"] #rfs-data .rd-row.best { background: rgba(48, 209, 88, .12); }
 html[data-rfs-style="cupertino"] #rfs-data .rd-row.best .rd-cc { color: #000; background: #30d158; }
 html[data-rfs-style="cupertino"] #rfs-data .rd-row.best .rd-tag { color: #30d158; background: rgba(48, 209, 88, .16); }
-html[data-rfs-style="cupertino"] #rfs-data :is(.rd-fact, .rd-link) { margin-inline: 16px; border-radius: 12px; background: #2c2c2e; border: 0; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06); }
+html[data-rfs-style="cupertino"] #rfs-data :is(.rd-fact, .rd-link) { border-radius: 12px; background: #2c2c2e; border: 0; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06); }
+html[data-rfs-style="cupertino"] #rfs-data .rd-grid { margin-inline: 16px; } /* the inset goes on the grid, not on each cell: per cell it cost 2 × 16px and cut the link names */
 html[data-rfs-style="cupertino"] #rfs-data .rd-link { color: #409cff; }
 html[data-rfs-style="cupertino"] #rfs-data .rd-link:hover { background: #3a3a3c; }
 /* the header Quick links button: a translucent pill */
@@ -7041,7 +7055,8 @@ html[data-rfs-style="cyberpunk"] #rfs-data .rd-row.home .rd-cc { color: #0b0f16;
 html[data-rfs-style="cyberpunk"] #rfs-data .rd-row.best { background: rgba(217, 180, 90, .08); border-inline-start-color: #d9b45a; }
 html[data-rfs-style="cyberpunk"] #rfs-data .rd-row.best .rd-cc { color: #15120b; background: #d9b45a; box-shadow: none; }
 html[data-rfs-style="cyberpunk"] #rfs-data .rd-row.best .rd-tag { color: #e9cd85; background: rgba(217, 180, 90, .17); box-shadow: inset 0 0 0 1px rgba(217, 180, 90, .35); }
-html[data-rfs-style="cyberpunk"] #rfs-data :is(.rd-fact, .rd-link) { margin-inline: 14px; border-radius: 0; background: #0b0f16; border: 1px solid rgba(154, 163, 173, .18); box-shadow: none; }
+html[data-rfs-style="cyberpunk"] #rfs-data :is(.rd-fact, .rd-link) { border-radius: 0; background: #0b0f16; border: 1px solid rgba(154, 163, 173, .18); box-shadow: none; }
+html[data-rfs-style="cyberpunk"] #rfs-data .rd-grid { margin-inline: 14px; } /* the inset goes on the grid, not on each cell: per cell it cost 2 × 14px and cut the link names */
 html[data-rfs-style="cyberpunk"] #rfs-data .rd-link { color: #5fc4c8; }
 html[data-rfs-style="cyberpunk"] #rfs-data .rd-link:hover { color: #8fd8db; background: #182130; border-color: rgba(95, 196, 200, .6); }
 /* the header Quick links button: the ghost slab */
@@ -7804,7 +7819,8 @@ html[data-rfs-style="shelter"] #rfs-data .rd-row.home .rd-cc { color: #021208; b
 html[data-rfs-style="shelter"] #rfs-data .rd-row.best { background: rgba(27, 255, 128, .12); box-shadow: inset 0 0 0 1px rgba(27, 255, 128, .55); }
 html[data-rfs-style="shelter"] #rfs-data .rd-row.best .rd-cc { color: #021208; background: #1bff80; box-shadow: none; }
 html[data-rfs-style="shelter"] #rfs-data .rd-row.best .rd-tag { color: #021208; background: #18dc6e; box-shadow: none; }
-html[data-rfs-style="shelter"] #rfs-data :is(.rd-fact, .rd-link) { margin-inline: 14px; border-radius: 3px; background: #020a05; border: 1px solid rgba(24, 220, 110, .28); box-shadow: inset 0 2px 6px rgba(0, 0, 0, .5); }
+html[data-rfs-style="shelter"] #rfs-data :is(.rd-fact, .rd-link) { border-radius: 3px; background: #020a05; border: 1px solid rgba(24, 220, 110, .28); box-shadow: inset 0 2px 6px rgba(0, 0, 0, .5); }
+html[data-rfs-style="shelter"] #rfs-data .rd-grid { margin-inline: 14px; } /* the inset goes on the grid, not on each cell: per cell it cost 2 × 14px and cut the link names */
 html[data-rfs-style="shelter"] #rfs-data .rd-link { color: #1bff80; }
 html[data-rfs-style="shelter"] #rfs-data .rd-link:hover { color: #021208; background: #18dc6e; border-color: #1bff80; }
 /* the header Quick links button: the boxed key */
@@ -8669,7 +8685,8 @@ html[data-rfs-style="xmb"] #rfs-data .rd-row.home .rd-cc { color: #0a1f4d; backg
 html[data-rfs-style="xmb"] #rfs-data .rd-row.best { background: rgba(143, 227, 180, .1); box-shadow: inset 0 0 0 1px rgba(143, 227, 180, .28); }
 html[data-rfs-style="xmb"] #rfs-data .rd-row.best .rd-cc { color: #062b16; background: #8fe3b4; }
 html[data-rfs-style="xmb"] #rfs-data .rd-row.best .rd-tag { color: #8fe3b4; background: rgba(143, 227, 180, .16); }
-html[data-rfs-style="xmb"] #rfs-data :is(.rd-fact, .rd-link) { margin-inline: 16px; border-radius: 12px; background: rgba(4, 14, 38, .5); border: 0; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .12); }
+html[data-rfs-style="xmb"] #rfs-data :is(.rd-fact, .rd-link) { border-radius: 12px; background: rgba(4, 14, 38, .5); border: 0; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .12); }
+html[data-rfs-style="xmb"] #rfs-data .rd-grid { margin-inline: 16px; } /* the inset goes on the grid, not on each cell: per cell it cost 2 × 16px and cut the link names */
 html[data-rfs-style="xmb"] #rfs-data .rd-link { color: #8cc4ff; }
 html[data-rfs-style="xmb"] #rfs-data .rd-link:hover { color: #fff; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .5), 0 0 12px rgba(160, 205, 255, .3); }
 /* the header Quick links button: a glass pill */

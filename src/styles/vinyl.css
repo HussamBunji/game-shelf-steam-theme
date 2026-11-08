@@ -350,6 +350,9 @@ html.responsive[data-rfs-style="vinyl"] .game_area_purchase_game {
 }
 html[dir="rtl"].responsive[data-rfs-style="vinyl"] .game_area_purchase_game { box-shadow: inset -5px 0 0 #e8742a, inset 0 0 0 1px rgba(243, 230, 207, .08), 0 8px 20px rgba(0, 0, 0, .4) !important; }
 html.responsive[data-rfs-style="vinyl"] .game_area_purchase_game :is(h1, h2.title) { font-size: 21px !important; }
+/* "Add all DLC to Cart" is one element with both classes: the capsule's position: relative here met SpaceTheme's
+   bottom: 12px (meant for the absolute buy row), which lifted it 12 px onto the last DLC row */
+html.responsive[data-rfs-style="vinyl"] .game_purchase_action.game_purchase_action_bg { inset: auto !important; }
 html.responsive[data-rfs-style="vinyl"] .game_purchase_action_bg {
   position: relative; border-radius: 6px 99px 99px 6px !important; padding-inline-start: 22px !important;
   background: repeating-linear-gradient(90deg, rgba(120, 80, 40, .05) 0 1px, transparent 1px 4px), linear-gradient(175deg, #f4e4c0, #dcc08a) !important;

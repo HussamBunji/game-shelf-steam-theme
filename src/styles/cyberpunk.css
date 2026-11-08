@@ -671,7 +671,8 @@ html[data-rfs-style="cyberpunk"] #rfs-data .rd-row.home .rd-cc { color: #0b0f16;
 html[data-rfs-style="cyberpunk"] #rfs-data .rd-row.best { background: rgba(217, 180, 90, .08); border-inline-start-color: #d9b45a; }
 html[data-rfs-style="cyberpunk"] #rfs-data .rd-row.best .rd-cc { color: #15120b; background: #d9b45a; box-shadow: none; }
 html[data-rfs-style="cyberpunk"] #rfs-data .rd-row.best .rd-tag { color: #e9cd85; background: rgba(217, 180, 90, .17); box-shadow: inset 0 0 0 1px rgba(217, 180, 90, .35); }
-html[data-rfs-style="cyberpunk"] #rfs-data :is(.rd-fact, .rd-link) { margin-inline: 14px; border-radius: 0; background: #0b0f16; border: 1px solid rgba(154, 163, 173, .18); box-shadow: none; }
+html[data-rfs-style="cyberpunk"] #rfs-data :is(.rd-fact, .rd-link) { border-radius: 0; background: #0b0f16; border: 1px solid rgba(154, 163, 173, .18); box-shadow: none; }
+html[data-rfs-style="cyberpunk"] #rfs-data .rd-grid { margin-inline: 14px; } /* the inset goes on the grid, not on each cell: per cell it cost 2 × 14px and cut the link names */
 html[data-rfs-style="cyberpunk"] #rfs-data .rd-link { color: #5fc4c8; }
 html[data-rfs-style="cyberpunk"] #rfs-data .rd-link:hover { color: #8fd8db; background: #182130; border-color: rgba(95, 196, 200, .6); }
 /* the header Quick links button: the ghost slab */

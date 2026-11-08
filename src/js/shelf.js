@@ -1791,10 +1791,12 @@
     return lvlP;
   }
   function gameBytes(g) { return g ? (g.installed ? (g.sizeOnDisk || 0) : (g.needBytes || 0)) : 0; }
+  // (long form: every game panel already shows "not installed" in its status line — repeating it here made the value
+  //  too long for the facts grids and it was cut off with an ellipsis)
   function sizeText(g, long) {
     if (!g) return '—';
     if (g.installed) return g.sizeOnDisk ? `${fmtSize(g.sizeOnDisk)}${long && g.drive ? ` · ${g.drive}` : ''}` : '—';
-    if (g.needBytes) return long ? T(`${fmtSize(g.needBytes)} للتحميل · غير مثبتة`, `${fmtSize(g.needBytes)} to download · not installed`) : T(`${fmtSize(g.needBytes)} تحميل`, `${fmtSize(g.needBytes)} download`);
+    if (g.needBytes) return long ? T(`${fmtSize(g.needBytes)} للتحميل`, `${fmtSize(g.needBytes)} to download`) : T(`${fmtSize(g.needBytes)} تحميل`, `${fmtSize(g.needBytes)} download`);
     return long ? T('غير مثبتة', 'Not installed') : '—';
   }
   /** achievement progress { got, total, pct } or null — from the loaded details, else Steam's progress cache */

@@ -445,10 +445,13 @@
     // on the search box's outer side: left of it in English; in the Arabic (RTL) store the box sits at the bar's left
     // end next to the wishlist button, so the button goes to its right instead
     const rtl = getComputedStyle(box).direction === 'rtl';
-    let top = Math.round(r.top + (r.height - 30) / 2), left = Math.round(rtl ? r.right + 10 : r.left - qbtn.offsetWidth - 10);
+    // measured while shown: a hidden button is 0 px wide, which put it right on top of the search box's text
+    qbtn.classList.toggle('on', true);
+    const w = qbtn.offsetWidth || 130;
+    let top = Math.round(r.top + (r.height - 30) / 2), left = Math.round(rtl ? r.right + 10 : r.left - w - 10);
     // the new React store bar (wishlist, sales…) puts its menus right up to the search: if the spot is taken by a
-    // menu, the button sits just under the bar at the search's end instead of covering it
-    const w = qbtn.offsetWidth || 130, cy = top + 15;
+    // menu, the button goes just outside the bar's end on the same line (or, with no room there, just under the bar)
+    const cy = top + 15;
     qbtn.style.pointerEvents = 'none'; // elementFromPoint looks through it
     const taken = [left + 4, left + w / 2, left + w - 4].some(x => {
       const el = document.elementFromPoint(x, cy);
@@ -457,8 +460,16 @@
     qbtn.style.pointerEvents = '';
     if (taken) {
       const bar = box.closest('nav, [role="navigation"], .store_nav, #store_nav_area') || box;
-      const br = bar.getBoundingClientRect();
-      top = Math.round(br.bottom + 8); left = Math.round(rtl ? r.left : r.right - w);
+      let br = bar.getBoundingClientRect();
+      // the framed bar can be a wrapper or two around the nav: take the outermost box that is still just this row
+      for (let a = bar.parentElement; a && a !== document.body; a = a.parentElement) {
+        const ar = a.getBoundingClientRect();
+        if (ar.height > br.height + 24 || ar.width > innerWidth - 40) break;
+        br = ar;
+      }
+      const outside = rtl ? br.left - w - 10 : br.right + 10;
+      if (outside >= 8 && outside + w <= innerWidth - 8) left = Math.round(outside);
+      else { top = Math.round(br.bottom + 8); left = Math.round(rtl ? r.left : r.right - w); }
     }
     setStyles(qbtn, { top: top + 'px', left: left + 'px' });
     qbtn.classList.toggle('on', true);
@@ -693,11 +704,18 @@
     for (const c of row.children) {
       let k = '';
       if (c.tagName === 'A' && c.querySelector('img')) k = 'art';
+      // "Added on … ✕ remove" (last row): its remove button is a button with a span too, so it is told apart by its
+      // icon and by having no link — taken for the buy row, it pushed the card past its fixed height into the next row
+      else if (c === row.lastElementChild && c.querySelector('button svg') && !c.querySelector('a') && c.textContent.trim()) k = 'added';
       else if (c.querySelector('button span, a[href*="/cart"]')) k = 'buy';
+      // the rank / drag handle is the block with the drag hook; everything else with text is a meta line (an item with
+      // no tags and no reviews, like hardware, has a meta line with neither buttons nor titles)
+      else if (c.querySelector('[data-rfd-drag-handle-draggable-id], [data-rfd-drag-handle-context-id], input')) k = 'rank';
       else if (c.querySelector('button, [title]')) k = 'meta';
       else if (c.querySelector(':scope > a') && !c.querySelector('img')) k = 'title';
       else if (c === row.lastElementChild && c.textContent.trim()) k = 'added';
       else if (!c.textContent.trim() && !c.querySelector('svg, img, button, input')) k = 'empty';
+      else if (c.textContent.trim()) k = 'meta';
       else k = 'rank';
       setA(c, 'data-rfs-wl', k);
     }
@@ -748,8 +766,21 @@
       wlView();
     }
   }
+  /* Badges page in Arabic (steamcommunity.com/…/badges): Steam's Arabic page leaves the XP box unclosed, so the badge
+     list, its header and paging end up INSIDE .profile_xp_block, which SpaceTheme lays out as one flex row: the whole
+     list was squeezed into a ~300 px column of 145 px cards with their text cut. Move them back after the box. */
+  function fixBadgesNesting() {
+    const xp = qs('.profile_xp_block');
+    const sheet = xp && xp.querySelector(':scope > .badges_sheet');
+    if (!sheet) return;
+    const first = xp.querySelector(':scope > .badge_details_set_favorite, :scope > .profile_badges_header, :scope > .profile_paging') || sheet;
+    const move = [];
+    for (let n = first; n; n = n.nextSibling) move.push(n);
+    xp.after(...move);
+  }
   function start() {
     iconDefs();
+    fixBadgesNesting();
     if (IS_WL) { setA(html, 'data-rfs-page', 'wishlist'); wlView(); wlTag(); setInterval(wlTag, 1200); }
     onLangChange = () => { if (rail) renderRail(); if (dataEl && dataFor) renderData(dataFor); if (qbtn) placeQuick(); };
     placeRail();
