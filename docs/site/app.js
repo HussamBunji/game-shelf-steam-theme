@@ -44,6 +44,7 @@ const T = {
     heroLead: 'Hand-built themes for the Steam library and store: a wooden bookcase, a neon carousel, a 70s record shop, an arcade cabinet. Switch looks in one click. Arabic and English.',
     platLabel: 'Platform', tabLx: 'Steam Deck / Linux',
     dlBig: 'Download for Windows', dlSub: 'Free installer · about a minute', allReleases: 'All releases',
+    latestVer: 'Latest version', verNew: 'New', verMb: 'MB', verAria: 'Latest release on GitHub',
     lxText: 'In Desktop Mode, open Konsole (or any terminal) and paste this one line:', lxCopy: 'Copy', lxCopied: 'Copied',
     lxNote: 'Needs Millennium installed first (the free theme loader, from steambrew.app). No sudo, nothing outside your home folder. Theme files only: GameShelf-Theme.zip in the releases.',
     factsLabel: 'Requirements', fWin: 'Windows 10/11', fDeck: 'Steam Deck', fLinux: 'Linux', fFree: 'Free', fSteam: 'Needs Steam',
@@ -96,6 +97,7 @@ const T = {
     heroLead: 'ثيمات مصنوعة بعناية لمكتبة ستيم والمتجر: رف خشب، دوّار نيون، متجر أسطوانات من السبعينات، شاشة أركيد. بدّل الشكل بضغطة وحدة. بالعربي والإنجليزي.',
     platLabel: 'النظام', tabLx: 'ستيم ديك / لينكس',
     dlBig: 'تحميل لويندوز', dlSub: 'مثبّت مجاني · دقيقة تقريبًا', allReleases: 'كل الإصدارات',
+    latestVer: 'آخر إصدار', verNew: 'جديد', verMb: 'ميغابايت', verAria: 'آخر إصدار على GitHub',
     lxText: 'في وضع سطح المكتب، افتح Konsole (أو أي طرفية) والصق هالسطر:', lxCopy: 'نسخ', lxCopied: 'تم النسخ',
     lxNote: 'يحتاج Millennium مثبّت قبل (محمّل الثيمات المجاني من steambrew.app). بدون sudo، وما يلمس شي برا مجلدك. ملفات الثيم بس: GameShelf-Theme.zip في صفحة الإصدارات.',
     factsLabel: 'المتطلبات', fWin: 'ويندوز 10/11', fDeck: 'ستيم ديك', fLinux: 'لينكس', fFree: 'مجاني', fSteam: 'يحتاج ستيم',
@@ -374,6 +376,47 @@ $('#faqList').addEventListener('click', (e) => {
   q.classList.toggle('is-open', on); b.setAttribute('aria-expanded', String(on));
 });
 
+/* ===== the latest version, read live from GitHub so the download always says what it gets =====
+   Cached for an hour per visit (GitHub allows 60 anonymous reads an hour). Offline or rate-limited: the line stays
+   hidden rather than showing an old number. */
+const LATEST_API = 'https://api.github.com/repos/yousf612-alwazzan/game-shelf-steam-theme/releases/latest';
+const SETUP_NAME = DOWNLOAD_URL.split('/').pop();
+let latest = null;
+function drawVersion() {
+  const els = $$('.js-ver');
+  if (!latest) { els.forEach((a) => { a.hidden = true; }); return; }
+  const d = new Date(latest.date), ok = !isNaN(d);
+  const date = ok ? new Intl.DateTimeFormat(lang === 'ar' ? 'ar-u-nu-latn' : 'en', { day: 'numeric', month: 'long', year: 'numeric' }).format(d) : '';
+  const fresh = ok && Date.now() - d.getTime() < 14 * 864e5;
+  const size = latest.size ? Math.round(latest.size / 1048576) + ' ' + t('verMb') : '';
+  const text = [t('latestVer') + ' \u2068' + latest.tag + '\u2069', date, size].filter(Boolean).join(' · ');
+  els.forEach((a) => {
+    a.href = latest.url; a.hidden = false;
+    a.setAttribute('aria-label', t('verAria') + ': ' + text);
+    a.querySelector('.ver__txt').textContent = text;
+    a.querySelector('.ver__new').textContent = fresh ? t('verNew') : '';
+  });
+  // the download buttons point at the newest file by name; if a release ever renames it, use what is really there
+  if (latest.dl && latest.dl.split('/').pop() !== SETUP_NAME) $$('.js-dl').forEach((a) => { a.href = latest.dl; });
+}
+async function loadVersion() {
+  try {
+    const c = JSON.parse(sessionStorage.getItem('gs.latest') || 'null');
+    if (c && c.d && Date.now() - c.at < 36e5) { latest = c.d; drawVersion(); return; }
+  } catch (e) { /* private mode */ }
+  try {
+    const r = await fetch(LATEST_API, { headers: { Accept: 'application/vnd.github+json' } });
+    if (!r.ok) return;
+    const j = await r.json();
+    if (!j || !j.tag_name) return;
+    const as = Array.isArray(j.assets) ? j.assets : [];
+    const setup = as.find((a) => a.name === SETUP_NAME) || as.find((a) => /setup.*\.exe$/i.test(a.name)) || as.find((a) => /\.exe$/i.test(a.name));
+    latest = { tag: j.tag_name, date: j.published_at, url: j.html_url || RELEASES_URL, size: setup ? setup.size : 0, dl: setup ? setup.browser_download_url : '' };
+    try { sessionStorage.setItem('gs.latest', JSON.stringify({ at: Date.now(), d: latest })); } catch (e) { /* private mode */ }
+    drawVersion();
+  } catch (e) { /* offline: the line stays hidden */ }
+}
+
 /* ===== language ===== */
 function applyLang(l, save) {
   lang = l;
@@ -393,7 +436,7 @@ function applyLang(l, save) {
   // the language tile shows the installer in the page's own language
   $('#langShot').src = `site/img/installer-${l === 'ar' ? 'ar' : 'en'}.jpg`;
   renderRail(); renderFaq(); renderPicker();
-  drawInfo(); drawStage(true); markFeatured();
+  drawInfo(); drawStage(true); markFeatured(); drawVersion();
 }
 $('#langBtn').addEventListener('click', () => applyLang(lang === 'ar' ? 'en' : 'ar', true));
 
@@ -413,6 +456,7 @@ addEventListener('scroll', onScroll, { passive: true }); onScroll();
 buildWall();
 buildStrip();
 applyLang(lang, false);
+loadVersion();
 observeReveal();
 startFeature();
 reduced.addEventListener?.('change', startFeature);
