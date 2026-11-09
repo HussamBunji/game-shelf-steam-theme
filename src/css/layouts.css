@@ -508,6 +508,14 @@ html[data-rfs-native] :is(#rfs-bar, #rfs-themes, #rfs-toast) * { font-family: va
 #rfs-bar.original.has-nav:not(.float) { display: none !important; }
 #rfs-navtheme { cursor: pointer; user-select: none; -webkit-app-region: no-drag; }
 #rfs-navtheme.rfs-open { color: var(--rf-accent) !important; }
+/* the sounds on/off switch right after THEMES (shelf.js navSnd): an icon in the nav's own colours, dimmed when off */
+#rfs-navwrap { display: flex; align-items: center; }
+#rfs-navsnd { display: inline-flex !important; align-items: center; justify-content: center; min-width: 30px; padding: 0 6px !important;
+  margin-inline-start: 2px; cursor: pointer; user-select: none; -webkit-app-region: no-drag; }
+#rfs-navsnd > svg.rf-ic { width: 17px; height: 17px; flex: 0 0 auto; }
+#rfs-navsnd[data-on="false"] { opacity: .55; }
+#rfs-navsnd:hover, #rfs-navsnd:focus-visible { opacity: 1; color: var(--rf-accent) !important; }
+#rfs-navsnd::after { display: none !important; } /* no "selected" underline */
 
 /* the filter strip lives inside the home design, right above the games (shelf.js dockBar) —
    one search + source + sort + view in one place; Glass puts it on the genre-chips row */

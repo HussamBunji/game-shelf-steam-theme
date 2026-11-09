@@ -147,6 +147,9 @@
   rule`${R} ${PBC}${GREEN} ${PB}, ${R} ${PBC}${GREEN} ${PB} * { color: var(--bpm-play-ink) !important; fill: var(--bpm-play-ink) !important; font-family: var(--bpm-head) !important; text-transform: var(--bpm-case) !important; letter-spacing: var(--bpm-spacing) !important; }`;
   rule`${R} ${PBC}${GREEN} ${PB}:focus, ${R} ${PBC}${GREEN} ${PB}.gpfocus { background: rgba(255, 255, 255, .16) !important; box-shadow: 0 0 0 2px var(--bpm-text), 0 0 26px rgba(var(--bpm-glow), .7) !important; }`;
   rule`${R} ${PBC}${GREEN} ${PB}:focus::after { opacity: .35 !important; }`;
+  // the other states (Purchase, Install, Update, Stream …): focused, the button takes the accent colour (re-tinted
+  // Steam blue), so its white label was unreadable on a light accent (gold, cyan, yellow) — the accent's own ink
+  rule`${R} ${PBC}:not(${GREEN}) ${PB}:is(.gpfocus, :focus), ${R} ${PBC}:not(${GREEN}) ${PB}:is(.gpfocus, :focus) * { color: var(--bpm-ink) !important; fill: var(--bpm-ink) !important; }`;
   rule`${R} ${C('AppDetailsSectionContainer', 'RightColumnSection')} { background: var(--bpm-card) !important; border: var(--bpm-card-border) !important; border-radius: var(--bpm-rl) !important; }`;
   rule`${R} ${C('SectionHeader', 'PadLeft')}, ${R} ${C('GameStatsSection')} ${C('StatusNameContainer')} { font-family: var(--bpm-head) !important; text-transform: var(--bpm-case) !important; letter-spacing: var(--bpm-spacing) !important; }`;
   rule`${R} ${C('PlayBarGameName')} { font-family: var(--bpm-head) !important; }`;
@@ -416,7 +419,9 @@
      ================================================================= */
   const PAGE = 8, COLS = 4;
   let picker = null, page = 0, sel = 0, busy = false;
-  const list = () => STYLES;
+  // only the styles that have a Big Picture version: the desktop-only ones (Classic Shelf, Corkboard, Magazine) are
+  // chosen from the desktop's own picker and are not offered here at all
+  const list = () => STYLES.filter(inBpm);
   const pages = () => Math.ceil(list().length / PAGE);
   function buildPicker() {
     picker = document.createElement('div');
@@ -441,11 +446,14 @@
     picker.dir = ar ? 'rtl' : 'ltr';
     picker.lang = ar ? 'ar' : 'en';
     const cur = curSid();
+    const desk = (() => { const st = curStyle(); return st && !inBpm(st) ? st : null; })(); // a desktop-only style is active
     const items = list().slice(page * PAGE, page * PAGE + PAGE);
     const n = pages();
     picker.innerHTML = `
       <div class="bp-head">
-        <div class="bp-title">${ICON}<div><b>${T('الثيمات', 'Themes')}</b><small>${T('اختر شكل ستيم — يتغيّر هنا وعلى سطح المكتب', 'Choose how Steam looks — here and on the desktop')}</small></div></div>
+        <div class="bp-title">${ICON}<div><b>${T('الثيمات', 'Themes')}</b><small>${desk
+          ? esc(T(`ثيمك «${desk.ar}» لسطح المكتب فقط — اختر واحد للشاشة الكبيرة`, `Your theme “${desk.en}” is desktop only — pick one for Big Picture`))
+          : T('اختر شكل ستيم — يتغيّر هنا وعلى سطح المكتب', 'Choose how Steam looks — here and on the desktop')}</small></div></div>
         <div class="bp-pages">
           <span class="bp-arrow ${page ? '' : 'dis'}" data-d="p">${CHEV}</span>
           <span>${T(`صفحة ${page + 1} من ${n}`, `Page ${page + 1} of ${n}`)}</span>
@@ -512,7 +520,7 @@
     closeSideMenus();
     clearFF();
     if (!picker) buildPicker();
-    const i = STYLES.findIndex(s => s.sid === curSid());
+    const i = list().findIndex(s => s.sid === curSid());
     sel = i < 0 ? 0 : i;
     page = Math.floor(sel / PAGE);
     renderPicker();
@@ -553,15 +561,20 @@
       toast(T('ما قدرت أغيّر الثيم — غيّره من إعدادات ستيم ← Millennium ← Themes', 'Couldn\'t change the theme — use Steam Settings → Millennium → Themes'), 5000);
       return;
     }
-    if (base(st.sid) === base(from) && await swapLive(st)) {
+    // Big Picture always switches live. A different community base (Material You / Steam Original) also needs the
+    // desktop's UI rebuilt — but a UI reload while Big Picture is open hangs Steam, so the desktop does it itself as
+    // soon as Big Picture closes (shelf.js SteamAPI.restartIfPending reads this flag).
+    const other = base(st.sid) !== base(from);
+    if (other) { try { localStorage.setItem('rfs.restartAfterBpm', String(Date.now())); } catch (e) { /* private */ } }
+    if (await swapLive(st)) {
       setBusy('');
       closePicker();
-      toast(T(`صار الثيم «${name}»`, `Theme is now “${name}”`));
+      toast(other ? T(`صار الثيم «${name}» — سطح المكتب يكمّل التبديل لما تطلع من الشاشة الكبيرة`, `Theme is now “${name}” — the desktop finishes the switch when you leave Big Picture`)
+        : T(`صار الثيم «${name}»`, `Theme is now “${name}”`), other ? 4500 : 2600);
       return;
     }
-    // a different community base (Material You / Steam Original) needs Steam's UI rebuilt
-    setBusy(T('ستيم يعيد تحميل الواجهة…', 'Steam is reloading its interface…'));
-    setTimeout(() => { try { ctx.SteamClient.Browser.RestartJSContext(); } catch (e) { setBusy(''); } }, 400);
+    setBusy('');
+    toast(T('تحفظ الثيم — يتطبق لما تطلع من الشاشة الكبيرة', 'Theme saved — it applies when you leave Big Picture'), 4500);
   }
   /** swap the style sheet in this window (and our menu windows) without reloading Steam;
       the desktop windows follow on their own (skin.js followStyle) */

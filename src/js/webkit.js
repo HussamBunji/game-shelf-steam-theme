@@ -787,7 +787,9 @@
     setInterval(placeRail, 1500);
     filterAdult(); markDiscounts();
     setInterval(() => { filterAdult(); markDiscounts(); }, 1200); // carousels and infinite lists keep adding items
-    addEventListener('resize', () => { column = null; placeRail(); });
+    // resizing fires dozens of events a second: place the side panels at most once per frame
+    let railFrame = 0;
+    addEventListener('resize', () => { if (railFrame) return; railFrame = requestAnimationFrame(() => { railFrame = 0; column = null; placeRail(); }); }, { passive: true });
     setTimeout(() => rail && renderRail(), 2500); // purchase / wishlist blocks may load late
     // the old colour-classifying recolour is off for every style (they all build on stock Steam or a community
     // theme), so its page-wide MutationObserver — which walked every node the store added — no longer runs

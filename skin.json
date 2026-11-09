@@ -2,7 +2,7 @@
   "name": "Game Shelf — رف الألعاب",
   "author": "Yousef (yousf612-alwazzan)",
   "description": "Sixteen looks for Steam — Classic Shelf, Glass Gallery, Neon Coverflow, Terminal, RPG Vault, Vinyl Records, Corkboard, Retro Arcade, Magazine, Cupertino Dark, Cyberpunk, Shelter OS, Crossbar, Steam Original, plus SpaceTheme and Material You (MIT). Store stats panels, Ctrl+K search, full Arabic or English.",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "header_image": "https://raw.githubusercontent.com/SteamClientHomebrew/Millennium/main/assets/header.png",
   "splash_image": "https://raw.githubusercontent.com/SteamClientHomebrew/Millennium/main/assets/header.png",
   "tags": [

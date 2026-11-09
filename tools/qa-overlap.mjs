@@ -3,6 +3,7 @@
 //   node tools/qa-overlap.mjs check <targetRegex> <outBase>      one window/page (regex on title or URL) → .json + .png
 //   node tools/qa-overlap.mjs list                               open CDP targets
 //   node tools/qa-overlap.mjs run <outDir> <Style> [<Style>...] [--only=home,panel,picker,app,menus,downloads,install,friends,settings,web|store|...]
+//   node tools/qa-overlap.mjs bpm <outBase>                     the open Big Picture window (zoom-aware; screen capture)
 // The in-page check (CHECK) reports, for the visible interactive elements (a, button, [role=button], input, select,
 // .DialogButton, [class*="Button"], our .tb-btn / .rf-act …):
 //   overflow  – sticks out of its clipping container (overflow hidden/clip, or the non-scrolling axis of a scroller)
@@ -597,6 +598,47 @@ export async function runStyle(outRoot, value, only, log = console.log) {
   return rows;
 }
 
+/* ======================================================================================================
+   Big Picture:  node tools/qa-overlap.mjs bpm <outBase>
+   - The home designs are CSS-zoomed there; this Chromium returns getBoundingClientRect() unzoomed inside a zoomed box
+     while elementFromPoint() works in real pixels, so every rect is scaled by its ancestors' zoom while checking.
+   - Steam's own home lies under our design (#rfs.on) on purpose: it is hidden for the check.
+   - CDP screenshots of the Big Picture window come back black: the screen itself is captured (PowerShell).
+   - Steam's screensaver (after 5 idle minutes) is dismissed first.
+   ====================================================================================================== */
+const ZOOM_ON = `(() => { if (window.__qaZoomOrig) return 1; const E = Element.prototype, Rg = Range.prototype;
+  const o = window.__qaZoomOrig = { b: E.getBoundingClientRect, c: E.getClientRects, rb: Rg.getBoundingClientRect, rc: Rg.getClientRects };
+  const zf = el => { let z = 1; for (let a = el; a && a.nodeType === 1; a = a.parentElement) { const v = parseFloat(getComputedStyle(a).zoom); if (v && v !== 1) z *= v; } return z; };
+  const sc = (r, z) => z === 1 ? r : new DOMRect(r.x * z, r.y * z, r.width * z, r.height * z);
+  const own = n => n.nodeType === 1 ? n : n.parentElement;
+  E.getBoundingClientRect = function () { return sc(o.b.call(this), zf(this)); };
+  E.getClientRects = function () { const z = zf(this); return [...o.c.call(this)].map(r => sc(r, z)); };
+  Rg.getBoundingClientRect = function () { return sc(o.rb.call(this), zf(own(this.commonAncestorContainer))); };
+  Rg.getClientRects = function () { const z = zf(own(this.commonAncestorContainer)); return [...o.rc.call(this)].map(r => sc(r, z)); };
+  const R = document.getElementById('rfs'); window.__qaHid = [];
+  if (R && R.classList.contains('on') && R.parentElement) for (const c of R.parentElement.children) if (c.id !== 'rfs' && c.id !== 'rfs-sheet') { window.__qaHid.push([c, c.style.visibility]); c.style.visibility = 'hidden'; }
+  window.__qaScope = '#rfs-bpm-picker.on, .ModalPosition, #rfs-sheet.on, .contextMenu';
+  const ss = document.querySelector('[class*=ScreensaverContainer]');
+  if (ss) { try { const k = Object.keys(ss).find(k => k.startsWith('__reactFiber')); let f = ss[k]; for (let i = 0; i < 9; i++) f = f.return; f.memoizedState.queue.dispatch(false); } catch (e) { /* Steam changed */ } }
+  return 1; })()`;
+const ZOOM_OFF = `(() => { const o = window.__qaZoomOrig; if (o) { Element.prototype.getBoundingClientRect = o.b; Element.prototype.getClientRects = o.c; Range.prototype.getBoundingClientRect = o.rb; Range.prototype.getClientRects = o.rc; window.__qaZoomOrig = null; }
+  for (const [c, v] of window.__qaHid || []) c.style.visibility = v; window.__qaHid = []; return 1; })()`;
+export async function checkBpm(outBase) {
+  const list = (await targets()).filter(t => t.title === 'Steam Big Picture Mode' && t.webSocketDebuggerUrl);
+  let p = null;
+  for (const t of list.reverse()) { try { const q = await open(t); if ((await q.evaluate('document.visibilityState', 3000)) === 'visible') { p = q; break; } q.close(); } catch (e) { /* stale */ } }
+  if (!p) return null;
+  let res;
+  try { await p.evaluate(ZOOM_ON); await sleep(400); res = await p.evaluate(CHECK, 60000); }
+  finally { try { await p.evaluate(ZOOM_OFF); } catch (e) { /* closed */ } p.close(); }
+  if (outBase) {
+    writeFileSync(outBase + '.json', JSON.stringify(res, null, 1));
+    const ps = `Add-Type -AssemblyName System.Windows.Forms,System.Drawing; Add-Type 'using System.Runtime.InteropServices; public class D { [DllImport("user32.dll")] public static extern bool SetProcessDPIAware(); }'; [D]::SetProcessDPIAware() | Out-Null; $b=[System.Windows.Forms.SystemInformation]::VirtualScreen; $m=New-Object System.Drawing.Bitmap $b.Width,$b.Height; [System.Drawing.Graphics]::FromImage($m).CopyFromScreen($b.Left,$b.Top,0,0,$m.Size); $m.Save('${path.resolve(outBase + '.png').replace(/'/g, "''")}')`;
+    try { execSync(`powershell -NoProfile -Command "${ps.replace(/"/g, '\\"')}"`, { stdio: 'ignore' }); } catch (e) { res.shotError = String(e.message || e).slice(0, 200); }
+  }
+  return res;
+}
+
 if (process.argv[1] && process.argv[1].endsWith('qa-overlap.mjs')) {
   const [mode, a, b] = process.argv.slice(2);
   if (mode === 'list') {
@@ -615,8 +657,11 @@ if (process.argv[1] && process.argv[1].endsWith('qa-overlap.mjs')) {
     for (const st of rest.filter(x => !x.startsWith('--'))) { try { all.push(...await runStyle(a, st, only)); } catch (e) { console.log('!!', st, e.message); } }
     mkdirSync(a, { recursive: true });
     writeFileSync(path.join(a, 'run-' + Date.now() + '.json'), JSON.stringify(all, null, 1));
+  } else if (mode === 'bpm') {
+    const r = await checkBpm(a);
+    console.log(r ? summary(r) : 'no visible Big Picture window');
   } else {
-    console.log('usage: node tools/qa-overlap.mjs check <targetRegex> <outBase> | list');
+    console.log('usage: node tools/qa-overlap.mjs check <targetRegex> <outBase> | list | bpm <outBase>');
   }
   process.exit(0);
 }

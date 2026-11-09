@@ -157,7 +157,47 @@
       try { const r = await this.ffi('Core_GetActiveTheme')(); const o = typeof r === 'string' ? JSON.parse(r) : r; return (o && o.native) || 'rf-shelf'; } catch (e) { return 'rf-shelf'; }
     },
     /** reload Steam's UI so Millennium re-injects the theme with the new condition values */
-    restartUI() { this.ctx().SteamClient.Browser.RestartJSContext(); },
+    restartUI() {
+      // never while Big Picture is open: a UI reload then hangs Steam. It is done as soon as Big Picture closes
+      // (the desktop window's tick runs restartIfPending), and Big Picture shows the new style live meanwhile.
+      if (this.bpmOpen()) { try { localStorage.setItem('rfs.restartAfterBpm', String(Date.now())); } catch (e) { /* private */ } return; }
+      const c = this.ctx();
+      // Big Picture's router moves the shared context's address to /routes/… (and leaves it there after Big Picture
+      // closes). A reload from there fetches that path as a file — Steam shows a "Save As: home" box and its UI never
+      // comes back. So the address goes back to the page Steam loaded first.
+      try {
+        if (!/\/index\.html$/.test(c.location.pathname)) {
+          let u = ''; try { u = localStorage.getItem('rfs.sjcUrl') || ''; } catch (e) { /* private */ }
+          c.history.replaceState(c.history.state, '', /^https:\/\/steamloopback\.host\/index\.html/.test(u) ? u : '/index.html' + c.location.search);
+        }
+      } catch (e) { LOG('could not reset the shared context address', e); }
+      c.SteamClient.Browser.RestartJSContext();
+    },
+    /** remember the shared context's real address while it still has it (see restartUI) */
+    noteContextUrl() {
+      try {
+        const c = this.ctx();
+        if (!c) return;
+        if (/\/index\.html$/.test(c.location.pathname)) { if (/[?&]CLIENT_SESSION=/.test(c.location.search)) localStorage.setItem('rfs.sjcUrl', c.location.href); return; }
+        // Big Picture closed and left its /routes/… address behind: put the real one back at once, so a reload Steam or
+        // Millennium starts on its own (a settings change, "Reload UI") doesn't land on the "Save As: home" box either
+        const u = localStorage.getItem('rfs.sjcUrl') || '';
+        if (!this.bpmOpen() && /^\/routes\//.test(c.location.pathname) && /^https:\/\/steamloopback\.host\/index\.html\?/.test(u)) c.history.replaceState(c.history.state, '', u);
+      } catch (e) { /* private / Steam changed */ }
+    },
+    /** Big Picture's window is open (true from any Steam window, desktop or Big Picture) */
+    bpmOpen() {
+      try { const g = this.ctx().SteamUIStore.WindowStore.GamepadUIMainWindowInstance; return !!(g && g.m_BrowserWindow && !g.m_BrowserWindow.closed); } catch (e) { return false; }
+    },
+    /** a reload put off while Big Picture was open: do it now that it is closed (desktop window only) */
+    restartIfPending() {
+      let at = 0;
+      try { at = +localStorage.getItem('rfs.restartAfterBpm') || 0; } catch (e) { return; }
+      if (!at || this.bpmOpen()) return;
+      try { localStorage.removeItem('rfs.restartAfterBpm'); } catch (e) { /* private */ }
+      if (Date.now() - at > 6 * 3600e3) return; // a stale flag (Steam was closed meanwhile): nothing to do
+      setTimeout(() => this.restartUI(), 800);
+    },
     async setCondition(name, value) {
       const set = this.ffi('Core_ChangeCondition');
       if (!set) throw new Error('no ffi');
@@ -700,7 +740,9 @@
   }
 
   function mount() {
-    for (const el of BPM ? [toastEl, sheet] : [toastEl, viewer, sheet, picker, bar]) if (!el.isConnected) document.body.appendChild(el);
+    // Big Picture: the filter strip stays hidden (bigpicture.css), but it is in the page: the designs drive the real
+    // search box / sort / library menus through it (Crossbar's on-screen keys and Options)
+    for (const el of BPM ? [toastEl, sheet, bar] : [toastEl, viewer, sheet, picker, bar]) if (!el.isConnected) document.body.appendChild(el);
     iconDefs();
   }
 
@@ -939,13 +981,14 @@
       wrap.innerHTML = `${grid ? '' : '<div class="cf-bg"><div class="cf-bg-img"></div><div class="cf-bg-img"></div><div class="cf-floor"></div></div>'}
         <div class="cf-top">
           <div class="rf-dock cf-dock" data-rfs-dock></div>
+          <!-- Big Picture: ↑ from the covers reaches this rail too (the toggle and the sections), besides LT / LB / RB -->
           <div class="cf-rail">${pad('LT')}
             <div class="cf-views" role="tablist" aria-label="${T('طريقة العرض', 'View')}">
-              <button class="cf-view${grid ? '' : ' on'}" data-view="flow" data-nopad role="tab" aria-selected="${!grid}" title="${T('العرض الدوّار', 'Coverflow')} (G)">${ic('layers')}<span>${T('دوّار', 'Coverflow')}</span></button>
-              <button class="cf-view${grid ? ' on' : ''}" data-view="grid" data-nopad role="tab" aria-selected="${grid}" title="${T('شبكة كل الألعاب', 'All games as a grid')} (G)">${ic('grid')}<span>${T('شبكة', 'Grid')}</span></button>
+              <button class="cf-view${grid ? '' : ' on'}" data-view="flow" role="tab" aria-selected="${!grid}" title="${T('العرض الدوّار', 'Coverflow')} (G)">${ic('layers')}<span>${T('دوّار', 'Coverflow')}</span></button>
+              <button class="cf-view${grid ? ' on' : ''}" data-view="grid" role="tab" aria-selected="${grid}" title="${T('شبكة كل الألعاب', 'All games as a grid')} (G)">${ic('grid')}<span>${T('شبكة', 'Grid')}</span></button>
             </div>${pad('LB')}
             <div class="cf-secs${byName ? ' abc' : ''}" aria-label="${T('انتقل إلى قسم', 'Jump to a section')}">${this.secs.map((s, k) =>
-              `<button class="cf-sec" data-s="${k}" data-nopad title="${esc(s.label)} — ${esc(fmtGames(s.count))}"><span dir="auto">${esc(s.label)}</span>${byName ? '' : `<b>${NUM.format(s.count)}</b>`}</button>`).join('')}</div>${pad('RB')}
+              `<button class="cf-sec" data-s="${k}" title="${esc(s.label)} — ${esc(fmtGames(s.count))}"><span dir="auto">${esc(s.label)}</span>${byName ? '' : `<b>${NUM.format(s.count)}</b>`}</button>`).join('')}</div>${pad('RB')}
             <div class="cf-count" dir="ltr"></div>
           </div>
         </div>
@@ -1683,6 +1726,7 @@
     if (!on && state.amb) { state.amb = false; store.set('amb', '0'); }
     Sfx.load(); updateBar(); try { Sfx.sync(); } catch (e) { /* ambience engine not ready */ }
     paintSoundSwitch(); if (on) sfx('tick');
+    try { paintNavSnd(); } catch (e) { /* nav button not built yet */ }
   }
   function paintSoundSwitch() {
     picker.querySelectorAll('.tp-snd button').forEach(b => { const on = (b.dataset.snd === 'on') === !!state.sound; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); });
@@ -2326,9 +2370,12 @@
   const placement = { mode: '', height: 0, key: '' };
   /* what the design on the stage was last built for: coming back to the library home with the same size, design and
      games, the built design is put back as it was instead of rebuilding 900+ games (docs/PERFORMANCE.md) */
-  let renderedFor = '', routeChangedAt = 0, lastTickAt = 0;
+  let renderedFor = '', routeChangedAt = 0, lastTickAt = 0, lastPendingCheck = 0;
   const renderKey = () => [placement.key, state.layout, state.sig, state.source, state.sort, state.genre, state.query, state.view, LANG].join('|');
   let loaded = false, lastSigCheck = 0, lastLayoutCheck = 0;
+  // window resizing (tick waits for the drag to end before rebuilding the design)
+  let lastResizeAt = 0, resizeT = 0;
+  window.addEventListener('resize', () => { lastResizeAt = Date.now(); }, { passive: true });
   function place(panel) {
     const upd = SteamAPI.updatesBlock();
     const pr = panel.getBoundingClientRect();
@@ -2375,9 +2422,27 @@
   navTheme.title = T('غيّر تصميم الثيم', 'Change the theme design');
   navTheme.addEventListener('click', e => { e.stopPropagation(); Themes.isOpen() ? Themes.close() : Themes.open(); });
   navTheme.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); Themes.open(); } });
+  /* the theme sounds' on/off switch, right after THEMES in Steam's nav row — on every page, one click (the owner: "not
+     everyone wants these sounds"). Same master switch as the picker's and the strip's (setSound). */
+  const navSnd = document.createElement('div');
+  navSnd.id = 'rfs-navsnd';
+  navSnd.setAttribute('role', 'button');
+  navSnd.tabIndex = 0;
+  navSnd.addEventListener('click', e => { e.stopPropagation(); setSound(!state.sound); });
+  navSnd.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSound(!state.sound); } });
+  function paintNavSnd() {
+    const on = !!state.sound;
+    if (navSnd.dataset.on === String(on)) return;
+    navSnd.dataset.on = String(on);
+    navSnd.innerHTML = on ? ic('volume') : ic('mute');
+    navSnd.title = on ? T('أطفئ أصوات الثيم', 'Mute the theme sounds') : T('شغّل أصوات الثيم', 'Turn the theme sounds on');
+    navSnd.setAttribute('aria-label', navSnd.title);
+    navSnd.setAttribute('aria-pressed', String(!on));
+  }
   const navWrap = document.createElement('div'); // mirrors Steam's per-item "MenuWrapper"
   navWrap.id = 'rfs-navwrap';
   navWrap.appendChild(navTheme);
+  navWrap.appendChild(navSnd);
   function placeNavTheme() {
     const sel = SteamAPI.sel('MenuButton', 'SuperNav');
     const btns = sel ? [...document.querySelectorAll(sel)].filter(b => b !== navTheme && b.getBoundingClientRect().width) : [];
@@ -2392,10 +2457,11 @@
     } else if (navWrap.previousElementSibling !== last) last.after(navWrap);
     // look like an unselected nav button (the one with the fewest classes)
     const plain = btns.reduce((a, b) => (b.classList.length < a.classList.length ? b : a));
-    if (navTheme.dataset.cls !== plain.className) { navTheme.className = plain.className; navTheme.dataset.cls = plain.className; }
+    if (navTheme.dataset.cls !== plain.className) { navTheme.className = plain.className; navTheme.dataset.cls = plain.className; navSnd.className = plain.className; }
     const label = T('الثيمات', 'Themes');
     if (navTheme.textContent !== label) navTheme.textContent = label;
     navTheme.classList.toggle('rfs-open', Themes.isOpen());
+    paintNavSnd();
     return true;
   }
   /** only write a style when it really changes — every write is a DOM change, and the community theme's page-wide
@@ -2530,6 +2596,7 @@
     mount();
     const now = Date.now();
     lastTickAt = now;
+    if (!BPM && now - lastPendingCheck > 2000) { lastPendingCheck = now; SteamAPI.noteContextUrl(); SteamAPI.restartIfPending(); } // a style / language reload put off while Big Picture was open
     if (force || now - lastLayoutCheck > 800) {
       lastLayoutCheck = now;
       const lay = themeVar('--rf-layout', 'shelf');
@@ -2563,7 +2630,12 @@
       const pr = panel.getBoundingClientRect();
       const key = [Math.round(pr.width), Math.round(pr.height), state.layout, state.news].join(',');
       const misplaced = !root.isConnected || (placement.mode === 'embed' && !root.parentElement.hasAttribute('data-rfs-home')) || Bpm.misplaced();
-      if (key !== placement.key || force || misplaced) {
+      // the window is being resized: rebuilding the whole design every tick while the edge is dragged made Steam
+      // crawl (900+ games laid out ~3× a second). Follow the panel cheaply now, rebuild ONCE when the drag stops.
+      if (key !== placement.key && !force && !misplaced && !BPM && root.classList.contains('on') && Date.now() - lastResizeAt < 300) {
+        place(panel);
+        clearTimeout(resizeT); resizeT = setTimeout(() => tick(false), 320);
+      } else if (key !== placement.key || force || misplaced) {
         const changed = key !== placement.key;
         placement.key = key;
         if (BPM) Bpm.place(panel); else place(panel);
@@ -2706,7 +2778,8 @@
         target: root, currentTarget: root, preventDefault: noop, stopPropagation: noop, stopImmediatePropagation: noop };
       try { return !!lay.key(ev); } catch (err) { LOG('pad key failed', err); return false; }
     }
-    const visible = el => { const r = el.getBoundingClientRect(); return r.width > 2 && r.height > 2 && getComputedStyle(el).visibility !== 'hidden'; };
+    // (faded-out parts count as hidden: Crossbar's on-screen keys are only there while Search is chosen)
+    const visible = el => { const r = el.getBoundingClientRect(); return r.width > 2 && r.height > 2 && getComputedStyle(el).visibility !== 'hidden' && (!el.checkVisibility || el.checkVisibility({ opacityProperty: true, visibilityProperty: true })); };
     /** the layout's selected game: its element (cursor classes the layouts use) and the game */
     function selEl() {
       const lay = L();
@@ -2766,35 +2839,56 @@
       if (ps) reveal(padF, ps === sheet ? sheet : root);
       else reveal(zone === 'acts' ? padF : selEl(), root);
     });
+    let padKey = null; // a [data-padid] cursor is found again after the design re-renders (Crossbar's keys)
     function setPadF(el) {
       if (padF === el) return;
       if (padF) padF.classList.remove('rfs-padf');
       padF = el || null;
+      padKey = padF && padF.dataset && padF.dataset.padid ? `[data-padid="${CSS.escape(padF.dataset.padid)}"]` : null;
       if (!padF) return;
       padF.classList.add('rfs-padf');
-      // inside a panel the cursor is also the real focus: no second (:focus) ring left on the button it came from
-      if (panelEl() && padF.focus) { try { padF.focus({ preventScroll: true }); } catch (e) { /* not focusable */ } }
+      // the cursor is a class only: the DOM focus stays on Steam's own home item (see keepSteamFocus)
+      // a design may follow it with its own selection (Shelter OS: the terminal entry under the cursor)
+      const lay = L();
+      if (typeof lay.padFocus === 'function') { try { lay.padFocus(padF); } catch (e) { /* the design's own business */ } }
       revealSoon();
     }
+    /* The DOM focus must stay inside Steam's navigation tree. When one of our elements took it (a design focusing its
+       panel's first button, a terminal entry …), Steam's tree lost its focused node, and the NEXT controller press was
+       spent by Steam on finding it again: every other press did nothing. So the focus goes straight back to the Steam
+       element that had it; our cursor is the .rfs-padf / design classes, never the DOM focus. */
+    let steamFocus = null;
+    const ours = el => !!(el && el.nodeType === 1 && (root.contains(el) || sheet.contains(el)));
+    function keepSteamFocus(e) {
+      const t = e.target;
+      if (!ours(t)) { if (t && t.nodeType === 1 && t !== document.body) steamFocus = t; return; }
+      if (t.matches && t.matches('input, textarea, [contenteditable="true"]')) return; // a real text field may keep it
+      const back = !ours(e.relatedTarget) && e.relatedTarget && e.relatedTarget.isConnected ? e.relatedTarget : steamFocus && steamFocus.isConnected ? steamFocus : null;
+      if (back) { try { back.focus({ preventScroll: true }); } catch (err) { /* gone */ } } else { try { t.blur(); } catch (err) { /* ignore */ } }
+    }
+    document.addEventListener('focusin', keepSteamFocus, true);
     const BTN = 'button, a[href], [data-act], [data-close], [role="button"]';
     /** buttons of the panel, or of the design outside its game tiles (a tile repeated in a list is the layout's job) */
     function btns(scope) {
       // [data-nopad]: a duplicate the D-pad skips (Shelter OS's dial labels repeat its tabs)
-      const all = [...scope.querySelectorAll(BTN)].filter(b => !b.disabled && !b.hasAttribute('data-nopad') && visible(b) && !b.closest('.rf-dock, [hidden]'));
+      // (the desktop filter strip is never the D-pad's; a design's own chips sharing its slot — .rf-merge — are)
+      const all = [...scope.querySelectorAll(BTN)].filter(b => !b.disabled && !b.hasAttribute('data-nopad') && visible(b) && !b.closest('#rfs-bar, [hidden]'));
       const own = all.filter(b => !all.some(o => o !== b && o.contains(b)));
       const sr = scope.getBoundingClientRect();
       // a panel: everything but its click-outside backdrop (a [data-close] veil the size of the panel)
       if (scope !== root) return own.filter(b => { const r = b.getBoundingClientRect(); return r.width * r.height < sr.width * sr.height * 0.5; });
       const big = sr.width * sr.height * 0.2;
       return own.filter(b => {
-        if (b.hasAttribute('data-appid') || b.getAttribute('tabindex') === '-1') return false; // tiles, and helper arrows the design keeps out of tab order
+        // tiles, and helper arrows the design keeps out of tab order ([data-pad]: kept out of the desktop's Tab order,
+        // but the D-pad's to reach, e.g. Crossbar's on-screen keys)
+        if (b.hasAttribute('data-appid') || (b.getAttribute('tabindex') === '-1' && !b.hasAttribute('data-pad'))) return false;
         const r = b.getBoundingClientRect();
         if (r.width * r.height > big) return false; // a clickable backdrop (hero art), not a button
         const it = b.closest('[data-appid]');
         return !(it && it.parentElement && it.parentElement.querySelectorAll(':scope > [data-appid]').length > 2);
       });
     }
-    function nearest(list, from, dx, dy) {
+    function nearest(list, from, dx, dy, cone = 0) {
       const ax = from.left + from.width / 2, ay = from.top + from.height / 2;
       let best = null, bs = Infinity;
       for (const b of list) {
@@ -2802,6 +2896,7 @@
         const r = b.getBoundingClientRect(), x = r.left + r.width / 2 - ax, y = r.top + r.height / 2 - ay;
         const main = dx ? x * dx : y * dy, side = dx ? Math.abs(y) : Math.abs(x);
         if (main <= 4) continue;
+        if (cone && side > main * cone) continue; // far off to the side: not "that way" at all
         const sc = main + side * 2.5;
         if (sc < bs) { bs = sc; best = b; }
       }
@@ -2855,7 +2950,9 @@
       const from = selEl();
       const rr = root.getBoundingClientRect();
       const fr = from ? from.getBoundingClientRect() : { left: rr.left + rr.width / 2, top: rr.top + rr.height / 2, width: 0, height: 0 };
-      let n = nearest(list, fr, dx, dy);
+      // leaving the games only for a button that really lies that way (← at Crossbar's first category is not the
+      // on-screen keyboard up-left of it)
+      let n = nearest(list, fr, dx, dy, dx ? 1 : 2);
       if (!n) return false;
       // the first row of buttons that way: start on its PLAY button when it has one
       const ax = fr.left + fr.width / 2, ay = fr.top + fr.height / 2;
@@ -2866,31 +2963,62 @@
       zone = 'acts'; setPadF(n); snd('move');
       return true;
     }
+    /** how far along direction (dx, dy) the centre of box r lies from box f (≤ 0: not that way) */
+    const along = (f, r, dx, dy) => dx ? (r.left + r.width / 2 - (f.left + f.width / 2)) * dx : (r.top + r.height / 2 - (f.top + f.height / 2)) * dy;
+    /** returns false when the press is Steam's to handle (Up past the design's top buttons: Steam's top bar) */
     function actsPad(b) {
       const d = DIR[b];
       if (d) {
         const list = btns(root);
-        const n = padF && padF.isConnected ? nearest(list, padF.getBoundingClientRect(), d[0], d[1]) : null;
-        if (n) { setPadF(n); snd('move'); return; }
+        const from = padF && padF.isConnected ? padF.getBoundingClientRect() : null;
+        const n = from ? nearest(list, from, d[0], d[1]) : null;
+        // the design's game cursor lies that way before the next button (the covers between Neon's deck and its
+        // rail, the grid under Glass's hero): back to the games, not over them
+        const sel = selEl(), sr = sel && from ? sel.getBoundingClientRect() : null;
+        // (only when it lies roughly that way: within 45°, not just a little further along the other axis)
+        let selAt = sr ? along(from, sr, d[0], d[1]) : 0;
+        if (sr && Math.abs(along(from, sr, d[1], d[0])) > selAt) selAt = 0;
+        if (n && !(selAt > 4 && selAt < along(from, n.getBoundingClientRect(), d[0], d[1]))) { setPadF(n); snd('move'); return true; }
+        if (selAt > 4) { leaveActs(); snd('move'); revealSoon(); return true; }
         // nothing further that way: a design may take the cursor on from there (Neon Coverflow: down into its
-        // "All games" grid), otherwise back to the games
+        // "All games" grid); Up goes on to Steam's top bar (search, avatar, Themes); anything else back to the games
         const lay = L();
         const on = typeof lay.padEdge === 'function' && lay.padEdge(d[0], d[1]);
-        leaveActs(); snd('move');
+        leaveActs();
+        if (!on && b === P.UP) return false;
+        snd('move');
         if (on) revealSoon();
-        return;
+        return true;
       }
       if (b === P.OK) {
-        if (!padF || !padF.isConnected) { leaveActs(); return; }
-        const before = selEl();
+        if (!padF || !padF.isConnected) { leaveActs(); return true; }
+        const before = selEl(), keep = padF.hasAttribute('data-pad');
         snd('ok'); padF.click();
-        if (selEl() !== before) { leaveActs(); revealSoon(); } // the button moved the design's own cursor (e.g. "Browse all games")
-        return;
+        // the button moved the design's own cursor (e.g. "Browse all games"): back to the games — except a [data-pad]
+        // key (Crossbar's on-screen keyboard), which stays under the cursor for the next letter
+        if (!keep && selEl() !== before) { leaveActs(); revealSoon(); }
+        return true;
       }
-      if (b === P.CANCEL) { leaveActs(); snd('out'); return; }
+      if (b === P.CANCEL) { leaveActs(); snd('out'); return true; }
       if (b === P.X) { const g = selGame(); if (g) { snd('ok'); launch(g); } else snd('fail'); }
+      return true;
     }
     function leaveActs() { zone = 'list'; setPadF(null); }
+    function refindPadF() {
+      const k = padKey, el = k && root.querySelector(k);
+      padF = null;
+      if (el && visible(el)) setPadF(el); else padKey = null;
+    }
+    /** a design whose game cursor appears only on the first arrow press (Glass, Vault, Vinyl, Cupertino, Cyberpunk,
+        Shelter): show it at once, so the controller's place is always visible. That first press only shows the
+        cursor on the first game in view; it never moves. */
+    let shownFor = null;
+    function ensureCursor() {
+      const st = stage.firstElementChild;
+      if (!st || shownFor === st || zone !== 'list' || current || panelEl() || selEl()) return;
+      shownFor = st;
+      send('ArrowDown');
+    }
 
     /** ≡ Options: Steam's own game page for the selected game (its full options: properties, manage, achievements …) */
     function options() {
@@ -2918,7 +3046,8 @@
       if (b === P.X) { eat(e); if (!rep) play(); return; }
       if (b === P.START) { eat(e); if (!rep) options(); return; }
       if (zone === 'acts') {
-        if (padF && padF.isConnected && root.contains(padF)) { eat(e); actsPad(b); return; }
+        if (!(padF && padF.isConnected) && padKey) refindPadF(); // the design re-rendered under the cursor (a typed letter)
+        if (padF && padF.isConnected && root.contains(padF)) { if (actsPad(b)) eat(e); return; }
         leaveActs();
       }
       const k = KEY[b];
@@ -2929,7 +3058,16 @@
         if (rep) { eat(e); return; }
         if (typeof lay.padOk === 'function' ? lay.padOk() : send(k, {}, rep)) { eat(e); snd(g ? 'into' : 'ok'); return; }
       } else {
-        const before = DIR[b] ? selEl() : null;
+        const before = DIR[b] || b === P.CANCEL ? selEl() : null;
+        if (b === P.CANCEL) {
+          // B on the home with nothing of the design's to close does nothing (as in Steam's own home) — it is not
+          // passed on: Steam dropped its hidden focus on it, and the next press was then spent finding it again.
+          // A design whose Escape only hides its game cursor (Vault, Vinyl …) keeps it on screen.
+          eat(e);
+          if (!send(k, {}, rep)) return;
+          if (before && !selEl()) { shownFor = null; ensureCursor(); return; }
+          snd('out'); revealSoon(); return;
+        }
         if (send(k, {}, rep)) {
           // the design used the press but its cursor didn't move (the edge of a row, the top of a grid): on to the
           // buttons that way — the hero's PLAY / DETAILS, a side panel's START / INFO …
@@ -2944,7 +3082,7 @@
         }
       }
       if (DIR[b] && enterActs(...DIR[b])) { eat(e); return; }
-      if (b === P.UP || b === P.CANCEL) return; // top of the design → Steam's top bar (search, avatar, Themes); B → Steam
+      if (b === P.UP) return; // top of the design → Steam's top bar (search, avatar, Themes)
       eat(e); snd('fail'); // everything else stays with us, so Steam's hidden focus never wanders
     }
     function onPadUp(e) {
@@ -2987,6 +3125,8 @@
       host() { return SteamAPI.el('BasicHome') || document.body; },
       misplaced() { return root.parentElement !== this.host() || (sheet.isConnected && sheet.parentElement !== this.host()); },
       place(panel) {
+        // another design: from its top (the last one's scroll position put the new one's hero half out of view)
+        if (root.dataset.layout !== state.layout) { root.scrollTop = 0; leaveActs(); }
         root.dataset.layout = state.layout;
         // inside Steam's own home (not <body>): Steam's dialogs, menus and on-screen keyboard still open above us
         const host = this.host();
@@ -3015,7 +3155,8 @@
         root.classList.toggle('pad-idle', show && !act);
         const ps = panelEl();
         if (ps) { zone = 'list'; if ((!padF || !padF.isConnected || !ps.contains(padF) || !visible(padF)) && !busy) sheetDefault(ps); }
-        else if (zone === 'acts' && (!padF || !padF.isConnected)) leaveActs();
+        else if (zone === 'acts' && (!padF || !padF.isConnected)) { refindPadF(); if (!padF) leaveActs(); }
+        else if (act) ensureCursor();
         else if (zone !== 'acts' && padF) setPadF(null);
         paintLegend(show, act);
       },
@@ -3027,6 +3168,7 @@
       destroy() {
         window.removeEventListener('vgp_onbuttondown', onPad, true);
         window.removeEventListener('vgp_onbuttonup', onPadUp, true);
+        document.removeEventListener('focusin', keepSteamFocus, true);
         legend.remove(); html.classList.remove('rfs-bpm-home');
       },
     };

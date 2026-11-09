@@ -137,6 +137,9 @@ html[data-rfs-lang="ar"] #rfs[data-layout="xmb"] .xb-clock { align-items: flex-s
   transition: opacity .3s var(--xb-ease);
 }
 #rfs[data-layout="xmb"] .xb-cat .ico { display: grid; place-items: center; width: 64px; height: 64px; }
+/* only the chosen category shows its label: the others are just their icon (their hidden label used to make the
+   button reach down over the info column's first line) */
+#rfs[data-layout="xmb"] .xb-cat:not(.on) { height: 64px; overflow: visible; }
 #rfs[data-layout="xmb"] .xb-cat .ico > svg.rf-ic {
   width: 40px; height: 40px; margin: 0; stroke: #fff; stroke-width: 1.4; filter: none;
   transition: transform .35s var(--xb-ease);
@@ -368,3 +371,17 @@ html.xb-full:not(.rfs-bpm) #rfs[data-layout="xmb"] .xb-top { padding-top: 34px; 
 #rfs[data-layout="xmb"] .xb-cat .ico > img.av { width: 42px; height: 42px; border-radius: 12px; object-fit: cover; box-shadow: 0 0 0 1.5px rgba(255, 255, 255, .5); transition: transform .35s var(--xb-ease), box-shadow .35s; }
 #rfs[data-layout="xmb"] .xb-cat.on .ico > img.av { transform: scale(1.18); box-shadow: 0 0 0 2px #fff, 0 0 16px rgba(var(--xb-g), .8); }
 #rfs[data-layout="xmb"] .xb-info .xb-sub { margin: 0; font-size: 14px; font-weight: 400; line-height: 1.5; color: var(--xb-dim); }
+
+/* ═════════════ Big Picture (src/js/shelf.js host): Steam's top bar already shows the clock, and there is no window to
+   move or close; Search has no visible field there (the strip stays hidden), so the typed text shows in a pill above the
+   on-screen keys, which the D-pad reaches with ↑ from the first result. ═════════════ */
+html.rfs-bpm #rfs[data-layout="xmb"] :is(.xb-top, .xb-win, .xb-drag) { display: none !important; }
+#rfs[data-layout="xmb"] .xb-qv { display: none; }
+html.rfs-bpm #rfs[data-layout="xmb"] .xb-qv {
+  display: flex; align-items: center; justify-content: center; min-width: 320px; max-width: 100%; height: 40px; padding: 0 22px; box-sizing: border-box;
+  border-radius: 99px; font: 300 20px/1 var(--rf-font-ui); color: #fff; text-shadow: var(--xb-tglow); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .16), rgba(255, 255, 255, .05)), rgba(6, 18, 46, .55);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .3), 0 10px 30px rgba(2, 8, 26, .3);
+}
+html.rfs-bpm #rfs[data-layout="xmb"] .xb-qv span { font-size: 15px; color: rgba(222, 234, 255, .6); text-shadow: none; }
+html.rfs-bpm #rfs[data-layout="xmb"] .xb-k.rfs-padf { color: #fff; background: rgba(255, 255, 255, .3); }

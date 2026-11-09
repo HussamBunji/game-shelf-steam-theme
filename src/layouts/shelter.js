@@ -405,6 +405,8 @@
        close); LT raises it from the home */
     padScope() { return this.term && this.r ? this.r.rig : null; },
     padAux() { if (!this.term) this.raiseTerm(); },
+    /** the controller's cursor moved onto an entry: it becomes the terminal's selected entry too (one highlight, not two) */
+    padFocus(el) { if (el && el.matches && el.matches('.sh-pick') && !el.classList.contains('sel')) this.pick(el.dataset.pick, +el.dataset.k, true); },
     get padAuxLabel() { return T('الجهاز', 'Terminal'); },
     /** the element the device "looks at" when it opens a game */
     source(appid) {

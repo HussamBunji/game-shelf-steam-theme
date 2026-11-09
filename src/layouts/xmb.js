@@ -25,6 +25,10 @@
   const EASE = 'cubic-bezier(.22,.7,.2,1)';
   const reduced = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } };
   const bar = () => document.getElementById('rfs-bar');
+  /** Big Picture (the TV window, driven by a controller: src/js/shelf.js "Big Picture host") */
+  const isBpm = () => document.documentElement.classList.contains('rfs-bpm');
+  /** Big Picture's own window navigator (friends & chat, downloads …) */
+  const gpNav = () => { try { const c = window.opener && window.opener.SteamUIStore ? window.opener : window; return c.SteamUIStore.WindowStore.GamepadUIMainWindowInstance.m_Navigator; } catch (e) { return null; } };
   /* ---- sound: the engine lives in xmb-audio.js next to this file (ambience track + synthesised menu sounds, both
      off by default). Crossbar's own toggles are the authority for its sounds; the core's sfx() is not used here. */
   const AUDIO = ((document.currentScript && document.currentScript.src) || '').replace(/xmb\.js(\?.*)?$/, 'xmb-audio.js');
@@ -253,6 +257,23 @@
       { id: 'exit', icon: 'external', name: T('الخروج من ستيم', 'Exit Steam'), sub: () => Layout.exitArm && Date.now() - Layout.exitArm < 4000 ? T('اضغط Enter مرة ثانية للخروج', 'Press Enter again to exit') : T('يقفل ستيم بالكامل', 'Quits Steam completely'), run() { if (Layout.exitArm && Date.now() - Layout.exitArm < 4000) { Layout.exitArm = 0; url('steam://exit'); } else { Layout.exitArm = Date.now(); Layout.refreshActs(); } } },
     ],
   };
+  /* ---- Big Picture: the same columns, minus what only makes sense on the desktop (window buttons, the desktop's
+     notification bell, "open Big Picture"); friends and downloads open Big Picture's own pages */
+  function bpmActs() {
+    const nav = (fn, u) => () => { const n = gpNav(); try { if (n && n[fn]) { n[fn](); return; } } catch (e) { /* older Steam */ } url(u); };
+    return {
+      ...ACTS,
+      friends: [
+        { id: 'chat', icon: 'msg', name: T('الأصدقاء والدردشة', 'Friends & chat'), sub: () => T('افتح قائمة الأصدقاء', 'Open the friends list'), run: nav('Chat', 'steam://open/friends') },
+        ACTS.friends.find(a => a.id === 'addfriend'),
+      ],
+      downloads: [{ ...ACTS.downloads[0], run: nav('Downloads', 'steam://open/downloads') }],
+      power: [
+        { id: 'leavebpm', icon: 'gamepad', name: T('الخروج من الشاشة الكبيرة', 'Exit Big Picture'), sub: () => T('رجوع لستيم على سطح المكتب', 'Back to Steam on the desktop'), run: () => url('steam://close/bigpicture') },
+        ACTS.power.find(a => a.id === 'exit'),
+      ],
+    };
+  }
   /* ---- the desktop chrome: while the Crossbar home is on screen, Steam's whole top bar is hidden (the design takes
      the full window; a thin drag strip + fade-in window buttons in the top-end corner keep it usable). Leaving the home
      (store, a game page …), switching theme or Big Picture brings Steam's bar back at once. */
@@ -365,10 +386,11 @@
       const genres = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 40).map(([t, n]) => ({ genre: t, n }));
       if (st.genre) genres.unshift({ genre: '', n: (st.games || []).length, clear: true });
       const all = games.map(g => ({ g }));
+      const acts = isBpm() ? bpmActs() : ACTS, opts = isBpm() ? OPTS.filter(o => o.id !== 'amb' && o.id !== 'msfx') : OPTS; // Big Picture keeps its own sounds
       this.lists = {
         search: all, recent: recent.map(g => ({ g })), installed: games.filter(g => g.installed).map(g => ({ g })),
-        all, top: top.map(g => ({ g })), genres, options: OPTS.map(o => ({ opt: o })),
-        ...Object.fromEntries(Object.entries(ACTS).map(([k, v]) => [k, v.map(a => ({ act: a }))])),
+        all, top: top.map(g => ({ g })), genres, options: opts.map(o => ({ opt: o })),
+        ...Object.fromEntries(Object.entries(acts).map(([k, v]) => [k, v.map(a => ({ act: a }))])),
       };
       // a new search shows its matches under Search; a new genre in All games — from the first one
       if (q && q !== this.lastQ) { this.cat = 'search'; this.selBy.search = null; }
@@ -399,11 +421,15 @@
         const sub = this.catSub(c.id, n, q, me);
         const icon = c.id === 'profile' && me.avatar ? `<img class="av" src="${esc(me.avatar)}" alt="">` : ic(c.icon);
         const name = c.id === 'profile' && me.name ? me.name : c.name;
-        return `<button type="button" class="xb-cat" data-c="${c.id}" data-k="${i}" aria-label="${esc(name)}"><span class="ico">${icon}</span><span class="lb" dir="auto">${esc(name)}</span><small dir="auto">${esc(sub)}</small></button>`;
+        // data-nopad: in Big Picture ← / → are the categories already; ↑ past the column goes on to Steam's top bar
+        return `<button type="button" class="xb-cat" data-c="${c.id}" data-k="${i}" data-nopad aria-label="${esc(name)}"><span class="ico">${icon}</span><span class="lb" dir="auto">${esc(name)}</span><small dir="auto">${esc(sub)}</small></button>`;
       }).join('');
-      const keys = OSK.map(k => `<button type="button" class="xb-k" data-k="${k}" tabindex="-1">${k}</button>`).join('')
-        + `<button type="button" class="xb-k wide" data-k=" " tabindex="-1">${esc(T('مسافة', 'Space'))}</button>`
-        + `<button type="button" class="xb-k wide" data-k="back" tabindex="-1" aria-label="${esc(T('حذف', 'Delete'))}">${ic(LTR ? 'chevL' : 'chevR')}${esc(T('حذف', 'Delete'))}</button>`;
+      // [data-pad]: out of the desktop's Tab order, but the controller's to reach (Big Picture: ↑ from the first result)
+      const keys = OSK.map(k => `<button type="button" class="xb-k" data-k="${k}" data-pad data-padid="xk-${k}" tabindex="-1">${k}</button>`).join('')
+        + `<button type="button" class="xb-k wide" data-k=" " data-pad data-padid="xk-space" tabindex="-1">${esc(T('مسافة', 'Space'))}</button>`
+        + `<button type="button" class="xb-k wide" data-k="back" data-pad data-padid="xk-back" tabindex="-1" aria-label="${esc(T('حذف', 'Delete'))}">${ic(LTR ? 'chevL' : 'chevR')}${esc(T('حذف', 'Delete'))}</button>`;
+      // Big Picture has no visible search field (the strip stays hidden there): the typed text shows above the keys
+      const qv = isBpm() ? `<div class="xb-qv" dir="auto">${q ? esc(st.query) : `<span>${esc(T('اكتب اسم اللعبة بالأزرار', 'Spell a game name with the keys'))}</span>`}</div>` : '';
       const kbd = k => `<kbd>${esc(k)}</kbd>`;
       el.innerHTML = `<div class="xb-bg" aria-hidden="true"><div class="xb-art"></div><div class="xb-wave-host"></div></div>
         <div class="xb-drag" aria-hidden="true"></div>
@@ -414,7 +440,7 @@
         </div>
         <header class="xb-top"><div class="xb-clock" aria-label="${esc(T('الساعة', 'Clock'))}"><b dir="ltr">${esc(ct)}</b><span>${esc(cd)}</span></div></header>
         <div class="xb-search" role="search" aria-label="${esc(T('البحث في ألعابك', 'Search your games'))}">
-          <div class="rf-dock" data-rfs-dock></div>
+          <div class="rf-dock" data-rfs-dock></div>${qv}
           <div class="xb-osk" aria-hidden="true">${keys}</div>
           <div class="xb-hint"><span>${kbd('↓')}${esc(T('النتائج', 'Results'))}</span><span>${kbd('Enter')}${esc(T('فتح أول لعبة', 'Open the first'))}</span><span>${kbd('Esc')}${esc(T('مسح', 'Clear'))}</span></div>
         </div>
@@ -463,9 +489,9 @@
     keyOf(x) { return x ? (x.g ? String(x.g.appid) : x.opt ? 'o:' + x.opt.id : x.act ? 'a:' + x.act.id : 'g:' + x.genre) : null; },
     /** the small line under a category's label */
     catSub(id, n, q, me) {
-      if (id === 'options') return 'F2';
+      if (id === 'options') return isBpm() ? '' : 'F2';
       if (id === 'genres') return NUM.format(n);
-      if (id === 'search') return q ? countGames(n) : 'Ctrl K';
+      if (id === 'search') return q ? countGames(n) : isBpm() ? '' : 'Ctrl K';
       if (id === 'profile') return me && me.name ? T('الملف الشخصي', 'Profile') : '';
       if (id === 'downloads') { const d = dlInfo(); return d.busy ? d.pct : d.pct ? T(`${d.pct} بالطابور`, `${d.pct} queued`) : ''; }
       if (ACTS[id]) return '';
@@ -765,6 +791,7 @@
       if (o.menu) { this.openMenu(id); return; }
       if (id === 'family') { const f = document.getElementById('rfs-family'); if (f) f.click(); Promise.resolve().then(() => this.refreshOpts()); return; }
       if (id === 'settings') { url('steam://open/settings'); return; }
+      if (id === 'themes' && isBpm() && window.__rfsBpm && window.__rfsBpm.open) { window.__rfsBpm.open(); return; } // Big Picture's own picker
       if (id === 'amb' || id === 'msfx') { const a = XA(); if (a) { if (id === 'amb') a.setAmb(!a.amb); else a.setSfx(!a.sfx); } this.refreshOpts(); return; }
       const b = bar(), btn = b && b.querySelector(id === 'news' ? '.tb-news' : id === 'sound' ? '.tb-snd' : '.tb-theme');
       if (btn) btn.click();
@@ -864,6 +891,9 @@
       return true;
     },
 
+    /** Big Picture host: the focused row (games, Steam items and options alike) and its game, if it is one */
+    padEl() { return (this.el && this.el.isConnected && this.pool.get(this.sel)) || null; },
+    padGame() { const x = this.cur()[this.sel]; return (x && x.g) || null; },
     /** the element the options panel's art comes from */
     source(appid) {
       const r = api.stage.querySelector(`.xb-it[data-appid="${appid}"] .art`);

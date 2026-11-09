@@ -108,7 +108,8 @@ html.rfs-bpm.rfs-ff-on .gpfocus:not(#rfs-bpm-tbtn) { outline-color: transparent 
 #rfs-bpm-picker {
   position: fixed; inset: 0; z-index: 2147483000; display: none; flex-direction: column;
   padding: 34px 48px 22px; box-sizing: border-box; color: var(--bpm-text);
-  background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(var(--bpm-acc-rgb), .16), transparent 70%), rgba(0, 0, 0, .94);
+  /* opaque: the home design, Steam's top bar and its footer hints must not show through behind the cards' text */
+  background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(var(--bpm-acc-rgb), .16), transparent 70%), #050608;
   font-family: var(--rf-font-ui, inherit);
 }
 #rfs-bpm-picker.on { display: flex; animation: rfs-bpm-in .22s ease-out; }
@@ -225,6 +226,10 @@ html.rfs-bpm :is(#rfs, #rfs-sheet) .rfs-padf {
   color: var(--bpm-text); font: 600 15px/1 var(--bpm-head, inherit) !important; text-transform: var(--bpm-case); letter-spacing: var(--bpm-spacing);
 }
 #rfs-bpm-legend.on { display: flex; }
+/* Steam's own hints right underneath ours: hidden while ours shows (no second row of buttons under the first) */
+:has(> #rfs-bpm-legend.on) > :not(#rfs-bpm-legend) { visibility: hidden !important; }
+/* the designs' slot for the desktop filter strip stays empty in Big Picture: no empty frame */
+html.rfs-bpm #rfs .rf-dock:empty { display: none !important; }
 #rfs-bpm-legend .sp { flex: 1 1 auto; }
 #rfs-bpm-legend .lg { display: inline-flex; align-items: center; gap: 9px; white-space: nowrap; }
 #rfs-bpm-legend .lg + .lg { margin-inline-start: 2px; }

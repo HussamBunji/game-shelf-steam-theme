@@ -84,7 +84,7 @@ function harness() {
   window.__harnessLog = [];
   window.appStore = { GetCachedVerticalCapsuleURL: o => [CDN + o.appid + '/library_600x900.jpg'], GetVerticalCapsuleURLForApp: o => CDN + o.appid + '/library_600x900_2x.jpg',
     GetIconURLForApp: () => '', GetLocalizationForStoreTag: t => t };
-  window.collectionStore = { allGamesCollection: { allApps: ov }, localGamesCollection: { allApps: ov.filter(o => o.installed) }, userCollections: [] };
+  window.collectionStore = { collectionsFromStorage: new Map(), allGamesCollection: { allApps: ov }, localGamesCollection: { allApps: ov.filter(o => o.installed) }, userCollections: [] };
   window.appDetailsStore = {
     GetAppDetails: id => ({ strDeveloperName: by[id] ? by[id].dev : '', strInstallFolder: 'D:\\\\SteamLibrary\\\\' + id, lDiskUsageBytes: by[id] ? by[id].size : 0 }),
     RequestAppDetails: () => Promise.resolve(), GetHeroImages: o => [CDN + o.appid + '/library_hero.jpg'], GetLogoImages: o => [CDN + o.appid + '/logo.png'],

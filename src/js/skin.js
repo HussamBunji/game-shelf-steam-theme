@@ -162,9 +162,26 @@
     width: auto !important; max-width: none !important; height: 100% !important; gap: 6px !important; margin: 0 28px 0 0 !important; padding: 0 !important;
     background: none !important; border: 0 !important; box-shadow: none !important; -webkit-app-region: no-drag; }`;
   urule`${U} ${C('TitleBarControls')} > * { flex: 0 0 auto !important; width: auto !important; }`;
+  /* Store · Library · Community … clickable in a window that isn't maximized. SpaceTheme centres this row in the
+     title bar with transform: translate(-50%, -50%), but Chromium places the -webkit-app-region areas WITHOUT the
+     transform: the row's "no-drag" holes landed 318 px to the right and 23 px down, the visible buttons stayed inside
+     the title bar's drag area, and Windows swallowed their clicks (and covered half of the account / notification /
+     update buttons and, in narrower windows, the maximize button). Same centring with margins — no transform.
+     (≤ 1188 px SpaceTheme drops the transform itself and moves the row under the title bar.) */
+  urule`@media (min-width: 1189px) { ${U} ${C('SuperNavBar')} { top: 0 !important; left: 0 !important; right: 0 !important; margin: 0 auto !important; transform: none !important; } }`;
   /* Steam's bottom bar (download progress) floated over the home designs' corner: the Downloads button next to the
      user name replaces it (shelf.js paintDownloads) */
-  urule`${U} ${C('BottomBarContainer')} { display: none !important; }`;
+  /* Hidden, but never display: none. Steam's window resize corner (.window_resize_grip) lives inside this bar, and
+     Steam sizes the native corner from where that element sits whenever the window is restored (not maximized):
+     Window.SetResizeGrip(innerWidth - left, innerHeight - top). Under display: none it measured 0,0, so the WHOLE
+     restored window became the bottom-right resize corner — clicks on Store / Library / Themes / account / maximize
+     started a resize instead, and dragging the left edge resized from the bottom-right. Laid out, invisible,
+     click-through: the grip stays a 16 × 16 corner at the bottom right. */
+  urule`${U} ${C('BottomBarContainer')} { position: absolute !important; height: 0 !important; min-height: 0 !important;
+    opacity: 0 !important; visibility: hidden !important; pointer-events: none !important; }`;
+  urule`${U} ${C('BottomBarContainer')} * { visibility: hidden !important; pointer-events: none !important; }`;
+  // the bar itself is a window-drag strip in Steam's CSS: an invisible one must not drag the window from under a design
+  urule`${U} ${C('BottomBar', 'BottomBarContainer')} { -webkit-app-region: no-drag !important; }`;
   /* SpaceTheme hides the box on pages without its game list (body:not(:has(list)) → visibility: hidden): we took the
      list off the store and the home design, which made the user name vanish there — it shows on every page */
   urule`${U} ${C('TitleBarControls')} { visibility: visible !important; }`;
