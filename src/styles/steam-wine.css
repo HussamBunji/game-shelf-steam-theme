@@ -1,0 +1,78 @@
+/* ═══ Theme 21 — ستيم العنابي (Steam Wine) ═══
+   A tint of Steam Original: stock Steam in deep wine red, rose accent.
+   Layout, sizes and fonts are Valve's — nothing is restyled. Only Steam's blue-grey palette moves to this one:
+     • Steam windows: src/js/tint.js re-tones Steam's own style sheets with the --tint-* numbers below
+       (OKLCH: hue in degrees, chroma as a multiple of Steam's own; lightness is kept, so text contrast stays Valve's);
+     • store / community: the same maths — the React sheets re-toned in place, the legacy sheets through the
+       generated parts in src/css/tint-web/ (tools/tint-web.mjs — run it again after changing these numbers);
+     • src/css/tint.css and the last block of src/css/webkit.css hold the few shared rules (html[data-rfs-tint]).
+   The selector: inside Steam this file is only loaded while the style is active (the root rule applies); on store
+   pages tools/build.mjs rewrites that root selector per style and webkit.js picks the palette with html[data-rfs-tint]. */
+html[data-rfs-style="original"][data-rfs-tint="steam-wine"], :root {
+  --tint-id: steam-wine;          /* names the palette: html[data-rfs-tint], the current card of the picker */
+  --tint-hue: 8;                  /* surfaces: OKLCH hue (stock Steam is about 255) */
+  --tint-chroma: 1.8;             /* x the faint chroma of stock Steam (0 = pure grey) */
+  --tint-chroma-max: 0.05;        /* ceiling for surfaces, so mid-tones never turn garish */
+  --tint-black: 0.06;             /* lightness that becomes pure black (0 = as deep as stock Steam) */
+  --tint-accent-hue: 8;           /* where the accent blue of stock Steam (about 250) goes */
+  --tint-accent-chroma: 0.9;      /* x the chroma of the accent */
+  --tint-accent-light: 1;         /* x the lightness of the accent */
+
+  /* fonts: Steam's own, as in Steam Original */
+  --rf-font-ui: 'Motiva Sans', 'Noto Sans Arabic', Arial, sans-serif;
+  --rf-font-gf: "family=Noto+Sans+Arabic:wght@400;500;600;700";
+  /* our own small pieces (Themes button, picker, store side panels) in the palette */
+  --rf-ic-1: #e9b7c1;
+  --rf-ic-2: #e86a89;
+  --rf-ic-fill: rgba(233, 155, 177, .12);
+  --rf-ic-sw: 1.8;
+  --rf-ic-glow: none;
+  --rf-ict-bg: rgba(234, 156, 178, .1);
+  --rf-ict-border: 1px solid transparent;
+  --rf-ict-radius: 2px;
+  --rf-ict-shadow: none;
+  --rf-ict-shadow-hi: inset 0 0 0 1px rgba(234, 156, 178, .45);
+  --rf-ict-1: #e9b7c1;
+  --rf-ict-2: #e07e95;
+  --rf-ict-fill: rgba(233, 155, 177, .15);
+  --rf-ict-glow: none;
+
+  --rf-vendor: none;
+  --rf-vendor-skip: none;
+  --rf-layout: original;
+  --rf-style-id: original;         /* to every rule of the theme this IS Steam Original */
+  --rf-bg: #32131a;
+  --rf-bg-img: none;
+  --rf-panel: #280b12;
+  --rf-panel-2: #36171e;
+  --rf-panel-3: #4d2c32;
+  --rf-border: rgba(234, 156, 178, .15);
+  --rf-text: #dcdedf;
+  --rf-text-dim: #a39294;
+  --rf-accent: #e99bb1;
+  --rf-accent-2: #e86a89;
+  --rf-accent-rgb: 233, 155, 177;
+  --rf-accent-ink: #23060d;
+  --rf-play-1: #75b022;
+  --rf-play-2: #588a1b;
+  --rf-play-ink: #e8f6d3;
+  --rf-glow: 233, 155, 177;
+
+  --rf-radius: 3px;
+  --rf-radius-lg: 4px;
+  --rf-topbar: #1f0d10;
+  --rf-topbar-line: rgba(255, 255, 255, .06);
+  --rf-sidebar: #231517;
+  --rf-card: rgba(0, 0, 0, .2);
+  --rf-card-border: 1px solid rgba(234, 156, 178, .1);
+  --rf-card-hover-shadow: none;
+  --rf-heading-font: 'Motiva Sans', 'Segoe UI', 'Motiva Sans', 'Noto Sans Arabic', Arial, sans-serif;
+  --rf-heading-case: none;
+  --rf-heading-spacing: 0;
+  --rf-blur: 0px;
+
+  --rf-led-rgb: 253, 209, 216;
+  --rf-plate-1: #fcedef;
+  --rf-plate-2: #ceaaaf;
+  --rf-plate-ink: #2e1016;
+}

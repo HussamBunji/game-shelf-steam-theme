@@ -1,8 +1,8 @@
 {
   "name": "Game Shelf — رف الألعاب",
   "author": "Yousef (yousf612-alwazzan)",
-  "description": "Sixteen looks for Steam — Classic Shelf, Glass Gallery, Neon Coverflow, Terminal, RPG Vault, Vinyl Records, Corkboard, Retro Arcade, Magazine, Cupertino Dark, Cyberpunk, Shelter OS, Crossbar, Steam Original, plus SpaceTheme and Material You (MIT). Store stats panels, Ctrl+K search, full Arabic or English.",
-  "version": "1.0.5",
+  "description": "Twenty-four looks for Steam — Classic Shelf, Glass Gallery, Neon Coverflow, Terminal, RPG Vault, Vinyl Records, Corkboard, Retro Arcade, Magazine, Cupertino Dark, Cyberpunk, Shelter OS, Crossbar, Steam Original, plus SpaceTheme and Material You (MIT). Store stats panels, Ctrl+K search, full Arabic or English.",
+  "version": "1.1.0",
   "header_image": "https://raw.githubusercontent.com/SteamClientHomebrew/Millennium/main/assets/header.png",
   "splash_image": "https://raw.githubusercontent.com/SteamClientHomebrew/Millennium/main/assets/header.png",
   "tags": [
@@ -62,6 +62,14 @@
             "src": "src/styles/original.css"
           }
         },
+        "Steam OLED Black": { "TargetCss": { "affects": [".*", "https://.*\\.steampowered\\.com(/.*)?", "https://steamcommunity\\.com(/.*)?"], "src": "src/styles/steam-oled.css" } },
+        "Steam Graphite": { "TargetCss": { "affects": [".*", "https://.*\\.steampowered\\.com(/.*)?", "https://steamcommunity\\.com(/.*)?"], "src": "src/styles/steam-graphite.css" } },
+        "Steam Midnight": { "TargetCss": { "affects": [".*", "https://.*\\.steampowered\\.com(/.*)?", "https://steamcommunity\\.com(/.*)?"], "src": "src/styles/steam-midnight.css" } },
+        "Steam Forest": { "TargetCss": { "affects": [".*", "https://.*\\.steampowered\\.com(/.*)?", "https://steamcommunity\\.com(/.*)?"], "src": "src/styles/steam-forest.css" } },
+        "Steam Wine": { "TargetCss": { "affects": [".*", "https://.*\\.steampowered\\.com(/.*)?", "https://steamcommunity\\.com(/.*)?"], "src": "src/styles/steam-wine.css" } },
+        "Steam Royal Purple": { "TargetCss": { "affects": [".*", "https://.*\\.steampowered\\.com(/.*)?", "https://steamcommunity\\.com(/.*)?"], "src": "src/styles/steam-royal.css" } },
+        "Steam Coffee": { "TargetCss": { "affects": [".*", "https://.*\\.steampowered\\.com(/.*)?", "https://steamcommunity\\.com(/.*)?"], "src": "src/styles/steam-coffee.css" } },
+        "Steam Ocean": { "TargetCss": { "affects": [".*", "https://.*\\.steampowered\\.com(/.*)?", "https://steamcommunity\\.com(/.*)?"], "src": "src/styles/steam-ocean.css" } },
         "SpaceTheme": {
           "TargetCss": {
             "affects": [

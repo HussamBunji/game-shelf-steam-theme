@@ -1,6 +1,7 @@
 'use strict';
 /* The styles this installer offers. `value` is the key in skin.json → Conditions.Style.values.
-   group: 'core' (Game Shelf themes, selected by default) or 'community' (extra MIT community themes, not selected by default). */
+   group: 'core' (Game Shelf themes, selected by default), 'tints' (Steam Original in another colour, selected by default)
+   or 'community' (extra MIT community themes, not selected by default). */
 const STYLES = [
   { id: 'classic', value: 'Classic Shelf', ar: 'الرف الكلاسيكي', en: 'Classic Shelf',
     descAr: 'رف خشب ثلاثي الأبعاد، والعلب تنفتح مثل CD', descEn: 'A 3D wooden bookcase; cases open like CDs' },
@@ -30,6 +31,23 @@ const STYLES = [
     descAr: 'قائمة كونسول فوق موجة متحركة', descEn: 'A console menu over a flowing wave' },
   { id: 'original', value: 'Steam Original', ar: 'ستيم الأصلي', en: 'Steam Original',
     descAr: 'ستيم مثل ما هو، مع زر الثيمات ولوحات المتجر', descEn: 'Stock Steam plus the Themes button and store panels' },
+  /* Steam Original in another colour (src/styles/steam-*.css) */
+  { group: 'tints', id: 'steam-oled', value: 'Steam OLED Black', ar: 'ستيم الأسود', en: 'Steam OLED Black',
+    descAr: 'ستيم الأصلي بخلفية سوداء صافية — مريح للعين ولشاشات OLED', descEn: 'Stock Steam on true black — easy on the eyes and on OLED screens' },
+  { group: 'tints', id: 'steam-graphite', value: 'Steam Graphite', ar: 'ستيم الرمادي', en: 'Steam Graphite',
+    descAr: 'ستيم الأصلي برمادي داكن محايد بدون الزرقة', descEn: 'Stock Steam in neutral dark grey, without the blue cast' },
+  { group: 'tints', id: 'steam-midnight', value: 'Steam Midnight', ar: 'ستيم الكحلي', en: 'Steam Midnight',
+    descAr: 'ستيم الأصلي بلون كحلي غامق', descEn: 'Stock Steam in a deep midnight navy' },
+  { group: 'tints', id: 'steam-forest', value: 'Steam Forest', ar: 'ستيم الأخضر', en: 'Steam Forest',
+    descAr: 'ستيم الأصلي بأخضر الغابات الداكن', descEn: 'Stock Steam in dark forest green' },
+  { group: 'tints', id: 'steam-wine', value: 'Steam Wine', ar: 'ستيم العنابي', en: 'Steam Wine',
+    descAr: 'ستيم الأصلي بلون عنابي غامق', descEn: 'Stock Steam in deep wine red' },
+  { group: 'tints', id: 'steam-royal', value: 'Steam Royal Purple', ar: 'ستيم البنفسجي', en: 'Steam Royal Purple',
+    descAr: 'ستيم الأصلي بالبنفسجي الملكي', descEn: 'Stock Steam in royal purple' },
+  { group: 'tints', id: 'steam-coffee', value: 'Steam Coffee', ar: 'ستيم القهوة', en: 'Steam Coffee',
+    descAr: 'ستيم الأصلي ببني القهوة الدافئ ولمسات كهرمانية', descEn: 'Stock Steam in warm coffee brown with amber highlights' },
+  { group: 'tints', id: 'steam-ocean', value: 'Steam Ocean', ar: 'ستيم المحيط', en: 'Steam Ocean',
+    descAr: 'ستيم الأصلي بأزرق المحيط المخضر', descEn: 'Stock Steam in deep ocean teal' },
   /* extra community themes (MIT), not selected by default */
   { group: 'community', id: 'space', value: 'SpaceTheme', ar: 'SpaceTheme', en: 'SpaceTheme',
     descAr: 'ثيم المجتمع المشهور، داكن ومرتب (رخصة MIT)', descEn: 'The popular dark community theme (MIT)', credit: 'SpaceTheme authors' },

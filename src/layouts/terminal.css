@@ -315,9 +315,10 @@
 #rfs-sheet[data-layout="terminal"] .tmv-x:is(:hover, :focus-visible)::after { color: inherit; }
 
 #rfs-sheet[data-layout="terminal"] .tmv-body { flex: 1 1 auto; min-height: 0; overflow: auto; padding: 14px 22px 18px; overscroll-behavior: contain; }
-/* the prompt: the command types itself (terminal.js grows .tmv-typed in steps) */
+/* the prompt: the command types itself (terminal.js slides a clip window over it in steps: transforms only) */
 #rfs-sheet[data-layout="terminal"] .tmv-cmd { direction: ltr; text-align: left; white-space: nowrap; overflow: hidden; font-size: 13px; line-height: 20px; }
 #rfs-sheet[data-layout="terminal"] .tmv-typed { display: inline-block; max-width: 100%; overflow: hidden; vertical-align: bottom; white-space: nowrap; }
+#rfs-sheet[data-layout="terminal"] .tmv-ty { display: inline-block; white-space: nowrap; }
 #rfs-sheet[data-layout="terminal"] :is(.tm-u, .tm-p) { font-weight: 700; }
 #rfs-sheet[data-layout="terminal"] .tm-u { color: var(--tm-g); }
 #rfs-sheet[data-layout="terminal"] .tm-p { color: var(--tm-a); }
@@ -424,16 +425,19 @@
   font: 600 10px var(--rf-font-ui); color: var(--tm-text); border: 1px solid var(--tm-line);
 }
 
-/* print-in: each block appears in three quick steps, one after another (about 300 to 560 ms) */
-#rfs-sheet[data-layout="terminal"] .tmv.shown .ln { animation: tm-print 90ms steps(3, end) both; }
-#rfs-sheet[data-layout="terminal"] .tmv.shown .mp-head { animation-delay: 300ms; }
-#rfs-sheet[data-layout="terminal"] .tmv.shown .mp-main section:nth-child(1) { animation-delay: 330ms; }
-#rfs-sheet[data-layout="terminal"] .tmv.shown .mp-frame { animation-delay: 360ms; }
-#rfs-sheet[data-layout="terminal"] .tmv.shown .mp-main section:nth-child(2) { animation-delay: 390ms; }
-#rfs-sheet[data-layout="terminal"] .tmv.shown .mp-acts { animation-delay: 410ms; }
-#rfs-sheet[data-layout="terminal"] .tmv.shown .mp-main section:nth-child(3) { animation-delay: 430ms; }
-#rfs-sheet[data-layout="terminal"] .tmv.shown .mp-tags { animation-delay: 450ms; }
-#rfs-sheet[data-layout="terminal"] .tmv.shown .mp-main section:nth-child(4) { animation-delay: 470ms; }
+/* print-in: each block appears in three quick steps, one after another, on an even 14 ms beat; the whole page is
+   printed by 350 ms (opacity only) */
+#rfs-sheet[data-layout="terminal"] .tmv.shown .ln { animation: tm-print 60ms steps(3, end) both; }
+#rfs-sheet[data-layout="terminal"] .tmv.shown .mp-head { animation-delay: 190ms; }
+#rfs-sheet[data-layout="terminal"] .tmv.shown .mp-main section:nth-child(1) { animation-delay: 204ms; }
+#rfs-sheet[data-layout="terminal"] .tmv.shown .mp-frame { animation-delay: 218ms; }
+#rfs-sheet[data-layout="terminal"] .tmv.shown .mp-main section:nth-child(2) { animation-delay: 232ms; }
+#rfs-sheet[data-layout="terminal"] .tmv.shown .mp-acts { animation-delay: 246ms; }
+#rfs-sheet[data-layout="terminal"] .tmv.shown .mp-main section:nth-child(3) { animation-delay: 260ms; }
+#rfs-sheet[data-layout="terminal"] .tmv.shown .mp-tags { animation-delay: 274ms; }
+#rfs-sheet[data-layout="terminal"] .tmv.shown .mp-main section:nth-child(4) { animation-delay: 288ms; }
+/* while a game page is open the home behind it holds still (its cursor and the running mark stop blinking) */
+html.rfs-sheet-on #rfs[data-layout="terminal"] :is(.tm-cur, .tm-r.run .c-st) { animation-play-state: paused; }
 @keyframes tm-print { from { opacity: 0; } to { opacity: 1; } }
 
 /* smaller windows: one column, the picture capped */

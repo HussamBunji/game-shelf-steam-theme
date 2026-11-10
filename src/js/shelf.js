@@ -412,6 +412,14 @@
     { value: 'Crossbar', sid: 'xmb', layout: 'xmb', name: T('الكونسول', 'Crossbar'), desc: T('قائمة كونسول بأيقونات أفقية وقائمة ألعاب عمودية فوق موجة متحركة', 'A console menu: a row of categories, a column of games, over a flowing wave') },
     // page 2: Steam as Valve ships it, then the extra community themes (MIT) — optional in the installer
     { value: 'Steam Original', sid: 'original', layout: 'original', name: T('ستيم الأصلي', 'Steam Original'), desc: T('ستيم مثل ما هو بدون أي تعديل — يبقى زر الثيمات ولوحة الأرقام بالمتجر', 'Steam exactly as Valve ships it — only the Themes button and the store stats panel stay') },
+    { value: 'Steam OLED Black', sid: 'steam-oled', layout: 'original', name: T('ستيم الأسود', 'Steam OLED Black'), desc: T('ستيم الأصلي بخلفية سوداء صافية — مريح للعين ولشاشات OLED', 'Stock Steam on true black — easy on the eyes and on OLED screens') },
+    { value: 'Steam Graphite', sid: 'steam-graphite', layout: 'original', name: T('ستيم الرمادي', 'Steam Graphite'), desc: T('ستيم الأصلي برمادي داكن محايد بدون الزرقة', 'Stock Steam in neutral dark grey, without the blue cast') },
+    { value: 'Steam Midnight', sid: 'steam-midnight', layout: 'original', name: T('ستيم الكحلي', 'Steam Midnight'), desc: T('ستيم الأصلي بلون كحلي غامق', 'Stock Steam in a deep midnight navy') },
+    { value: 'Steam Forest', sid: 'steam-forest', layout: 'original', name: T('ستيم الأخضر', 'Steam Forest'), desc: T('ستيم الأصلي بأخضر الغابات الداكن', 'Stock Steam in dark forest green') },
+    { value: 'Steam Wine', sid: 'steam-wine', layout: 'original', name: T('ستيم العنابي', 'Steam Wine'), desc: T('ستيم الأصلي بلون عنابي غامق', 'Stock Steam in deep wine red') },
+    { value: 'Steam Royal Purple', sid: 'steam-royal', layout: 'original', name: T('ستيم البنفسجي', 'Steam Royal Purple'), desc: T('ستيم الأصلي بالبنفسجي الملكي', 'Stock Steam in royal purple') },
+    { value: 'Steam Coffee', sid: 'steam-coffee', layout: 'original', name: T('ستيم القهوة', 'Steam Coffee'), desc: T('ستيم الأصلي ببني القهوة الدافئ ولمسات كهرمانية', 'Stock Steam in warm coffee brown with amber highlights') },
+    { value: 'Steam Ocean', sid: 'steam-ocean', layout: 'original', name: T('ستيم المحيط', 'Steam Ocean'), desc: T('ستيم الأصلي بأزرق المحيط المخضر', 'Stock Steam in deep ocean teal') },
     { value: 'SpaceTheme', sid: 'space', layout: 'space', name: 'SpaceTheme', desc: T('ثيم المجتمع المشهور (SpaceTheme، رخصة MIT) — داكن ومرتب، مع لوحات الأرقام والأيقونات حقتنا', 'The popular community theme (SpaceTheme, MIT) — dark and modular, plus our stats panels and icons') },
     { value: 'Material You', sid: 'material', layout: 'material', name: 'Material You', desc: T('تصميم Material 3 من Google (Material Theme، رخصة MIT) — أسطح ناعمة وزوايا دائرية', 'Google\'s Material 3 design (Material Theme, MIT) — soft tonal surfaces and round corners') },
   ];
@@ -734,6 +742,14 @@
           <button class="tp-pg prev" type="button" aria-label="${T('الصفحة السابقة', 'Previous page')}">${ic(LTR ? 'chevL' : 'chevR')}</button>
           <span class="tp-pgn"></span>
           <button class="tp-pg next" type="button" aria-label="${T('الصفحة التالية', 'Next page')}">${ic(LTR ? 'chevR' : 'chevL')}</button>
+        </div>
+        <div class="tp-rm">
+          <button class="tp-rm-ask" type="button" title="${T('يحذف الثيم بكل تصاميمه ويرجّع ستيم مثل ما كان', 'Deletes the theme with every design and gives Steam back as it was')}">${ic('trash')}${T('إزالة رف الألعاب', 'Remove Game Shelf')}</button>
+          <div class="tp-rm-sure" hidden>
+            <span>${T('ينحذف الثيم بكل تصاميمه وإعداداته، ويرجع ستيم لشكله الأصلي. متأكد؟', 'The theme, all its designs and its settings are deleted, and Steam goes back to its own look. Sure?')}</span>
+            <button class="tp-rm-yes" type="button">${T('إي، احذف كل شيء', 'Yes, remove everything')}</button>
+            <button class="tp-rm-no" type="button">${T('لا، خلّه', 'No, keep it')}</button>
+          </div>
         </div>
         <button class="tp-close">${T('إغلاق', 'Close')}</button>
       </div>
@@ -1391,13 +1407,13 @@
       // 1. the card flies forward (FLIP from the carousel cover / grid card into its place, a small lift at the end)
       anims.push(r
         ? art.animate([{ transform: `translate(${r.left - A.left}px, ${r.top - A.top}px) scale(${r.width / A.width}, ${r.height / A.height})` },
-          { transform: 'translate(0, -10px) scale(1.035)', offset: .72 }, { transform: 'none' }], { duration: 560, easing: ease })
-        : art.animate([{ opacity: 0, transform: 'translateY(34px) scale(.9)' }, { opacity: 1, transform: 'none' }], { duration: 460, easing: ease }));
+          { transform: 'translate(0, -10px) scale(1.035)', offset: .72 }, { transform: 'none' }], { duration: 380, easing: ease })
+        : art.animate([{ opacity: 0, transform: 'translateY(34px) scale(.9)' }, { opacity: 1, transform: 'none' }], { duration: 340, easing: ease }));
       // 2. the sign lights up: plate fades in, the cyan and magenta tubes flicker on, then the title
       const FLICK = [{ opacity: 0 }, { opacity: .9, offset: .1 }, { opacity: .12, offset: .18 }, { opacity: 1, offset: .3 }, { opacity: .3, offset: .38 }, { opacity: 1, offset: .52 }, { opacity: .75, offset: .7 }, { opacity: 1 }];
       anims.push($('.ns-plate', sheet).animate([{ opacity: 0 }, { opacity: 1 }], { duration: 260, delay: 60, fill: 'backwards' }));
-      anims.push($('.ns-frame.c', sheet).animate(FLICK, { duration: 440, delay: 90, fill: 'backwards' }));
-      anims.push($('.ns-frame.m', sheet).animate(FLICK, { duration: 400, delay: 170, fill: 'backwards' }));
+      anims.push($('.ns-frame.c', sheet).animate(FLICK, { duration: 320, delay: 60, fill: 'backwards' }));
+      anims.push($('.ns-frame.m', sheet).animate(FLICK, { duration: 300, delay: 110, fill: 'backwards' }));
       anims.push($('.ns-title', sheet).animate(FLICK, { duration: 380, delay: 220, fill: 'backwards' }));
       [...sign.querySelectorAll(':scope > :not(i):not(.ns-title)'), $('.ns-x', sheet)].forEach((e, k) => anims.push(
         e.animate([{ opacity: 0, transform: 'translateY(8px)' }, { opacity: 1, transform: 'none' }], { duration: 240, delay: 190 + k * 28, easing: 'ease-out', fill: 'backwards' })));
@@ -1477,12 +1493,21 @@
       games.forEach(g => {
         const c = div('gl-card' + (running.has(g.appid) ? ' running' : '') + (g.installed ? '' : ' ni'));
         c.dataset.appid = g.appid;
+        // a card far from the screen is 5 elements, not 10: its light rim and its quick-play button (an icon of 3-4
+        // elements) are added when it comes near (the same moment its art loads). 900 games were 9,000 elements,
+        // and every page-wide style pass — a theme switch, opening the picker — paid for all of them.
         c.innerHTML = `
-          <div class="gl-art"><div class="gl-shine"></div>${running.has(g.appid) ? `<span class="gl-badge">${T('شغّالة', 'Running')}</span>` : g.installed ? '' : `<span class="gl-badge dim">${T('غير مثبتة', 'Not installed')}</span>`}
-            <button class="gl-quick" title="${g.installed ? T('تشغيل', 'Play') : T('تثبيت', 'Install')}">${g.installed ? ic('play') : ic('download')}</button></div>
+          <div class="gl-art">${running.has(g.appid) ? `<span class="gl-badge">${T('شغّالة', 'Running')}</span>` : g.installed ? '' : `<span class="gl-badge dim">${T('غير مثبتة', 'Not installed')}</span>`}</div>
           <div class="gl-cap"><div class="gl-title" dir="auto">${esc(g.name)}</div><div class="gl-sub">${esc(fmtPlaytime(g.playtimeMin))}</div></div>`;
         frag.append(c);
-        lazy(c, gg => c.style.setProperty('--cap', cssUrl(first(gg.images.capsule))));
+        lazy(c, gg => {
+          c.style.setProperty('--cap', cssUrl(first(gg.images.capsule)));
+          if (c._full) return;
+          c._full = true;
+          const art = c.firstElementChild;
+          art.insertAdjacentHTML('afterbegin', '<div class="gl-shine"></div>');
+          art.insertAdjacentHTML('beforeend', `<button class="gl-quick" title="${g.installed ? T('تشغيل', 'Play') : T('تثبيت', 'Install')}">${g.installed ? ic('play') : ic('download')}</button>`);
+        });
       });
       grid.append(frag);
       stage.replaceChildren(el);
@@ -1612,12 +1637,12 @@
       const anims = [$('.gs-scrim', sheet).animate([{ opacity: 0 }, { opacity: 1 }], { duration: 280, easing: 'ease-out' }),
         $('.gs-shadow', sheet).animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300, delay: 220, fill: 'backwards' })];
       if (r) {
-        anims.push(glass.animate([{ clipPath: this.clipAt(P, r), opacity: .7 }, { clipPath: `inset(0px 0px 0px 0px round 22px)`, opacity: 1 }], { duration: 540, easing: ease }));
+        anims.push(glass.animate([{ clipPath: this.clipAt(P, r), opacity: .7 }, { clipPath: `inset(0px 0px 0px 0px round 22px)`, opacity: 1 }], { duration: 360, easing: ease }));
         // a portrait card glides into the cover slot; from the wide banner the cover just fades in
-        if (Math.abs(r.width / r.height - 2 / 3) < .12) anims.push(cover.animate([{ transform: this.flip(cover.getBoundingClientRect(), r) }, { transform: 'none' }], { duration: 540, easing: ease }));
+        if (Math.abs(r.width / r.height - 2 / 3) < .12) anims.push(cover.animate([{ transform: this.flip(cover.getBoundingClientRect(), r) }, { transform: 'none' }], { duration: 360, easing: ease }));
         else anims.push(cover.animate([{ opacity: 0, transform: 'translateY(16px)' }, { opacity: 1, transform: 'none' }], { duration: 320, delay: 160, easing: 'ease-out', fill: 'backwards' }));
       } else {
-        anims.push(panel.animate([{ opacity: 0, transform: 'translateY(28px) scale(.97)' }, { opacity: 1, transform: 'none' }], { duration: 440, easing: ease }));
+        anims.push(panel.animate([{ opacity: 0, transform: 'translateY(28px) scale(.97)' }, { opacity: 1, transform: 'none' }], { duration: 320, easing: ease }));
       }
       [...main.children, $('.gs-facts', sheet), $('.gs-x', sheet)].forEach((e, k) => anims.push(
         e.animate([{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'none' }], { duration: 260, delay: 140 + k * 28, easing: 'ease-out', fill: 'backwards' })));
@@ -1658,11 +1683,20 @@
     const me = document.querySelector('script[src*="/src/js/shelf.js"]');
     return me ? me.src.replace(/src\/js\/shelf\.js.*$/, '') : 'https://millennium.host/v1/themes/rf-shelf/';
   })();
-  function loadLayout(id) {
+  /** switch a <link> style sheet on / off AT ONCE, through the sheet's own media list. Changing the media attribute
+      makes Chromium fetch the file again and swap the result in later: for a frame or more the page has the wrong set
+      of sheets (a live theme switch drew the window once with no theme at all, then again with the new one). */
+  function sheetOn(l, on) {
+    const m = on ? '' : 'not all';
+    try { if (l.sheet) { if (l.sheet.media.mediaText !== m) l.sheet.media.mediaText = m; return; } } catch (e) { /* not readable: the attribute then */ }
+    if (l.media !== m) l.media = m; // still loading: it arrives in this state
+  }
+  function loadLayout(id, quiet) {
     if (EXT[id] || extLoading[id] || !/^[a-z0-9-]+$/.test(id)) return;
     extLoading[id] = true;
     const css = document.createElement('link');
     css.rel = 'stylesheet'; css.href = themeBase + 'src/layouts/' + id + '.css'; css.dataset.rfsLayout = id;
+    if (quiet) css.media = 'not all'; // a live switch turns it on in the same step as the style sheet (Themes.live)
     document.head.appendChild(css);
     const s = document.createElement('script');
     s.src = themeBase + 'src/layouts/' + id + '.js';
@@ -1993,7 +2027,7 @@
     if (src && src.slot) src.slot.classList.add('taken');
     viewer.classList.add('show'); void viewer.offsetWidth; viewer.classList.add('on');
     sfx('slide');
-    await fly.animate([{ transform: from, opacity: src ? 1 : 0 }, { transform: 'none', opacity: 1 }], { duration: 780, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'forwards' }).finished;
+    await fly.animate([{ transform: from, opacity: src ? 1 : 0 }, { transform: 'none', opacity: 1 }], { duration: 520, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'forwards' }).finished;
     viewer.classList.add('open');
     sfx('snap');
     spin = discArt.animate([{ transform: 'rotate(0deg)' }, { transform: 'rotate(360deg)' }], { duration: 9000, iterations: Infinity });
@@ -2009,7 +2043,7 @@
     const src = L().source(current.appid);
     viewer.classList.remove('on');
     if (src && !fast && root.classList.contains('on')) {
-      await fly.animate([{ transform: 'none' }, { transform: flyFrom(src) }], { duration: 640, easing: 'cubic-bezier(.55,0,.3,1)', fill: 'forwards' }).finished;
+      await fly.animate([{ transform: 'none' }, { transform: flyFrom(src) }], { duration: 440, easing: 'cubic-bezier(.55,0,.3,1)', fill: 'forwards' }).finished;
     } else await wait(fast ? 0 : 300);
     stage.querySelectorAll('.taken').forEach(s => s.classList.remove('taken'));
     viewer.classList.remove('show');
@@ -2416,6 +2450,8 @@
   // which picker card is current: original / community styles name themselves with --rf-style-id
   /** the theme window waits for Steam to reload; if Millennium never answers, don't leave it frozen */
   let busyT = 0;
+  /** resolves once the next frame is on screen (a hidden window paints no frames: a short timer stands in) */
+  const nextPaint = () => new Promise(r => { let done = false; const fin = () => { if (!done) { done = true; r(); } }; requestAnimationFrame(() => requestAnimationFrame(fin)); setTimeout(fin, 90); });
   function pickerBusy() {
     picker.classList.add('busy');
     clearTimeout(busyT);
@@ -2426,7 +2462,8 @@
       toast(T('ستيم ما رد — جرّب مرة ثانية', 'Steam did not respond — please try again'), 5000);
     }, 8000);
   }
-  const curStyle = () => themeVar('--rf-style-id', '') || (state.original ? 'original' : ({ shelf: 'classic', coverflow: 'neon', gallery: 'glass' })[state.layout] || state.layout);
+  // a colour variant of Steam Original names itself with --tint-id (to every rule it IS "original")
+  const curStyle = () => themeVar('--tint-id', '') || themeVar('--rf-style-id', '') || (state.original ? 'original' : ({ shelf: 'classic', coverflow: 'neon', gallery: 'glass' })[state.layout] || state.layout);
   /* which styles the user has: the installer writes src/installed.json ({"installed": [style values], …}); styles
      added later from this picker are remembered here. The rest show dimmed with a "Download" badge — their files are
      already on disk, so adding one is instant. No installed.json (an older install or a dev copy) → everything is in. */
@@ -2543,68 +2580,173 @@
       Overlay.push('themes');
       sfx('tick');
     },
-    close() { if (!picker.classList.contains('on')) return; picker.classList.remove('on'); picker.classList.remove('busy'); Overlay.pop('themes'); },
-    isOpen() { return picker.classList.contains('on'); },
-    /** Switch WITHOUT reloading Steam when both styles sit on the same community base (SpaceTheme: every style but
-        Material You and Steam Original). A reload rebuilds all of Steam's data (900+ games) before the window even
-        comes back — 15-30 s. Here the style sheet Millennium injected is swapped in every open Steam window, the
-        choice is saved for the next start, and the home design follows within a frame. */
-    async live(st) {
-      const base = sid => sid === 'material' ? 'material' : sid === 'original' ? 'none' : 'space';
-      if (!st || base(st.sid) !== 'space' || base(curStyle()) !== 'space') return false;
-      const set = SteamAPI.ffi('Core_ChangeCondition');
-      if (!set) return false;
-      const docs = [document];
+    close() { if (!picker.classList.contains('on')) return; picker.classList.remove('on'); picker.classList.remove('busy'); this.askRemove(false); Overlay.pop('themes'); },
+    /* ---- "Remove Game Shelf": one button for someone who tried the theme and wants Steam back exactly as it was.
+       A first click asks; the second does all of it, in this order:
+         1. one store page and one community page are opened with ?rfsclean=1 — webkit.js there forgets what the theme
+            kept for those sites (its saved choices, the store-language cookie it set for Arabic). They are other
+            origins: only a page of theirs can clean them, and only while the theme still runs;
+         2. Millennium goes back to its default theme (Steam's own look) and forgets this theme's saved choices;
+         3. Millennium deletes the theme's folder (Core_UninstallTheme, the call its own "uninstall" button makes);
+         4. our keys leave Steam's own storage and Steam's interface reloads — as Valve ships it.
+       Millennium itself (the loader) stays: other themes and plugins may live in it. If the folder could not be
+       deleted the theme is still switched off, and the message says which folder is left. */
+    removing: false,
+    askRemove(on) {
+      const a = picker.querySelector('.tp-rm-ask'), b = picker.querySelector('.tp-rm-sure');
+      if (!a || !b || this.removing) return;
+      a.hidden = !!on; b.hidden = !on;
+      if (on) { const no = b.querySelector('.tp-rm-no'); if (no) no.focus({ preventScroll: true }); }
+    },
+    async removeAll() {
+      if (this.removing) return;
+      if (BPM || SteamAPI.bpmOpen()) { toast(T('اطلع من وضع الشاشة الكبيرة أول، وبعدها احذف', 'Leave Big Picture first, then remove'), 6000); return; }
+      if (SteamAPI.runningIds().size) { toast(T('سكّر اللعبة الشغّالة أول، وبعدها احذف', 'Close the running game first, then remove'), 6000); return; }
+      const setTheme = SteamAPI.ffi('Core_ChangeActiveTheme'), uninstall = SteamAPI.ffi('Core_UninstallTheme');
+      const getCfg = SteamAPI.ffi('Core_GetBackendConfig'), setCfg = SteamAPI.ffi('Core_SetBackendConfig');
+      const manual = T('ما قدرت أحذفه تلقائيًا — من: إعدادات ستيم ← Millennium ← Themes اختر Default', 'Couldn\'t remove it automatically — in Steam Settings → Millennium → Themes choose Default');
+      if (!setTheme) { toast(manual, 9000); return; }
+      this.removing = true;
+      picker.classList.add('busy'); clearTimeout(busyT);
+      toast(T('جاري إزالة رف الألعاب… لا تسكّر ستيم', 'Removing Game Shelf… keep Steam open'), 20000);
+      const native = await SteamAPI.themeNative();
+      const obj = r => { try { return typeof r === 'string' ? JSON.parse(r) : r; } catch (e) { return null; } };
+      // 1. the store and community sites clean themselves
+      for (const u of ['https://store.steampowered.com/about/?rfsclean=1', 'https://steamcommunity.com/?rfsclean=1']) {
+        try { SteamAPI.steamUrl('steam://openurl/' + u); } catch (e) { /* that site keeps its few keys */ }
+        await wait(3200);
+      }
+      // 2. Steam's own look, and this theme's saved style / language forgotten
+      try { await setTheme('default'); }
+      catch (e) { this.removing = false; picker.classList.remove('busy'); toast(manual, 9000); return; }
       try {
-        const c = SteamAPI.ctx(), pm = c && c.g_PopupManager;
-        for (const p of pm ? pm.GetPopups() : []) { const d = p.m_popup && p.m_popup.document; if (d && !docs.includes(d)) docs.push(d); }
-      } catch (e) { /* popups keep their style until the next start */ }
+        const cfg = obj(await getCfg());
+        if (setCfg && cfg && cfg.themes && cfg.themes.conditions && cfg.themes.conditions[native]) {
+          delete cfg.themes.conditions[native];
+          cfg.themes.activeTheme = 'default';
+          await setCfg(JSON.stringify(cfg), true);
+        }
+      } catch (e) { LOG('the saved choices stay in Millennium\'s config', e); }
+      // 3. the folder
+      let deleted = false;
+      try { const [owner, repo] = REPO.split('/'); const r = obj(await uninstall(owner, repo)); deleted = !!r && r.success !== false; }
+      catch (e) { LOG('theme folder not deleted', e); }
+      // 4. our own keys, then Steam's interface again
+      toast(deleted ? T('انحذف رف الألعاب. ستيم يرجع لشكله الأصلي…', 'Game Shelf is removed. Steam is going back to its own look…')
+        : T('انطفى الثيم ورجع ستيم لشكله. باقي مجلد واحد تحذفه بيدك: Steam\\millennium\\themes\\' + native, 'The theme is off and Steam is back to its own look. One folder is left to delete by hand: Steam\\millennium\\themes\\' + native), 8000);
+      await wait(deleted ? 1200 : 5000);
+      let sjc = ''; try { sjc = localStorage.getItem('rfs.sjcUrl') || ''; } catch (e) { /* private */ }
+      try { for (const k of Object.keys(localStorage)) if (k.startsWith('rfs.')) localStorage.removeItem(k); } catch (e) { /* private */ }
+      // the reload needs the shared context's real address once more (see restartUI); it is not written back
+      try { if (sjc) localStorage.setItem('rfs.sjcUrl', sjc); } catch (e) { /* private */ }
+      SteamAPI.restartUI();
+      try { localStorage.removeItem('rfs.sjcUrl'); } catch (e) { /* private */ }
+    },
+    isOpen() { return picker.classList.contains('on'); },
+    /** Switch WITHOUT reloading Steam when both styles sit on the same base (SpaceTheme: every designed style;
+        stock Steam: Steam Original and its colour variants). A reload rebuilds all of Steam's data (900+ games)
+        before the window even comes back — 15-30 s. Here the style sheet Millennium injected is swapped in every
+        open Steam window and the choice is saved for the next start.
+        What made a switch feel slow (measured on a 900-game library, 2026-11-10): the old home design (≈ 9,000
+        elements) stayed in the page while the sheets changed, and the whole window was re-matched against every rule
+        two or three times (new sheet in next to the old one · old one out · <html data-rfs-style> rewritten) —
+        one ~1.1 s freeze. Now the new sheet loads switched off (media "not all"), and ONE step empties the old
+        design, flips the sheets, names the style and builds the new design: one style pass over a third of the
+        elements. The ~25 hidden menu windows follow one by one while Steam is idle. */
+    switching: false,
+    canLive(st) {
+      const base = sid => sid === 'material' ? 'material' : STYLES.some(x => x.sid === sid && x.layout === 'original') ? 'none' : 'space';
+      return !!st && base(st.sid) === base(curStyle()) && base(st.sid) !== 'material' && !!SteamAPI.ffi('Core_ChangeCondition')
+        && !!document.querySelector('link[href*="/src/styles/"]');
+    },
+    async live(st) {
+      if (!this.canLive(st)) return false;
+      const t0 = performance.now(), perf = this.perf = { to: st.sid }, mark = k => { perf[k] = Math.round(performance.now() - t0); }; // dev: where a switch spends its time
+      const set = SteamAPI.ffi('Core_ChangeCondition');
       const mine = document.querySelector('link[href*="/src/styles/"]');
-      if (!mine) return false;
       const href = mine.href.replace(/\/src\/styles\/[^/?#]+\.css/, `/src/styles/${st.sid}.css`);
-      // the new design's own module (JS + CSS) starts loading now, alongside the style sheet — it used to wait until
-      // the sheet was in and the next tick read --rf-layout (≈ 0.7 s more before the new home design appeared)
-      if (st.layout && !['original', 'space', 'material'].includes(st.layout) && !LAYOUTS[st.layout] && (!BPM || BPM_LAYOUTS.has(st.layout))) loadLayout(st.layout);
-      const r = await set(await SteamAPI.themeNative(), st.value, 'Style'); // remembered for the next start
-      if (r && r.success === false) return false;
-      try { localStorage.setItem('rfs.style', st.sid); } catch (e) { /* the store reads it */ }
-      const swap = d => new Promise(done => {
-        const old = d.querySelector('link[href*="/src/styles/"]');
-        if (!old) { done(); return; }
-        const nl = d.createElement('link');
-        nl.rel = 'stylesheet'; nl.href = href; nl.id = old.id;
-        // the old sheet goes only once the new one is in: no unstyled frame in between
-        // only the sheets that were there before go: removing "every other one" raced with skin.js followStyle (its own
-        // swap in the same window) — each removed the other's new sheet and the window was left with no style at all
-        const olds = [...d.querySelectorAll('link[href*="/src/styles/"]')];
-        let finished = false;
-        const fin = () => { if (finished) return; finished = true; for (const l of olds) l.remove(); try { const w = d.defaultView; if (w && w.__rfsSkin && w.__rfsSkin.restyle) w.__rfsSkin.restyle(); } catch (e) { /* ignore */ } done(); };
-        nl.onload = fin; nl.onerror = fin;
-        old.after(nl);
-        setTimeout(fin, 4000);
-      });
-      // the main window first; the ~25 popup windows (menus, mostly hidden) share its main thread, so they follow one
-      // at a time once it is done instead of all restyling in the same moment as the main window
-      await Promise.race([swap(document), new Promise(r => setTimeout(r, 4000))]);
-      (async () => { for (const d of docs.slice(1)) { await new Promise(r => setTimeout(r, 16)); try { await swap(d); } catch (e) { /* closed meanwhile */ } } })();
-      lastLayoutCheck = 0; placement.key = ''; tick(true);
+      const ext = st.layout && !['original', 'space', 'material'].includes(st.layout) && !LAYOUTS[st.layout] && (!BPM || BPM_LAYOUTS.has(st.layout));
+      // the click answers at once: the picker closes now, the work starts after that frame is on screen
       picker.classList.remove('busy'); clearTimeout(busyT);
       this.close();
+      // the new design's own module (JS + CSS) starts loading now, alongside the style sheet; its CSS stays off until
+      // the swap (switched on with the old design still in the page, it restyled those 9,000 elements for nothing)
+      if (ext) loadLayout(st.layout, true);
+      // saved for the next start — in parallel with the sheet (skin.js followStyle compares every window with it)
+      const saved = (async () => { try { const r = await set(await SteamAPI.themeNative(), st.value, 'Style'); return !(r && r.success === false); } catch (e) { return false; } })();
+      /** the new sheet, loaded but not applied yet */
+      const prepare = d => new Promise(done => {
+        const olds = [...d.querySelectorAll('link[href*="/src/styles/"]')];
+        if (!olds.length) { done(null); return; }
+        const nl = d.createElement('link');
+        nl.rel = 'stylesheet'; nl.href = href; nl.id = olds[0].id; nl.media = 'not all';
+        let fin = false;
+        const ok = v => { if (fin) return; fin = true; if (!v) nl.remove(); done(v ? { d, nl, olds } : null); };
+        nl.onload = () => ok(true); nl.onerror = () => ok(false);
+        olds[olds.length - 1].after(nl);
+        setTimeout(() => ok(false), 4000);
+      });
+      /** one step, nothing reads a style in between: sheets flipped, the style named, then the window's own hooks */
+      const commit = p => {
+        const { d, nl, olds } = p;
+        sheetOn(nl, true);
+        for (const l of olds) l.remove();
+        const tint = /^steam-/.test(st.sid), ds = tint ? 'original' : st.sid;
+        if (d.documentElement.dataset.rfsStyle !== ds) d.documentElement.dataset.rfsStyle = ds;
+        if (tint) d.documentElement.dataset.rfsTint = st.sid; else delete d.documentElement.dataset.rfsTint;
+        try { const w = d.defaultView; if (w && w.__rfsSkin && w.__rfsSkin.restyle) w.__rfsSkin.restyle(); } catch (e) { /* ignore */ }
+      };
+      const [main, okSaved] = await Promise.all([prepare(document), saved]);
+      mark('ready');
+      if (!okSaved || !main) { if (main) main.nl.remove(); return false; }
+      try { localStorage.setItem('rfs.style', st.sid); } catch (e) { /* the store reads it */ }
+      await nextPaint(); // the closed picker is on screen
+      mark('start');
+      // the old design leaves first: its elements are not worth restyling for a sheet they will never be shown with
+      if (current && current.sheet) closeViewer(true);
+      Hub.close(); GameMenu.close(); hideTip(); resetLazy();
+      stage.replaceChildren(); renderedFor = '';
+      for (const l of document.querySelectorAll('link[data-rfs-layout]')) sheetOn(l, l.dataset.rfsLayout === st.layout);
+      commit(main);
+      mark('styled');
+      lastLayoutCheck = 0; placement.key = ''; tick(true);
+      mark('built'); perf.layout = state.layout; perf.els = stage.querySelectorAll('*').length;
+      requestAnimationFrame(() => { mark('frame'); requestAnimationFrame(() => mark('painted')); });
       toast(T(`صار الثيم «${st.name}»`, `Theme is now “${st.name}”`), 2500);
+      // the other windows (≈ 25 menus, mostly hidden) share this main thread: the visible ones follow now, the rest
+      // one at a time while Steam is idle — never in the same moment as the new design is being built
+      const docs = [];
+      try {
+        const c = SteamAPI.ctx(), pm = c && c.g_PopupManager;
+        for (const p of pm ? pm.GetPopups() : []) { const d = p.m_popup && p.m_popup.document; if (d && d !== document && !docs.includes(d)) docs.push(d); }
+      } catch (e) { /* popups follow on their own (skin.js followStyle) */ }
+      const idle = () => new Promise(r => (window.requestIdleCallback ? requestIdleCallback(r, { timeout: 600 }) : setTimeout(r, 120)));
+      (async () => {
+        docs.sort((x, y) => (x.hidden ? 1 : 0) - (y.hidden ? 1 : 0));
+        for (const d of docs) {
+          if (d.hidden) await idle();
+          try { const p = await prepare(d); if (p && curStyle() === st.sid) commit(p); else if (p) p.nl.remove(); } catch (e) { /* closed meanwhile */ }
+        }
+      })();
       return true;
     },
     async apply(value) {
       const st = STYLES.find(s => s.value === value);
       if (st && st.sid === curStyle()) { this.close(); return; }
-      pickerBusy();
-      const nm = st ? st.name : value;
-      toast(T(`جاري تطبيق «${nm}»… ستيم بيعيد تحميل الواجهة`, `Applying “${nm}”… Steam will reload its interface`), 6000);
-      try { if (await this.live(st)) return; } catch (e) { LOG('live switch failed, reloading', e); }
-      try { await SteamAPI.setStyle(value); }
-      catch (e) {
-        picker.classList.remove('busy');
-        toast(T('ما قدرت أغيّر الثيم تلقائيًا — غيّره من: إعدادات ستيم ← Millennium ← Themes', 'Couldn\'t change the theme automatically — change it in Steam Settings → Millennium → Themes'), 6000);
-      }
+      if (this.switching) return;
+      this.switching = true;
+      try {
+        try { if (await this.live(st)) return; } catch (e) { LOG('live switch failed, reloading', e); }
+        if (!picker.classList.contains('on')) this.open();
+        pickerBusy();
+        const nm = st ? st.name : value;
+        toast(T(`جاري تطبيق «${nm}»… ستيم بيعيد تحميل الواجهة`, `Applying “${nm}”… Steam will reload its interface`), 6000);
+        try { await SteamAPI.setStyle(value); }
+        catch (e) {
+          picker.classList.remove('busy');
+          toast(T('ما قدرت أغيّر الثيم تلقائيًا — غيّره من: إعدادات ستيم ← Millennium ← Themes', 'Couldn\'t change the theme automatically — change it in Steam Settings → Millennium → Themes'), 6000);
+        }
+      } finally { this.switching = false; }
     },
   };
 
@@ -2646,13 +2788,37 @@
   /* pointing at (or arrowing to) a style in the picker fetches its style sheet and its design module ahead of the
      click, so the switch itself only has to apply them: a first switch to a style waited ~0.5-1 s for its files */
   const prefetched = new Set();
+  /* the style's fonts too: each style has its own Google Fonts pair, and a first switch showed the new design in a
+     fallback font, then re-laid the whole window out when the real one arrived (up to a second later). The font
+     files this window's language needs are fetched ahead (browser cache), so they are there when the style is. */
+  async function warmFonts(sheet, sid) {
+    try {
+      const css = await (await fetch(sheet)).text();
+      const m = /--rf-font-gf:\s*["']([^"']+)["']/.exec(css);
+      if (!m) return;
+      const gf = await (await fetch('https://fonts.googleapis.com/css2?' + m[1] + '&display=swap')).text();
+      const want = LTR ? ['latin'] : ['latin', 'arabic'], urls = new Set();
+      // "/* latin */ @font-face { … src: url(…woff2) … }" — one block per family, weight and script
+      for (const b of gf.split('/*').slice(1)) {
+        const name = b.slice(0, b.indexOf('*/')).trim(), u = /url\((https:\/\/fonts\.gstatic\.com\/[^)]+\.woff2)\)/.exec(b);
+        if (u && want.includes(name)) urls.add(u[1]);
+      }
+      for (const u of [...urls].slice(0, 14)) {
+        const l = document.createElement('link');
+        l.rel = 'preload'; l.as = 'font'; l.type = 'font/woff2'; l.crossOrigin = 'anonymous'; l.href = u; l.dataset.rfsPre = sid;
+        document.head.appendChild(l);
+      }
+    } catch (e) { /* offline: the fonts arrive with the style, as before */ }
+  }
   function prefetchStyle(value) {
     const st = STYLES.find(s => s.value === value);
     const mine = document.querySelector('link[href*="/src/styles/"]');
     if (!st || !mine || prefetched.has(st.sid)) return;
     prefetched.add(st.sid);
     const pre = (href, as) => { const l = document.createElement('link'); l.rel = 'preload'; l.as = as; l.href = href; l.dataset.rfsPre = st.sid; document.head.appendChild(l); };
-    pre(mine.href.replace(/\/src\/styles\/[^/?#]+\.css/, `/src/styles/${st.sid}.css`), 'style');
+    const sheet = mine.href.replace(/\/src\/styles\/[^/?#]+\.css/, `/src/styles/${st.sid}.css`);
+    pre(sheet, 'style');
+    warmFonts(sheet, st.sid);
     if (st.layout && !['original', 'space', 'material'].includes(st.layout) && !LAYOUTS[st.layout] && !EXT[st.layout] && (!BPM || BPM_LAYOUTS.has(st.layout))) {
       pre(themeBase + 'src/layouts/' + st.layout + '.css', 'style');
       pre(themeBase + 'src/layouts/' + st.layout + '.js', 'script');
@@ -2667,6 +2833,9 @@
     const lb = e.target.closest('.tp-lang:not(.tp-snd) button');
     if (lb) { if (!lb.classList.contains('on')) Lang.set(lb.dataset.lang); return; }
     if (e.target.closest('.tp-upd-go')) { Updater.open(); return; }
+    if (e.target.closest('.tp-rm-ask')) { Themes.askRemove(true); return; }
+    if (e.target.closest('.tp-rm-no')) { Themes.askRemove(false); return; }
+    if (e.target.closest('.tp-rm-yes')) { Themes.removeAll(); return; }
     const pg = e.target.closest('.tp-pg');
     if (pg) { Pager.step(pg.classList.contains('next') ? 1 : -1); return; }
     const card = e.target.closest('.tp-card');
@@ -2953,7 +3122,7 @@
       }
       // only the chosen design's stylesheet stays on: every loaded one was matched against the whole page on each
       // style recalc (5 designs loaded after a few switches = ~20 % more style work on every change)
-      for (const l of document.querySelectorAll('link[data-rfs-layout]')) { const m = l.dataset.rfsLayout === lay ? '' : 'not all'; if (l.media !== m) l.media = m; }
+      for (const l of document.querySelectorAll('link[data-rfs-layout]')) sheetOn(l, l.dataset.rfsLayout === lay);
       // language changed behind our back (Millennium settings) → reload the UI once in the new language
       const lang = normLang(themeVar('--rf-lang', ''));
       if (!BPM && lang && lang !== LANG) Lang.follow(lang);
@@ -2966,7 +3135,7 @@
     document.documentElement.classList.toggle('rfs-home-on', show);
     // the community theme's styling for Steam's own home is costly (page-wide :has() checks on every change) and
     // pointless while our design covers that page — switch it off then, back on for Steam's own home
-    for (const l of document.querySelectorAll('link[data-rfs-part="home"]')) { const m = show ? 'not all' : ''; if (l.media !== m) l.media = m; }
+    for (const l of document.querySelectorAll('link[data-rfs-part="home"]')) sheetOn(l, !show);
     document.documentElement.classList.toggle('rfs-show-news', state.news);
     if (!BPM) { placeBar(SteamAPI.isLibraryHome(), panel); placeFamily(); }
     if (panel && show) {

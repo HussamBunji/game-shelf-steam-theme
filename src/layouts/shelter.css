@@ -39,7 +39,7 @@ html[data-rfs-lang="en"] #rfs-sheet[data-layout="shelter"] {
   --s-dl: 15px;
   --s-sb: 46px;
 }
-:is(#rfs, #rfs-sheet)[data-layout="shelter"] * { box-sizing: border-box; }
+#rfs[data-layout="shelter"] *, #rfs-sheet[data-layout="shelter"] * { box-sizing: border-box; }
 
 /* ══════════════ the home page ══════════════ */
 #rfs[data-layout="shelter"] .sh {
@@ -96,7 +96,7 @@ html[data-rfs-lang="en"] #rfs-sheet[data-layout="shelter"] {
 #rfs[data-layout="shelter"] .sh-t {
   position: relative; overflow: hidden; padding-bottom: 9px; border-radius: 7px; cursor: pointer;
   background: #04110a; box-shadow: inset 0 0 0 1px var(--ln);
-  transition: transform .16s cubic-bezier(.2, .7, .2, 1), box-shadow .16s;
+  transition: transform .14s cubic-bezier(.2, .7, .2, 1);
 }
 #rfs[data-layout="shelter"] .sh-t .art {
   position: relative; aspect-ratio: 460 / 215; margin: 5px 5px 8px; border-radius: 4px;
@@ -108,9 +108,11 @@ html[data-rfs-lang="en"] #rfs-sheet[data-layout="shelter"] {
     repeating-linear-gradient(0deg, rgba(0, 0, 0, .3) 0 1px, transparent 1px 3px),
     linear-gradient(180deg, rgba(6, 74, 36, .72), rgba(2, 26, 12, .82));
   box-shadow: inset 0 0 0 1px rgba(27, 255, 128, .25);
-  transition: opacity .18s;
+  transition: opacity .14s cubic-bezier(.2, .7, .2, 1);
 }
-#rfs[data-layout="shelter"] .sh-t .t { padding: 0 12px; color: var(--hi); font-size: 14.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: var(--glow); }
+/* (the names carry no glow at rest: a blurred shadow under 900 lines of text was the most expensive thing to draw while scrolling) */
+#rfs[data-layout="shelter"] .sh-t .t { padding: 0 12px; color: var(--hi); font-size: 14.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#rfs[data-layout="shelter"] .sh-t:is(:hover, .run) .t { text-shadow: var(--glow); }
 #rfs[data-layout="shelter"] .sh-t .h { padding: 3px 12px 0; color: var(--mu); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 html[data-rfs-lang="ar"] #rfs[data-layout="shelter"] .sh-t .t { text-align: right; }
 #rfs[data-layout="shelter"] .sh-t.ni .t { color: var(--tx); opacity: .75; }
@@ -135,7 +137,7 @@ html[data-rfs-lang="ar"] #rfs[data-layout="shelter"] .sh-t .t { text-align: righ
 #rfs[data-layout="shelter"] .sh.term .sh-foot > .sh-b3 { visibility: hidden; }
 /* the veil behind the raised terminal */
 :is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-veil {
-  position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .3s;
+  position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity .24s cubic-bezier(.2, .7, .2, 1);
   background: radial-gradient(ellipse 90% 80% at 60% 60%, rgba(1, 8, 4, .78), rgba(1, 5, 3, .93));
 }
 #rfs[data-layout="shelter"] .sh.term .sh-veil { opacity: 1; pointer-events: auto; }
@@ -147,14 +149,14 @@ html[data-rfs-lang="ar"] #rfs[data-layout="shelter"] .sh-t .t { text-align: righ
   --hd: min(690px, calc(100vh - 280px));
   position: absolute; inset-inline-end: 4%; bottom: 118px; width: min(1120px, 88%); height: var(--hd); outline: 0;
   transform-origin: 100% 100%;
-  transition: transform .52s cubic-bezier(.2, .85, .25, 1.03);
+  transition: transform .34s cubic-bezier(.22, .9, .28, 1);
 }
 html[data-rfs-lang="ar"] :is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-rig { transform-origin: 0 100%; }
 /* resting: half size, tilted, sunk into the corner — only the top rim + the top of the screen show */
 :is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-rig.low { transform: translateY(calc(var(--hd) * .5 + 118px - 118px)) rotate(calc(-5deg * var(--mir))) scale(.5); }
 #rfs[data-layout="shelter"] .sh-peek .sh-rig.low:hover,
-#rfs[data-layout="shelter"] .sh-peek .sh-rig.low:focus-visible { transform: translateY(calc(var(--hd) * .5 + 118px - 140px)) rotate(calc(-4deg * var(--mir))) scale(.5); transition-duration: .22s; }
-:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-rig.down { transition-duration: .28s; transition-timing-function: cubic-bezier(.5, 0, .8, .3); }
+#rfs[data-layout="shelter"] .sh-peek .sh-rig.low:focus-visible { transform: translateY(calc(var(--hd) * .5 + 118px - 140px)) rotate(calc(-4deg * var(--mir))) scale(.5); transition-duration: .16s; }
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-rig.down { transition-duration: .24s; transition-timing-function: cubic-bezier(.5, 0, .75, .35); }
 :is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-rig.still { transition: none; }
 #rfs-sheet[data-layout="shelter"] .sh-rig:not(.ready) { pointer-events: none; } /* a double-click can't press Play */
 
@@ -264,16 +266,15 @@ html[data-rfs-lang="ar"] :is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-rig { 
     repeating-linear-gradient(0deg, rgba(0, 0, 0, .2) 0 1px, transparent 1px 3px);
   box-shadow: inset 0 0 60px rgba(0, 0, 0, .6), inset 0 0 0 2px rgba(0, 0, 0, .65);
 }
-/* the power-on as the arm arrives: a bright line opens into the picture, two soft flickers (≤ 560 ms) */
-:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-scr.boot .sh-crt { animation: rfs-shelter-on .56s .12s cubic-bezier(.3, .6, .3, 1) both; }
+/* the power-on as the arm arrives: a line opens into the picture, one soft flicker — transform and opacity only,
+   finished as the arm lands (340 ms) */
+:is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-scr.boot .sh-crt { animation: rfs-shelter-on .28s .06s cubic-bezier(.3, .6, .3, 1) both; }
 @keyframes rfs-shelter-on {
-  0% { opacity: 0; transform: scale(.96, .008); filter: brightness(2.6); }
-  30% { opacity: 1; transform: scale(1, .008); filter: brightness(2.6); }
-  60% { opacity: 1; transform: none; filter: brightness(1.5); }
-  72% { opacity: .55; filter: none; }
-  82% { opacity: 1; }
-  90% { opacity: .8; }
-  100% { opacity: 1; transform: none; filter: none; }
+  0% { opacity: 0; transform: scale(.96, .01); }
+  32% { opacity: 1; transform: scale(1, .01); }
+  68% { opacity: 1; transform: none; }
+  80% { opacity: .62; }
+  100% { opacity: 1; transform: none; }
 }
 :is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-crt { position: relative; height: 100%; padding: 18px 24px 16px; font-size: 14.5px; }
 :is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-ui { display: grid; grid-template-rows: auto minmax(0, 1fr) auto auto; height: 100%; min-height: 0; }
@@ -317,7 +318,7 @@ html[data-rfs-lang="ar"] :is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-rig { 
   position: absolute; left: 50%; top: 122px; margin: 0; padding: 1px 3px; border: 0; background: none; cursor: pointer; white-space: nowrap;
   transform: translate(-50%, -50%) rotate(calc(var(--a) * var(--mir))) translateY(-86px) rotate(calc(var(--a) * var(--mir) * -1));
   font: var(--w-tab) var(--s-dl)/1 var(--crt) !important; letter-spacing: var(--trk); color: #1a1b12; text-shadow: 0 1px 0 rgba(255, 255, 230, .22);
-  transition: color .12s, text-shadow .12s;
+  transition: none;
 }
 :is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-dl:hover { color: #0b2a17; }
 :is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-dl.on { color: var(--hi); text-shadow: 0 0 8px rgba(27, 255, 128, .8), 0 1px 0 rgba(0, 0, 0, .6); }
@@ -355,7 +356,7 @@ html[data-rfs-lang="ar"] :is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-rig { 
 :is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-tab {
   margin: 0; padding: 0 16px 4px; border: 0; border-bottom: 2px solid var(--a); background: none; cursor: pointer; white-space: nowrap;
   font: var(--w-tab) var(--s-tab)/1.1 var(--crt) !important; letter-spacing: var(--trk); text-transform: uppercase; color: var(--dim); text-shadow: none;
-  transition: color .12s;
+  transition: none;
 }
 :is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-tab:hover { color: var(--a); }
 :is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-tab[aria-selected="true"] { border-bottom-color: transparent; color: var(--hi); text-shadow: 0 0 10px rgba(27, 255, 128, .6); }
@@ -390,7 +391,7 @@ html[data-rfs-lang="ar"] :is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-rig { 
   border: 1px solid var(--ln2); border-radius: 3px; cursor: pointer; white-space: nowrap;
   color: var(--hi); background: rgba(27, 255, 128, .05); text-shadow: var(--glow);
   font: var(--w-tab) calc(var(--s-tab) - 8px)/1 var(--crt) !important; letter-spacing: var(--trk); text-transform: uppercase;
-  transition: background-color .1s, color .1s, box-shadow .1s, transform .1s;
+  transition: transform .1s cubic-bezier(.2, .7, .2, 1);
 }
 :is(#rfs, #rfs-sheet)[data-layout="shelter"] :is(.rf-act, .sh-x):hover { color: var(--ink); background: var(--a); border-color: var(--hi); text-shadow: none; box-shadow: 0 0 14px rgba(27, 255, 128, .35); }
 :is(#rfs, #rfs-sheet)[data-layout="shelter"] :is(.rf-act, .sh-x):active { transform: translateY(1px); }
@@ -578,7 +579,12 @@ html[data-rfs-lang="ar"] #rfs[data-layout="shelter"] :is(.sh-mt b, .sh-bn) { tex
   #rfs-sheet[data-layout="shelter"] .shv-pic { max-height: 40%; }
 }
 
+/* arriving home: the header powers on like the screen (one soft flicker, 260 ms; one element, opacity only) */
+#rfs[data-layout="shelter"] .sh-hd { animation: rfs-shelter-hd .26s linear both; }
+@keyframes rfs-shelter-hd { 0% { opacity: 0; } 35% { opacity: .75; } 55% { opacity: .4; } 100% { opacity: 1; } }
+
 @media (prefers-reduced-motion: reduce) {
+  #rfs[data-layout="shelter"] .sh-hd { animation: none; }
   :is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-rig { transition: none; }
   :is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-scr.boot .sh-crt { animation: none; }
   :is(#rfs, #rfs-sheet)[data-layout="shelter"] .sh-dial { transition: none; }

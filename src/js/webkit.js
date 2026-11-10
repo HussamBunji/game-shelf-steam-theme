@@ -14,15 +14,66 @@
 
   /* ---- which theme style + language are active?  Millennium only injects the default style into web
      pages, so ask Millennium for the user's choices and switch the variable set / texts ourselves. */
-  const STYLE_IDS = { 'Classic Shelf': 'classic', 'Neon Coverflow': 'neon', 'Glass Gallery': 'glass', 'Steam Original': 'original', 'SpaceTheme': 'space', 'Material You': 'material', 'Terminal': 'terminal', 'RPG Vault': 'vault', 'Vinyl Records': 'vinyl', 'Corkboard': 'cork', 'Retro Arcade': 'arcade', 'Magazine': 'magazine', 'Cupertino Dark': 'cupertino', 'Cyberpunk': 'cyberpunk', 'Shelter OS': 'shelter', 'Crossbar': 'xmb' };
+  const STYLE_IDS = { 'Classic Shelf': 'classic', 'Neon Coverflow': 'neon', 'Glass Gallery': 'glass', 'Steam Original': 'original', 'SpaceTheme': 'space', 'Material You': 'material', 'Terminal': 'terminal', 'RPG Vault': 'vault', 'Vinyl Records': 'vinyl', 'Corkboard': 'cork', 'Retro Arcade': 'arcade', 'Magazine': 'magazine', 'Cupertino Dark': 'cupertino', 'Cyberpunk': 'cyberpunk', 'Shelter OS': 'shelter', 'Crossbar': 'xmb',
+    'Steam OLED Black': 'steam-oled', 'Steam Graphite': 'steam-graphite', 'Steam Midnight': 'steam-midnight', 'Steam Forest': 'steam-forest', 'Steam Wine': 'steam-wine', 'Steam Royal Purple': 'steam-royal', 'Steam Coffee': 'steam-coffee', 'Steam Ocean': 'steam-ocean' };
   // styles that do not use our own store recolour (stock Steam, or a bundled community theme)
   // every style now leaves the store to stock Steam or a community theme base (SpaceTheme / Material);
   // the old colour-classifying recolour below stays in the code but is switched off
   const NATIVE = new Set(['classic', 'neon', 'glass', 'original', 'space', 'material', 'terminal', 'vault', 'vinyl', 'cork', 'arcade', 'magazine']);
   const html = document.documentElement;
+  /* "Remove Game Shelf" (the Themes window, shelf.js Themes.removeAll): right before the theme is deleted Steam opens
+     one store page and one community page with ?rfsclean=1. Each forgets what the theme kept for its site — its
+     saved choices and caches, and the store-language cookie it set for Arabic (Steam then uses its own language
+     again) — and does nothing else. */
+  if (/[?&]rfsclean=1(?:&|$)/.test(location.search)) {
+    for (const st of [() => localStorage, () => sessionStorage]) {
+      try { const box = st(); for (const k of Object.keys(box)) if (k.startsWith('rfs.')) box.removeItem(k); } catch (e) { /* storage blocked */ }
+    }
+    try { if (/(?:^|;\s*)Steam_Language=arabic(?:;|$)/.test(document.cookie)) document.cookie = 'Steam_Language=; path=/; max-age=0; secure; samesite=None'; } catch (e) { /* cookies blocked */ }
+    return;
+  }
+  /* tint styles (src/styles/steam-*.css) are Steam Original in another colour: to every rule they ARE "original"
+     (so each exception written for Original holds), and the palette is named by html[data-rfs-tint].
+     src/js/tint.js recolours the page; it is loaded only while a tint style is on. */
+  /* ONE style's rules per page. Until 2026-11 webkit.css imported webkit-styles.css — every style's store rules in one
+     1.2 MB file, each scoped html[data-rfs-style="…"]. The browser matches selectors right to left, so on every style
+     pass it tried ~3,000 selectors of the OTHER styles against every element before the html test failed: 92 % of all
+     selector-matching time on a store page, even under "Steam Original" (measured: home load 1.2 s of main thread
+     against 0.44 s without the theme, a scroll pass 0.77 s against 0.19 s). Now tools/build.mjs writes
+     src/css/web-styles/<id>.css and only the active one is linked; a switch loads the new one and drops the old. */
+  const me0 = document.querySelector('script[src*="/src/js/webkit.js"]');
+  const BASE0 = me0 ? me0.src.replace(/src\/js\/webkit\.js.*$/, '') : 'https://millennium.host/v1/themes/rf-shelf/';
+  let afterStyle = () => {}; // set below: what reads the style's variables (community base, fonts)
+  const styleReady = () => { const all = html.querySelectorAll('link[data-rfs-style-css]'), l = all[all.length - 1]; return !!(l && l.sheet); };
+  function styleCss(sid) {
+    const links = [...html.querySelectorAll('link[data-rfs-style-css]')], cur = links[links.length - 1];
+    if (cur && cur.dataset.rfsStyleCss === sid) return;
+    const nl = document.createElement('link');
+    nl.rel = 'stylesheet'; nl.href = BASE0 + 'src/css/web-styles/' + sid + '.css'; nl.dataset.rfsStyleCss = sid;
+    // the old style's sheet goes only when the new one is in (no unstyled moment on a live switch)
+    const done = () => { for (const l of html.querySelectorAll('link[data-rfs-style-css]')) if (l !== nl && l.compareDocumentPosition(nl) & 4) l.remove(); afterStyle(); };
+    nl.onload = done; nl.onerror = done;
+    (document.head || html).appendChild(nl);
+  }
+  const setStyle = id => {
+    const tint = /^steam-/.test(id) ? id : '';
+    const sid = tint ? 'original' : id;
+    styleCss(sid);
+    if (html.getAttribute('data-rfs-style') !== sid) html.setAttribute('data-rfs-style', sid);
+    const tintWas = html.getAttribute('data-rfs-tint') || '';
+    if (tintWas !== tint) { if (tint) html.setAttribute('data-rfs-tint', tint); else html.removeAttribute('data-rfs-tint'); }
+    if (window.__rfsTint) { if (tintWas !== tint) window.__rfsTint.sync(); } // only on a change: this runs every 3 s
+    else if (tint && !document.querySelector('script[data-rfs-tint-js]')) {
+      const s = document.querySelector('script[src*="/src/js/webkit.js"]');
+      const js = document.createElement('script');
+      js.src = (s ? s.src.replace(/src\/js\/webkit\.js.*$/, '') : 'https://millennium.host/v1/themes/rf-shelf/') + 'src/js/tint.js';
+      js.dataset.rfsTintJs = '1';
+      html.appendChild(js);
+    }
+  };
   let LANG = 'en'; // English by default
   try {
-    const c = localStorage.getItem('rfs.style'); if (c) html.setAttribute('data-rfs-style', c);
+    const c = localStorage.getItem('rfs.style'); if (c) setStyle(c);
     LANG = localStorage.getItem('rfs.lang') || 'en';
   } catch (e) { /* ignore */ }
   html.setAttribute('data-rfs-lang', LANG);
@@ -81,6 +132,13 @@
   function applyFonts(getVar) {
     const gf = getVar('--rf-font-gf').replace(/^["']|["']$/g, '').trim();
     if (!gf || !document.head) return;
+    // Steam Original (and its colour variants) in English: Steam's own font is already the style's font, and the
+    // page-wide font rule below costs a style pass over every element (120-150 ms on a store page) for nothing.
+    // In Arabic it stays: Steam's font has no Arabic letters.
+    if (html.getAttribute('data-rfs-style') === 'original' && LANG === 'en') {
+      for (const id of ['rfs-fonts', 'rfs-font-rule']) { const n = document.getElementById(id); if (n) n.remove(); }
+      return;
+    }
     let link = document.getElementById('rfs-fonts');
     const href = 'https://fonts.googleapis.com/css2?' + gf + '&display=swap';
     if (!link) { link = document.createElement('link'); link.id = 'rfs-fonts'; link.rel = 'stylesheet'; document.head.appendChild(link); }
@@ -104,7 +162,8 @@
     document.cookie = `Steam_Language=${want}; path=/; max-age=31536000; secure; samesite=None`;
     location.reload();
   }
-  let onLangChange = () => {};
+  let onLangChange = () => {}, syncedOnce = false;
+  afterStyle = () => { vendorWeb(); applyFonts(n => getComputedStyle(html).getPropertyValue(n)); };
   async function syncStyle() {
     const api = window.MILLENNIUM_API;
     if (!api || !api.ffi) return false;
@@ -113,11 +172,14 @@
       const id = STYLE_IDS[c.Style] || 'classic';
       const lang = c.Language === 'Arabic' ? 'ar' : 'en';
       const was = html.getAttribute('data-rfs-style');
-      if (was !== id) { html.setAttribute('data-rfs-style', id); if (NATIVE.has(was)) retag(); }
-      vendorWeb();
-      applyFonts(n => getComputedStyle(html).getPropertyValue(n));
+      setStyle(id);
+      const langWas = LANG;
+      if (lang !== LANG) { LANG = lang; html.setAttribute('data-rfs-lang', lang); }
+      // the community base and the fonts come from the style's variables: read now if its sheet is in, else when it
+      // arrives (afterStyle); and only when the style or the language changed, not on every 3 s look
+      if (styleReady() && (was !== html.getAttribute('data-rfs-style') || langWas !== lang || !syncedOnce)) { syncedOnce = true; afterStyle(); }
       storeLanguage();
-      if (lang !== LANG) { LANG = lang; html.setAttribute('data-rfs-lang', lang); onLangChange(); }
+      if (langWas !== lang) onLangChange();
       const fam = c.Family !== 'Off'; // Family mode: the button next to the user name sets it (shelf.js)
       if (fam !== safeOn) { safeOn = fam; filterAdult(); }
       try { localStorage.setItem('rfs.style', id); localStorage.setItem('rfs.lang', lang); } catch (e) { /* ignore */ }
@@ -426,8 +488,20 @@
     qmenu.innerHTML = LINKS().map(([title, items]) => `<section><h4>${esc(title)}</h4>${items.map(([n, t, href]) =>
       `<a class="ql${location.href.startsWith(href) ? ' cur' : ''}" href="${esc(href)}">${icT(n)}<span>${esc(t)}</span></a>`).join('')}</section>`).join('');
   }
-  function placeQuick() {
+  /* where the button sits relative to the search box, worked out once (three hit tests + a few forced layouts):
+     while the page scrolls the box only moves up and down, so the button follows it with one measurement a frame */
+  let qPlace = null;
+  function placeQuick(follow) {
     if (!/store\.steampowered\.com/.test(location.host) || !document.body) return;
+    if (follow === true && qPlace && qbtn && qPlace.box.isConnected && qLang === LANG && !qmenu.classList.contains('on')) {
+      const r = qPlace.box.getBoundingClientRect();
+      if (Math.abs(r.left - qPlace.left) < 1 && Math.abs(r.width - qPlace.width) < 1) {
+        if (!r.width || r.bottom < 0 || r.top > innerHeight) { qbtn.classList.toggle('on', false); return; }
+        qbtn.classList.toggle('on', true);
+        setStyles(qbtn, { top: Math.round(r.top + qPlace.dy) + 'px', left: qPlace.x + 'px' });
+        return;
+      }
+    }
     if (!qbtn) {
       qbtn = document.createElement('button');
       qbtn.id = 'rfs-qbtn'; qbtn.type = 'button';
@@ -436,7 +510,10 @@
       qbtn.addEventListener('click', e => { e.stopPropagation(); if (!qmenu.classList.contains('on')) renderQuick(); qmenu.classList.toggle('on'); placeQuick(); });
       document.addEventListener('click', e => { if (qmenu.classList.contains('on') && !qmenu.contains(e.target)) qmenu.classList.remove('on'); });
       document.addEventListener('keydown', e => { if (e.key === 'Escape') qmenu.classList.remove('on'); });
-      addEventListener('scroll', () => requestAnimationFrame(placeQuick), { passive: true });
+      // scrolling: at most once per frame, and only the cheap follow (see qPlace below)
+      let qFrame = 0;
+      addEventListener('scroll', () => { if (qFrame) return; qFrame = requestAnimationFrame(() => { qFrame = 0; placeQuick(true); }); }, { passive: true });
+      addEventListener('resize', () => { qPlace = null; }, { passive: true });
       document.body.append(qbtn, qmenu);
     }
     if (qLang !== LANG) {
@@ -479,6 +556,7 @@
       else { top = Math.round(br.bottom + 8); left = Math.round(rtl ? r.left : r.right - w); }
     }
     setStyles(qbtn, { top: top + 'px', left: left + 'px' });
+    qPlace = { box, left: r.left, width: r.width, dy: top - r.top, x: left };
     qbtn.classList.toggle('on', true);
     const b = qbtn.getBoundingClientRect();
     setStyles(qmenu, { top: Math.round(b.bottom + 8) + 'px', left: Math.round(rtl ? Math.min(innerWidth - qmenu.offsetWidth - 12, b.left) : Math.max(12, b.right - qmenu.offsetWidth)) + 'px' });
@@ -670,21 +748,33 @@
 
   /* every "-NN%" discount on the page gets one stable class (.rfs-pct, its box .rfs-price): Steam's React carousels
      draw theirs with hashed class names, so a style can't reach them otherwise. Leaves only; each one marked once. */
+  /* Runs after the page changed, never on a timer alone, and not at all under Steam Original / SpaceTheme / Material
+     (they have no rule for these classes). Reads first, writes after: the old loop wrote an attribute and then asked
+     for the next element's computed style, which made the browser redo the page's styles once per element — one call
+     took 0.7 s on a game page. */
+  let pageDirty = true;
+  const DRESSED = () => { const s = html.getAttribute('data-rfs-style'); return !!s && s !== 'original' && s !== 'space' && s !== 'material'; };
   function markDiscounts() {
-    if (!document.body) return;
+    if (!document.body || !DRESSED()) return;
     for (const d of document.querySelectorAll('div:not(.rfs-pct):not([data-rfs-np]):not(.bundle_base_discount)')) {
       if (d.firstElementChild || d.textContent.length > 16) continue;
       // "-30%", and the sale tiles' "Up to -50%" / «حتى -50%»
       if (/^[^\d%]{0,10}-\d{1,3}%$/.test(d.textContent.trim())) { d.classList.add('rfs-pct'); if (d.parentElement) d.parentElement.classList.add('rfs-price'); }
     }
     // the React rows' "See More" links are light-gray boxes with hashed classes: one class for the styles to dress
+    const skip = [], ask = [];
     for (const a of document.querySelectorAll(':is(a, button, div):not(.rfs-btn2):not([data-rfs-nb])')) {
-      if (a.firstElementChild || a.textContent.length > 40 || (a.tagName === 'DIV' && !a.textContent.trim())) { a.setAttribute('data-rfs-nb', ''); continue; }
+      if (a.firstElementChild || a.textContent.length > 40 || (a.tagName === 'DIV' && !a.textContent.trim())) skip.push(a); else ask.push(a);
+    }
+    const pill = [];
+    for (const a of ask) {
       // light-gray boxes ("See More") and outlined ghost links ("See all updates", "View All") → one secondary pill
       const cs = getComputedStyle(a);
       const ghost = cs.borderTopStyle === 'solid' && parseFloat(cs.borderTopWidth) >= 1 && cs.backgroundColor === 'rgba(0, 0, 0, 0)' && a.textContent.trim().length > 2;
-      if (cs.backgroundColor === 'rgb(204, 204, 204)' || ghost) a.classList.add('rfs-btn2'); else a.setAttribute('data-rfs-nb', '');
+      (cs.backgroundColor === 'rgb(204, 204, 204)' || ghost ? pill : skip).push(a);
     }
+    for (const a of skip) a.setAttribute('data-rfs-nb', '');
+    for (const a of pill) a.classList.add('rfs-btn2');
   }
   /* ---- wishlist (React, hashed classes, a measuring virtual list): tag its parts with stable hooks so every style
      can dress them, and lay the rows out as a card grid.  The list measures each row's box (data-index wrapper), so in
@@ -792,8 +882,11 @@
     onLangChange = () => { if (rail) renderRail(); if (dataEl && dataFor) renderData(dataFor); if (qbtn) placeQuick(); };
     placeRail();
     setInterval(placeRail, 1500);
-    filterAdult(); markDiscounts();
-    setInterval(() => { filterAdult(); markDiscounts(); }, 1200); // carousels and infinite lists keep adding items
+    filterAdult(); markDiscounts(); pageDirty = false;
+    // carousels and infinite lists keep adding items: look again 1.2 s at most after the page changed — and not at
+    // all while it is still (the observer only raises a flag; our own class / attribute writes don't raise it)
+    try { new MutationObserver(() => { pageDirty = true; }).observe(document.body, { childList: true, subtree: true }); } catch (e) { pageDirty = true; }
+    setInterval(() => { if (!pageDirty || document.hidden) return; pageDirty = false; filterAdult(); markDiscounts(); }, 1200);
     // resizing fires dozens of events a second: place the side panels at most once per frame
     let railFrame = 0;
     addEventListener('resize', () => { if (railFrame) return; railFrame = requestAnimationFrame(() => { railFrame = 0; column = null; placeRail(); }); }, { passive: true });

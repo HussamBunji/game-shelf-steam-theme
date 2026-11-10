@@ -15,6 +15,7 @@
 
   const PROMPT_USER = 'player';                                            // the prompt reads  player@steam:~$
   const SORT_COL = { name: 'nm', playtime: 'hr', size: 'sz', recent: 'lp' }; // which column shows the sort mark
+  const EASE_OUT = 'cubic-bezier(.2, .9, .3, 1)'; // the one "switch on" curve of this design
   const reduced = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; } };
 
   /* ---------- formatting ---------- */
@@ -370,7 +371,7 @@
             <button class="tmv-x" data-close title="${esc(T('إغلاق (Esc)', 'Close (Esc)'))}"><span dir="ltr">Esc</span></button>
           </div>
           <div class="tmv-body">
-            <div class="tmv-cmd" dir="ltr"><span class="tm-u">${esc(PROMPT_USER)}@steam</span><span class="tm-s">:</span><span class="tm-p">~</span><span class="tm-s">$ </span><span class="tmv-typed"><span class="tm-k">open</span> <span class="tm-v">${esc(shq(g.name))}</span></span><i class="tm-cur" aria-hidden="true"></i></div>
+            <div class="tmv-cmd" dir="ltr"><span class="tm-u">${esc(PROMPT_USER)}@steam</span><span class="tm-s">:</span><span class="tm-p">~</span><span class="tm-s">$ </span><span class="tmv-typed"><span class="tmv-ty"><span class="tm-k">open</span> <span class="tm-v">${esc(shq(g.name))}</span></span></span><i class="tm-cur" aria-hidden="true"></i></div>
             <div class="mp-head ln" dir="ltr"><span>${esc(manId)}</span><span class="c">${esc(T('دليل ألعاب ستيم', 'Steam Games Manual'))}</span><span>${esc(manId)}</span></div>
             <div class="mp-cols">
               <div class="mp-side">
@@ -423,31 +424,36 @@
       const typed = $('.tmv-typed', sheet);
       const n = Math.max(6, Math.min(28, typed.textContent.length));
       const tw = typed.scrollWidth;
-      sheet.animate([{ backgroundColor: 'rgba(2, 5, 4, 0)' }, { backgroundColor: 'rgba(2, 5, 4, .86)' }], { duration: 160, easing: 'ease-out' });
+      // Only transform and opacity move (no filters, no colour or size animation): the screen blanks at once, the
+      // window switches on like a CRT (a line that opens), then the command types itself: a clip window slides over
+      // the text (outer and inner move in opposite directions, the cursor rides the edge). All done by 350 ms.
       if (calm) box.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 120, easing: 'ease-out' });
       else {
         box.animate([
-          { transform: 'scale(1, .004)', opacity: .9, filter: 'brightness(2.2)' },
-          { transform: 'scale(1, .004)', opacity: 1, filter: 'brightness(2.2)', offset: .25 },
-          { transform: 'none', opacity: 1, filter: 'none' },
-        ], { duration: 220, easing: 'cubic-bezier(.2, .9, .3, 1)' });
+          { transform: 'scale(1, .004)', opacity: .9 },
+          { transform: 'scale(1, .004)', opacity: 1, offset: .22 },
+          { transform: 'none', opacity: 1 },
+        ], { duration: 200, easing: EASE_OUT });
       }
-      typed.animate([{ maxWidth: '0px' }, { maxWidth: tw + 'px' }], { duration: 200, delay: 140, easing: `steps(${n}, end)`, fill: 'backwards' });
+      const ty = $('.tmv-ty', sheet), cur = $('.tmv-cmd .tm-cur', sheet);
+      const type = { duration: 150, delay: 90, easing: `steps(${n}, end)`, fill: 'backwards' };
+      typed.animate([{ transform: `translateX(${-tw}px)` }, { transform: 'none' }], type);
+      if (ty) ty.animate([{ transform: `translateX(${tw}px)` }, { transform: 'none' }], type);
+      if (cur) cur.animate([{ transform: `translateX(${-tw}px)` }, { transform: 'none' }], type);
       box.classList.add('shown');
-      setTimeout(focusRun, 330); // RUN takes the keyboard once it has printed (Esc works from the first frame)
+      setTimeout(focusRun, 300); // RUN takes the keyboard once it has printed (Esc works from the first frame)
     },
     async close(sheet) {
       const box = $('.tmv', sheet);
       if (!box) return;
       api.sfx('close');
-      sheet.animate([{ backgroundColor: 'rgba(2, 5, 4, .86)' }, { backgroundColor: 'rgba(2, 5, 4, 0)' }], { duration: 260, easing: 'ease-in', fill: 'forwards' });
-      if (reduced()) { await box.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, easing: 'ease-in', fill: 'forwards' }).finished; return; }
+      if (reduced()) { await box.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 140, easing: 'ease-in', fill: 'forwards' }).finished; return; }
       // the CRT switches off: the picture collapses to a bright line, then to a dot
       await box.animate([
-        { transform: 'none', opacity: 1, filter: 'none' },
-        { transform: 'scale(1, .004)', opacity: 1, filter: 'brightness(2.4)', offset: .55 },
-        { transform: 'scale(0, .004)', opacity: 0, filter: 'brightness(2.4)' },
-      ], { duration: 280, easing: 'cubic-bezier(.5, 0, .7, .4)', fill: 'forwards' }).finished;
+        { transform: 'none', opacity: 1 },
+        { transform: 'scale(1, .004)', opacity: 1, offset: .55 },
+        { transform: 'scale(0, .004)', opacity: 0 },
+      ], { duration: 240, easing: 'cubic-bezier(.5, 0, .7, .4)', fill: 'forwards' }).finished;
     },
 
     /** ↑ ↓ · PgUp PgDn · Home End · Enter (open) · Ctrl/Shift+Enter (play) */

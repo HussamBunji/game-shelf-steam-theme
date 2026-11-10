@@ -1,0 +1,16 @@
+/* Picker cards of the tint styles (src/styles/steam-*.css): Steam Original's miniature (.tp-original in
+   src/css/layouts.css — title bar, game list, hero, capsules) drawn in each palette. Colours only.
+   The values are the palette's own tones of Steam's colours (same maths as src/js/tint.js). */
+#rfs-themes .tp-card[data-sid^="steam-"] .tp-prev { background: var(--pv-bg); }
+#rfs-themes .tp-card[data-sid^="steam-"] .pv-snav { background: var(--pv-bar); }
+#rfs-themes .tp-card[data-sid^="steam-"] .pv-slist { background: repeating-linear-gradient(var(--pv-side) 0 9px, var(--pv-line) 9px 11px); }
+#rfs-themes .tp-card[data-sid^="steam-"] .pv-shero { background: linear-gradient(90deg, var(--pv-hero), var(--pv-bg)); box-shadow: 0 0 0 1px var(--pv-acc); }
+#rfs-themes .tp-card[data-sid^="steam-"] .pv-scap { background: color-mix(in srgb, var(--pv-hero) calc(100% - var(--i) * 7%), var(--pv-acc)); }
+#rfs-themes .tp-card[data-sid="steam-coffee"] { --pv-bg: #2d1b08; --pv-bar: #1e1206; --pv-side: #22190f; --pv-line: #302214; --pv-hero: #4e3a26; --pv-acc: #dda976; }
+#rfs-themes .tp-card[data-sid="steam-forest"] { --pv-bg: #092415; --pv-bar: #07170d; --pv-side: #111d15; --pv-line: #17291d; --pv-hero: #294433; --pv-acc: #7ec7a7; }
+#rfs-themes .tp-card[data-sid="steam-graphite"] { --pv-bg: #1f2224; --pv-bar: #151618; --pv-side: #1b1d1e; --pv-line: #252729; --pv-hero: #3d4043; --pv-acc: #97b9d6; }
+#rfs-themes .tp-card[data-sid="steam-midnight"] { --pv-bg: #0a1437; --pv-bar: #050a1c; --pv-side: #0d1220; --pv-line: #151c31; --pv-hero: #28365c; --pv-acc: #90b5f7; }
+#rfs-themes .tp-card[data-sid="steam-ocean"] { --pv-bg: #002428; --pv-bar: #00171a; --pv-side: #091d1f; --pv-line: #0a292c; --pv-hero: #0f454b; --pv-acc: #60c9c4; }
+#rfs-themes .tp-card[data-sid="steam-oled"] { --pv-bg: #0c0c0c; --pv-bar: #030303; --pv-side: #070707; --pv-line: #121212; --pv-hero: #2f2f2f; --pv-acc: #6fbfec; }
+#rfs-themes .tp-card[data-sid="steam-royal"] { --pv-bg: #221638; --pv-bar: #150f21; --pv-side: #1b1724; --pv-line: #262034; --pv-hero: #41355b; --pv-acc: #b6a9f2; }
+#rfs-themes .tp-card[data-sid="steam-wine"] { --pv-bg: #32131a; --pv-bar: #1f0d10; --pv-side: #231517; --pv-line: #321d21; --pv-hero: #543238; --pv-acc: #e99bb1; }

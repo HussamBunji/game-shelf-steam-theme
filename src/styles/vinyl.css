@@ -120,8 +120,9 @@ html[data-rfs-style="vinyl"] .DialogButton {
   background: linear-gradient(180deg, #6a4128, #4a2b18) !important;
   box-shadow: inset 0 1px 0 rgba(255, 220, 170, .24), inset 0 -2px 4px rgba(0, 0, 0, .3), inset 0 0 0 1px rgba(20, 10, 4, .55), 0 1px 3px rgba(0, 0, 0, .4) !important;
   text-shadow: 0 1px 0 rgba(0, 0, 0, .35) !important;
-  transition: background .15s, box-shadow .15s, color .15s !important;
+  transition: transform .09s cubic-bezier(.2, .8, .2, 1) !important;
 }
+html[data-rfs-style="vinyl"] .DialogButton:not(:disabled):not(.Disabled):active { transform: scale(.97); }
 html[data-rfs-style="vinyl"] .DialogButton:not(:disabled):not(.Disabled):hover {
   color: #fff6e4 !important; background: linear-gradient(180deg, #7b4c2f, #57331d) !important;
   box-shadow: inset 0 1px 0 rgba(255, 220, 170, .3), inset 0 -2px 4px rgba(0, 0, 0, .3), inset 0 0 0 1px rgba(227, 178, 60, .45), 0 2px 6px rgba(0, 0, 0, .45) !important;
@@ -214,7 +215,7 @@ html.responsive[data-rfs-style="vinyl"] :is(.store_nav_area, #store_nav_area) .s
   border: 0 !important; border-radius: 12px 12px 6px 6px !important;
   box-shadow: inset 0 1px 0 rgba(255, 220, 170, .12), 0 0 0 1px rgba(10, 5, 2, .5), 0 10px 24px rgba(0, 0, 0, .42) !important;
 }
-html.responsive[data-rfs-style="vinyl"] .store_nav .tab { border-radius: 99px !important; transition: background .15s, box-shadow .15s !important; }
+html.responsive[data-rfs-style="vinyl"] .store_nav .tab { border-radius: 99px !important; transition: none !important; }
 html.responsive[data-rfs-style="vinyl"] .store_nav .tab > span,
 html.responsive[data-rfs-style="vinyl"] .store_nav .tab .pulldown > span {
   font-family: var(--rf-heading-font) !important; font-weight: 400 !important; font-synthesis: none;
@@ -292,7 +293,7 @@ html.responsive[data-rfs-style="vinyl"] :is(.tab_item, .search_result_row, .game
   background: linear-gradient(125deg, rgba(255, 240, 210, .055), transparent 42%), linear-gradient(180deg, #2c1e15, #24180f) !important;
   border: 0 !important;
   box-shadow: inset 0 0 0 1px rgba(243, 230, 207, .075), 0 4px 12px rgba(0, 0, 0, .32) !important;
-  transition: box-shadow .15s, background .15s !important;
+  transition: transform .14s cubic-bezier(.2, .8, .2, 1) !important;
 }
 html.responsive[data-rfs-style="vinyl"] :is(.tab_item, .search_result_row, .game_area_dlc_row, .apphub_Card.interactable, .market_listing_row, .badge_row, .forum_topic,
   .help_wizard_button, .market_search_game_button_group .game_button):hover {
@@ -622,3 +623,278 @@ html[data-rfs-page="wishlist"][data-rfs-style="vinyl"][data-rfs-wlview="cards"] 
 
 /* downloads page + install / settings dialogs (skin.js --rf-dl-* hooks): soft pill-ish rows, warm amber selection */
 html[data-rfs-style="vinyl"] { --rf-dl-btn-radius: 12px; --rf-dl-check-radius: 6px; --rf-dl-sel-bg: linear-gradient(90deg, rgba(232, 116, 42, .3), rgba(227, 178, 60, .08)); --rf-dl-hero-empty: radial-gradient(ellipse 60% 120% at 10% 50%, rgba(232, 116, 42, .38), transparent 70%), linear-gradient(90deg, rgba(36, 24, 16, .6), transparent); --rf-dl-rule: linear-gradient(90deg, rgba(227, 178, 60, .6), rgba(227, 178, 60, .04)); }
+
+/* ═══════════════ the record store, part two: crates, sleeves, price tags, motion ═══════════════
+   Web pages only (html.responsive). The shelves are record crates (walnut, the 70s rule along the bottom lip),
+   capsules are sleeves that slide up out of the crate, list rows are sleeves you pull toward you, every discount is a
+   round mustard sticker, the price sits ON its kraft tag, the carousel arrows are little 45s that turn a quarter when
+   pointed at, hover cards are liner-note cards. Links are the shop's teal.
+   Motion: one curve (--vy-ease); hover = 140 ms on transform only (colours switch at once); menus and hover cards
+   drop in 180 ms. Nothing runs at rest; no filters, no blur. */
+html.responsive[data-rfs-style="vinyl"] { --vy-ease: cubic-bezier(.2, .8, .2, 1); --vy-fast: 140ms;
+  --vy-pill: linear-gradient(180deg, #5d3922, #42271a); --vy-pill-hi: linear-gradient(180deg, #f3cd6e, #d9a032);
+  --vy-45: radial-gradient(circle closest-side, #f6ead2 0 8%, #e8742a 10% 40%, #e3b23c 41% 45%, #120c09 47% 52%, transparent 53%), repeating-radial-gradient(circle closest-side, #171210 0 7%, #2b221c 8% 11%); }
+
+/* ---- Steam's React pages (cart, wishlist, menus) draw with design tokens: walnut surfaces, burnt-orange fills ---- */
+html.responsive[data-rfs-style="vinyl"][data-accent-color], html.responsive[data-rfs-style="vinyl"] [data-accent-color]:not([data-accent-color="dull"]) {
+  --color-accent-1: #1a120c; --color-accent-2: #22160e; --color-accent-3: #2e1b10; --color-accent-4: #3c2213;
+  --color-accent-5: #4c2a16; --color-accent-6: #63351a; --color-accent-7: #84451f; --color-accent-8: #a8401c;
+  --color-accent-9: #c4511f; --color-accent-10: #d2692a; --color-accent-11: #f0b06a; --color-accent-12: #fbeed6;
+  --color-accent-contrast: #fff3dc;
+}
+html.responsive[data-rfs-style="vinyl"][data-dull-color], html.responsive[data-rfs-style="vinyl"] [data-dull-color], html.responsive[data-rfs-style="vinyl"] [data-accent-color="dull"] {
+  --color-dull-1: #1a120c; --color-dull-2: #20160e; --color-dull-3: #271b12; --color-dull-4: #2f2116;
+  --color-dull-5: #38281b; --color-dull-6: #443122; --color-dull-7: #5a4230; --color-dull-8: #735640;
+  --color-dull-9: #a08567; --color-dull-10: #b39572; --color-dull-11: #e6d6bb; --color-dull-12: #fbeed6;
+}
+html.responsive[data-rfs-style="vinyl"] [data-accent-color="dull"] {
+  --color-accent-1: #1a120c; --color-accent-2: #20160e; --color-accent-3: #271b12; --color-accent-4: #2f2116;
+  --color-accent-5: #38281b; --color-accent-6: #443122; --color-accent-7: #5a4230; --color-accent-8: #38281b;
+  --color-accent-9: #735640; --color-accent-10: #443122; --color-accent-11: #e6d6bb; --color-accent-12: #fbeed6;
+}
+
+/* ---- every shelf title of the home page wears the display face and its little record ---- */
+html.responsive[data-rfs-style="vinyl"] :is(#discounts_and_events_title, .home_title :is(a, span, b), .WidgetHeaderCtn > div:first-child) {
+  font-family: var(--rf-heading-font) !important; font-weight: 400 !important; font-synthesis: none; letter-spacing: .02em !important; text-transform: none !important; color: #fbeed6 !important;
+}
+html.responsive[data-rfs-style="vinyl"] #discounts_and_events_title::before {
+  content: ''; display: inline-block; flex: none; width: .95em; height: .95em; margin-inline-end: .42em; vertical-align: -.1em; border-radius: 50%;
+  background: var(--vy-45); box-shadow: 0 0 0 1px rgba(0, 0, 0, .6), 0 2px 4px rgba(0, 0, 0, .4);
+}
+html.responsive[data-rfs-style="vinyl"] .game_description_column h2:not(.bb_tag, .title) { font-family: var(--rf-heading-font) !important; font-weight: 400 !important; font-synthesis: none; color: #fbeed6 !important; text-transform: none !important; }
+
+/* ---- the shelves are record crates: walnut boards, the 70s rule along the bottom lip (React carousels, discount blocks) ---- */
+html.responsive[data-rfs-style="vinyl"][data-rfs-style] :is(.carousel__slider, .home_discount_games_ctn) {
+  background: var(--vy-stripe) left bottom / 100% 8px no-repeat, var(--vy-grain), linear-gradient(180deg, #2f2016, #22170f) !important;
+  border-radius: 6px !important; padding-bottom: 14px !important;
+  box-shadow: inset 0 0 0 1px rgba(243, 230, 207, .08), inset 0 10px 22px rgba(0, 0, 0, .28), 0 8px 18px rgba(0, 0, 0, .3) !important;
+}
+html.responsive[data-rfs-style="vinyl"] .content_hub_capsule_ctn .gradient { background: linear-gradient(180deg, transparent 40%, rgba(26, 16, 10, .92)) !important; }
+/* sleeves: crisp corners, a cream seam; the one you point at slides up out of the crate (transform only) */
+html.responsive[data-rfs-style="vinyl"] :is(.store_capsule, .home_area_spotlight, .special_tiny_cap, .content_hub_capsule_ctn, .dailydeal_cap) {
+  border-radius: 3px !important; transition: transform var(--vy-fast) var(--vy-ease) !important;
+}
+html.responsive[data-rfs-style="vinyl"] :is(.store_capsule, .home_area_spotlight, .special_tiny_cap, .content_hub_capsule_ctn, .dailydeal_cap):is(:hover, .focus) {
+  transform: translateY(-5px); outline: 2px solid #e8742a; outline-offset: 0;
+  box-shadow: 0 14px 22px -8px rgba(0, 0, 0, .7) !important;
+}
+html.responsive[data-rfs-style="vinyl"] .store_main_capsule { border-radius: 4px !important; box-shadow: inset 0 0 0 1px rgba(243, 230, 207, .08), 0 14px 30px rgba(0, 0, 0, .5) !important; }
+html.responsive[data-rfs-style="vinyl"] .store_main_capsule .app_name { font-family: var(--rf-heading-font) !important; font-weight: 400 !important; font-synthesis: none; color: #fbeed6 !important; }
+/* React discounts (webkit.js tags them .rfs-pct, their box .rfs-price): the round mustard sticker on a dark tag */
+html.responsive[data-rfs-style="vinyl"] .rfs-pct {
+  color: #3a1f0e !important; background: radial-gradient(circle at 35% 30%, #f6d27a, #e3a93a 70%) !important; border-radius: 99px !important;
+  outline: 1px dashed rgba(58, 31, 14, .45); outline-offset: -3px; padding-inline: 9px !important; text-shadow: none !important;
+  font-family: var(--rf-heading-font) !important; font-weight: 400 !important; font-synthesis: none;
+}
+html.responsive[data-rfs-style="vinyl"] .rfs-price { background: rgba(26, 16, 10, .82) !important; border-radius: 99px !important; box-shadow: inset 0 0 0 1px rgba(227, 178, 60, .22) !important; overflow: hidden; }
+/* "See More" / "View All" (.rfs-btn2), the DLC "Browse all" note, compare, the queue's sign-in, follow: walnut pills that turn mustard */
+html.responsive[data-rfs-style="vinyl"] :is(a.rfs-btn2:not(.app_tag, .tags > a), .game_area_dlc_section .note, .WidgetHeaderCtn .rmgCh57vTjU-, .FollowButton, .game_purchase_options_editions_header_compare_button) {
+  color: #f6e7cb !important; background: var(--vy-pill) !important; border: 0 !important; border-radius: 99px !important; opacity: 1 !important;
+  box-shadow: inset 0 1px 0 rgba(255, 220, 170, .2), inset 0 0 0 1px rgba(227, 178, 60, .28), 0 2px 5px rgba(0, 0, 0, .35) !important;
+  font-weight: 700 !important; text-shadow: none !important; padding-inline: 14px !important;
+}
+html.responsive[data-rfs-style="vinyl"] :is(.WidgetHeaderCtn .rmgCh57vTjU-, .FollowButton) * { color: inherit !important; }
+html.responsive[data-rfs-style="vinyl"] :is(a.rfs-btn2:not(.app_tag, .tags > a), .game_area_dlc_section .note, .WidgetHeaderCtn .rmgCh57vTjU-, .FollowButton, .game_purchase_options_editions_header_compare_button):hover {
+  color: #2a1206 !important; background: var(--vy-pill-hi) !important;
+}
+
+/* ---- carousel arrows: a little 45 with a cream chevron; it turns a quarter when pointed at (Steam's arrow art is hidden) ---- */
+html.responsive[data-rfs-style="vinyl"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button) {
+  background: none !important; box-shadow: none !important; border: 0 !important; border-radius: 0 !important; opacity: 1 !important;
+}
+html.responsive[data-rfs-style="vinyl"] .carousel_container .arrow > div,
+html.responsive[data-rfs-style="vinyl"] :is(.carousel__back-button, .carousel__next-button) > svg { opacity: 0 !important; }
+html.responsive[data-rfs-style="vinyl"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button)::before,
+html.responsive[data-rfs-style="vinyl"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button)::after {
+  content: ''; position: absolute; top: 50%; left: 50%; width: 44px; height: 44px; margin: -22px 0 0 -22px; border-radius: 50%; box-sizing: border-box; pointer-events: none;
+}
+html.responsive[data-rfs-style="vinyl"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button)::before {
+  background: conic-gradient(from 20deg, rgba(255, 240, 210, .16), transparent 12% 48%, rgba(255, 240, 210, .12) 52%, transparent 62%), repeating-radial-gradient(circle closest-side, #171210 0 7%, #2b221c 8% 11%);
+  box-shadow: 0 0 0 1px #0c0705, 0 0 0 2px rgba(243, 230, 207, .14), 0 6px 14px rgba(0, 0, 0, .55);
+  transition: transform 240ms var(--vy-ease);
+}
+html.responsive[data-rfs-style="vinyl"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button)::after {
+  content: '\2039'; direction: ltr; unicode-bidi: isolate; width: 24px; height: 24px; margin: -12px 0 0 -12px; display: grid; place-items: center; padding-bottom: 3px;
+  font: 700 19px/1 Georgia, serif; color: #fff3dc; background: radial-gradient(circle, #f08a48, #c4511f 70%); box-shadow: 0 0 0 1px rgba(60, 20, 5, .6), inset 0 0 0 2px rgba(227, 178, 60, .55);
+}
+html.responsive[data-rfs-style="vinyl"] :is(.carousel_container .arrow.right, .carousel__next-button)::after { content: '\203A'; }
+html.responsive[data-rfs-style="vinyl"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button):hover::before { transform: rotate(90deg); }
+html.responsive[data-rfs-style="vinyl"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button):hover::after { background: radial-gradient(circle, #f6d27a, #e3a93a 70%); color: #3a1f0e; }
+html.responsive[data-rfs-style="vinyl"] :is(.carousel__back-button, .carousel__next-button):disabled { opacity: 0 !important; pointer-events: none; }
+html.responsive[data-rfs-style="vinyl"] .carousel_wide_mode .carousel_container .arrow.left::before { left: auto; right: 2px; margin: -22px 0 0 0; }
+html.responsive[data-rfs-style="vinyl"] .carousel_wide_mode .carousel_container .arrow.left::after { left: auto; right: 12px; margin: -12px 0 0 0; }
+html.responsive[data-rfs-style="vinyl"] .carousel_wide_mode .carousel_container .arrow.right::before { left: 2px; margin: -22px 0 0 0; }
+html.responsive[data-rfs-style="vinyl"] .carousel_wide_mode .carousel_container .arrow.right::after { left: 12px; margin: -12px 0 0 0; }
+/* Arabic: Steam swaps the arrows' sides, so the chevrons swap too */
+html.responsive[dir="rtl"][data-rfs-style="vinyl"] :is(.carousel_container .arrow.left, .carousel__back-button)::after { content: '\203A'; }
+html.responsive[dir="rtl"][data-rfs-style="vinyl"] :is(.carousel_container .arrow.right, .carousel__next-button)::after { content: '\2039'; direction: ltr; unicode-bidi: isolate; }
+html.responsive[dir="rtl"][data-rfs-style="vinyl"] .carousel_wide_mode .carousel_container .arrow.left::before { left: 2px; right: auto; }
+html.responsive[dir="rtl"][data-rfs-style="vinyl"] .carousel_wide_mode .carousel_container .arrow.left::after { left: 12px; right: auto; }
+html.responsive[dir="rtl"][data-rfs-style="vinyl"] .carousel_wide_mode .carousel_container .arrow.right::before { left: auto; right: 2px; }
+html.responsive[dir="rtl"][data-rfs-style="vinyl"] .carousel_wide_mode .carousel_container .arrow.right::after { left: auto; right: 12px; }
+/* the page dots: little records, the current one with its orange label */
+html.responsive[data-rfs-style="vinyl"] .carousel_container .carousel_thumbs { background: transparent !important; }
+html.responsive[data-rfs-style="vinyl"] .carousel_container .carousel_thumbs > div { width: 12px !important; height: 12px !important; border-radius: 50% !important; background: radial-gradient(circle, #3b291b 0 28%, #120c09 32%) !important; box-shadow: 0 0 0 1px rgba(243, 230, 207, .14) !important; }
+html.responsive[data-rfs-style="vinyl"] .carousel_container .carousel_thumbs > div.focus { background: radial-gradient(circle, #f6ead2 0 14%, #e8742a 18% 46%, #120c09 50%) !important; box-shadow: 0 0 0 1px #e3b23c !important; }
+
+/* ---- rows are sleeves in a crate: the one you point at comes toward you (transform only, colours at once) ---- */
+html.responsive[data-rfs-style="vinyl"] :is(.tab_row_item, .search_result_row, .game_area_dlc_row, .apphub_Card, .market_listing_row, .badge_row, .forum_topic, .help_wizard_button, .market_search_game_button_group .game_button) {
+  transition: transform var(--vy-fast) var(--vy-ease) !important;
+}
+html.responsive[data-rfs-style="vinyl"] :is(.tab_row_item, .search_result_row, .game_area_dlc_row):is(:hover, .focus) { transform: translateX(4px); }
+html.responsive[dir="rtl"][data-rfs-style="vinyl"] :is(.tab_row_item, .search_result_row, .game_area_dlc_row):is(:hover, .focus) { transform: translateX(-4px); }
+html.responsive[data-rfs-style="vinyl"] .apphub_Card.interactable:hover { transform: translateY(-3px); }
+html.responsive[data-rfs-style="vinyl"] :is(.tab_row_item, .search_result_row):is(:hover, .focus) :is(.tab_item_title, .search_name .title) { color: #ffd98a !important; }
+html.responsive[data-rfs-style="vinyl"] :is(.tab_row_item, .search_result_row) :is(img.tab_row_capsule, .search_capsule img) { border-radius: 2px; box-shadow: 0 0 0 1px rgba(243, 230, 207, .16), 2px 2px 0 rgba(0, 0, 0, .35); }
+html.responsive[data-rfs-style="vinyl"] .store_nav .tab { transition: none !important; }
+/* the preview beside the list and the hover card over any game: liner-note cards with the 70s rule on top */
+html.responsive[data-rfs-style="vinyl"] :is(.tab_preview, .game_hover_box) {
+  color: #e6d6bb !important; border: 0 !important; border-radius: 6px !important;
+  background: var(--vy-stripe-solid) left top / 100% 6px no-repeat, var(--vy-grain), linear-gradient(180deg, #33231a, #22170f) !important;
+  box-shadow: inset 0 0 0 1px rgba(243, 230, 207, .1), 0 18px 40px rgba(0, 0, 0, .6) !important;
+}
+html.responsive[data-rfs-style="vinyl"] .game_hover_box { padding-top: 12px !important; }
+html.responsive[data-rfs-style="vinyl"] .game_hover :is(.hover_arrow_left, .hover_arrow_right) { display: none !important; }
+html.responsive[data-rfs-style="vinyl"] :is(.tab_preview .tab_title, .game_hover_box h4, .game_hover_box .hover_title) { font-family: var(--rf-heading-font) !important; font-weight: 400 !important; font-synthesis: none; color: #fbeed6 !important; }
+html.responsive[data-rfs-style="vinyl"] :is(.tab_preview .tags a, .game_hover_box .hover_tag_row > *, .deep_dive_tag) {
+  color: #f0cf86 !important; background: rgba(227, 178, 60, .12) !important; border: 1px solid rgba(227, 178, 60, .28) !important; border-radius: 99px !important; box-shadow: none !important;
+}
+html.responsive[data-rfs-style="vinyl"] .tab_preview .tags a:hover { color: #fff3dc !important; background: #c4511f !important; border-color: transparent !important; }
+html.responsive[data-rfs-style="vinyl"] :is(.game_hover_box .hover_review_summary, .deep_dive_key_tags) { background: rgba(0, 0, 0, .25) !important; border-radius: 6px !important; }
+html.responsive[data-rfs-style="vinyl"] .tab_preview .tab_review_summary span { color: #e6d6bb !important; }
+
+/* ---- the game page ---- */
+/* the price sits ON its kraft tag: tag = hole · price · button in one row (SpaceTheme floats the price above the tag,
+   where its dark ink met the dark sleeve) */
+html.responsive[data-rfs-style="vinyl"] .game_purchase_action_bg {
+  display: inline-flex !important; align-items: center; gap: 10px; white-space: nowrap; height: auto !important; padding: 4px !important; padding-inline-start: 26px !important;
+}
+html.responsive[data-rfs-style="vinyl"] .game_purchase_action_bg > * { float: none !important; }
+html.responsive[data-rfs-style="vinyl"] .game_purchase_action_bg :is(.game_purchase_price, .discount_block) { position: static !important; inset: auto !important; height: auto !important; padding: 0 !important; margin: 0 !important; line-height: 1.25 !important; box-shadow: none !important; }
+html.responsive[data-rfs-style="vinyl"] .game_purchase_action_bg .discount_block { display: inline-flex !important; align-items: center; gap: 6px; }
+html.responsive[data-rfs-style="vinyl"] .game_purchase_action_bg .discount_prices { height: auto !important; padding: 0 !important; display: flex; flex-direction: column; align-items: flex-end; }
+html.responsive[data-rfs-style="vinyl"] .game_purchase_action_bg :is(.game_purchase_price, .discount_final_price) { font-size: 16px !important; }
+html.responsive[data-rfs-style="vinyl"] .game_purchase_action_bg .discount_pct { padding: 3px 8px !important; line-height: 1.3 !important; height: auto !important; }
+/* the glance column: the header art in a sleeve seam (its rows stay plain) */
+html.responsive[data-rfs-style="vinyl"] .game_header_image_full { border-radius: 3px; box-shadow: 0 0 0 1px rgba(243, 230, 207, .14), 3px 3px 0 rgba(0, 0, 0, .35); }
+html.responsive[data-rfs-style="vinyl"] .highlight_strip_item.focus { outline: 2px solid #e8742a; outline-offset: -2px; }
+html.responsive[data-rfs-style="vinyl"] :is(.slider_left, .slider_right) { background: var(--vy-pill) !important; border-radius: 99px !important; }
+html.responsive[data-rfs-style="vinyl"] .slider_ctn .slider { background: #160f0a !important; border-radius: 99px !important; }
+html.responsive[data-rfs-style="vinyl"] .slider_ctn .slider .handle { background: linear-gradient(180deg, #e8803e, #a8401c) !important; border-radius: 99px !important; }
+/* the feature list (Single-player, Achievements …) and the links block: track-list lines, the icon on a round label */
+html.responsive[data-rfs-style="vinyl"] :is(.game_area_details_specs_ctn, #category_block a, a.linkbar) { background: transparent !important; border-radius: 0 !important; border-bottom: 1px solid rgba(243, 230, 207, .07) !important; }
+html.responsive[data-rfs-style="vinyl"] :is(.game_area_details_specs_ctn, #category_block a) .label { background: transparent !important; color: #f0c766 !important; }
+html.responsive[data-rfs-style="vinyl"] :is(.game_area_details_specs_ctn, #category_block a) .icon { background: #120c09 !important; border-radius: 50% !important; box-shadow: 0 0 0 1px rgba(227, 178, 60, .4); }
+html.responsive[data-rfs-style="vinyl"] :is(.game_area_details_specs_ctn, #category_block a, a.linkbar):hover { background: rgba(232, 116, 42, .14) !important; }
+html.responsive[data-rfs-style="vinyl"] :is(.game_area_details_specs_ctn, #category_block a):hover .label { color: #ffd98a !important; }
+html.responsive[data-rfs-style="vinyl"] #category_block :is(a:not(.game_area_details_specs_ctn) > div, summary, summary > div) { background: transparent !important; }
+html.responsive[data-rfs-style="vinyl"] #category_block :is(a:not(.game_area_details_specs_ctn), summary) :is(span, div) { color: #f0c766 !important; }
+html.responsive[data-rfs-style="vinyl"] .game_page_autocollapse_readmore { background: var(--vy-pill) !important; color: #f6e7cb !important; border-radius: 99px !important; }
+html.responsive[data-rfs-style="vinyl"] .game_page_autocollapse_fade { background: linear-gradient(180deg, rgba(26, 18, 12, 0), #1a120c 85%) !important; }
+/* links: the shop's teal, lighter on hover */
+html.responsive[data-rfs-style="vinyl"] :is(.queue_actions_ctn p a, #game_area_metalink a, .block_header a, #game_area_reviews a, .package_contents a, .game_area_purchase_game p a, .apphub_GetMoreContent a, .apphub_Chat a,
+  .apphub_CardContentAuthorName a, .DRM_notice a) { color: #5fc9bc !important; }
+html.responsive[data-rfs-style="vinyl"] :is(.queue_actions_ctn p a, #game_area_metalink a, .block_header a, #game_area_reviews a, .package_contents a, .game_area_purchase_game p a, .DRM_notice a):hover { color: #a5ece2 !important; }
+
+/* ---- community hub ---- */
+html.responsive[data-rfs-style="vinyl"] .apphub_CardTextContent :is(.bb_h1, .bb_h2) { font-family: var(--rf-heading-font) !important; font-weight: 400 !important; font-synthesis: none; color: #f0c766 !important; }
+html.responsive[data-rfs-style="vinyl"] :is(.apphub_StorePrice, .apphub_StoreAppData .apphub_StorePrice) { background: linear-gradient(175deg, #f4e4c0, #dcc08a) !important; border-radius: 6px !important; }
+html.responsive[data-rfs-style="vinyl"] .apphub_StorePrice .price { color: #2a1206 !important; background: transparent !important; font-family: var(--rf-heading-font) !important; font-weight: 400 !important; font-synthesis: none; }
+html.responsive[data-rfs-style="vinyl"] :is(.appHubIconHolder, .appHubIconHolder img) { border-radius: 50% !important; }
+
+/* ---- motion: pills press in; menus and hover cards drop in ---- */
+html.responsive[data-rfs-style="vinyl"] :is(.btn_green_steamui, .btn_blue_steamui, .btnv6_blue_hoverfade, .btnv6_grey_black, .btn_grey_steamui, .btnv6_white_transparent, .btn_grey_black,
+  .btn_grey_white_innerfade, .btn_darkblue_white_innerfade, .btn_green_white_innerfade, .btnv6_lightblue_blue, .btn_profile_action, .rfs-btn2) { transition: transform 90ms var(--vy-ease) !important; }
+html.responsive[data-rfs-style="vinyl"] :is(.btn_green_steamui, .btn_blue_steamui, .btnv6_blue_hoverfade, .btnv6_grey_black, .btn_grey_steamui, .btnv6_white_transparent, .btn_grey_black,
+  .btn_grey_white_innerfade, .btn_darkblue_white_innerfade, .btn_green_white_innerfade, .btnv6_lightblue_blue, .btn_profile_action, .rfs-btn2):not(.btn_disabled):active { transform: scale(.96); }
+html.responsive[data-rfs-style="vinyl"] :is(.popup_block_new .popup_body, .game_hover_box) { animation: vy-drop 180ms var(--vy-ease) both; }
+@keyframes vy-drop { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  html.responsive[data-rfs-style="vinyl"] :is(.popup_block_new .popup_body, .game_hover_box) { animation: none; }
+  html.responsive[data-rfs-style="vinyl"] :is(.store_capsule, .home_area_spotlight, .special_tiny_cap, .content_hub_capsule_ctn, .dailydeal_cap, .tab_row_item, .search_result_row, .game_area_dlc_row, .apphub_Card,
+    .btn_green_steamui, .btn_blue_steamui, .btnv6_blue_hoverfade, .btn_grey_steamui, .btnv6_white_transparent, .rfs-btn2) { transition: none !important; }
+  html.responsive[data-rfs-style="vinyl"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button)::before { transition: none; }
+}
+
+/* ---- the home list as it is built today: a.tab_row_item rows are sleeves, a.home_tab_button tabs are crate dividers ---- */
+html.responsive[data-rfs-style="vinyl"] .tab_row_item {
+  border-radius: 4px !important; border: 0 !important;
+  background: linear-gradient(125deg, rgba(255, 240, 210, .055), transparent 42%), linear-gradient(180deg, #2c1e15, #24180f) !important;
+  box-shadow: inset 0 0 0 1px rgba(243, 230, 207, .075), 0 4px 12px rgba(0, 0, 0, .32) !important;
+}
+html.responsive[data-rfs-style="vinyl"] .tab_row_item:is(:hover, .focus) {
+  background: linear-gradient(125deg, rgba(255, 240, 210, .08), transparent 42%), linear-gradient(180deg, #3a2618, #2b1c12) !important;
+  box-shadow: inset 0 0 0 1px rgba(232, 116, 42, .5), inset 4px 0 0 #e8742a, 0 8px 18px rgba(0, 0, 0, .42) !important;
+}
+html.responsive[dir="rtl"][data-rfs-style="vinyl"] .tab_row_item:is(:hover, .focus) { box-shadow: inset 0 0 0 1px rgba(232, 116, 42, .5), inset -4px 0 0 #e8742a, 0 8px 18px rgba(0, 0, 0, .42) !important; }
+html.responsive[data-rfs-style="vinyl"] .tab_row_item .tab_item_title { color: #fbeed6 !important; font-weight: 700 !important; }
+html.responsive[data-rfs-style="vinyl"] .tab_row_item :is(.tab_item_tags, .tab_item_tags a, .tab_item_release_date) { color: #b9a07e !important; }
+html.responsive[data-rfs-style="vinyl"] .tab_preview .tab_title { font-size: 20px !important; }
+html.responsive[data-rfs-style="vinyl"] .tab_preview :is(.screenshot, .tab_preview_video) { border-radius: 3px !important; }
+html.responsive[data-rfs-style="vinyl"] .home_tab_button { border: 0 !important; border-radius: 8px 8px 0 0 !important; background: linear-gradient(180deg, #3a2618, #2b1c12) !important; box-shadow: inset 0 1px 0 rgba(255, 220, 170, .12) !important; margin-inline-end: 4px !important; }
+html.responsive[data-rfs-style="vinyl"] .home_tab_button .tab_content { color: #e6d6bb !important; background: transparent !important; box-shadow: none !important; font-family: var(--rf-heading-font) !important; font-weight: 400 !important; font-synthesis: none; text-transform: none !important; letter-spacing: .02em !important; }
+html.responsive[data-rfs-style="vinyl"] .home_tab_button:hover .tab_content { color: #ffd98a !important; }
+html.responsive[data-rfs-style="vinyl"] .home_tab_button.active { background: repeating-linear-gradient(90deg, rgba(120, 80, 40, .05) 0 1px, transparent 1px 4px), linear-gradient(170deg, #f0dcae, #d8b87e) !important; }
+html.responsive[data-rfs-style="vinyl"] .home_tab_button.active .tab_content { color: #3a1f0e !important; }
+
+/* ═════════════ part three: guides, discussions, workshop and the reviews as sleeves and liner notes ═════════════
+   These pages were still stock Steam blue. Guides: category tiles, guide rows, the side column (search, browse list).
+   Discussions: the quiet meta text. Workshop hub (React, hashed): its titles. Game page foot: the React reviews block
+   ([data-featuretarget="appreviews"]; its inner class names are hashed, the same ones Steam ships today). Plain CSS, nothing animated. */
+html.responsive[data-rfs-style="vinyl"] :is(.guides_home_section_title, .huRHJiZfYko- :is(h1, h2)) { font-family: var(--rf-heading-font) !important; font-weight: 400 !important; font-synthesis: none; letter-spacing: .02em !important; text-transform: none !important; color: #fbeed6 !important; background: none !important; }
+html.responsive[data-rfs-style="vinyl"] :is(.guides_home_view_all_link a, .workshopItemAuthorName, .rightbox_list_option_content a, .huRHJiZfYko- a) { color: #5fc9bc !important; }
+html.responsive[data-rfs-style="vinyl"] :is(.guides_home_view_all_link a, .rightbox_list_option_content a):hover { color: #a5ece2 !important; }
+html.responsive[data-rfs-style="vinyl"] #GuideCategories.detailBox { background-image: none !important; }
+html.responsive[data-rfs-style="vinyl"] a.guide_home_category_selection { background: var(--vy-grain), linear-gradient(170deg, #2f2016, #22170f) !important; border: 0 !important; box-shadow: inset 0 0 0 1px rgba(243, 230, 207, .08), 0 6px 16px rgba(0, 0, 0, .3) !important; border-radius: 6px !important; }
+html.responsive[data-rfs-style="vinyl"] a.guide_home_category_selection:hover { background: linear-gradient(125deg, rgba(255, 240, 210, .08), transparent 42%), linear-gradient(180deg, #3a2618, #2b1c12) !important; box-shadow: inset 0 0 0 1px rgba(232, 116, 42, .5), 0 8px 18px rgba(0, 0, 0, .42) !important; }
+html.responsive[data-rfs-style="vinyl"] .guide_home_category_name { color: #fbeed6 !important; font-weight: 700 !important; }
+html.responsive[data-rfs-style="vinyl"] .guide_home_category_count { color: #b9a07e !important; }
+html.responsive[data-rfs-style="vinyl"] a.workshopItemCollection { background: linear-gradient(125deg, rgba(255, 240, 210, .055), transparent 42%), linear-gradient(180deg, #2c1e15, #24180f) !important; border: 0 !important; box-shadow: inset 0 0 0 1px rgba(243, 230, 207, .08), 0 6px 16px rgba(0, 0, 0, .3) !important; border-radius: 6px !important; }
+html.responsive[data-rfs-style="vinyl"] a.workshopItemCollection:hover { background: linear-gradient(125deg, rgba(255, 240, 210, .08), transparent 42%), linear-gradient(180deg, #3a2618, #2b1c12) !important; box-shadow: inset 0 0 0 1px rgba(232, 116, 42, .5), 0 8px 18px rgba(0, 0, 0, .42) !important; }
+html.responsive[data-rfs-style="vinyl"] .workshopItemCollection .workshopItemTitle { color: #fbeed6 !important; font-weight: 700 !important; }
+html.responsive[data-rfs-style="vinyl"] .workshopItemCollection .workshopItemAuthorLine { color: #b9a07e !important; }
+html.responsive[data-rfs-style="vinyl"] .workshopItemCollection .workshopItemShortDesc { color: #e6d6bb !important; }
+html.responsive[data-rfs-style="vinyl"] .workshopItemCollection .workshopItemPreviewHolder { border-radius: 4px !important; }
+html.responsive[data-rfs-style="vinyl"] :is(.searchTextContainer, .discussionSearchTextContainer) { background: #160f0a !important; border: 1px solid rgba(227, 178, 60, .32) !important; border-radius: 6px !important; box-shadow: none !important; box-sizing: border-box; }
+html.responsive[data-rfs-style="vinyl"] :is(.searchTextContainer input.searchText, input.discussionSearchText) { color: #e6d6bb !important; background: transparent !important; border: 0 !important; box-shadow: none !important; }
+html.responsive[data-rfs-style="vinyl"] .sidebar .panel { background: var(--vy-grain), linear-gradient(170deg, #2f2016, #22170f) !important; border: 0 !important; box-shadow: inset 0 0 0 1px rgba(243, 230, 207, .08), 0 6px 16px rgba(0, 0, 0, .3) !important; border-radius: 6px !important; }
+html.responsive[data-rfs-style="vinyl"] .sidebar :is(.rightSectionTopTitle, .guide_category_tags_title, .rightSectionTitle, .tag_category_desc) { color: #b9a07e !important; }
+html.responsive[data-rfs-style="vinyl"] .sidebar :is(.filterOption, .filterOption label) { color: #e6d6bb !important; }
+html.responsive[data-rfs-style="vinyl"] .rightbox_list_selection_background { background: rgba(232, 116, 42, .22) !important; box-shadow: inset 0 0 0 1px rgba(232, 116, 42, .5); border-radius: 6px; }
+html.responsive[data-rfs-style="vinyl"] .browseOption.selected a { color: #ffd98a !important; font-weight: 700 !important; }
+html.responsive[data-rfs-style="vinyl"] :is(.forum_topic_op, .forum_topic_lastpost, .forum_paging_summary, .forum_paging_summary span) { color: #b9a07e !important; }
+html.responsive[data-rfs-style="vinyl"] :is(#rfs-x, .block_header .right) a { color: #f6e7cb !important; background: var(--vy-pill) !important; border: 0 !important; border-radius: 99px !important; font-weight: 700 !important; padding-inline: 12px !important; box-shadow: none !important; text-shadow: none !important; }
+html.responsive[data-rfs-style="vinyl"] :is(#rfs-x, .block_header .right) a:hover { color: #2a1206 !important; background: var(--vy-pill-hi) !important; }
+/* the React reviews */
+html.responsive[data-rfs-style="vinyl"] [data-featuretarget="appreviews"] .dAKtJif-TvE- > h2 { font-family: var(--rf-heading-font) !important; font-weight: 400 !important; font-synthesis: none; letter-spacing: .02em !important; text-transform: none !important; color: #fbeed6 !important; }
+html.responsive[data-rfs-style="vinyl"] [data-featuretarget="appreviews"] h1 { color: #fbeed6 !important; }
+html.responsive[data-rfs-style="vinyl"] [data-featuretarget="appreviews"] :is(span, li, p) > a.Focusable { color: #5fc9bc !important; }
+html.responsive[data-rfs-style="vinyl"] [data-featuretarget="appreviews"] :is(span, li, p) > a.Focusable:hover { color: #a5ece2 !important; }
+html.responsive[data-rfs-style="vinyl"] [data-featuretarget="appreviews"] :is(._4rFF1L9jPC8-, .PwTlk5b4Rh0-, ._3tTNLTWh51g-) { background: var(--vy-grain), linear-gradient(170deg, #2f2016, #22170f) !important; border: 0 !important; box-shadow: inset 0 0 0 1px rgba(243, 230, 207, .08), 0 6px 16px rgba(0, 0, 0, .3) !important; border-radius: 6px !important; }
+html.responsive[data-rfs-style="vinyl"] [data-featuretarget="appreviews"] .nS3iAoyO-XI- { background: rgba(26, 16, 10, .6) !important; border-radius: 6px !important; }
+html.responsive[data-rfs-style="vinyl"] [data-featuretarget="appreviews"] .ev-4YE2674o- { background: rgba(26, 16, 10, .6) !important; border-radius: 4px !important; color: #b9a07e !important; }
+html.responsive[data-rfs-style="vinyl"] [data-featuretarget="appreviews"] .ev-4YE2674o- * { color: inherit !important; }
+html.responsive[data-rfs-style="vinyl"] [data-featuretarget="appreviews"] .PaJFVCJu0g0- { background: rgba(26, 16, 10, .6) !important; border-radius: 4px !important; }
+html.responsive[data-rfs-style="vinyl"] [data-featuretarget="appreviews"] .H2acnhvyOf8- { background: radial-gradient(circle at 35% 30%, #f39a4c, #c4511f 70%) !important; color: #fff3dc !important; border-radius: 4px !important; }
+html.responsive[data-rfs-style="vinyl"] [data-featuretarget="appreviews"] .ar-Pie428S4- { color: #f0c766 !important; }
+html.responsive[data-rfs-style="vinyl"] [data-featuretarget="appreviews"] .nQmgFD0Ujec- { background: rgba(243, 230, 207, .12) !important; }
+html.responsive[data-rfs-style="vinyl"] .guides_home_section_title::before { content: ''; display: inline-block; width: .9em; height: .9em; margin-inline-end: .4em; vertical-align: -.1em; border-radius: 50%; background: var(--vy-45); }
+html.responsive[data-rfs-style="vinyl"] [data-featuretarget="appreviews"] .H2acnhvyOf8- { border-radius: 50% !important; }
+html.responsive[data-rfs-style="vinyl"] :is(.highlight_strip_item, .highlight_strip_item img, #highlight_player_area, .highlight_player_item, .workshopItemPreviewHolder img) { border-radius: 4px !important; }
+/* links Steam left in its own blue (reviewer names, search preferences, Deck notes) */
+html.responsive[data-rfs-style="vinyl"] [data-featuretarget="appreviews"] a.Focusable, html.responsive[data-rfs-style="vinyl"] :is(#search_manage_lang_preferences_btn a, #deck_compat_learn_more_btn, .search_results_filtered_warning a) { color: #5fc9bc !important; }
+html.responsive[data-rfs-style="vinyl"] [data-featuretarget="appreviews"] a.Focusable:hover, html.responsive[data-rfs-style="vinyl"] :is(#search_manage_lang_preferences_btn a, #deck_compat_learn_more_btn):hover { color: #a5ece2 !important; }
+html.responsive[data-rfs-style="vinyl"] [data-featuretarget="appreviews"] ._2URjSD6c0qk- { color: #fbeed6 !important; }
+/* the pale radial wash Steam lays behind "More like this" and the curators block at the foot of a game page */
+html.responsive[data-rfs-style="vinyl"] :is(.related_items_ctn, .nKsKxQO2ePs-) { background: none !important; }
+/* discussions: the paging strip above and below the topics */
+html.responsive[data-rfs-style="vinyl"] .forum_paging { background: linear-gradient(180deg, #33231a, #261810) !important; border-radius: 6px !important; color: #b9a07e !important; }
+/* the React workshop hub (#CommunityTemplate; its class names are hashed): the current tab's rule, the sub-menu links,
+   the section titles and the button shape. Its fills already come from the --color-accent / --color-dull scales above. */
+html.responsive[data-rfs-style="vinyl"] #CommunityTemplate .Ldik1p0iuKE- { border-bottom-color: #e8742a !important; }
+html.responsive[data-rfs-style="vinyl"] #CommunityTemplate .bt37JYoalu8- a { color: #5fc9bc !important; }
+html.responsive[data-rfs-style="vinyl"] #CommunityTemplate .bt37JYoalu8- a:hover { color: #a5ece2 !important; }
+html.responsive[data-rfs-style="vinyl"] #CommunityTemplate :is(h2, h3) { font-family: var(--rf-heading-font) !important; font-weight: 400 !important; font-synthesis: none; color: #fbeed6 !important; }
+html.responsive[data-rfs-style="vinyl"] #CommunityTemplate .inqz7Zdx9Xg- { border-radius: 99px !important; font-weight: 700 !important; }
+html.responsive[data-rfs-style="vinyl"] a.forum_paging_pagelink { color: #5fc9bc !important; }
+html.responsive[data-rfs-style="vinyl"] a.forum_paging_pagelink:hover { color: #a5ece2 !important; }

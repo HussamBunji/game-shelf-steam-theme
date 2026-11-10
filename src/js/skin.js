@@ -431,7 +431,8 @@
      becomes visible (and every few seconds while visible), and swaps the sheet if they differ. */
   (function followStyle() {
     if (!/steamloopback\.host$/.test(location.host)) return;
-    const STYLE_IDS = { 'Classic Shelf': 'classic', 'Neon Coverflow': 'neon', 'Glass Gallery': 'glass', 'Steam Original': 'original', 'SpaceTheme': 'space', 'Material You': 'material', 'Terminal': 'terminal', 'RPG Vault': 'vault', 'Vinyl Records': 'vinyl', 'Corkboard': 'cork', 'Retro Arcade': 'arcade', 'Magazine': 'magazine', 'Cupertino Dark': 'cupertino', 'Cyberpunk': 'cyberpunk', 'Shelter OS': 'shelter', 'Crossbar': 'xmb' };
+    const STYLE_IDS = { 'Classic Shelf': 'classic', 'Neon Coverflow': 'neon', 'Glass Gallery': 'glass', 'Steam Original': 'original', 'SpaceTheme': 'space', 'Material You': 'material', 'Terminal': 'terminal', 'RPG Vault': 'vault', 'Vinyl Records': 'vinyl', 'Corkboard': 'cork', 'Retro Arcade': 'arcade', 'Magazine': 'magazine', 'Cupertino Dark': 'cupertino', 'Cyberpunk': 'cyberpunk', 'Shelter OS': 'shelter', 'Crossbar': 'xmb',
+      'Steam OLED Black': 'steam-oled', 'Steam Graphite': 'steam-graphite', 'Steam Midnight': 'steam-midnight', 'Steam Forest': 'steam-forest', 'Steam Wine': 'steam-wine', 'Steam Royal Purple': 'steam-royal', 'Steam Coffee': 'steam-coffee', 'Steam Ocean': 'steam-ocean' };
     const api = ctx.MILLENNIUM_API;
     if (!api || !api.ffi) return;
     let busy = false;
@@ -459,6 +460,59 @@
     addEventListener('focus', check);
     document.addEventListener('visibilitychange', check);
     setInterval(check, 4000);
+  })();
+  /* menu windows keep the right size. Steam gives every menu (the Store / Library / Community hover menus, the
+     Steam / View / Friends / Games / Help menus, the account and notification menus, right-click menus) its own small
+     window and sizes that window from the menu's measured box. Those windows live hidden between uses, and when the
+     look of the menu changes while one is hidden — a live theme switch, or the style's web font arriving after the
+     first measurement — Steam's stored box is updated but the window is not: the menu then shows cut off at its end
+     edge with square corners (the rounded border falls outside the window). Here each menu window checks itself
+     when it is shown, after a style switch and when its fonts are in: if the window is not the size Steam itself
+     measured for the menu, Steam's own positioning is run again. Nothing is polled. */
+  (function menuFit() {
+    if (!/steamloopback\.host$/.test(location.host)) return;
+    const menu = () => {
+      const el = document.querySelector('.contextMenu');
+      if (!el) return null;
+      try {
+        const k = Object.keys(el).find(x => x.startsWith('__reactFiber'));
+        for (let f = k && el[k], i = 0; f && i < 8; f = f.return, i++) { const n = f.stateNode; if (n && typeof n.PositionMenu === 'function' && typeof n.PositionPopupWindow === 'function') return n; }
+      } catch (e) { /* Steam changed its menu: nothing to fix here */ }
+      return null;
+    };
+    function fit(remeasure) {
+      const m = menu();
+      if (!m || !m.state) return;
+      try {
+        if (remeasure) m.PositionMenu(true);
+        const w = m.state.menuWidth, h = m.state.menuHeight;
+        if (w == null || h == null) return;
+        if (Math.abs(innerWidth - w) > 1.5 || Math.abs(innerHeight - h) > 1.5) m.PositionPopupWindow();
+      } catch (e) { /* leave the menu as Steam drew it */ }
+    }
+    const soon = remeasure => { fit(remeasure); setTimeout(fit, 120); setTimeout(fit, 450); };
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) soon(false); });
+    restyleHooks.push(() => setTimeout(() => soon(true), 60));
+    try { document.fonts.addEventListener('loadingdone', () => { if (document.querySelector('.contextMenu')) soon(true); }); } catch (e) { /* no font events */ }
+  })();
+  /* ---- tint styles (src/styles/steam-*.css: Steam Original in another colour). The style names its palette with
+     --tint-id; src/js/tint.js then re-tones Steam's own style sheets in this window. It is loaded only while such a
+     style is active, and asked again after every live theme switch (restyleHooks) — nothing is cached here. */
+  (function tintLoader() {
+    const me = document.querySelector('script[src*="/src/js/skin.js"]');
+    const BASE = me ? me.src.replace(/src\/js\/skin\.js.*$/, '') : 'https://millennium.host/v1/themes/rf-shelf/';
+    function check() {
+      if (window.__rfsTint) { window.__rfsTint.sync(); return; }
+      if (!document.head || document.querySelector('script[data-rfs-tint-js]')) return;
+      if (!getComputedStyle(document.documentElement).getPropertyValue('--tint-id').trim()) return;
+      const s = document.createElement('script');
+      s.src = BASE + 'src/js/tint.js'; s.dataset.rfsTintJs = '1';
+      document.head.appendChild(s);
+    }
+    check();
+    restyleHooks.push(check);
+    // the style's own sheet may still be arriving in a window that just opened — look a few times, then stop
+    [300, 1000, 2500, 6000].forEach(ms => setTimeout(check, ms));
   })();
   window.__rfsSkin = { rules: rules.length, missing: [...new Set(missing)], restyle: () => restyleHooks.forEach(f => { try { f(); } catch (e) { /* keep going */ } }) };
 

@@ -480,6 +480,305 @@ html[data-rfs-style="magazine"] .market_title_text { font-size: 34px !important;
 html[data-rfs-style="magazine"] .Bo5an3G1SQw- { background: #181818 !important; background-image: none !important; border-top: 3px solid var(--rf-text) !important; }
 html[data-rfs-style="magazine"] :is(.FGz00pv8-mU-, .huRHJiZfYko- h1) { font-family: var(--rf-heading-font) !important; font-weight: 900 !important; text-transform: none !important; letter-spacing: 0 !important; }
 
+/* ═════════════ the newsstand store: flat print, rules and numerals ═════════════
+   On top of the dressing above, the store is set like the Magazine home: photographs are flat and unframed — when
+   you point at one a red rule is drawn under it (the one motion of this style: a 120 ms stroke, transform only);
+   shelves are stepped with square hairline boxes holding a long thin arrow and counted with small squares (the red
+   kicker square marks the open page); the tab row is a contents line in small caps; the lists are numbered charts
+   (big serif numerals); the game page is a feature article — headline, a boxed price in the display face, sections
+   under thick cream rules, a sidebar of ruled lines. No radii, no shadows, no glow.
+   Everything else answers at once, without a transition. */
+html[data-rfs-style="magazine"] {
+  --mg-t: .12s;
+  --mg-ease: cubic-bezier(.3, .7, .25, 1);
+  --mg-x: 3px;         /* inline-start edge of inset rules (−3px in Arabic) */
+  --mg-origin: left;   /* where a rule starts to draw (right in Arabic) */
+  --mg-arrow-back: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 16' fill='none' stroke='%23efe6d6' stroke-width='1.6'%3E%3Cpath d='M27 8H2M8 2L2 8l6 6'/%3E%3C/svg%3E");
+  --mg-arrow-next: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 16' fill='none' stroke='%23efe6d6' stroke-width='1.6'%3E%3Cpath d='M1 8h25M20 2l6 6-6 6'/%3E%3C/svg%3E");
+  --mg-arrow-back-ink: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 16' fill='none' stroke='%23121212' stroke-width='1.8'%3E%3Cpath d='M27 8H2M8 2L2 8l6 6'/%3E%3C/svg%3E");
+  --mg-arrow-next-ink: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 16' fill='none' stroke='%23121212' stroke-width='1.8'%3E%3Cpath d='M1 8h25M20 2l6 6-6 6'/%3E%3C/svg%3E");
+}
+html[data-rfs-style="magazine"][data-rfs-lang="ar"] { --mg-origin: right; --mg-x: -3px; }
+
+/* ---- the store's menus: a sheet under a red rule; the line you point at gets the red bar ---- */
+html.responsive[data-rfs-style="magazine"] .popup_block_new .popup_body {
+  background: var(--mg-sheet) !important; border: 1px solid rgba(239, 230, 214, .18) !important; border-top: 2px solid var(--rf-accent) !important; border-radius: 0 !important;
+  padding: 4px 0 !important; box-shadow: 0 18px 40px rgba(0, 0, 0, .6) !important;
+}
+html.responsive[data-rfs-style="magazine"] .popup_body .popup_menu_item { color: var(--rf-text) !important; border-radius: 0 !important; }
+html.responsive[data-rfs-style="magazine"] .popup_body .popup_menu_item:hover { color: #fff !important; background: rgba(239, 230, 214, .06) !important; box-shadow: inset 3px 0 0 var(--rf-accent); }
+html.responsive[dir="rtl"][data-rfs-style="magazine"] .popup_body .popup_menu_item:hover { box-shadow: inset -3px 0 0 var(--rf-accent); }
+
+/* ---- the React shelf's own title joins the headlines ---- */
+html.responsive[data-rfs-style="magazine"] #discounts_and_events_title {
+  font-family: var(--rf-heading-font) !important; font-weight: 800 !important; font-size: 24px !important; line-height: 1.2 !important; color: var(--rf-text) !important; letter-spacing: 0 !important;
+}
+html.responsive[data-rfs-style="magazine"] #discounts_and_events_title::before { content: ''; display: inline-block; width: 9px; height: 9px; margin-inline-end: 10px; vertical-align: .14em; background: var(--rf-accent); }
+html.responsive[data-rfs-style="magazine"] .tW10-at9cMc- { padding-top: 9px !important; border-top: 3px solid var(--rf-text) !important; }
+html.responsive[data-rfs-style="magazine"] .home_title :is(b, a) { color: inherit !important; font-weight: 800 !important; text-transform: none !important; }
+
+/* ---- photographs: flat, unframed, square. Pointing at one draws a red rule under it (a pseudo-element scaled
+   from the reading side; nothing lifts, nothing glows) ---- */
+html.responsive[data-rfs-style="magazine"] :is(.store_capsule, .sale_capsule, .home_area_spotlight, .special_tiny_cap, .content_hub_capsule_ctn, .dailydeal_cap, .curator_giant_capsule) {
+  position: relative; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; transition: none !important;
+}
+html.responsive[data-rfs-style="magazine"] :is(.store_capsule, .sale_capsule, .home_area_spotlight, .special_tiny_cap, .content_hub_capsule_ctn, .dailydeal_cap, .curator_giant_capsule, .search_page #search_result_container .search_result_row, .OtherEvents_EventCtn)::after {
+  content: ''; position: absolute; inset-inline: 0; bottom: 0; z-index: 3; height: 3px; pointer-events: none; background: var(--rf-accent);
+  transform: scaleX(0); transform-origin: var(--mg-origin) center; transition: transform var(--mg-t) var(--mg-ease);
+}
+html.responsive[data-rfs-style="magazine"] :is(.store_capsule, .sale_capsule, .home_area_spotlight, .special_tiny_cap, .content_hub_capsule_ctn, .dailydeal_cap, .curator_giant_capsule, .search_page #search_result_container .search_result_row, .OtherEvents_EventCtn):is(:hover, :focus-visible)::after { transform: none; }
+html.responsive[data-rfs-style="magazine"] :is(.store_capsule, .sale_capsule) img { border-radius: 0 !important; }
+/* the cover story: the photograph and a column of print, divided by a hairline, under a thick cream rule */
+html.responsive[data-rfs-style="magazine"] .store_main_capsule { border-radius: 0 !important; box-shadow: 0 0 0 1px rgba(239, 230, 214, .16) !important; }
+html.responsive[data-rfs-style="magazine"] .store_main_capsule .app_name { font-size: 24px !important; line-height: 1.15 !important; color: var(--rf-text) !important; }
+html.responsive[data-rfs-style="magazine"] .store_main_capsule .screenshots > div { border-radius: 0 !important; }
+html.responsive[data-rfs-style="magazine"] .store_main_capsule .reason { border-top: 1px solid rgba(239, 230, 214, .16); padding-top: 10px; }
+/* a group of offers: no box — a column under its headline, hairline between the two columns */
+html.responsive[data-rfs-style="magazine"] .home_discount_games_ctn { background: transparent !important; border: 0 !important; padding: 14px 0 0 !important; }
+html.responsive[data-rfs-style="magazine"] .sale_capsule .discount_block { margin-top: 6px !important; }
+
+/* ---- turning the page: a square hairline box with a long thin arrow, centred in Steam's own hit area; it
+   inverts to cream paper when you point at it. Steam's arrow art is hidden; box and arrow are pseudo-elements ---- */
+html.responsive[data-rfs-style="magazine"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button) {
+  background: none !important; box-shadow: none !important; border: 0 !important; border-radius: 0 !important; opacity: 1 !important;
+}
+html.responsive[data-rfs-style="magazine"] .carousel_container .arrow > div,
+html.responsive[data-rfs-style="magazine"] :is(.carousel__back-button, .carousel__next-button) > svg { opacity: 0 !important; }
+html.responsive[data-rfs-style="magazine"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button)::before,
+html.responsive[data-rfs-style="magazine"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button)::after {
+  content: ''; position: absolute; top: 50%; left: 50%; width: 44px; height: 44px; margin: -22px 0 0 -22px; pointer-events: none; box-sizing: border-box;
+}
+html.responsive[data-rfs-style="magazine"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button)::before { background: #131313; border: 1px solid rgba(239, 230, 214, .45); }
+html.responsive[data-rfs-style="magazine"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button)::after { background: center / 26px 15px no-repeat; transition: transform var(--mg-t) var(--mg-ease); }
+html.responsive[data-rfs-style="magazine"] :is(.carousel_container .arrow.left, .carousel__back-button)::after { background-image: var(--mg-arrow-back); }
+html.responsive[data-rfs-style="magazine"] :is(.carousel_container .arrow.right, .carousel__next-button)::after { background-image: var(--mg-arrow-next); }
+html.responsive[data-rfs-style="magazine"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button):hover::before { background: var(--rf-text); border-color: var(--rf-text); box-shadow: 0 3px 0 var(--rf-accent); }
+html.responsive[data-rfs-style="magazine"] :is(.carousel_container .arrow.left, .carousel__back-button):hover::after { background-image: var(--mg-arrow-back-ink); transform: translateX(-3px); }
+html.responsive[data-rfs-style="magazine"] :is(.carousel_container .arrow.right, .carousel__next-button):hover::after { background-image: var(--mg-arrow-next-ink); transform: translateX(3px); }
+html.responsive[data-rfs-style="magazine"] :is(.carousel__back-button, .carousel__next-button):disabled { opacity: 0 !important; pointer-events: none; }
+/* the cover story row (wide mode): its hit areas cover the side previews, so the boxes sit next to the main photograph */
+html.responsive[data-rfs-style="magazine"] .carousel_wide_mode .carousel_container .arrow.left::before,
+html.responsive[data-rfs-style="magazine"] .carousel_wide_mode .carousel_container .arrow.left::after { left: auto; right: 8px; margin: -22px 0 0 0; }
+html.responsive[data-rfs-style="magazine"] .carousel_wide_mode .carousel_container .arrow.right::before,
+html.responsive[data-rfs-style="magazine"] .carousel_wide_mode .carousel_container .arrow.right::after { left: 8px; margin: -22px 0 0 0; }
+/* Arabic (right to left): Steam swaps the arrows' sides, so each arrow points the other way */
+html[dir="rtl"][data-rfs-style="magazine"] :is(.carousel_container .arrow.left, .carousel__back-button)::after { background-image: var(--mg-arrow-next); }
+html[dir="rtl"][data-rfs-style="magazine"] :is(.carousel_container .arrow.right, .carousel__next-button)::after { background-image: var(--mg-arrow-back); }
+html[dir="rtl"][data-rfs-style="magazine"] :is(.carousel_container .arrow.left, .carousel__back-button):hover::after { background-image: var(--mg-arrow-next-ink); transform: translateX(3px); }
+html[dir="rtl"][data-rfs-style="magazine"] :is(.carousel_container .arrow.right, .carousel__next-button):hover::after { background-image: var(--mg-arrow-back-ink); transform: translateX(-3px); }
+html.responsive[dir="rtl"][data-rfs-style="magazine"] .carousel_wide_mode .carousel_container .arrow.left::before,
+html.responsive[dir="rtl"][data-rfs-style="magazine"] .carousel_wide_mode .carousel_container .arrow.left::after { left: 8px; right: auto; }
+html.responsive[dir="rtl"][data-rfs-style="magazine"] .carousel_wide_mode .carousel_container .arrow.right::before,
+html.responsive[dir="rtl"][data-rfs-style="magazine"] .carousel_wide_mode .carousel_container .arrow.right::after { left: auto; right: 8px; }
+/* page marks: small outlined squares, the open page is the red kicker square (no track, no animation) */
+html.responsive[data-rfs-style="magazine"] :is(.carousel_container .carousel_thumbs, .carousel .I8j65FBXdOY-, .carousel ._3HjnEmKg66o82ah74EIvmq) {
+  padding: 8px 0 !important; gap: 8px !important; background: none !important; box-shadow: none !important; border-radius: 0 !important;
+}
+html.responsive[data-rfs-style="magazine"] :is(.carousel_container .carousel_thumbs > div, .carousel .I8j65FBXdOY- > button, .carousel ._3HjnEmKg66o82ah74EIvmq > button),
+html.responsive[data-rfs-style="magazine"] :is(.carousel_container .carousel_thumbs > div.focus, .carousel .I8j65FBXdOY- > button.carousel__dot--selected, .carousel ._3HjnEmKg66o82ah74EIvmq > button.carousel__dot--selected) {
+  width: 8px !important; height: 8px !important; border-radius: 0 !important; background: transparent !important; box-shadow: inset 0 0 0 1px rgba(239, 230, 214, .5) !important; transition: none !important;
+}
+html.responsive[data-rfs-style="magazine"] :is(.carousel_container .carousel_thumbs > div, .carousel .I8j65FBXdOY- > button, .carousel ._3HjnEmKg66o82ah74EIvmq > button):hover { background: var(--rf-text) !important; }
+html.responsive[data-rfs-style="magazine"] :is(.carousel_container .carousel_thumbs > div.focus, .carousel .I8j65FBXdOY- > button.carousel__dot--selected, .carousel ._3HjnEmKg66o82ah74EIvmq > button.carousel__dot--selected) {
+  background: var(--rf-accent) !important; box-shadow: none !important;
+}
+/* the React rows' "See More" (webkit.js tags it .rfs-btn2): a hairline ghost in small caps. webkit.js tags every leaf
+   with a border and no background, which here includes the ruled page titles — those are left alone */
+html.responsive[data-rfs-style="magazine"] .rfs-btn2:not(.pageheader, .pagesubheader, h1, h2) {
+  color: var(--rf-text) !important; background: transparent !important; border: 0 !important; border-radius: 0 !important; cursor: pointer;
+  box-shadow: inset 0 0 0 1px rgba(239, 230, 214, .3) !important; padding-inline: 12px !important; font-weight: 700 !important;
+}
+html[data-rfs-lang="en"][data-rfs-style="magazine"] .rfs-btn2:not(.pageheader, .pagesubheader, h1, h2) { text-transform: uppercase; letter-spacing: .12em; font-size: 10.5px !important; }
+html.responsive[data-rfs-style="magazine"] .rfs-btn2:not(.pageheader, .pagesubheader, h1, h2):hover { color: #fff !important; box-shadow: inset 0 0 0 1px rgba(239, 230, 214, .55), inset 0 -2px 0 var(--rf-accent) !important; }
+html.responsive[data-rfs-style="magazine"] .rmgCh57vTjU-.rfs-btn2 { color: #121212 !important; background: var(--rf-text) !important; box-shadow: none !important; }
+html.responsive[data-rfs-style="magazine"] .rmgCh57vTjU-.rfs-btn2:hover { color: #121212 !important; background: #fff !important; box-shadow: inset 0 -3px 0 var(--rf-accent) !important; }
+
+/* ---- the tab row (New & Trending · Top Sellers …): a contents line — small caps between a thick cream rule and
+   a hairline, a red rule under the open one ---- */
+html.responsive[data-rfs-style="magazine"] .tabs_menu_ctn { background: none !important; border: 0 !important; box-shadow: none !important; }
+html.responsive[data-rfs-style="magazine"] :is(.home_tabs_row_ctn, .home_tabs_row) {
+  display: flex !important; gap: 22px; padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: none !important;
+  border-top: 3px solid var(--rf-text) !important; border-bottom: 1px solid rgba(239, 230, 214, .22) !important; box-shadow: none !important;
+}
+html.responsive[data-rfs-style="magazine"] :is(.home_tab_button, .home_tabs_row .home_tab) { margin: 0 !important; margin-inline-end: 22px !important; padding: 0 !important; background: none !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; }
+html.responsive[data-rfs-style="magazine"] :is(.home_tab_button, .home_tabs_row .home_tab) .tab_content {
+  padding: 11px 0 10px !important; border-radius: 0 !important; color: var(--rf-text-dim) !important; background: transparent !important; border: 0 !important; box-shadow: none !important; font-weight: 700 !important;
+}
+html[data-rfs-lang="en"][data-rfs-style="magazine"] :is(.home_tab_button, .home_tabs_row .home_tab) .tab_content { text-transform: uppercase !important; letter-spacing: .14em !important; font-size: 11px !important; }
+html.responsive[data-rfs-style="magazine"] :is(.home_tab_button, .home_tabs_row .home_tab):hover .tab_content { color: var(--rf-text) !important; }
+html.responsive[data-rfs-style="magazine"] :is(.home_tab_button, .home_tabs_row .home_tab).active .tab_content { color: var(--rf-text) !important; box-shadow: inset 0 -3px 0 var(--rf-accent) !important; }
+/* the list under it: a numbered chart — big serif numerals, hairlines, the photograph without a frame */
+html.responsive[data-rfs-style="magazine"] .tab_content_items { counter-reset: mg-row; }
+html.responsive[data-rfs-style="magazine"] .tab_row_item { position: relative; counter-increment: mg-row; margin: 0 !important; padding-inline-start: 50px !important; background: transparent !important; transition: none !important; }
+html.responsive[data-rfs-style="magazine"] .tab_row_item::before {
+  content: counter(mg-row, decimal-leading-zero); position: absolute; inset-inline-start: 6px; top: 50%; transform: translateY(-50%);
+  font: 800 22px/1 var(--rf-heading-font); font-variant-numeric: lining-nums; color: rgba(239, 230, 214, .32);
+}
+html.responsive[data-rfs-style="magazine"] .tab_row_item:is(:hover, .focus) { background: #1b1b1a !important; box-shadow: none !important; }
+html.responsive[data-rfs-style="magazine"] .tab_row_item:is(:hover, .focus)::before { color: var(--rf-accent); }
+html.responsive[data-rfs-style="magazine"] :is(.tab_row_item .tab_item_header, .tab_item .tab_item_cap), html.responsive[data-rfs-style="magazine"] :is(.tab_row_item .tab_item_header img, .tab_item .tab_item_cap img) { border-radius: 0 !important; }
+html.responsive[data-rfs-style="magazine"] :is(.tab_item_title, .tab_item_name) { font-family: var(--rf-heading-font) !important; font-weight: 700 !important; font-size: 16.5px !important; }
+html.responsive[data-rfs-style="magazine"] :is(.tab_item_tags, .tab_item_top_tags, .tab_item_details) { color: var(--rf-text-dim) !important; font-style: italic; }
+html[data-rfs-lang="ar"][data-rfs-style="magazine"] :is(.tab_item_tags, .tab_item_top_tags, .tab_item_details) { font-style: normal; }
+/* the preview beside the list: a sidebar box (thick cream rule on top), its title a headline */
+html.responsive[data-rfs-style="magazine"] :is(#tab_preview_container .tab_preview, .tab_preview_container) {
+  background: #181818 !important; border: 1px solid rgba(239, 230, 214, .12) !important; border-top: 3px solid var(--rf-text) !important; border-radius: 0 !important; box-shadow: none !important;
+}
+html.responsive[data-rfs-style="magazine"] .tab_preview :is(.tab_title, h2) { font-family: var(--rf-heading-font) !important; font-weight: 800 !important; font-size: 22px !important; line-height: 1.2 !important; color: var(--rf-text) !important; }
+html.responsive[data-rfs-style="magazine"] .tab_preview :is(.screenshot, video, img) { border-radius: 0 !important; }
+html.responsive[data-rfs-style="magazine"] :is(.tab_preview .tags a, .deep_dive_tag, .game_hover_box .hover_tag_row > *) {
+  color: var(--rf-text-dim) !important; background: transparent !important; border: 0 !important; border-radius: 0 !important; box-shadow: inset 0 0 0 1px rgba(239, 230, 214, .22) !important;
+}
+html.responsive[data-rfs-style="magazine"] .see_more_link { background: none !important; border: 0 !important; box-shadow: none !important; }
+/* the hover card over a capsule: a sheet under a red rule */
+html.responsive[data-rfs-style="magazine"] .game_hover_box {
+  background: var(--mg-sheet) !important; color: #e3d9c8 !important; border: 1px solid rgba(239, 230, 214, .18) !important; border-top: 2px solid var(--rf-accent) !important; border-radius: 0 !important;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, .6) !important;
+}
+html.responsive[data-rfs-style="magazine"] .game_hover :is(.hover_arrow_left, .hover_arrow_right) { display: none !important; }
+html.responsive[data-rfs-style="magazine"] .game_hover_box :is(h4, .hover_title) { font-family: var(--rf-heading-font) !important; font-weight: 800 !important; color: var(--rf-text) !important; }
+
+/* ---- search / browse: a contact sheet — flat cards, the red rule drawn under the one you point at ---- */
+html.responsive[data-rfs-style="magazine"] .search_page #search_result_container .search_result_row { position: relative; transition: none !important; }
+html.responsive[data-rfs-style="magazine"] .search_page #search_result_container .search_result_row:hover { box-shadow: none !important; }
+html.responsive[data-rfs-style="magazine"] .search_result_row .search_capsule img { border-radius: 0 !important; }
+html.responsive[data-rfs-style="magazine"] .search_result_row .search_name .title { font-family: var(--rf-heading-font) !important; font-weight: 700 !important; font-size: 15.5px !important; }
+html.responsive[data-rfs-style="magazine"] .search_results_filtered_warning { background: none !important; border: 0 !important; box-shadow: none !important; }
+html.responsive[data-rfs-style="magazine"] .search_results_filtered_warning > div:first-child {
+  color: #e3d9c8 !important; background: #181818 !important; border: 0 !important; border-inline-start: 3px solid var(--rf-accent) !important; border-radius: 0 !important; box-shadow: none !important;
+}
+
+/* ---- the game page: a feature article ---- */
+html.responsive[data-rfs-style="magazine"] .apphub_AppName { font-size: 36px !important; line-height: 1.1 !important; }
+html.responsive[data-rfs-style="magazine"] #game_highlights { border-top: 3px solid var(--rf-text) !important; padding-top: 12px !important; }
+html.responsive[data-rfs-style="magazine"] .gamehighlight_desktopcarousel img, html.responsive[data-rfs-style="magazine"] :is(.game_header_image_full, .highlight_player_item) { border-radius: 0 !important; }
+/* the screenshot strip's slider (hashed classes — re-check after a Steam update): a hairline with a cream bar */
+html.responsive[data-rfs-style="magazine"] :is(.highlight_selector, #highlight_slider, .slider_ctn, .dhoOKL-yTAw-) { background: transparent !important; }
+html.responsive[data-rfs-style="magazine"] :is(.slider_bg, .xfzmpLIv9nQ-) { background: linear-gradient(rgba(239, 230, 214, .22), rgba(239, 230, 214, .22)) center / 100% 1px no-repeat !important; border-radius: 0 !important; box-shadow: none !important; }
+html.responsive[data-rfs-style="magazine"] :is(.slider .handle, .JIdk89M-jjc-) { background: var(--rf-text) !important; border-radius: 0 !important; box-shadow: none !important; }
+html.responsive[data-rfs-style="magazine"] :is(.slider_left, .slider_right, ._1WAcs3o8Lg4-) { background: transparent !important; border-radius: 0 !important; box-shadow: inset 0 0 0 1px rgba(239, 230, 214, .35) !important; }
+/* each edition: a boxed feature. The price is a large figure in the display face, a hairline, then the cream slab —
+   no well around them */
+html.responsive[data-rfs-style="magazine"] .game_bg.application .game_description_column .game_purchase_action_bg {
+  display: inline-flex !important; align-items: center; gap: 0; height: auto !important; padding: 0 !important; white-space: nowrap;
+  background: none !important; border: 0 !important; box-shadow: none !important;
+}
+html.responsive[data-rfs-style="magazine"] .game_bg.application .game_description_column .game_purchase_action_bg :is(.game_purchase_price, .game_purchase_discount) {
+  position: static !important; inset: auto !important; padding: 0 16px !important; margin: 0 !important; background: transparent !important; box-shadow: none !important;
+  font-family: var(--rf-heading-font) !important; font-size: 21px !important; font-weight: 800 !important; font-variant-numeric: lining-nums; color: var(--rf-text) !important; line-height: 1.5 !important;
+}
+html.responsive[data-rfs-style="magazine"] .game_purchase_action_bg .discount_block { background: transparent !important; box-shadow: none !important; }
+html.responsive[data-rfs-style="magazine"] .game_purchase_action :is(.btn_addtocart, .btn_packageinfo) :is(.btn_green_steamui, .btn_blue_steamui, .btnv6_blue_hoverfade) > span { padding-inline: 20px !important; }
+html[data-rfs-lang="en"][data-rfs-style="magazine"] .game_purchase_action :is(.btn_addtocart, .btn_packageinfo) :is(.btn_green_steamui, .btn_blue_steamui, .btnv6_blue_hoverfade) > span { text-transform: uppercase; letter-spacing: .1em; font-size: 12px !important; }
+/* long sections (about, reviews, requirements): no boxes — columns of print under their ruled headline */
+html.responsive[data-rfs-style="magazine"] :is(.game_page_autocollapse_ctn, #game_area_reviews) { margin-bottom: 22px !important; background: none !important; border: 0 !important; box-shadow: none !important; }
+html.responsive[data-rfs-style="magazine"] #game_area_description { font-size: 14.5px; line-height: 1.7; }
+html.responsive[data-rfs-style="magazine"] .game_page_autocollapse_fade { background: linear-gradient(180deg, rgba(19, 19, 19, 0), #131313 78%) !important; }
+html.responsive[data-rfs-style="magazine"] .game_page_autocollapse_readmore {
+  color: var(--rf-text) !important; background: #131313 !important; border-radius: 0 !important; padding: 4px 14px !important; font-weight: 700 !important;
+  box-shadow: inset 0 0 0 1px rgba(239, 230, 214, .35), inset 0 -2px 0 var(--rf-accent) !important;
+}
+html.responsive[data-rfs-style="magazine"] .game_area_dlc_section h2 .note { background: none !important; border: 0 !important; }
+html.responsive[data-rfs-style="magazine"] .game_area_dlc_section h2 .note a { color: var(--rf-text) !important; padding: 3px 10px !important; box-shadow: inset 0 0 0 1px rgba(239, 230, 214, .3); font-family: var(--rf-font-ui) !important; font-size: 11px !important; }
+html.responsive[data-rfs-style="magazine"] .game_area_dlc_price { font-family: var(--rf-heading-font) !important; font-weight: 700 !important; color: var(--rf-text) !important; }
+/* the right column: ruled lines, not boxes — a hairline under each feature, the red bar on the one you point at */
+html.responsive[data-rfs-style="magazine"] :is(.game_area_details_specs_ctn, a.linkbar, #category_block a[class]:not(.game_area_details_specs_ctn)) {
+  background: transparent !important; border-radius: 0 !important; margin: 0 !important; box-shadow: inset 0 -1px 0 rgba(239, 230, 214, .12) !important;
+}
+html.responsive[data-rfs-style="magazine"] :is(.game_area_details_specs_ctn, a.linkbar, #category_block a[class]:not(.game_area_details_specs_ctn)):hover {
+  background: #1e1e1d !important; box-shadow: inset 0 -1px 0 rgba(239, 230, 214, .12), inset 3px 0 0 var(--rf-accent) !important;
+}
+html.responsive[dir="rtl"][data-rfs-style="magazine"] :is(.game_area_details_specs_ctn, a.linkbar, #category_block a[class]:not(.game_area_details_specs_ctn)):hover { box-shadow: inset 0 -1px 0 rgba(239, 230, 214, .12), inset -3px 0 0 var(--rf-accent) !important; }
+html.responsive[data-rfs-style="magazine"] :is(.game_area_details_specs_ctn, #category_block a) :is(.label, .icon, div) { background: transparent !important; }
+html.responsive[data-rfs-style="magazine"] .game_area_details_specs_ctn .label { color: var(--rf-text) !important; text-transform: none !important; letter-spacing: 0 !important; font-size: 13px !important; font-weight: 600 !important; }
+html.responsive[data-rfs-style="magazine"] a.linkbar { color: var(--rf-text) !important; padding-inline: 10px !important; }
+html.responsive[data-rfs-style="magazine"] :is(#achievement_block, .communitylink_achievement_images) { background: transparent !important; }
+/* the "Accessibility features" fold (a <details> with hashed classes): the same row as the features above it */
+html.responsive[data-rfs-style="magazine"] #category_block details > summary { background: transparent !important; border-radius: 0 !important; box-shadow: inset 0 -1px 0 rgba(239, 230, 214, .12) !important; }
+html.responsive[data-rfs-style="magazine"] #category_block details > summary:hover { background: #1e1e1d !important; }
+html.responsive[data-rfs-style="magazine"] #category_block details > summary :is(div, span) { background: transparent !important; color: var(--rf-text) !important; }
+html.responsive[data-rfs-style="magazine"] .game_bg.application .game_description_column .game_purchase_action { align-items: center !important; }
+html.responsive[data-rfs-style="magazine"] :is(.tab_item_tags, .tab_item_top_tags) :is(.top_tag, span) { border: 0 !important; background: none !important; box-shadow: none !important; padding: 0 !important; color: inherit !important; }
+html.responsive[data-rfs-style="magazine"] #category_block :is(.kMCVIwCpXwE-, .TM-gf0Qc-hM-) { color: var(--rf-text) !important; font-weight: 600 !important; }
+/* the licence note: a plain box with a red edge (Steam's tan box made the links unreadable) */
+html.responsive[data-rfs-style="magazine"] .DRM_notice { color: #e3d9c8 !important; background: #181818 !important; border: 0 !important; border-inline-start: 3px solid var(--rf-accent) !important; border-radius: 0 !important; }
+html.responsive[data-rfs-style="magazine"] .DRM_notice a { color: var(--rf-text) !important; text-decoration: underline; text-decoration-color: rgba(239, 230, 214, .4); text-underline-offset: 3px; }
+/* the news block's own headline joins the ruled headlines */
+html.responsive[data-rfs-style="magazine"] .early_access_announcements h2 { font-family: var(--rf-heading-font) !important; font-weight: 800 !important; font-size: 20px !important; color: var(--rf-text) !important; padding-top: 9px !important; border-top: 3px solid var(--rf-text) !important; }
+/* the React blocks of the page (achievements, events, the discount shelf, the discovery queue — hashed classes
+   inside stable wrappers; re-check after a Steam update) */
+html.responsive[data-rfs-style="magazine"] .game_meta_data .noOpinionatedGlobalStyles > div {
+  background: #181818 !important; border: 1px solid rgba(239, 230, 214, .12) !important; border-top: 3px solid var(--rf-text) !important; border-radius: 0 !important;
+}
+html.responsive[data-rfs-style="magazine"] .OtherEvents_EventCtn { position: relative; border-radius: 0 !important; }
+html.responsive[data-rfs-style="magazine"] #module_discounts_and_events .carousel__inner-slide a.Focusable { border-radius: 0 !important; }
+html.responsive[data-rfs-style="magazine"] .q6mo6TFfdDs- { border-radius: 0 !important; background: #181818 !important; border: 1px solid rgba(239, 230, 214, .12) !important; border-top: 3px solid var(--rf-text) !important; }
+html.responsive[data-rfs-style="magazine"] .q6mo6TFfdDs- .jQDeazzGQps- { border-radius: 0 !important; }
+html.responsive[data-rfs-style="magazine"] .q6mo6TFfdDs- .bKJhafR0h9g- { font-family: var(--rf-heading-font) !important; font-weight: 800 !important; font-size: 22px !important; }
+
+/* ---- community hub: a contents line of words on a hairline; cards are flat sheets ---- */
+html.responsive[data-rfs-style="magazine"] .apphub_sectionTabs {
+  display: flex; flex-wrap: wrap; gap: 20px; height: auto !important; padding: 0 !important; background: none !important; border: 0 !important;
+  border-top: 3px solid var(--rf-text) !important; border-bottom: 1px solid rgba(239, 230, 214, .22) !important;
+}
+html.responsive[data-rfs-style="magazine"] .apphub_sectionTab { float: none !important; margin: 0 !important; padding: 0 !important; height: auto !important; line-height: 1.3 !important; }
+html.responsive[data-rfs-style="magazine"] .apphub_sectionTab > span { display: block; padding: 11px 0 10px !important; font-weight: 700 !important; text-shadow: none !important; }
+html[data-rfs-lang="en"][data-rfs-style="magazine"] .apphub_sectionTab > span { text-transform: uppercase; letter-spacing: .14em; font-size: 11px !important; }
+html.responsive[data-rfs-style="magazine"] .apphub_sectionTab:is(.active, :hover) { box-shadow: inset 0 -3px 0 var(--rf-accent) !important; }
+html.responsive[data-rfs-style="magazine"] .apphub_Card { border-radius: 0 !important; }
+html.responsive[data-rfs-style="magazine"] :is(.apphub_CardContentMain, .apphub_CardTextContent, .apphub_CardContentAuthorBlock, .apphub_CardRatingBar) { background: transparent !important; }
+html.responsive[data-rfs-style="magazine"] .apphub_CardContentNewsTitle { font-family: var(--rf-heading-font) !important; font-weight: 800 !important; font-size: 22px !important; line-height: 1.2 !important; color: var(--rf-text) !important; }
+html.responsive[data-rfs-style="magazine"] :is(.apphub_StoreAppLogo, .apphub_CardContentPreviewImage) { border-radius: 0 !important; }
+html.responsive[data-rfs-style="magazine"] .apphub_StoreAppData .price { color: var(--rf-text) !important; font-family: var(--rf-heading-font) !important; font-weight: 800 !important; background: transparent !important; border: 0 !important; box-shadow: inset 0 0 0 1px rgba(239, 230, 214, .22); border-radius: 0 !important; }
+
+/* ---- the rest of the game page (more like this, reviews) and the community lists (guides, workshop items,
+   discussions): ruled lines and sidebar boxes, like the rest of the issue. The review blocks are React with hashed classes under the
+   stable #app_reviews_hash — re-check them after a Steam update ---- */
+html.responsive[data-rfs-style="magazine"] .related_items_ctn { background: #181818 !important; border: 1px solid rgba(239, 230, 214, .12) !important; border-top: 3px solid var(--rf-text) !important; border-radius: 0 !important; box-shadow: none !important; }
+/* Arabic: Steam puts the buttons on the left, where the platform icons sat under them — the icons go to the right */
+html.responsive[dir="rtl"][data-rfs-style="magazine"] .game_bg.application .game_description_column .game_area_purchase_platform { left: auto !important; right: 12px !important; }
+html.responsive[data-rfs-style="magazine"] .steam_curators_block .no_curators_followed { color: var(--rf-text) !important; font-size: 13.5px !important; text-transform: none !important; font-variant-caps: normal !important; letter-spacing: 0 !important; text-shadow: none !important; font-weight: 400 !important; }
+html.responsive[data-rfs-style="magazine"] .steam_curators_block .no_curators_followed a { color: var(--mg-red-hi) !important; }
+html.responsive[data-rfs-style="magazine"] .steam_curators_block .right a { color: var(--mg-red-hi) !important; background: none !important; text-shadow: none !important; }
+/* the workshop browser (React, hashed classes — re-check after a Steam update): its item cards wear the list style */
+html.responsive[data-rfs-style="magazine"] #CommunityTemplate .UNowfeldbNg- { background: transparent !important; border: 0 !important; border-bottom: 1px solid rgba(239, 230, 214, .12) !important; border-radius: 0 !important; box-shadow: none !important; overflow: hidden; }
+html.responsive[data-rfs-style="magazine"] .game_page_autocollapse_readmore { width: fit-content !important; min-width: 0 !important; margin-inline: auto !important; float: none !important; }
+html.responsive[data-rfs-style="magazine"] #app_reviews_hash h2[class] { font-family: var(--rf-heading-font) !important; font-weight: 800 !important; color: var(--rf-text) !important; text-transform: none !important; letter-spacing: 0 !important; }
+html.responsive[data-rfs-style="magazine"] #app_reviews_hash ._4rFF1L9jPC8- :is(h1, h2, h3) { background: none !important; -webkit-background-clip: border-box !important; background-clip: border-box !important; color: var(--rf-text) !important; text-transform: none !important; letter-spacing: 0 !important; text-shadow: none !important; font-variant-caps: normal !important; font-size: 16px !important; padding: 0 !important; border: 0 !important; }
+html.responsive[data-rfs-style="magazine"] #app_reviews_hash .PwTlk5b4Rh0- { background: #181818 !important; border-radius: 0 !important; box-shadow: inset 0 3px 0 var(--rf-text), inset 0 0 0 1px rgba(239, 230, 214, .12) !important; }
+html.responsive[data-rfs-style="magazine"] #app_reviews_hash :is(._3tTNLTWh51g-, .nS3iAoyO-XI-, .PaJFVCJu0g0-) { background: #0e0e0e !important; border-radius: 0 !important; box-shadow: inset 0 0 0 1px rgba(239, 230, 214, .14) !important; }
+html.responsive[data-rfs-style="magazine"] #app_reviews_hash ._4rFF1L9jPC8- { background: transparent !important; border: 0 !important; border-bottom: 1px solid rgba(239, 230, 214, .12) !important; border-radius: 0 !important; box-shadow: none !important; }
+html.responsive[data-rfs-style="magazine"] #app_reviews_hash .H2acnhvyOf8- { background: #0e0e0e !important; border-radius: 0 !important; box-shadow: inset 0 0 0 1px rgba(239, 230, 214, .4) !important; }
+html.responsive[data-rfs-style="magazine"] #app_reviews_hash .H2acnhvyOf8-.Q-ri1pkIYZs- { box-shadow: inset 0 0 0 1px var(--rf-accent), inset 0 -3px 0 var(--rf-accent) !important; }
+html.responsive[data-rfs-style="magazine"] #app_reviews_hash .ev-4YE2674o- { background: #181818 !important; border: 0 !important; border-inline-start: 3px solid var(--rf-accent) !important; border-radius: 0 !important; }
+html.responsive[data-rfs-style="magazine"] #app_reviews_hash :is(.nQmgFD0Ujec-, hr) { background: rgba(239, 230, 214, .16) !important; border-color: rgba(239, 230, 214, .16) !important; }
+html.responsive[data-rfs-style="magazine"] :is(.subtitle_ctn, #rightContents .panel, .workshopBrowsePagingControls) { background: #181818 !important; border: 1px solid rgba(239, 230, 214, .12) !important; border-top: 3px solid var(--rf-text) !important; border-radius: 0 !important; box-shadow: none !important; }
+html.responsive[data-rfs-style="magazine"] :is(.apphub_Guides .detailBox, .searchTextContainer, .forum_paging, .workshopItemPreviewHolder) { background: none !important; border: 0 !important; box-shadow: none !important; }
+html.responsive[data-rfs-style="magazine"] :is(a.workshopItemCollection, a.guide_home_category_selection, .workshopItemCollectionContainer > a, .browseOption.notSelected) { background: transparent !important; border: 0 !important; border-bottom: 1px solid rgba(239, 230, 214, .12) !important; border-radius: 0 !important; box-shadow: none !important; transition: none !important; }
+html.responsive[data-rfs-style="magazine"] :is(a.workshopItemCollection, a.guide_home_category_selection, .workshopItemCollectionContainer > a, .browseOption.notSelected):hover { background: #1e1e1d !important; box-shadow: inset var(--mg-x) 0 0 var(--rf-accent) !important; }
+html.responsive[data-rfs-style="magazine"] :is(.workshopItemTitle, .guide_home_category_name, .browseOption .rightbox_list_option_content, .browseOption a) { color: var(--rf-text) !important; }
+html.responsive[data-rfs-style="magazine"] :is(.workshopItemShortDesc, .workshopItemAuthorLine, .guide_home_category_count, .guides_home_section_desc, .rightSectionTopTitle, .guide_category_tags_title, .forum_paging_summary) { color: var(--rf-text-dim) !important; }
+html.responsive[data-rfs-style="magazine"] :is(.workshopItemAuthorName, .guides_home_view_all_link a, .forum_topic .forum_topic_lastpost, .forum_paging_pagelink) { color: var(--mg-red-hi) !important; }
+html.responsive[data-rfs-style="magazine"] .guides_home_section_title { font-family: var(--rf-heading-font) !important; font-weight: 800 !important; color: var(--rf-text) !important; text-transform: none !important; letter-spacing: 0 !important; background: none !important; border: 0 !important; }
+html.responsive[data-rfs-style="magazine"] :is(.workshopItemPreviewImage, .guide_category_icon) { border-radius: 0 !important; }
+html.responsive[data-rfs-style="magazine"] .rightbox_list_selection_background { background: #222221 !important; border-radius: 0 !important; box-shadow: inset var(--mg-x) 0 0 var(--rf-accent) !important; }
+html.responsive[data-rfs-style="magazine"] :is(.browseOption.selected, .forum_list .rightbox_list_option.selected) :is(.rightbox_list_option_content, a, span, div) { color: var(--rf-text) !important; }
+html.responsive[data-rfs-style="magazine"] .rightSectionDivider { height: 1px !important; background: rgba(239, 230, 214, .16) !important; }
+html.responsive[data-rfs-style="magazine"] .guideInfo { background: #181818 !important; border: 0 !important; border-inline-start: 3px solid var(--rf-accent) !important; border-radius: 0 !important; background-image: none !important; }
+html.responsive[data-rfs-style="magazine"] .guideInfoTitle { color: var(--rf-text) !important; }
+html.responsive[data-rfs-style="magazine"] :is(.guide_category_icon, .searchTextSubmitImg, .discussionSearchTextContainer img, .discussionSearchTextContainer input[type="image"], img.fileRating) { filter: grayscale(1) brightness(1.5); }
+
+/* ---- press feedback: a button moves down 1 px, at once (print does not ease) ---- */
+html.responsive[data-rfs-style="magazine"] :is(.btn_green_steamui, .btn_green_white_innerfade, .btnv6_green_white_innerfade, .btn_blue_steamui, .btnv6_blue_hoverfade, .btnv6_white_transparent,
+  .btn_grey_steamui, .btnv6_grey_black, .btn_grey_black, .btn_darkblue_white_innerfade, .btnv6_blue_blue_innerfade, .btn_grey_white_innerfade, .btn_profile_action, .pagebtn, .rfs-btn2) { transition: none !important; }
+html.responsive[data-rfs-style="magazine"] :is(.btn_green_steamui, .btn_green_white_innerfade, .btnv6_green_white_innerfade, .btn_blue_steamui, .btnv6_blue_hoverfade, .btnv6_white_transparent,
+  .btn_grey_steamui, .btnv6_grey_black, .btn_grey_black, .btn_darkblue_white_innerfade, .btnv6_blue_blue_innerfade, .btn_grey_white_innerfade, .btn_profile_action, .pagebtn, .rfs-btn2):not(.btn_disabled):active { transform: translateY(1px); }
+
+@media (prefers-reduced-motion: reduce) {
+  html.responsive[data-rfs-style="magazine"] :is(.store_capsule, .sale_capsule, .home_area_spotlight, .special_tiny_cap, .content_hub_capsule_ctn, .dailydeal_cap, .curator_giant_capsule, .search_result_row, .OtherEvents_EventCtn,
+    .carousel_container .arrow, .carousel__back-button, .carousel__next-button)::after { transition: none !important; }
+}
+
 /* ═════════════ our filter strip (library home): a magazine "department" bar ═════════════ */
 html[data-rfs-style="magazine"] #rfs-bar.inhome {
   gap: 0; padding: 6px 0; border: 0; border-radius: 0; background: transparent;
@@ -623,6 +922,13 @@ html[data-rfs-style="magazine"] #rfs-themes .tp-meta b { font-family: var(--rf-h
 html[data-rfs-style="magazine"] #rfs-themes .tp-close { border-radius: 0; background: transparent; border-color: rgba(239, 230, 214, .3); }
 html[data-rfs-style="magazine"] #rfs-themes .tp-close:hover { box-shadow: inset 0 -2px 0 var(--rf-accent); }
 html[data-rfs-style="magazine"] #rfs-themes :is(.tp-lang, .tp-lang button) { border-radius: 0; }
+
+/* ---- motion in the client: print does not ease. Menus drop in 100 ms (the only movement besides the page turn of
+   an opened story); buttons move down 1 px when pressed, at once ---- */
+html[data-rfs-style="magazine"] #rfs-bar.inhome :is(.tb-btn, .tb-seg button):active { transform: translateY(1px); }
+html[data-rfs-style="magazine"] #rfs-bar .rf-dd.open .rf-dd-menu { animation: mg-drop .1s cubic-bezier(.3, .7, .25, 1); }
+@keyframes mg-drop { from { opacity: 0; transform: translateY(-5px); } }
+@media (prefers-reduced-motion: reduce) { html[data-rfs-style="magazine"] #rfs-bar .rf-dd-menu { animation: none !important; } }
 
 /* the user box and its footer bar (skin.js) */
 html[data-rfs-style="magazine"] { --rf-footer-bg: #0a0a0a; --rf-footer-line: 2px solid var(--rf-accent); --rf-user-radius: 0; --rf-user-bg: #0e0e0e; --rf-user-bg-hover: #1c1c1c; --rf-user-border: 1px solid rgba(239, 230, 214, .35); --rf-user-font: 700 12px var(--rf-heading-font); }

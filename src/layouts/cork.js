@@ -326,7 +326,7 @@
       const focusPlay = () => { const p = byKey && acts.querySelector('[data-act="play"]'); if (p) p.focus({ preventScroll: true }); };
 
       api.sfx('open');
-      dim.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 260, easing: 'ease-out' });
+      dim.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, easing: 'ease-out' });
       const rc = card.getBoundingClientRect();
       let fly;
       if (node) {
@@ -334,18 +334,18 @@
         // lifted off the board: up a little and bigger, half-way turned straight
         const mid = `translate(${(o.dx * 0.5).toFixed(1)}px, ${(o.dy * 0.5 - 28).toFixed(1)}px) rotate(${(o.rot * 0.4 - 3).toFixed(2)}deg) scale(${((o.s + FRONT_SCALE) / 2 + 0.08).toFixed(3)})`;
         fly = card.animate([{ transform: o.t }, { transform: mid, offset: 0.45 }, { transform: FRONT_REST }],
-          { duration: 270, easing: 'cubic-bezier(.25,.7,.3,1)', fill: 'forwards' });
+          { duration: 180, easing: 'cubic-bezier(.25,.7,.3,1)', fill: 'forwards' });
       } else {
         fly = card.animate([{ transform: 'translateY(40px) rotate(-6deg) scale(.7)', opacity: 0 }, { transform: FRONT_REST, opacity: 1 }],
-          { duration: 270, easing: 'cubic-bezier(.25,.7,.3,1)', fill: 'forwards' });
+          { duration: 180, easing: 'cubic-bezier(.25,.7,.3,1)', fill: 'forwards' });
       }
       await fly.finished;
       const turn = card.animate([{ transform: FRONT_REST }, { transform: `rotate(-.8deg) scale(${FRONT_SCALE}) scaleX(0)` }],
-        { duration: 120, easing: 'cubic-bezier(.55,0,1,.45)', fill: 'forwards' });
+        { duration: 75, easing: 'cubic-bezier(.55,0,1,.45)', fill: 'forwards' });
       await turn.finished;
       card.classList.toggle('flip', true);   // the back: its own size, at scale 1 (crisp text)
       fly.cancel(); turn.cancel();
-      await card.animate([{ transform: 'scaleX(0)' }, { transform: 'none' }], { duration: 160, easing: 'cubic-bezier(.15,.6,.3,1)' }).finished;
+      await card.animate([{ transform: 'scaleX(0)' }, { transform: 'none' }], { duration: 95, easing: 'cubic-bezier(.15,.6,.3,1)' }).finished;
       focusPlay();
     },
 
@@ -354,8 +354,8 @@
       const card = sheet.querySelector('.ckv-card'), dim = sheet.querySelector('.ckv-dim');
       if (!card) { putBack(); return; }
       api.sfx('close');
-      if (dim) dim.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 350, easing: 'ease-in', fill: 'forwards' });
-      const t1 = card.animate([{ transform: 'none' }, { transform: 'scaleX(0)' }], { duration: 80, easing: 'cubic-bezier(.55,0,1,.45)', fill: 'forwards' });
+      if (dim) dim.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, easing: 'ease-in', fill: 'forwards' });
+      const t1 = card.animate([{ transform: 'none' }, { transform: 'scaleX(0)' }], { duration: 70, easing: 'cubic-bezier(.55,0,1,.45)', fill: 'forwards' });
       await t1.finished;
       card.classList.toggle('flip', false);
       t1.cancel();
@@ -366,7 +366,7 @@
         { transform: `rotate(-.8deg) scale(${FRONT_SCALE}) scaleX(0)`, opacity: 1, easing: 'cubic-bezier(.15,.6,.3,1)' },
         { transform: FRONT_REST, opacity: 1, offset: 0.3, easing: 'cubic-bezier(.5,0,.25,1)' },
         { transform: home, opacity: node ? 1 : 0 },
-      ], { duration: 280, fill: 'forwards' });
+      ], { duration: 250, fill: 'forwards' });
       await back.finished;
       putBack();
       if (node) api.sfx('tick');

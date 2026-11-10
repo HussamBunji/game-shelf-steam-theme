@@ -609,10 +609,10 @@
         if (veil.animate) await veil.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 150 }).finished.catch(() => null);
       } else {
         void rig.offsetWidth;          // the lowered pose is on screen first …
-        rig.classList.toggle('low', false); // … then the arm comes up (CSS transition, 520 ms)
+        rig.classList.toggle('low', false); // … then the arm comes up (CSS transition, 340 ms)
         scr.classList.toggle('boot', true); // the CRT powers on as it arrives
-        if (veil.animate) veil.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300, easing: 'ease-out' });
-        await wait(540);
+        if (veil.animate) veil.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 240, easing: 'cubic-bezier(.2,.7,.2,1)' });
+        await wait(350);
       }
       if (rig.isConnected) {
         rig.classList.toggle('ready', true);
@@ -621,7 +621,7 @@
       }
     },
 
-    /** the arm lowers again (≤ 300 ms) */
+    /** the arm lowers again (250 ms) */
     async close(sheet) {
       const rig = $('.sh-rig', sheet), veil = $('.sh-veil', sheet);
       const done = () => { if (this.r && this.r.el.isConnected) this.r.el.classList.toggle('raised', false); };
@@ -633,8 +633,8 @@
       } else {
         rig.classList.toggle('down', true);
         rig.classList.toggle('low', true);
-        if (veil && veil.animate) veil.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 280, easing: 'ease-in', fill: 'forwards' });
-        await wait(290);
+        if (veil && veil.animate) veil.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 240, easing: 'ease-in', fill: 'forwards' });
+        await wait(250);
       }
       done();
     },

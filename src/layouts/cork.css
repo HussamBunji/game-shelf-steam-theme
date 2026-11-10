@@ -39,7 +39,7 @@
   background: linear-gradient(#f2e0be, #e3cb9f);
   border: 1px solid rgba(80, 50, 20, .3); border-bottom-color: rgba(80, 50, 20, .5); border-radius: 2px;
   transform: rotate(-1deg);
-  transition: transform .12s ease-out, background .12s;
+  transition: transform .12s cubic-bezier(.2, .8, .3, 1);
 }
 #rfs[data-layout="cork"] .ck-tab:nth-of-type(even) { transform: rotate(1.1deg); }
 #rfs[data-layout="cork"] .ck-tab:nth-of-type(3n) { transform: rotate(-.4deg); }
@@ -88,7 +88,7 @@
   background: linear-gradient(170deg, var(--ck-paper), var(--ck-paper-2));
   border: 1px solid rgba(96, 64, 32, .16); border-bottom-color: rgba(96, 64, 32, .34); border-radius: 2px;
   transform: translateY(0) scale(1) rotate(var(--r, 0deg));          /* static 2D tilt, no layer */
-  transition: transform .13s cubic-bezier(.2, .8, .3, 1), box-shadow .13s;   /* short: hover must feel instant */
+  transition: transform .13s cubic-bezier(.2, .8, .3, 1);   /* short: hover must feel instant */
   scroll-margin-block: 80px;
 }
 #rfs[data-layout="cork"] .ck-p .art {
@@ -316,7 +316,7 @@ html:not([data-rfs-lang="en"]) #rfs-sheet[data-layout="cork"] .ckv-snap { transf
   background: radial-gradient(circle at 34% 28%, #ffd6c8 0 7%, #f87a5f 32%, #d94a33 68%, #9c2c1b 100%);
   border: 1px solid rgba(110, 28, 14, .55);
   box-shadow: inset 0 -2px 3px rgba(110, 24, 10, .45), inset 0 1px 1px rgba(255, 255, 255, .45), 0 3px 6px rgba(20, 10, 4, .45);
-  transition: transform .12s ease-out;
+  transition: transform .12s cubic-bezier(.2, .8, .3, 1);
 }
 #rfs-sheet[data-layout="cork"] .ckv-x:hover { transform: scale(1.1); }
 #rfs-sheet[data-layout="cork"] .ckv-x:focus-visible { outline: 2px dashed #fff3c4; outline-offset: 2px; }
@@ -374,7 +374,7 @@ html:not([data-rfs-lang="en"]) #rfs-sheet[data-layout="cork"] .ckv-note { transf
   background: repeating-linear-gradient(135deg, rgba(255, 255, 255, .3) 0 6px, transparent 6px 12px), #ead6ae;
   clip-path: polygon(0 0, 100% 0, 97% 25%, 100% 50%, 97% 75%, 100% 100%, 0 100%, 3% 75%, 0 50%, 3% 25%);
   transform: rotate(-.8deg);
-  transition: transform .12s ease-out, background-color .12s;
+  transition: transform .12s cubic-bezier(.2, .8, .3, 1);
 }
 #rfs-sheet[data-layout="cork"] .rf-act[data-act="store"] {
   background: radial-gradient(circle, rgba(255, 255, 255, .55) 0 1.3px, transparent 1.8px) 0 0 / 8px 8px, #bfe3cf;
@@ -425,3 +425,8 @@ html:not([data-rfs-lang="en"]) #rfs-sheet[data-layout="cork"] .rf-act.play:hover
 /* ---------- nothing to show ---------- */
 #rfs[data-layout="cork"] .ck-empty { display: flex; justify-content: center; padding: 80px 20px; }
 #rfs[data-layout="cork"] .ck-empty .ck-note { max-width: 460px; padding: 22px 30px 14px; }
+
+/* Windows animation effects off: nothing eases (the hover states still switch, at once) */
+@media (prefers-reduced-motion: reduce) {
+  #rfs[data-layout="cork"] :is(.ck-tab, .ck-p, .ck-p .go), #rfs-sheet[data-layout="cork"] :is(.ckv-x, .rf-act) { transition: none; }
+}

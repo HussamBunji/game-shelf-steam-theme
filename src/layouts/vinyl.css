@@ -202,7 +202,7 @@ html[data-rfs-lang="en"] #rfs[data-layout="vinyl"] .vy-kicker > span { font-size
   background: linear-gradient(180deg, #6a4128, #4a2b18);
   box-shadow: inset 0 1px 0 rgba(255, 220, 170, .25), inset 0 -2px 4px rgba(0, 0, 0, .3), 0 0 0 1px rgba(20, 10, 4, .55), 0 4px 10px rgba(0, 0, 0, .35);
   text-shadow: 0 1px 0 rgba(0, 0, 0, .35);
-  transition: background .15s, box-shadow .15s, transform .15s;
+  transition: transform .12s cubic-bezier(.2, .8, .2, 1);
 }
 #rfs[data-layout="vinyl"] .vy-btn:hover { background: linear-gradient(180deg, #7b4c2f, #57331d); transform: translateY(-1px); }
 #rfs[data-layout="vinyl"] .vy-btn:focus-visible { outline: 2px solid var(--vy-gold); outline-offset: 2px; }
@@ -291,7 +291,7 @@ html[data-rfs-lang="en"] #rfs[data-layout="vinyl"] .vy-div b::before { text-tran
     var(--img) center 28% / cover no-repeat,
     linear-gradient(140deg, #4a2d1b, #2a1a10);
   box-shadow: inset 0 0 0 1px rgba(255, 240, 210, .09), 0 6px 14px rgba(0, 0, 0, .45);
-  transition: transform .25s cubic-bezier(.2, .8, .2, 1), box-shadow .15s;
+  transition: transform .14s cubic-bezier(.2, .8, .2, 1);
 }
 /* not installed = still sealed in cellophane */
 #rfs[data-layout="vinyl"] .vy-it.ni {
@@ -308,14 +308,14 @@ html[data-rfs-lang="en"] #rfs[data-layout="vinyl"] .vy-div b::before { text-tran
     repeating-radial-gradient(circle closest-side, #161211 0 1.4%, #241c1a 1.7% 2.6%),
     #141010;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, .7), 0 6px 14px rgba(0, 0, 0, .5);
-  transition: transform .25s cubic-bezier(.2, .8, .2, 1), visibility 0s linear .25s;
+  transition: transform .16s cubic-bezier(.2, .8, .2, 1), visibility 0s linear .16s;
 }
 /* hover / keyboard ring: ONLY this sleeve moves — the record slides half out, the sleeve gives way a little */
 #rfs[data-layout="vinyl"] .vy-it:is(:hover, .kf) { z-index: 3; }
 #rfs[data-layout="vinyl"] .vy-it.flip { --vy-flip: -1; }
 #rfs[data-layout="vinyl"] .vy-it:is(:hover, .kf) .art::before {
   visibility: visible; transform: translateX(calc(var(--vy-dir) * var(--vy-flip, 1) * 50%));
-  transition: transform .3s cubic-bezier(.2, .8, .2, 1), visibility 0s;
+  transition: transform .16s cubic-bezier(.2, .8, .2, 1), visibility 0s;
 }
 #rfs[data-layout="vinyl"] .vy-it:is(:hover, .kf) .art::after {
   transform: translateX(calc(var(--vy-dir) * var(--vy-flip, 1) * -5%));
@@ -327,7 +327,7 @@ html.rfs-sheet-on #rfs[data-layout="vinyl"] .vy-it.taken .art { opacity: 0; }
 /* album title + hours */
 #rfs[data-layout="vinyl"] .vy-it .t {
   margin-top: 10px; font-size: 13px; font-weight: 700; line-height: 1.3; color: var(--ink);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; unicode-bidi: plaintext; text-align: right; transition: color .15s;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; unicode-bidi: plaintext; text-align: right;
 }
 html[data-rfs-lang="en"] #rfs[data-layout="vinyl"] .vy-it .t { text-align: left; }
 #rfs[data-layout="vinyl"] .vy-it:is(:hover, .kf) .t { color: var(--vy-gold); }
@@ -339,7 +339,7 @@ html[data-rfs-lang="en"] #rfs[data-layout="vinyl"] .vy-it .t { text-align: left;
   display: grid; place-items: center; cursor: pointer; color: #fff3dc;
   background: radial-gradient(circle at 35% 30%, #f39a4c, #c4511f 60%, #a8401c);
   box-shadow: 0 0 0 2px rgba(20, 10, 4, .55), 0 6px 14px rgba(0, 0, 0, .5);
-  opacity: 0; transform: scale(.8); transition: opacity .15s, transform .15s;
+  opacity: 0; transform: scale(.8); transition: opacity .12s, transform .14s cubic-bezier(.2, .8, .2, 1);
 }
 #rfs[data-layout="vinyl"] .vy-it:is(:hover, .kf) .pl { opacity: 1; transform: none; }
 #rfs[data-layout="vinyl"] .vy-it .pl:hover { background: radial-gradient(circle at 35% 30%, #ffad62, #d65f28 60%, #b4481f); }
@@ -560,7 +560,7 @@ html[data-rfs-lang="en"] #rfs-sheet[data-layout="vinyl"] .vy-n-kick { text-trans
   font-size: 13px; font-weight: 700; color: #f6e7cb; text-shadow: 0 1px 0 rgba(0, 0, 0, .35);
   background: linear-gradient(180deg, #6a4128, #4a2b18);
   box-shadow: inset 0 1px 0 rgba(255, 220, 170, .25), inset 0 -2px 4px rgba(0, 0, 0, .3), 0 0 0 1px rgba(60, 30, 10, .4), 0 3px 8px rgba(60, 30, 10, .3);
-  transition: background .15s, transform .15s;
+  transition: transform .12s cubic-bezier(.2, .8, .2, 1);
 }
 #rfs-sheet[data-layout="vinyl"] .rf-act:hover { background: linear-gradient(180deg, #7b4c2f, #57331d); transform: translateY(-1px); }
 #rfs-sheet[data-layout="vinyl"] .rf-act:focus-visible { outline: 2px solid #c4511f; outline-offset: 2px; }
@@ -581,7 +581,7 @@ html[data-rfs-lang="en"] #rfs-sheet[data-layout="vinyl"] .vy-n-kick { text-trans
   display: grid; place-items: center; cursor: pointer; color: #f6e7cb;
   background: radial-gradient(circle at 38% 32%, #7b4c2f, #4a2b18 70%);
   box-shadow: inset 0 1px 0 rgba(255, 220, 170, .3), 0 0 0 1px rgba(20, 10, 4, .6), 0 0 0 4px rgba(243, 230, 207, .08), 0 6px 14px rgba(0, 0, 0, .5);
-  transition: background .15s, color .15s;
+  transition: transform .12s cubic-bezier(.2, .8, .2, 1);
 }
 #rfs-sheet[data-layout="vinyl"] .vy-x:hover { color: #fff3dc; background: radial-gradient(circle at 38% 32%, #ec8a3c, #b4481f 70%); }
 #rfs-sheet[data-layout="vinyl"] .vy-x > svg.rf-ic { width: 16px; height: 16px; margin: 0; stroke: currentColor; filter: none; }

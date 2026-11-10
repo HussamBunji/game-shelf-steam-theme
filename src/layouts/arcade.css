@@ -501,6 +501,8 @@ html:not([data-rfs-lang="en"]) #rfs[data-layout="arcade"] .ar-row.sel::before { 
   animation: rfs-arcade-blink 1.1s steps(1, end) infinite;
 }
 @keyframes rfs-arcade-blink { 50% { opacity: 0; } }
+/* one blinking prompt per screen: while a game's screen covers the list, this one rests */
+html.rfs-sheet-on #rfs[data-layout="arcade"] .ar-blink { animation-play-state: paused; }
 @media (prefers-reduced-motion: reduce) { #rfs[data-layout="arcade"] .ar-blink { animation: none; } }
 #rfs[data-layout="arcade"] .ar-keys {
   display: flex;

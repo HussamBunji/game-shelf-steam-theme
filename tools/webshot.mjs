@@ -27,7 +27,8 @@ for (let i = 0; i < args.length; i++) {
   else urls.push(a);
 }
 if (!urls.length) { console.log('usage: node tools/webshot.mjs --style "Retro Arcade" [--lang ar] URL …'); process.exit(1); }
-const STYLE_IDS = { 'Classic Shelf': 'classic', 'Neon Coverflow': 'neon', 'Glass Gallery': 'glass', 'Steam Original': 'original', 'SpaceTheme': 'space', 'Material You': 'material', 'Terminal': 'terminal', 'RPG Vault': 'vault', 'Vinyl Records': 'vinyl', 'Corkboard': 'cork', 'Retro Arcade': 'arcade', 'Magazine': 'magazine', 'Cupertino Dark': 'cupertino', 'Cyberpunk': 'cyberpunk', 'Shelter OS': 'shelter', 'Crossbar': 'xmb' };
+const STYLE_IDS = { 'Classic Shelf': 'classic', 'Neon Coverflow': 'neon', 'Glass Gallery': 'glass', 'Steam Original': 'original', 'SpaceTheme': 'space', 'Material You': 'material', 'Terminal': 'terminal', 'RPG Vault': 'vault', 'Vinyl Records': 'vinyl', 'Corkboard': 'cork', 'Retro Arcade': 'arcade', 'Magazine': 'magazine', 'Cupertino Dark': 'cupertino', 'Cyberpunk': 'cyberpunk', 'Shelter OS': 'shelter', 'Crossbar': 'xmb',
+  'Steam OLED Black': 'steam-oled', 'Steam Graphite': 'steam-graphite', 'Steam Midnight': 'steam-midnight', 'Steam Forest': 'steam-forest', 'Steam Wine': 'steam-wine', 'Steam Royal Purple': 'steam-royal', 'Steam Coffee': 'steam-coffee', 'Steam Ocean': 'steam-ocean' };
 // accept the id too ("arcade")
 const byId = Object.fromEntries(Object.entries(STYLE_IDS).map(([v, id]) => [id, v]));
 if (byId[opt.style]) opt.style = byId[opt.style];
@@ -37,7 +38,8 @@ const LANG = opt.lang === 'ar' ? 'Arabic' : 'English';
 mkdirSync(opt.out, { recursive: true });
 
 /* ---- the theme files, served as if from millennium.host */
-const STYLES = ['classic', 'neon', 'glass', 'original', 'space', 'material', 'terminal', 'vault', 'vinyl', 'cork', 'arcade', 'magazine', 'cupertino', 'cyberpunk', 'shelter'];
+const STYLES = ['classic', 'neon', 'glass', 'original', 'space', 'material', 'terminal', 'vault', 'vinyl', 'cork', 'arcade', 'magazine', 'cupertino', 'cyberpunk', 'shelter', 'xmb',
+  'steam-oled', 'steam-graphite', 'steam-midnight', 'steam-forest', 'steam-wine', 'steam-royal', 'steam-coffee', 'steam-ocean'];
 function webkitStyles() { // same transformation as tools/build.mjs
   let out = '';
   for (const s of STYLES) {
@@ -51,6 +53,15 @@ const TYPES = { css: 'text/css', js: 'text/javascript', mjs: 'text/javascript', 
 function themeFile(url) {
   const rel = decodeURIComponent(new URL(url).pathname.replace(/^\/v1\/themes\/rf-shelf\//, ''));
   if (rel === 'src/css/webkit-styles.css') return { body: Buffer.from(webkitStyles()), type: TYPES.css };
+  { // one style's store rules, built from the sources on the fly (same transformation as tools/build.mjs)
+    const m = /^src\/css\/web-styles\/([a-z0-9-]+)\.css$/.exec(rel), src = m && path.join(ROOT, 'src/styles', m[1] + '.css');
+    if (src && existsSync(src)) {
+      const one = id => readFileSync(path.join(ROOT, 'src/styles', id + '.css'), 'utf8').replace(/:root:root\s*\{/g, `html[data-rfs-style="${id}"][data-rfs-style] {`).replace(/(^|[^:]):root\s*\{/gm, `$1html[data-rfs-style="${id}"] {`);
+      let css = one(m[1]);
+      if (m[1] === 'original') for (const id of Object.values(STYLE_IDS)) if (/^steam-/.test(id) && existsSync(path.join(ROOT, 'src/styles', id + '.css'))) css += '\n' + one(id); // the colour variants' palettes
+      return { body: Buffer.from(css + '\n' + readFileSync(path.join(ROOT, 'src/css/icons.css'), 'utf8')), type: TYPES.css };
+    }
+  }
   const f = path.join(ROOT, rel);
   if (!f.startsWith(ROOT) || !existsSync(f)) return null;
   return { body: readFileSync(f), type: TYPES[path.extname(f).slice(1)] || 'application/octet-stream' };

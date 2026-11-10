@@ -1,0 +1,19 @@
+/* ===================================================================
+   رف الألعاب — tint styles (src/styles/steam-*.css): the few shared rules for Steam windows.
+   Loaded by src/js/tint.js only while a tint style is active; every rule is scoped html[data-rfs-tint].
+   Colours are NOT set here: tint.js re-tones Steam's own style sheets. This file only adds what Steam does
+   not have — states on its dialog buttons — and puts our own pieces in the palette.
+   No layout, no fonts, no filters on containers, no :has().
+   =================================================================== */
+
+/* buttons: same size, same shape. (The softer 3px corner and the even hover fade are written into Steam's own
+   button rules by tint.js, so Steam's special cases — split buttons, square list buttons — keep winning.) */
+html[data-rfs-tint] .DialogButton:enabled:active { opacity: .86; }
+html[data-rfs-tint] :is(.DialogButton, .DialogInput, .DialogDropDown, .DialogCheckbox):focus-visible {
+  outline: 2px solid rgba(var(--rf-accent-rgb), .75); outline-offset: 2px;
+}
+html[data-rfs-tint] ::selection { background: rgba(var(--rf-accent-rgb), .35); }
+
+/* our own game page, where a layout opens it from Steam Original: the palette instead of Steam's blue */
+html[data-rfs-tint] #rfs-hub { background: linear-gradient(180deg, var(--rf-panel-3), var(--rf-bg) 300px); }
+html[data-rfs-tint] #rfs-hub .rf-act.play { background: linear-gradient(90deg, var(--rf-accent), var(--rf-accent-2)); color: var(--rf-accent-ink); }

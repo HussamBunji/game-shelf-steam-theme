@@ -1,6 +1,5 @@
-/* all four style variable sets (Millennium only injects the default one into web pages;
-   webkit.js sets html[data-rfs-style] to the user's choice) */
-@import url("webkit-styles.css");
+/* The chosen style's own rules are NOT imported here any more: webkit.js links src/css/web-styles/<id>.css (one
+   style per page, built by tools/build.mjs). One file with every style cost each store page ~0.7 s of style work. */
 /* LEGACY store recolour (before the SpaceTheme base): kept for reference, switched off — every style now builds on
    stock Steam or a community theme base, plus flair.css and the side panels */
 html[data-rfs-legacy-store] {
@@ -685,3 +684,24 @@ html[data-rfs-style]:not([data-rfs-style="original"]) .profile_animated_backgrou
   & :is(.invite_row, .search_row) a:not([class*="btn"]) { color: var(--rf-text) !important; }
   & .invite_row .indicator { background: var(--rf-panel-2) !important; color: var(--rf-text) !important; }
 }
+
+/* ═════════════════════ TINT STYLES — Steam Original in another colour (src/styles/steam-*.css) ═════════════════════
+   webkit.js names them html[data-rfs-style="original"][data-rfs-tint="<id>"], so every rule and exception written
+   for Steam Original applies to them unchanged. The page's own colours are NOT set here: src/js/tint.js re-tones the
+   React sheets in place and links the generated parts of src/css/tint-web/ right after Valve's legacy sheets.
+   This block only
+     1. puts our own small pieces (store side panels, Quick links) in the palette instead of Steam's blue;
+     2. gives Valve's buttons the two states they lack — pressed and keyboard focus. Same size, same shape (the 3px
+        corner is written into the parts, at Valve's own rules).
+   Colour and opacity only: no layout, no fonts, no filters, no :has(). */
+html[data-rfs-tint] #rfs-data :is(.rd-fact, .rd-link) { background: rgba(var(--rf-accent-rgb), .08); }
+html[data-rfs-tint] #rfs-qbtn { background: rgba(var(--rf-accent-rgb), .12); }
+html[data-rfs-tint] #rfs-qbtn:hover { background: rgba(var(--rf-accent-rgb), .22); }
+html[data-rfs-tint] ::selection { background: rgba(var(--rf-accent-rgb), .35); }
+html[data-rfs-tint] :is(.btn_green_steamui, .btn_blue_steamui, .btnv6_blue_hoverfade, .btnv6_lightblue_blue, .btnv6_blue_blue_innerfade, .btnv6_green_white_innerfade, .btn_darkblue_white_innerfade, .btn_grey_steamui, .btnv6_grey_black):active { opacity: .86; }
+html[data-rfs-tint] :is(.btn_green_steamui, .btn_blue_steamui, .btnv6_blue_hoverfade, .btnv6_lightblue_blue, .btnv6_blue_blue_innerfade, .btnv6_green_white_innerfade, .btn_darkblue_white_innerfade, .btn_grey_steamui, .btnv6_grey_black):focus-visible {
+  outline: 2px solid rgba(var(--rf-accent-rgb), .75); outline-offset: 2px;
+}
+
+/* Arabic (RTL), every style: Steam stretches the LIVE badge across the whole capsule — keep it its own size */
+html[dir="rtl"] .broadcast_live_stream_icon { width: fit-content !important; left: auto !important; }

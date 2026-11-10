@@ -160,7 +160,7 @@ html[data-rfs-style="shelter"] .DialogButton {
   border: 1px solid rgba(24, 220, 110, .55) !important; border-radius: 3px !important; color: #1bff80 !important;
   text-transform: uppercase; letter-spacing: var(--sh-track) !important; text-shadow: var(--sh-glow) !important;
   background: var(--sh-key-bg) !important; box-shadow: var(--sh-key-sh) !important;
-  transition: background-color .12s, color .12s, box-shadow .12s, transform .12s var(--sh-ease) !important;
+  transition: transform .12s var(--sh-ease) !important;
 }
 html[data-rfs-style="shelter"] .DialogButton:not(:disabled):not(.Disabled):hover {
   color: #021208 !important; background: #18dc6e !important; border-color: #1bff80 !important; text-shadow: none !important; box-shadow: var(--sh-key-hi-sh) !important;
@@ -271,11 +271,11 @@ html.responsive[data-rfs-style="shelter"] .store_nav .tab {
 }
 html.responsive[data-rfs-style="shelter"] .store_nav .tab > span,
 html.responsive[data-rfs-style="shelter"] .store_nav .tab .pulldown > span {
-  color: #2fb36a !important; text-transform: uppercase !important; letter-spacing: var(--sh-track) !important; transition: color .12s !important;
+  color: #2fb36a !important; text-transform: uppercase !important; letter-spacing: var(--sh-track) !important; transition: none !important;
 }
 html.responsive[data-rfs-style="shelter"] .store_nav .tab::after {
   content: ''; position: absolute; inset: 6px 4px; border: 1px solid #1bff80; border-radius: 3px; opacity: 0;
-  background: rgba(27, 255, 128, .08); pointer-events: none; transition: opacity .12s;
+  background: rgba(27, 255, 128, .08); pointer-events: none; transition: opacity .12s var(--sh-ease);
 }
 html.responsive[data-rfs-style="shelter"] .store_nav .tab:is(:hover, .focus, .active)::after { opacity: 1; }
 html.responsive[data-rfs-style="shelter"] .store_nav .tab:is(:hover, .focus, .active) > span,
@@ -304,12 +304,12 @@ html.responsive[data-rfs-style="shelter"] .store_main_capsule .app_name { color:
 html[data-rfs-lang="ar"][data-rfs-style="shelter"] .store_main_capsule .app_name { font-size: 19px !important; font-weight: 600 !important; }
 html.responsive[data-rfs-style="shelter"] .store_capsule {
   border-radius: 4px !important; overflow: hidden; background: #04110a !important; /* Steam positions it (its flags sit inside) */
-  box-shadow: none !important; transition: transform .16s var(--sh-ease) !important;
+  box-shadow: none !important; transition: transform .12s var(--sh-ease) !important;
 }
 /* the frame is an overlay (the art would cover an inset line) */
 html.responsive[data-rfs-style="shelter"] .store_capsule::after {
   content: ''; position: absolute; inset: 0; z-index: 3; pointer-events: none; border-radius: inherit;
-  box-shadow: inset 0 0 0 1px rgba(24, 220, 110, .26); transition: box-shadow .16s;
+  box-shadow: inset 0 0 0 1px rgba(24, 220, 110, .26); transition: none;
 }
 html.responsive[data-rfs-style="shelter"] .store_capsule:hover { transform: translateY(-2px); }
 html.responsive[data-rfs-style="shelter"] .store_capsule:hover::after { box-shadow: inset 0 0 0 1px #1bff80, inset 0 0 18px rgba(27, 255, 128, .18); }
@@ -333,7 +333,7 @@ html.responsive[data-rfs-style="shelter"] :is(.carousel_container .arrow, .carou
   border-radius: 5px; border: 1px solid rgba(24, 220, 110, .6);
   background: linear-gradient(180deg, rgba(8, 25, 15, .95), rgba(4, 17, 10, .95));
   box-shadow: inset 0 1px 0 rgba(170, 255, 210, .1), 0 0 0 2px rgba(2, 10, 5, .55), 0 4px 12px rgba(0, 0, 0, .5);
-  transition: background-color .12s, box-shadow .12s, transform .12s var(--sh-ease);
+  transition: transform .12s var(--sh-ease);
 }
 html.responsive[data-rfs-style="shelter"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button)::after {
   background: var(--chev) center / 16px 16px no-repeat;
@@ -372,7 +372,7 @@ html.responsive[data-rfs-style="shelter"] .carousel_container .carousel_thumbs >
 /* ---- 5. tab lists: dark rows; the hovered row gets an green start bar and a faint green wash (the list cursor) ---- */
 html.responsive[data-rfs-style="shelter"] .tab_item {
   position: relative; border: 0 !important; border-radius: 3px !important; background: #04110a !important; box-shadow: inset 0 0 0 1px rgba(24, 220, 110, .1) !important;
-  margin-bottom: 3px !important; transition: background-color .12s !important;
+  margin-bottom: 3px !important; transition: none !important;
 }
 html.responsive[data-rfs-style="shelter"] .tab_item::before {
   content: ''; position: absolute; inset-block: 0; inset-inline-start: 0; width: 3px; z-index: 2; background: transparent; pointer-events: none;
@@ -404,7 +404,7 @@ html.responsive[data-rfs-style="shelter"] :is(.tab_preview_container, .home_righ
 /* search results and other repeated rows: the same dark rows with the start bar */
 html.responsive[data-rfs-style="shelter"] :is(.search_result_row, .game_area_dlc_row, .market_listing_row, .badge_row, .forum_topic, .help_wizard_button) {
   position: relative; border: 0 !important; border-radius: 3px !important; background: #04110a !important; box-shadow: inset 0 0 0 1px rgba(24, 220, 110, .1) !important;
-  margin-bottom: 3px !important; transition: background-color .12s !important;
+  margin-bottom: 3px !important; transition: none !important;
 }
 html.responsive[data-rfs-style="shelter"] :is(.search_result_row, .game_area_dlc_row, .market_listing_row, .badge_row, .forum_topic, .help_wizard_button)::before {
   content: ''; position: absolute; inset-block: 0; inset-inline-start: 0; width: 3px; z-index: 2; background: transparent; pointer-events: none;
@@ -454,7 +454,7 @@ html.responsive[data-rfs-style="shelter"] .btn_addtocart { border-radius: 3px; }
 html.responsive[data-rfs-style="shelter"] :is(.btn_green_steamui, .btn_blue_steamui, .btnv6_blue_hoverfade, .btnv6_grey_black, .btn_grey_steamui, .btnv6_white_transparent,
   .btn_grey_black, .btn_grey_white_innerfade, .btn_darkblue_white_innerfade, .btn_green_white_innerfade, .btnv6_lightblue_blue, .btn_profile_action, .help_site_button) {
   border: 1px solid rgba(24, 220, 110, .55) !important; border-radius: 3px !important; text-shadow: none !important;
-  transition: background-color .12s, color .12s, box-shadow .12s, transform .12s var(--sh-ease) !important;
+  transition: transform .12s var(--sh-ease) !important;
 }
 html.responsive[data-rfs-style="shelter"] :is(.btn_green_steamui, .btn_blue_steamui, .btnv6_blue_hoverfade, .btnv6_grey_black, .btn_grey_steamui, .btnv6_white_transparent,
   .btn_grey_black, .btn_grey_white_innerfade, .btn_darkblue_white_innerfade, .btn_green_white_innerfade, .btnv6_lightblue_blue, .btn_profile_action):not(.btn_disabled):active { transform: translateY(1px); }
@@ -547,7 +547,7 @@ html[data-rfs-style="shelter"] #rfs-bar.inhome .tb-btn {
   --ink: #1bff80;
   height: 30px; border: 1px solid rgba(24, 220, 110, .5); border-radius: 3px; color: #1bff80; text-transform: uppercase; letter-spacing: var(--sh-track);
   background: rgba(27, 255, 128, .04); box-shadow: none; text-shadow: var(--sh-glow);
-  transition: background-color .12s, color .12s, transform .12s var(--sh-ease);
+  transition: transform .12s var(--sh-ease);
 }
 html[data-rfs-style="shelter"] #rfs-bar.inhome .tb-btn:hover { --ink: #021208; color: #021208; background: #18dc6e; border-color: #1bff80; text-shadow: none; }
 html[data-rfs-style="shelter"] #rfs-bar.inhome .tb-btn:active { transform: translateY(1px); }
@@ -560,14 +560,14 @@ html[data-rfs-style="shelter"] #rfs-bar.inhome .tb-seg button,
 html[data-rfs-style="shelter"] #rfs-bar.inhome .tb-seg button:is(:first-child, :last-child) {
   --ink: #2fb36a;
   height: 30px; border: 0; border-radius: 0; color: #2fb36a; background: transparent; box-shadow: none;
-  text-transform: uppercase; letter-spacing: var(--sh-track); transition: background-color .12s, color .12s;
+  text-transform: uppercase; letter-spacing: var(--sh-track); transition: none;
 }
 html[data-rfs-style="shelter"] #rfs-bar.inhome .tb-seg button:hover { --ink: #1bff80; color: #1bff80; background: rgba(27, 255, 128, .08); }
 html[data-rfs-style="shelter"] #rfs-bar.inhome .tb-seg button.on { --ink: #021208; color: #021208; background: #18dc6e; }
 /* the search: a dark command line with a ">" prompt glyph colour, green line on focus */
 html[data-rfs-style="shelter"] #rfs-bar:is(.inhome, .float) .tb-search {
   height: 32px; border-radius: 3px; border: 1px solid rgba(24, 220, 110, .45);
-  background: #010603; box-shadow: inset 0 2px 6px rgba(0, 0, 0, .65); transition: border-color .12s, box-shadow .12s;
+  background: #010603; box-shadow: inset 0 2px 6px rgba(0, 0, 0, .65); transition: none;
 }
 html[data-rfs-style="shelter"] #rfs-bar:is(.inhome, .float) .tb-search:focus-within { border-color: #1bff80; box-shadow: inset 0 2px 6px rgba(0, 0, 0, .65), 0 0 10px rgba(27, 255, 128, .2); }
 html[data-rfs-style="shelter"] #rfs-bar .tb-q { color: #7dffb5; font-size: 14px; caret-color: #1bff80; text-shadow: var(--sh-glow); }
@@ -620,7 +620,7 @@ html[data-rfs-lang="ar"][data-rfs-style="shelter"] :is(#rfs-rail, #rfs-data, #rf
 html[data-rfs-style="shelter"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) h4 small { color: #0f6b3a; letter-spacing: 0; text-transform: none; text-shadow: none; font-family: var(--sh-mono) !important; font-size: 12px; }
 /* rows: full width; the hovered one inverts like the device list, the current one is boxed */
 html[data-rfs-style="shelter"] :is(#rfs-rail .rr-link, #rfs-qmenu .ql, #rfs-data .rd-row) {
-  border-radius: 2px; margin-inline: 6px; padding-inline: 8px; transition: background-color .12s, color .12s;
+  border-radius: 2px; margin-inline: 6px; padding-inline: 8px; transition: none;
 }
 html[data-rfs-style="shelter"] :is(#rfs-rail .rr-link, #rfs-qmenu .ql):hover { background: #18dc6e; color: #021208 !important; }
 html[data-rfs-style="shelter"] :is(#rfs-rail .rr-link, #rfs-qmenu .ql):hover svg.rf-ic { stroke: currentColor; }
@@ -634,7 +634,7 @@ html[data-rfs-style="shelter"] #rfs-rail .rr-price i { color: #021208; backgroun
 html[data-rfs-style="shelter"] #rfs-rail .rr-btn {
   border: 1px solid rgba(24, 220, 110, .55); border-radius: 3px; color: #1bff80 !important; text-transform: uppercase; letter-spacing: var(--sh-track);
   background: var(--sh-key-bg); box-shadow: var(--sh-key-sh); text-shadow: var(--sh-glow);
-  transition: background-color .12s, color .12s, transform .12s var(--sh-ease);
+  transition: transform .12s var(--sh-ease);
 }
 html[data-rfs-style="shelter"] #rfs-rail .rr-btn:hover { color: #021208 !important; background: #18dc6e; border-color: #1bff80; text-shadow: none; box-shadow: var(--sh-key-hi-sh); }
 html[data-rfs-style="shelter"] #rfs-rail .rr-btn:active { transform: translateY(1px); }
@@ -667,7 +667,7 @@ html[data-rfs-style="shelter"] #rfs-data .rd-link:hover { color: #021208; backgr
 /* the header Quick links button: the boxed key */
 html[data-rfs-style="shelter"] #rfs-qbtn {
   color: #1bff80; border: 1px solid rgba(24, 220, 110, .55); border-radius: 3px; background: var(--sh-key-bg); box-shadow: var(--sh-key-sh);
-  text-transform: uppercase; letter-spacing: var(--sh-track); text-shadow: var(--sh-glow); transition: background-color .12s, color .12s;
+  text-transform: uppercase; letter-spacing: var(--sh-track); text-shadow: var(--sh-glow); transition: none;
 }
 html[data-rfs-style="shelter"] #rfs-qbtn:hover { color: #021208; background: #18dc6e; border-color: #1bff80; text-shadow: none; }
 html[data-rfs-style="shelter"] #rfs-qbtn svg.rf-ic { stroke: currentColor; }
@@ -843,3 +843,292 @@ html[data-rfs-style="shelter"] { --rf-footer-bg: linear-gradient(180deg, #3a3a2a
 
 /* downloads page + install / settings dialogs (skin.js --rf-dl-* hooks): device keys, phosphor selection, scanline header */
 html[data-rfs-style="shelter"] { --rf-dl-btn-radius: 3px; --rf-dl-check-radius: 2px; --rf-dl-sel-bg: linear-gradient(90deg, rgba(27, 255, 128, .2), rgba(27, 255, 128, .05)); --rf-dl-hero-empty: repeating-linear-gradient(180deg, rgba(27, 255, 128, .07) 0 1px, transparent 1px 3px), linear-gradient(90deg, rgba(27, 255, 128, .22), rgba(4, 17, 10, .2)); --rf-dl-head-bg: linear-gradient(180deg, #08190f, #04110a); --rf-dl-rule: linear-gradient(90deg, rgba(27, 255, 128, .6), rgba(27, 255, 128, .05)); --rf-dl-pri-shadow: 0 0 12px rgba(27, 255, 128, .3); --rf-dl-play-bg: linear-gradient(180deg, #4dff9c, #18c060); }
+
+/* ═══════════════ the shelter store: one terminal, built from the wrist computer's own parts ═══════════════
+   On top of the dressing above, the store is laid out like the device's screen: the store bar is a status strip whose
+   tabs get a boxed cursor; shelf titles sit in the notch of a tab line (two posts + the line, like INVENTORY's
+   "READY"); art wears the inventory tiles' phosphor tint and shows its colours when pointed at; lists are terminal
+   rows with dashed rules whose selected name inverts (the device's selection bar); prices are CRT digits and the
+   discount an inverted block; side blocks are DATA panes with an inverted label; the game page header is the screen in
+   its olive casing. Everything is plain CSS: no filters, no blur, no glow on repeated text, no blurred outer shadows on
+   repeated blocks (they are invisible on the near-black page and only cost raster time); the only motion is opacity /
+   transform on the hovered item (140 ms at most). */
+
+/* ---- the store bar (React StoreMenu, both builds): a status strip in the olive rim; the tab under the pointer gets
+   the boxed cursor (one pseudo-element fading in), Steam's underline goes ---- */
+html.responsive[data-rfs-style="shelter"] :is(.XLbP8xOkCYw-, .WCG-2-OYepA-, .StoreMenuLoadingPlaceholder .PlaceholderInner) {
+  border-radius: 6px !important;
+  background: linear-gradient(180deg, rgba(27, 255, 128, .05), transparent 60%), #04110a !important;
+  box-shadow: inset 0 0 0 1px rgba(24, 220, 110, .38), 0 0 0 3px #3a3a2a, 0 0 0 4px #1b1b13 !important;
+}
+html.responsive[data-rfs-style="shelter"] [role="navigation"] button[role="button"] {
+  position: relative; color: #2fb36a !important; text-transform: uppercase; letter-spacing: var(--sh-track); text-shadow: none !important;
+}
+html.responsive[data-rfs-style="shelter"] [role="navigation"] button[role="button"]::before {
+  content: ''; position: absolute; inset: -4px -7px; border: 1px solid #1bff80; border-radius: 3px; background: rgba(27, 255, 128, .08);
+  opacity: 0; pointer-events: none; transition: opacity .12s var(--sh-ease);
+}
+html.responsive[data-rfs-style="shelter"] [role="navigation"] button[role="button"]:is(:hover, :focus-visible, [aria-expanded="true"]) { color: #1bff80 !important; }
+html.responsive[data-rfs-style="shelter"] [role="navigation"] button[role="button"]:is(:hover, :focus-visible, [aria-expanded="true"])::before { opacity: 1; }
+html.responsive[data-rfs-style="shelter"] [role="navigation"] button[role="button"] > div > div { display: none !important; }
+/* the store search: a command line with a prompt */
+html.responsive[data-rfs-style="shelter"] [role="navigation"] form[role="search"] {
+  border-radius: 3px !important; background-color: #010603 !important; box-shadow: inset 0 0 0 1px rgba(24, 220, 110, .4) !important; transition: none !important;
+}
+html.responsive[data-rfs-style="shelter"] [role="navigation"] form[role="search"]:focus-within { box-shadow: inset 0 0 0 1px #1bff80 !important; }
+html.responsive[data-rfs-style="shelter"] [role="navigation"] form[role="search"]::before { content: '>'; align-self: center; padding-inline-start: 10px; color: #18dc6e; font-family: var(--sh-mono); }
+html.responsive[dir="rtl"][data-rfs-style="shelter"] [role="navigation"] form[role="search"]::before { content: '<'; }
+html.responsive[data-rfs-style="shelter"] [role="navigation"] form[role="search"] input[role="combobox"] { color: #7dffb5 !important; caret-color: #1bff80; padding-inline-start: 8px !important; }
+html.responsive[data-rfs-style="shelter"] [role="navigation"] form[role="search"] input[role="combobox"]::placeholder { color: #0f6b3a !important; }
+/* the search suggestions: a dark pane; the row under the pointer inverts */
+html.responsive[data-rfs-style="shelter"] [id^="searchSuggestions"] { background: #04110a !important; border-radius: 4px !important; box-shadow: inset 0 0 0 1px rgba(24, 220, 110, .45), 0 18px 40px rgba(0, 0, 0, .6) !important; }
+html.responsive[data-rfs-style="shelter"] [id^="searchSuggestions"] a:is(:hover, :focus-visible) { background: #18dc6e !important; color: #021208 !important; }
+html.responsive[data-rfs-style="shelter"] [id^="searchSuggestions"] a:is(:hover, :focus-visible) * { color: #021208 !important; text-shadow: none !important; }
+
+/* ---- shelf titles: the label in the notch of the tab line — a short lead-in, two posts, the line running on ---- */
+html.responsive[data-rfs-style="shelter"] :is(.home_title, .home_section_title, #discounts_and_events_title) {
+  position: relative; width: fit-content !important; max-width: calc(100% - 60px); margin-inline-start: 22px !important; padding: 0 14px 4px !important;
+  background: linear-gradient(#18dc6e, #18dc6e) left bottom / 2px 14px no-repeat, linear-gradient(#18dc6e, #18dc6e) right bottom / 2px 14px no-repeat !important;
+}
+html.responsive[data-rfs-style="shelter"] :is(.home_title, .home_section_title, #discounts_and_events_title)::before,
+html.responsive[data-rfs-style="shelter"] :is(.home_title, .home_section_title, #discounts_and_events_title)::after { content: ''; position: absolute; bottom: 0; height: 2px; pointer-events: none; }
+html.responsive[data-rfs-style="shelter"] :is(.home_title, .home_section_title, #discounts_and_events_title)::before { inset-inline-end: 100%; width: 22px; background: #18dc6e; }
+html.responsive[data-rfs-style="shelter"] :is(.home_title, .home_section_title, #discounts_and_events_title)::after { inset-inline-start: 100%; width: 460px; background: linear-gradient(90deg, #18dc6e 40%, rgba(24, 220, 110, 0)); }
+html.responsive[dir="rtl"][data-rfs-style="shelter"] :is(.home_title, .home_section_title, #discounts_and_events_title)::after { background: linear-gradient(270deg, #18dc6e 40%, rgba(24, 220, 110, 0)); }
+html.responsive[data-rfs-style="shelter"] .home_discounts_block .home_section_title::after { width: 120px !important; }
+html.responsive[data-rfs-style="shelter"] .title_grid .see_more_link { position: relative; z-index: 1; }
+html.responsive[data-rfs-style="shelter"] .home_section_subtitle { color: #3fae72 !important; font-family: var(--sh-mono) !important; text-transform: uppercase; letter-spacing: var(--sh-track); font-size: 12px !important; }
+/* game page / search section titles: a prompt in front of the caps */
+html.responsive[data-rfs-style="shelter"] :is(.game_area_description h2, .game_area_dlc_section h2, .early_access_announcements h2, #game_area_reviews > h2, .pagesubheader)::before { content: '>'; margin-inline-end: 10px; color: #0f9b50; }
+html.responsive[dir="rtl"][data-rfs-style="shelter"] :is(.game_area_description h2, .game_area_dlc_section h2, .early_access_announcements h2, #game_area_reviews > h2, .pagesubheader)::before { content: '<'; }
+
+/* ---- the featured capsule: the screen in its casing; the name is the selection bar ---- */
+html.responsive[data-rfs-style="shelter"] .store_main_capsule { border-radius: 10px !important; box-shadow: inset 0 0 0 1px rgba(24, 220, 110, .32), 0 0 0 3px #3a3a2a, 0 0 0 4px #1b1b13 !important; }
+html.responsive[data-rfs-style="shelter"] .store_main_capsule .info { background: #04110a !important; }
+html.responsive[data-rfs-style="shelter"] .store_main_capsule .app_name {
+  width: fit-content; max-width: 100%; padding: 2px 8px 1px !important; border-radius: 2px; color: #021208 !important; background: #18dc6e !important; text-shadow: none !important;
+}
+html.responsive[data-rfs-style="shelter"] .store_main_capsule .screenshots > div { border-radius: 2px; box-shadow: 0 0 0 1px rgba(24, 220, 110, .3); }
+html.responsive[data-rfs-style="shelter"] .store_main_capsule .topseller_title { color: #1bff80 !important; text-transform: uppercase; letter-spacing: var(--sh-track); }
+
+/* ---- art on the shelves: the inventory tiles' phosphor tint (a plain overlay — no filter); pointing at a capsule
+   fades the overlay out and shows the art's own colours ---- */
+html.responsive[data-rfs-style="shelter"] :is(.sale_capsule, .store_capsule) { border-radius: 4px !important; background: #04110a !important; box-shadow: none !important; overflow: hidden; }
+html.responsive[data-rfs-style="shelter"] .search_result_row .search_capsule { position: relative; }
+html.responsive[data-rfs-style="shelter"] :is(.sale_capsule .capsule_image_ctn, .search_result_row .search_capsule, .carousel__inner-slide a.Focusable > div:first-child, a.OtherEvents_EventCtn > div:first-child, .content_hub_capsule_ctn)::after {
+  content: ''; position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background: linear-gradient(180deg, rgba(6, 74, 36, .32), rgba(2, 26, 12, .5));
+  box-shadow: inset 0 0 0 1px rgba(27, 255, 128, .3);
+  transition: opacity .14s var(--sh-ease);
+}
+html.responsive[data-rfs-style="shelter"] :is(.sale_capsule:hover .capsule_image_ctn, .search_result_row:hover .search_capsule, .carousel__inner-slide a.Focusable:is(:hover, :focus-visible) > div:first-child, a.OtherEvents_EventCtn:hover > div:first-child, .content_hub_capsule_ctn:hover)::after { opacity: 0; }
+html.responsive[data-rfs-style="shelter"] :is(.sale_capsule, .content_hub_capsule_ctn) { transition: transform .14s var(--sh-ease) !important; }
+html.responsive[data-rfs-style="shelter"] :is(.sale_capsule, .content_hub_capsule_ctn):hover { transform: translateY(-2px); }
+html.responsive[data-rfs-style="shelter"] .carousel__inner-slide a.Focusable { border-radius: 4px !important; overflow: hidden; background: #04110a !important; outline: 1px solid rgba(24, 220, 110, .26); outline-offset: -1px; }
+html.responsive[data-rfs-style="shelter"] .carousel__inner-slide a.Focusable:is(:hover, :focus-visible) { outline-color: #1bff80; }
+html.responsive[data-rfs-style="shelter"] .carousel__inner-slide a.Focusable > div:last-child { background: #04110a !important; }
+html.responsive[data-rfs-style="shelter"] .sale_capsule:hover { outline: 1px solid #1bff80; outline-offset: -1px; }
+/* the old capsules' frame used to animate a box-shadow: it switches at once now */
+html.responsive[data-rfs-style="shelter"] .store_capsule::after { transition: none; }
+html.responsive[data-rfs-style="shelter"] .store_capsule:hover::after { box-shadow: inset 0 0 0 1px #1bff80; }
+/* category capsules: the label is a boxed key */
+html.responsive[data-rfs-style="shelter"] .content_hub_capsule_ctn { border-radius: 4px !important; overflow: hidden; }
+html.responsive[data-rfs-style="shelter"] .content_hub_capsule_ctn .label_ctn { z-index: 3; }
+html.responsive[data-rfs-style="shelter"] .content_hub_capsule_ctn .label {
+  color: #1bff80 !important; background: #04110a !important; border: 1px solid rgba(24, 220, 110, .6); border-radius: 3px !important;
+  text-transform: uppercase; letter-spacing: var(--sh-track); text-shadow: none !important; box-shadow: none !important;
+}
+html.responsive[data-rfs-style="shelter"] .content_hub_capsule_ctn:hover .label { color: #021208 !important; background: #18dc6e !important; border-color: #1bff80; }
+/* the page dots of both carousels: short dashes, the current one bright (no glow) */
+html.responsive[data-rfs-style="shelter"] .carousel_container .carousel_thumbs { background: transparent !important; }
+html.responsive[data-rfs-style="shelter"] :is(.carousel_thumbs > div, .carousel__dot) { height: 4px !important; border-radius: 0 !important; background: rgba(24, 220, 110, .28) !important; box-shadow: none !important; }
+html.responsive[data-rfs-style="shelter"] :is(.carousel_thumbs > div.focus, .carousel__dot--selected) { background: #1bff80 !important; box-shadow: none !important; }
+
+/* ---- prices: CRT digits; the discount is an inverted block (the same on every shelf) ---- */
+html.responsive[data-rfs-style="shelter"] :is(.discount_block, .rfs-price) { border-radius: 3px !important; background: #020a05 !important; box-shadow: inset 0 0 0 1px rgba(24, 220, 110, .3) !important; }
+html.responsive[data-rfs-style="shelter"] .discount_block .discount_pct,
+html.responsive[data-rfs-style="shelter"] .discount_pct,
+html.responsive[data-rfs-style="shelter"] .rfs-pct {
+  border-radius: 2px !important; margin: 3px !important; padding-inline: 7px !important; color: #021208 !important; background: #18dc6e !important;
+  font-family: var(--sh-crt) !important; font-size: 21px !important; font-weight: 400 !important; line-height: 1 !important; letter-spacing: .02em; box-shadow: none !important;
+}
+html.responsive[data-rfs-style="shelter"] .discount_final_price { color: #1bff80 !important; font-family: var(--sh-crt) !important; font-size: 22px !important; line-height: 1 !important; text-shadow: none !important; }
+html.responsive[data-rfs-style="shelter"] .discount_block.no_discount .discount_final_price { color: #8ff5b8 !important; }
+html.responsive[data-rfs-style="shelter"] .bundle_base_discount { color: #3fae72 !important; background: transparent !important; font-family: var(--sh-mono) !important; }
+
+/* ---- the home tab strip: the device's tab line (the chosen tab in the notch); the list is terminal rows ---- */
+html.responsive[data-rfs-style="shelter"] .home_tabs_row_ctn { gap: 0 !important; padding: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: inset 0 -2px 0 #18dc6e !important; }
+html.responsive[data-rfs-style="shelter"] .home_tabs_row_ctn .home_tab_button { margin: 0 !important; padding: 2px 16px 6px !important; border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; }
+html.responsive[data-rfs-style="shelter"] .home_tabs_row_ctn .home_tab_button .tab_content {
+  color: #2fb36a !important; background: transparent !important; box-shadow: none !important;
+  font-family: var(--sh-crt) !important; font-size: 21px !important; font-weight: 400 !important; line-height: 1 !important; text-transform: uppercase; letter-spacing: var(--sh-track);
+}
+html.responsive[data-rfs-lang="ar"][data-rfs-style="shelter"] .home_tabs_row_ctn .home_tab_button .tab_content { font-size: 15px !important; font-weight: 600 !important; line-height: 1.4 !important; }
+html.responsive[data-rfs-style="shelter"] .home_tabs_row_ctn .home_tab_button:hover .tab_content { color: #1bff80 !important; }
+html.responsive[data-rfs-style="shelter"] .home_tabs_row_ctn .home_tab_button.active {
+  background: linear-gradient(#18dc6e, #18dc6e) left bottom / 2px 14px no-repeat, linear-gradient(#18dc6e, #18dc6e) right bottom / 2px 14px no-repeat, linear-gradient(#020a05, #020a05) left bottom / 100% 2px no-repeat !important;
+}
+html.responsive[data-rfs-style="shelter"] .home_tabs_row_ctn .home_tab_button.active .tab_content { color: #1bff80 !important; text-shadow: var(--sh-glow); }
+html.responsive[data-rfs-style="shelter"] :is(.home_tab_bg_ctn, .home_tabs_columns, .home_tabs_sections, .tab_content_items) { background: transparent !important; }
+html.responsive[data-rfs-style="shelter"] .tab_row_item {
+  position: relative; border: 0 !important; border-bottom: 1px dashed rgba(24, 220, 110, .26) !important; border-radius: 0 !important;
+  background: transparent !important; box-shadow: none !important; margin-bottom: 0 !important; transition: none !important;
+}
+html.responsive[data-rfs-style="shelter"] .tab_row_item::before { content: ''; position: absolute; inset: 0; background: rgba(27, 255, 128, .09); opacity: 0; pointer-events: none; transition: opacity .12s var(--sh-ease); }
+html.responsive[data-rfs-style="shelter"] .tab_row_item:is(:hover, .focus)::before { opacity: 1; }
+html.responsive[data-rfs-style="shelter"] .tab_row_item .tab_item_title { width: fit-content; max-width: 100%; padding: 1px 6px; margin-inline-start: -6px; border-radius: 2px; color: #7dffb5 !important; }
+html.responsive[data-rfs-style="shelter"] .tab_row_item:is(:hover, .focus) .tab_item_title { color: #021208 !important; background: #18dc6e; text-shadow: none !important; }
+html.responsive[data-rfs-style="shelter"] .tab_row_item :is(.tab_item_tags, .top_tag) { color: #3fae72 !important; }
+html.responsive[data-rfs-style="shelter"] .tab_row_item .tab_item_release_date { color: #0f9b50 !important; text-transform: uppercase; letter-spacing: .04em; }
+html.responsive[data-rfs-style="shelter"] .tab_row_item :is(.discount_block, .rfs-price) { background: transparent !important; box-shadow: none !important; }
+/* the preview beside the list: a DATA pane */
+html.responsive[data-rfs-style="shelter"] :is(.tab_preview_container, #tab_preview_container) { background: #04110a !important; border-radius: 4px !important; box-shadow: inset 0 0 0 1px rgba(24, 220, 110, .3) !important; }
+html.responsive[data-rfs-style="shelter"] .tab_preview .tab_title { display: block; padding-bottom: 6px; color: #1bff80 !important; background: var(--sh-rule-dim); font-family: var(--sh-crt) !important; font-size: 24px !important; text-transform: uppercase; letter-spacing: var(--sh-track); }
+html.responsive[data-rfs-lang="ar"][data-rfs-style="shelter"] .tab_preview .tab_title { font-size: 17px !important; font-weight: 600; }
+html.responsive[data-rfs-style="shelter"] .tab_preview .screenshot { border-radius: 2px !important; box-shadow: 0 0 0 1px rgba(24, 220, 110, .26); }
+
+/* ---- the discovery queue strip + other React widgets: a CRT title; its button is the main key ---- */
+html.responsive[data-rfs-style="shelter"] .WidgetHeaderCtn > div:first-child { color: #1bff80 !important; font-family: var(--sh-crt) !important; font-size: 24px !important; font-weight: 400 !important; line-height: 1.05 !important; text-transform: uppercase; letter-spacing: var(--sh-track); text-shadow: var(--sh-glow); }
+html.responsive[data-rfs-lang="ar"][data-rfs-style="shelter"] .WidgetHeaderCtn > div:first-child { font-size: 18px !important; font-weight: 600 !important; line-height: 1.4 !important; }
+html.responsive[data-rfs-style="shelter"] .WidgetHeaderCtn > div:nth-child(2) { color: #3fae72 !important; }
+html.responsive[data-rfs-style="shelter"] .WidgetHeaderCtn > div:nth-child(3) {
+  color: #021208 !important; background: var(--sh-pri-bg) !important; border: 1px solid #5dffa4 !important; border-radius: 3px !important;
+  text-transform: uppercase; letter-spacing: var(--sh-track); box-shadow: none !important;
+}
+html.responsive[data-rfs-style="shelter"] .WidgetHeaderCtn > div:nth-child(3):hover { background: var(--sh-pri-bg-hi) !important; }
+
+/* ---- the game page: the screen in its casing, DATA panes with an inverted label, a trade row per edition ---- */
+html.responsive[data-rfs-style="shelter"] #game_highlights { border-radius: 12px !important; box-shadow: inset 0 0 0 1px rgba(24, 220, 110, .3), 0 0 0 5px #3a3a2a, 0 0 0 6px #1b1b13 !important; }
+html.responsive[data-rfs-style="shelter"] .glance_ctn .game_description_snippet { color: #8ff5b8 !important; line-height: 1.45 !important; }
+html.responsive[data-rfs-style="shelter"] :is(.block.responsive_apppage_details_right, .block.responsive_apppage_details_left, .rightcol .block, .block.search_collapse_block, .steam_curators_block, .rightbox) {
+  box-shadow: inset 0 0 0 1px rgba(24, 220, 110, .26) !important;
+}
+html.responsive[data-rfs-style="shelter"] .game_area_purchase_game { border-radius: 3px !important; background: linear-gradient(90deg, rgba(27, 255, 128, .07), rgba(27, 255, 128, 0) 46%), #04110a !important; box-shadow: inset 3px 0 0 #18dc6e, inset 0 0 0 1px rgba(24, 220, 110, .26) !important; }
+html.responsive[dir="rtl"][data-rfs-style="shelter"] .game_area_purchase_game { background: linear-gradient(270deg, rgba(27, 255, 128, .07), rgba(27, 255, 128, 0) 46%), #04110a !important; box-shadow: inset -3px 0 0 #18dc6e, inset 0 0 0 1px rgba(24, 220, 110, .26) !important; }
+html.responsive[data-rfs-style="shelter"] .game_purchase_action_bg { border-radius: 3px !important; background: linear-gradient(180deg, #0a3d22, #072a17) !important; box-shadow: inset 0 0 0 1px rgba(27, 255, 128, .35) !important; }
+html.responsive[data-rfs-style="shelter"] .game_purchase_action :is(.game_purchase_price, .price) { color: #1bff80 !important; font-family: var(--sh-crt) !important; font-size: 21px !important; line-height: 1 !important; letter-spacing: .02em; text-shadow: var(--sh-glow) !important; }
+/* the labels of the side blocks: the inverted bar of the selected line */
+html.responsive[data-rfs-style="shelter"] :is(.block_title, .responsive_block_header) {
+  width: fit-content; padding: 1px 8px !important; margin-bottom: 8px !important; border-radius: 2px; color: #021208 !important; background: #18dc6e !important;
+  font-family: var(--sh-mono) !important; font-size: 12px !important; text-transform: uppercase; letter-spacing: .1em; text-shadow: none !important;
+}
+html.responsive[data-rfs-lang="ar"][data-rfs-style="shelter"] :is(.block_title, .responsive_block_header) { letter-spacing: 0; font-size: 12.5px !important; }
+/* the feature rows: no filter on the little icons (a filtered layer per row) */
+html.responsive[data-rfs-style="shelter"] .game_area_details_specs_ctn .icon { filter: none !important; opacity: .7; }
+html.responsive[data-rfs-style="shelter"] .game_language_options :is(td, th) { border-color: rgba(24, 220, 110, .2) !important; color: #8ff5b8 !important; }
+/* DLC + events */
+html.responsive[data-rfs-style="shelter"] .game_area_dlc_row { border-radius: 0 !important; background: transparent !important; box-shadow: none !important; border-bottom: 1px dashed rgba(24, 220, 110, .26) !important; margin-bottom: 0 !important; }
+html.responsive[data-rfs-style="shelter"] .game_area_dlc_row::before { display: none !important; }
+html.responsive[data-rfs-style="shelter"] .game_area_dlc_row:hover { background: rgba(27, 255, 128, .09) !important; box-shadow: none !important; }
+html.responsive[data-rfs-style="shelter"] a.OtherEvents_EventCtn { border-radius: 4px !important; overflow: hidden; background: #04110a !important; outline: 1px solid rgba(24, 220, 110, .26); outline-offset: -1px; }
+html.responsive[data-rfs-style="shelter"] a.OtherEvents_EventCtn:hover { outline-color: #1bff80; }
+html.responsive[data-rfs-style="shelter"] .game_page_autocollapse_fade { background: linear-gradient(180deg, rgba(2, 10, 5, 0), #020a05) !important; }
+html.responsive[data-rfs-style="shelter"] #game_area_description { color: #8ff5b8 !important; line-height: 1.6; }
+
+/* ---- search: the result cards are inventory tiles; filters are a DATA pane ---- */
+html.responsive[data-rfs-style="shelter"] .searchbar { background: transparent !important; border: 0 !important; box-shadow: inset 0 -1px 0 rgba(24, 220, 110, .4) !important; border-radius: 0 !important; }
+html.responsive[data-rfs-style="shelter"] .search_result_row { border-radius: 6px !important; background: #04110a !important; box-shadow: inset 0 0 0 1px rgba(24, 220, 110, .26) !important; transition: transform .14s var(--sh-ease) !important; }
+html.responsive[data-rfs-style="shelter"] .search_result_row::before { display: none !important; }
+html.responsive[data-rfs-style="shelter"] .search_result_row:hover { transform: translateY(-2px); background: #04110a !important; box-shadow: inset 0 0 0 1px #1bff80 !important; }
+html.responsive[data-rfs-style="shelter"] .search_result_row .search_capsule { border-radius: 3px; overflow: hidden; }
+html.responsive[data-rfs-style="shelter"] .search_result_row .search_name .title { color: #1bff80 !important; }
+html.responsive[data-rfs-style="shelter"] .search_result_row :is(.discount_block, .rfs-price) { background: transparent !important; box-shadow: none !important; }
+html.responsive[data-rfs-style="shelter"] .search_results_filtered_warning { border: 0 !important; border-radius: 3px !important; background: #04110a !important; box-shadow: inset 3px 0 0 #18dc6e, inset 0 0 0 1px rgba(24, 220, 110, .26) !important; }
+html.responsive[dir="rtl"][data-rfs-style="shelter"] .search_results_filtered_warning { box-shadow: inset -3px 0 0 #18dc6e, inset 0 0 0 1px rgba(24, 220, 110, .26) !important; }
+html.responsive[data-rfs-style="shelter"] .search_results_filtered_warning > div:first-child { background: transparent !important; border: 0 !important; box-shadow: none !important; color: #8ff5b8 !important; }
+html.responsive[data-rfs-style="shelter"] .tab_filter_control_row { border-radius: 2px !important; }
+html.responsive[data-rfs-style="shelter"] .tab_filter_control_row:hover { background: rgba(27, 255, 128, .09) !important; }
+html.responsive[data-rfs-style="shelter"] .st-search-view-toggle .st-btn { border-radius: 3px !important; }
+html.responsive[data-rfs-style="shelter"] .st-search-view-toggle .st-btn.active { background: #18dc6e !important; color: #021208 !important; }
+
+/* ---- community hub: the device's tab line, dark panes, readable posts ---- */
+html.responsive[data-rfs-style="shelter"] .apphub_HeaderTop { background: transparent !important; }
+html.responsive[data-rfs-style="shelter"] .apphub_sectionTabs { box-shadow: inset 0 -2px 0 #18dc6e; }
+html.responsive[data-rfs-style="shelter"] .apphub_sectionTab {
+  margin: 0 !important; padding: 4px 14px 8px !important; border: 0 !important; border-radius: 0 !important; color: #2fb36a !important; background: transparent !important;
+}
+html.responsive[data-rfs-style="shelter"] .apphub_sectionTab span { border: 0 !important; color: inherit !important; font-family: var(--sh-crt) !important; font-size: 20px !important; line-height: 1 !important; text-transform: uppercase; letter-spacing: var(--sh-track); }
+html.responsive[data-rfs-lang="ar"][data-rfs-style="shelter"] .apphub_sectionTab span { font-size: 15px !important; font-weight: 600; line-height: 1.4 !important; }
+html.responsive[data-rfs-style="shelter"] .apphub_sectionTab:hover { color: #1bff80 !important; }
+html.responsive[data-rfs-style="shelter"] .apphub_sectionTab.active {
+  color: #1bff80 !important; text-shadow: var(--sh-glow);
+  background: linear-gradient(#18dc6e, #18dc6e) left bottom / 2px 14px no-repeat, linear-gradient(#18dc6e, #18dc6e) right bottom / 2px 14px no-repeat, linear-gradient(#020a05, #020a05) left bottom / 100% 2px no-repeat !important;
+}
+html.responsive[data-rfs-style="shelter"] :is(.apphub_HubDivider, .apphub_sectionTabsHR) { background: rgba(24, 220, 110, .4) !important; height: 1px !important; border: 0 !important; }
+html.responsive[data-rfs-style="shelter"] .apphub_StoreInfoHeader { border-radius: 6px !important; }
+html.responsive[data-rfs-style="shelter"] .apphub_StorePrice .price { color: #1bff80 !important; background: #020a05 !important; border-radius: 3px !important; box-shadow: inset 0 0 0 1px rgba(24, 220, 110, .4); font-family: var(--sh-crt) !important; font-size: 21px !important; }
+html.responsive[data-rfs-style="shelter"] .apphub_Card { border: 0 !important; border-radius: 4px !important; background: #04110a !important; box-shadow: inset 0 0 0 1px rgba(24, 220, 110, .22) !important; }
+html.responsive[data-rfs-style="shelter"] .apphub_Card:hover { box-shadow: inset 0 0 0 1px #1bff80 !important; }
+html.responsive[data-rfs-style="shelter"] :is(.apphub_CardContentMain, .apphub_CardContentAuthorBlock, .apphub_CardMetaData, .apphub_CardContentType, .apphub_CardContentDiscussionAuthorBlock, .UserReviewCardContent_Footer, .apphub_CardContentNewsFade) { background: transparent !important; }
+html.responsive[data-rfs-style="shelter"] .apphub_CardContentAuthorBlock { box-shadow: inset 0 1px 0 rgba(24, 220, 110, .2); }
+html.responsive[data-rfs-style="shelter"] :is(.apphub_CardContentNewsTitle, .apphub_CardContentGuideTitle, .apphub_CardContentDiscussionTitle, .apphub_CardContentTitle) { color: #1bff80 !important; }
+html.responsive[data-rfs-style="shelter"] .apphub_CardContentNewsTitle { font-family: var(--sh-crt) !important; font-size: 26px !important; line-height: 1.05 !important; text-transform: uppercase; letter-spacing: .04em; }
+html.responsive[data-rfs-lang="ar"][data-rfs-style="shelter"] .apphub_CardContentNewsTitle { font-size: 19px !important; line-height: 1.4 !important; }
+html.responsive[data-rfs-style="shelter"] :is(.apphub_CardTextContent, .apphub_CardContentNewsDesc, .apphub_CardContentDiscussionText, .apphub_CardContentGuideDesc) { color: #8ff5b8 !important; }
+/* posts are written by people: their headings stay sentence-case and unlit, so long text reads easily */
+html.responsive[data-rfs-style="shelter"] .apphub_Card :is(.bb_h1, .bb_h2, .bb_h3, h2.bb_tag) { text-transform: none !important; letter-spacing: 0 !important; text-shadow: none !important; color: #a8ffcc !important; font-weight: 400 !important; }
+html.responsive[data-rfs-style="shelter"] :is(.apphub_CardContentNewsDate, .apphub_CardContentAuthorName, .apphub_CardContentDiscussionDate, .date_posted, .hours) { color: #3fae72 !important; }
+html.responsive[data-rfs-style="shelter"] .apphub_UserReviewCardContent .title { color: #1bff80 !important; text-transform: uppercase; letter-spacing: var(--sh-track); }
+html.responsive[data-rfs-style="shelter"] .apphub_GetMoreContent { background: transparent !important; }
+
+/* ---- wishlist · profile · friends pages (the shared layer is in src/css/webkit.css; this style's tokens):
+   dark panes with a green hairline, CRT caps headings on a rule, boxed green chips ---- */
+html.responsive[data-rfs-style="shelter"] {
+  --rfp-card: #04110a; --rfp-card-hover: #08190f; --rfp-card-edge: inset 0 0 0 1px rgba(24, 220, 110, .26); --rfp-card-shadow: none; --rfp-radius: 4px;
+  --rfp-head-case: uppercase; --rfp-head-track: var(--sh-track); --rfp-head-ink: #1bff80; --rfp-head-rule: 1px solid rgba(24, 220, 110, .45);
+  --rfp-glass: rgba(4, 17, 10, .92); --rfp-field: #020a05; --rfp-chip: rgba(27, 255, 128, .05); --rfp-chip-ink: #18dc6e;
+  --rfp-chip-edge: inset 0 0 0 1px rgba(24, 220, 110, .38); --rfp-chip-radius: 2px; --rfp-link: #1bff80; --rfp-ingame: #c6ff6a;
+}
+
+/* ---- the deeper pages: the game page's related shelves and reviews (newer React blocks that keep Steam's own
+   slate and blue), discussions, guides, workshop lists, the hub's filters: dark panes with the green hairline, no stock blue left ---- */
+html.responsive[data-rfs-style="shelter"] :is(.related_items_ctn, .related_items_ctn > .page_content, .review_ctn) { background: transparent !important; box-shadow: none !important; }
+html.responsive[data-rfs-style="shelter"] .related_items_ctn [data-featuretarget] > div > .Panel { background: #04110a !important; border-radius: 4px !important; box-shadow: inset 0 0 0 1px rgba(24, 220, 110, .26) !important; }
+html.responsive[data-rfs-style="shelter"] .related_items_ctn [data-featuretarget] a.Focusable { border-radius: 4px !important; overflow: hidden; }
+html.responsive[data-rfs-style="shelter"] .FollowButton { color: #1bff80 !important; background: #020a05 !important; border-radius: 4px !important; box-shadow: inset 0 0 0 1px rgba(24, 220, 110, .26) !important; }
+html.responsive[data-rfs-style="shelter"] .FollowButton .FollowBtnText { color: inherit !important; }
+html.responsive[data-rfs-style="shelter"] :is(.steam_curators_block .right > a, .dev_row .more_btn, .dlc_highlight_reason) { color: #1bff80 !important; background: var(--sh-key-bg) !important; box-shadow: inset 0 0 0 1px rgba(24, 220, 110, .55) !important; border-radius: 3px !important; }
+html.responsive[data-rfs-style="shelter"] :is(.review_ctn h2, #app_reviews_hash h2, .guides_home_section_title) { font-family: var(--rf-heading-font) !important; font-weight: 400 !important; font-size: 23px !important; text-transform: uppercase; letter-spacing: var(--rf-heading-spacing); color: #1bff80 !important; background: none !important; }
+html.responsive[data-rfs-lang="ar"][data-rfs-style="shelter"] :is(.review_ctn h2, #app_reviews_hash h2, .guides_home_section_title) { font-size: 17px !important; font-weight: 600 !important; }
+html.responsive[data-rfs-style="shelter"] #app_reviews_hash [role="list"] [role="button"] { background: #04110a !important; border-radius: 4px !important; box-shadow: inset 0 0 0 1px rgba(24, 220, 110, .26) !important; overflow: hidden; }
+html.responsive[data-rfs-style="shelter"] #app_reviews_hash [role="list"] [role="button"] .Panel { background-image: none !important; background-color: transparent !important; }
+html.responsive[data-rfs-style="shelter"] #app_reviews_hash [role="list"] [role="button"] .Panel > .Panel > div:not(.Panel),
+html.responsive[data-rfs-style="shelter"] #app_reviews_hash a.Focusable > .Focusable > div { background: #08190f !important; }
+html.responsive[data-rfs-style="shelter"] #app_reviews_hash h1 { color: #8ff5b8 !important; text-shadow: none !important; }
+/* discussions */
+html.responsive[data-rfs-style="shelter"] .forum_paging { background: #04110a !important; border-radius: 4px !important; box-shadow: inset 0 0 0 1px rgba(24, 220, 110, .26) !important; }
+html.responsive[data-rfs-style="shelter"] .forum_paging .pagebtn { color: #1bff80 !important; background: #020a05 !important; border-radius: 4px !important; }
+html.responsive[data-rfs-style="shelter"] :is(.forum_paging_pagelink, .forum_paging_summary, .forum_paging_summary span, .forum_topic_lastpost, .forum_topic_op, .rightbox_list_header div, .apphub_SectionFilterLabel, .tag_category_desc, .tagSearch, .guides_home_section_desc) { color: #3fae72 !important; }
+html.responsive[data-rfs-style="shelter"] .forum_paging_pagelink.active { color: #1bff80 !important; }
+html.responsive[data-rfs-style="shelter"] :is(.discussionSearchTextContainer, .searchTextContainer) { background: #020a05 !important; border-radius: 4px !important; box-shadow: inset 0 0 0 1px rgba(24, 220, 110, .26) !important; }
+html.responsive[data-rfs-style="shelter"] :is(.discussionSearchText, .searchTextContainer input) { color: #8ff5b8 !important; background: transparent !important; border: 0 !important; box-shadow: none !important; }
+html.responsive[data-rfs-style="shelter"] .rightbox_list_selection_background { background-image: none !important; background: rgba(27, 255, 128, .12) !important; box-shadow: inset 0 0 0 1px rgba(27, 255, 128, .5); }
+html.responsive[data-rfs-style="shelter"] :is(.rightbox_list_option.selected, .browseOption.selected) :is(.forum_list_postcount, .forum_list_name a, a) { color: #8ff5b8 !important; }
+html.responsive[data-rfs-style="shelter"] img.discussionSearchTextSubmitImg { filter: grayscale(1); opacity: .85; }
+/* the hub's sub-pages: filters, guides, workshop lists */
+html.responsive[data-rfs-style="shelter"] :is(.subtitle_ctn, .apphub_SectionFilter) { background: #04110a !important; border-radius: 4px !important; box-shadow: inset 0 0 0 1px rgba(24, 220, 110, .26) !important; }
+html.responsive[data-rfs-style="shelter"] .subtitle_ctn .subtitle { color: #8ff5b8 !important; }
+html.responsive[data-rfs-style="shelter"] .filterselect { background: #020a05 !important; border-radius: 4px !important; box-shadow: inset 0 0 0 1px rgba(24, 220, 110, .26) !important; }
+html.responsive[data-rfs-style="shelter"] .filterselect :is(.option, .filterselect_subtext) { color: #1bff80 !important; }
+html.responsive[data-rfs-style="shelter"] .filterselect_options { background: #04110a !important; border-radius: 4px !important; box-shadow: inset 0 0 0 1px rgba(24, 220, 110, .26), 0 18px 40px rgba(0, 0, 0, .6) !important; }
+html.responsive[data-rfs-style="shelter"] :is(.detailBox, #GuideCategoryTags, .panel.guide_category_tags) { background: #04110a !important; border: 0 !important; border-radius: 4px !important; box-shadow: inset 0 0 0 1px rgba(24, 220, 110, .26) !important; }
+html.responsive[data-rfs-style="shelter"] a.guide_home_category_selection { color: #1bff80 !important; background: #020a05 !important; border: 0 !important; border-radius: 4px !important; box-shadow: inset 0 0 0 1px rgba(24, 220, 110, .26) !important; }
+html.responsive[data-rfs-style="shelter"] a.guide_home_category_selection:hover { background: #08190f !important; }
+html.responsive[data-rfs-style="shelter"] a.workshopItemCollection { background: #04110a !important; border-radius: 4px !important; box-shadow: inset 0 0 0 1px rgba(24, 220, 110, .26) !important; }
+html.responsive[data-rfs-style="shelter"] a.workshopItemCollection:hover { background: #08190f !important; }
+html.responsive[data-rfs-style="shelter"] .workshopItemAuthorName { color: #1bff80 !important; }
+html.responsive[data-rfs-style="shelter"] :is(.workshopItemTitle, .rightSectionTitle) { color: #8ff5b8 !important; }
+html.responsive[data-rfs-style="shelter"] :is(.workshopItemPreviewHolder, .workshopItemPreviewHolder img, .appHubIconHolder, .appHubIconHolder img) { border-radius: 4px !important; }
+html.responsive[data-rfs-style="shelter"] :is(.appHubIconHolder, .appHubIconHolder img) { background-image: none !important; background-color: #08190f !important; }
+/* Arabic (RTL): Steam stretches the LIVE badge across the capsule and leaves the platform icon under the buy button */
+html.responsive[dir="rtl"][data-rfs-style="shelter"] .broadcast_live_stream_icon { width: fit-content !important; left: auto !important; }
+html.responsive[dir="rtl"][data-rfs-style="shelter"] .game_area_purchase_platform { left: auto !important; right: 22px !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  html.responsive[data-rfs-style="shelter"] :is(.sale_capsule, .content_hub_capsule_ctn, .search_result_row) { transition: none !important; }
+  html.responsive[data-rfs-style="shelter"] :is(.sale_capsule .capsule_image_ctn, .search_result_row .search_capsule, .carousel__inner-slide a.Focusable > div:first-child, a.OtherEvents_EventCtn > div:first-child, .content_hub_capsule_ctn, .tab_row_item)::after,
+  html.responsive[data-rfs-style="shelter"] :is(.tab_row_item, [role="navigation"] button[role="button"])::before { transition: none; }
+  html.responsive[data-rfs-style="shelter"] :is(.sale_capsule, .content_hub_capsule_ctn, .search_result_row):hover { transform: none; }
+}
+/* friends list: a long game name ends in "…" instead of being cut mid-word (this font is wide) */
+html[data-rfs-style="shelter"] .friend .richPresenceContainer .gameName { display: block; min-width: 0; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

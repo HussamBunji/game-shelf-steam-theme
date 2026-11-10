@@ -434,12 +434,12 @@
       api.sfx('slide');
       const dim = $('.cu-dim', sheet);
       await Promise.all([
-        dim.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 260, easing: 'ease-out' }),
+        dim.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 220, easing: 'ease-out' }),
         card.animate([
           { opacity: 0, transform: 'translateY(12px) scale(.94)' },
           { opacity: 1, transform: 'translateY(-1px) scale(1.006)', offset: 0.72 },
           { opacity: 1, transform: 'none' },
-        ], { duration: 380, easing: EASE, fill: 'backwards' }),
+        ], { duration: 320, easing: EASE, fill: 'backwards' }),
       ].map(a => a.finished.catch(() => null)));
       if (card.isConnected) { card.classList.toggle('ready', true); card.focus({ preventScroll: true }); }
     },

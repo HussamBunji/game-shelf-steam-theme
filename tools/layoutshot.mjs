@@ -20,9 +20,9 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const args = process.argv.slice(2);
-const opt = { style: 'arcade', lang: 'en', out: path.join(ROOT, 'shots'), w: 1600, h: 1000, hover: '', open: '', menu: '', hub: '', search: '', key: '', eval: '' };
+const opt = { style: 'arcade', lang: 'en', out: path.join(ROOT, 'shots'), w: 1600, h: 1000, hover: '', open: '', menu: '', hub: '', search: '', key: '', eval: '', evalshot: '' };
 for (let i = 0; i < args.length; i++) { const k = args[i].replace(/^--/, ''); opt[k] = ['w', 'h'].includes(k) ? +args[++i] : args[++i]; }
-const NAMES = { classic: 'Classic Shelf', neon: 'Neon Coverflow', glass: 'Glass Gallery', terminal: 'Terminal', vault: 'RPG Vault', vinyl: 'Vinyl Records', cork: 'Corkboard', arcade: 'Retro Arcade', magazine: 'Magazine' };
+const NAMES = { classic: 'Classic Shelf', neon: 'Neon Coverflow', glass: 'Glass Gallery', terminal: 'Terminal', vault: 'RPG Vault', vinyl: 'Vinyl Records', cork: 'Corkboard', arcade: 'Retro Arcade', magazine: 'Magazine', cupertino: 'Cupertino Dark', cyberpunk: 'Cyberpunk', shelter: 'Shelter OS', xmb: 'Crossbar' };
 if (!NAMES[opt.style]) { console.log('style id, one of:', Object.keys(NAMES).join(', ')); process.exit(1); }
 mkdirSync(opt.out, { recursive: true });
 
@@ -108,7 +108,7 @@ function harness() {
       GetMyAchievementsForApp: async id => window.SteamClient_ach(+id),
       CreateDesktopShortcutForApp: id => { __harnessLog.push('Shortcut ' + id); return Promise.resolve(); } },
     System: { OpenLocalDirectoryInSystemExplorer: d => __harnessLog.push('OpenDir ' + d) },
-    URL: { ExecuteSteamURL: u => __harnessLog.push('URL ' + u) }, Browser: { RestartJSContext() {} } };
+    URL: { ExecuteSteamURL: u => __harnessLog.push('URL ' + u) }, Browser: { RestartJSContext() {} }, User: { GetIPCountry: async () => 'KW' } };
   // the game page's sources (src/js/hub.js): news, achievements, friends, DLC, badge — shaped like Steam's
   // like Steam: per-language text in a MobX ObservableMap (has get/values, but is NOT instanceof Map)
   const lang0 = s => ({ get: k => (k === 0 ? s : undefined), has: k => k === 0, keys: () => [0][Symbol.iterator](), values: () => [s][Symbol.iterator](), [Symbol.toStringTag]: 'Map' });
@@ -122,12 +122,20 @@ function harness() {
       description: lang0(i % 2 ? BODY_NEW(appid) : BODY_OLD(appid)),
       GetImageURL: () => CDN + appid + '/header.jpg', GetPostTimeAndDateUnixSeconds: () => ${now} - i * 6 * 86400 - 3600 })),
     GetAppImportantUpdate: () => ({ date: ${now} - 2 * 86400 }) };
-  window.friendStore = { GetFriendsInGame: appid => appid === G[0].appid ? [{ steamid64: '76561198000000001', nickname: 'Sanad', persona: { m_strPlayerName: 'Sanad', avatar_url_medium: '', is_online: true } }] : [] };
+  // friends as Steam's friend store holds them (the Crossbar's Friends column): in a game · online · away · offline
+  const FR = [['Sanad', 1, G[0].appid, 'Limgrave — exploring'], ['Rakan', 1, G[6].appid, ''], ['Noor', 1, 0, ''], ['Hamad_KW', 3, 0, ''], ['Layla', 0, 0, ''], ['OldFriend', 0, 0, ''], ['Zayed', 0, 0, '']];
+  const allFriends = FR.map(([n, st, app, rp], i) => ({ accountid: 1000 + i, steamid64: '7656119800000000' + i, efriendrelationship: 3, display_name: n,
+    current_game_name: app && by[app] ? by[app].name : '', current_game_rich_presence: rp,
+    persona: { m_strPlayerName: n, m_ePersonaState: st, m_gameid: app ? String(app) : '0', m_unGamePlayedAppID: app, m_rtLastSeenOnline: ${now} - (i + 1) * 90000, avatar_url_medium: app ? CDN + app + '/header.jpg' : '', avatar_url_full: app ? CDN + app + '/library_600x900.jpg' : '' } }));
+  window.friendStore = { allFriends, GetFriendsInGame: appid => appid === G[0].appid ? [{ steamid64: '76561198000000001', nickname: 'Sanad', persona: { m_strPlayerName: 'Sanad', avatar_url_medium: '', is_online: true } }] : [] };
+  // the store's public services answer Steam's own window; this test page asks them through the harness server
+  { const real = window.fetch.bind(window); const viaHarness = u => u.startsWith('https://store.steampowered.com/') || u.startsWith('https://api.steampowered.com/'); window.fetch = (u, o) => viaHarness(String(u)) ? real('/__proxy?u=' + encodeURIComponent(String(u)), o) : real(u, o); }
   window.badgeStore = { GetBadgeData: appid => ({ strName: 'Tarnished', strIconURL: '', nLevel: 2, nMaxLevel: 5, rgCards: [1, 2, 3, 4, 5, 6].map(i => ({ strTitle: 'Card ' + i, strImgURL: CDN + appid + '/library_600x900.jpg', nOwned: i % 3 ? 1 : 0 })) }) };
   window.SteamClient_ach = appid => ({ result: 1, data: { rgAchievements: Array.from({ length: 14 }, (_, i) => ({ strID: 'A' + i, strName: ['Elden Lord', 'Shardbearer', 'Legendary Armaments', 'Great Rune', 'Roundtable Hold', 'Age of Stars', 'Lord of Frenzied Flame', 'Godslayer', 'Dragonkin', 'Rennala', 'Malenia', 'Radahn', 'Morgott', 'Rykard'][i],
     strDescription: 'Stand-in achievement text number ' + (i + 1) + ' for the test page.', strImage: CDN + appid + '/header.jpg', bAchieved: i % 3 !== 2, bHidden: i === 13, rtUnlocked: i % 3 !== 2 ? ${now} - i * 9 * 86400 : 0, flAchieved: Math.round((60 - i * 4) * 10) / 10 })) } });
   window.MainWindowBrowserManager = { m_lastLocation: { pathname: '/library/home' }, m_browser: null };
-  window.SteamUIStore = { RunningApps: [], Navigate: p => { MainWindowBrowserManager.m_lastLocation.pathname = p; __harnessLog.push('Navigate ' + p); } };
+  window.SteamUIStore = { RunningApps: [], Navigate: p => { MainWindowBrowserManager.m_lastLocation.pathname = p; __harnessLog.push('Navigate ' + p); },
+    WindowStore: { MainWindowInstance: { m_history: { get location() { return MainWindowBrowserManager.m_lastLocation; }, index: 1, length: 2, goForward() {} }, NavigateBack() { __harnessLog.push('Back'); } } } };
   window.MILLENNIUM_API = { classMapList: [], ffi: () => async () => ({ success: true }) };
   try { localStorage.setItem('rfs.lang', ${JSON.stringify(opt.lang)}); localStorage.setItem('rfs.sound', '0'); } catch (e) {}
 })();
@@ -147,6 +155,12 @@ const TYPES = { '.css': 'text/css', '.js': 'text/javascript', '.json': 'applicat
 const server = createServer((req, res) => {
   const u = new URL(req.url, 'http://x');
   if (u.pathname === '/' || u.pathname === '/__harness.html') { res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' }); res.end(harness()); return; }
+  if (u.pathname === '/__proxy') { // the store's public JSON services, for the Crossbar's store shelves
+    const target = u.searchParams.get('u') || '';
+    if (!/^https:\/\/(store|api)\.steampowered\.com\//.test(target)) { res.writeHead(400); res.end(); return; }
+    fetch(target).then(async r => { res.writeHead(r.status, { 'Content-Type': 'application/json; charset=utf-8' }); res.end(Buffer.from(await r.arrayBuffer())); }, () => { res.writeHead(502); res.end(); });
+    return;
+  }
   const f = path.join(ROOT, decodeURIComponent(u.pathname));
   if (!f.startsWith(ROOT) || !existsSync(f)) { res.writeHead(404); res.end(); return; }
   res.writeHead(200, { 'Content-Type': (TYPES[path.extname(f)] || 'application/octet-stream') + '; charset=utf-8', 'Cache-Control': 'no-store' });
@@ -266,14 +280,18 @@ try {
     await sleep(300);
   }
   if (opt.key) {
+    let keyShots = 0;
     for (const k of opt.key.split(',')) {
-      const vk = { ArrowDown: 40, ArrowUp: 38, ArrowLeft: 37, ArrowRight: 39, Enter: 13, Escape: 27, Tab: 9 }[k] || 0;
+      if (k === 'wait') { await sleep(3000); continue; } // e.g. a store shelf loading
+      if (k === 'shot') { await sleep(500); await shot('keys' + (++keyShots)); continue; }
+      const vk = { ArrowDown: 40, ArrowUp: 38, ArrowLeft: 37, ArrowRight: 39, Enter: 13, Escape: 27, Tab: 9, Backspace: 8, F2: 113 }[k] || 0;
       await S('Input.dispatchKeyEvent', { type: 'keyDown', key: k, code: k, windowsVirtualKeyCode: vk });
       await S('Input.dispatchKeyEvent', { type: 'keyUp', key: k, code: k, windowsVirtualKeyCode: vk });
       await sleep(180);
     }
     await sleep(700); await shot('keys');
   }
+  if (opt.evalshot) { console.log('evalshot:', JSON.stringify(await ev(opt.evalshot)).slice(0, 2000)); await sleep(1500); await shot('eval'); } // run JS, then a screenshot
   if (opt.eval) console.log('eval:', JSON.stringify(await ev(opt.eval)).slice(0, 6000));
   console.log('steam calls:', JSON.stringify(await ev('__harnessLog')));
 } catch (e) {

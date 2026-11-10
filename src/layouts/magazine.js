@@ -545,11 +545,21 @@
         const s = Math.max(0.1, Math.min(1, r.width / p.width));
         from = `translate(${Math.round(r.left + r.width / 2 - (p.left + p.width / 2))}px, ${Math.round(r.top + r.height / 2 - (p.top + p.height / 2))}px) scale(${s.toFixed(3)})`;
       }
-      dim.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, easing: 'ease-out' });
-      const a = pa.animate([{ transform: from, opacity: 0.35 }, { transform: 'none', opacity: 1 }], { duration: 300, easing: 'cubic-bezier(.2,.75,.25,1)', fill: 'backwards' });
-      const b = pb.animate([{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], { duration: 330, delay: 240, easing: 'cubic-bezier(.3,.7,.25,1)', fill: 'backwards' });
-      shade.animate([{ opacity: 0.9 }, { opacity: 0 }], { duration: 330, delay: 240, easing: 'ease-out', fill: 'backwards' });
-      setTimeout(() => api.sfx('tick'), 240); // the page turning (sound only, no DOM)
+      // The whole opening is over in 350 ms (it used to take 570): the page starts to turn while the first one is still
+      // settling, and the print "sets" a line at a time behind both. Transform and opacity only, all on the compositor.
+      const EASE = 'cubic-bezier(.2,.8,.25,1)', TURN = 120;
+      dim.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 160, easing: 'ease-out' });
+      const a = pa.animate([{ transform: from, opacity: 0.35 }, { transform: 'none', opacity: 1 }], { duration: 240, easing: EASE, fill: 'backwards' });
+      const b = pb.animate([{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }], { duration: 220, delay: TURN, easing: EASE, fill: 'backwards' });
+      shade.animate([{ opacity: 0.9 }, { opacity: 0 }], { duration: 220, delay: TURN, easing: 'ease-out', fill: 'backwards' });
+      // (only this extra setting of the lines is skipped under reduced motion; the short page turn stays, see above)
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        const set = (els, t0, step) => els.forEach((e, k) => e.animate([{ opacity: 0, transform: 'translateY(7px)' }, { opacity: 1, transform: 'none' }],
+          { duration: 130, delay: t0 + k * step, easing: 'ease-out', fill: 'backwards' }));
+        set([...pa.querySelectorAll('.mg-pg-body > *')].slice(0, 6), 70, 24);
+        set([...pb.querySelectorAll('.mg-pg-body > *')].slice(0, 4), TURN + 50, 16);
+      }
+      setTimeout(() => api.sfx('tick'), TURN); // the page turning (sound only, no DOM)
       try { await Promise.all([a.finished, b.finished]); } catch (e) { /* closed early */ }
       // the keyboard lands on the spread itself (Tab reaches the call-outs, Esc closes) — never straight on Play
       if (sp.isConnected) sp.focus({ preventScroll: true });

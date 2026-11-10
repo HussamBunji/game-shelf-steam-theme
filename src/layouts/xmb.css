@@ -385,3 +385,111 @@ html.rfs-bpm #rfs[data-layout="xmb"] .xb-qv {
 }
 html.rfs-bpm #rfs[data-layout="xmb"] .xb-qv span { font-size: 15px; color: rgba(222, 234, 255, .6); text-shadow: none; }
 html.rfs-bpm #rfs[data-layout="xmb"] .xb-k.rfs-padf { color: #fff; background: rgba(255, 255, 255, .3); }
+
+/* ═════════════ the store shelves and the friends column (xmb.js: Shop, friendRows) ═════════════ */
+/* a store game's price line: the discount is the console's white-lit capsule, the old price fades behind it */
+#rfs[data-layout="xmb"] :is(.xb-it .h, .xb-price) .pc {
+  flex: none; padding: 1px 8px; border-radius: 99px; font-size: 11.5px; font-weight: 700; letter-spacing: 0; color: #06204d;
+  background: #fff; box-shadow: 0 0 10px rgba(var(--xb-g), .7);
+}
+#rfs[data-layout="xmb"] :is(.xb-it .h, .xb-price) .pr { flex: none; color: rgba(255, 255, 255, .92); font-weight: 400; }
+#rfs[data-layout="xmb"] :is(.xb-it .h, .xb-price) .pr.soon { color: var(--xb-dim); }
+#rfs[data-layout="xmb"] :is(.xb-it .h, .xb-price) s { flex: none; color: var(--xb-faint); text-decoration-thickness: 1px; }
+#rfs[data-layout="xmb"] .xb-it .h i.own { flex: none; font-style: normal; color: #b9f0c8; }
+#rfs[data-layout="xmb"] .xb-it .h i.own::before { content: '·'; margin-inline-end: 10px; color: var(--xb-faint); }
+#rfs[data-layout="xmb"] .xb-price { display: flex; align-items: center; gap: 12px; min-height: 30px; }
+#rfs[data-layout="xmb"] .xb-price .pr { font-size: 26px; font-weight: 300; color: #fff; text-shadow: var(--xb-tglow); }
+#rfs[data-layout="xmb"] .xb-price .pr.soon { font-size: 16px; text-shadow: none; }
+#rfs[data-layout="xmb"] .xb-price .pc { font-size: 13px; padding: 2px 10px; }
+#rfs[data-layout="xmb"] .xb-price s { font-size: 14px; }
+#rfs[data-layout="xmb"] .xb-info .xb-clamp { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+/* a shelf is a folder: a small chevron at the end of its title says it opens */
+#rfs[data-layout="xmb"] .xb-it.dir .t::after {
+  content: ''; display: inline-block; width: 6px; height: 6px; margin-inline-start: 12px; vertical-align: middle;
+  border-block-start: 1.5px solid currentColor; border-inline-end: 1.5px solid currentColor; opacity: .6; transform: rotate(45deg);
+}
+html[data-rfs-lang="ar"] #rfs[data-layout="xmb"] .xb-it.dir .t::after { transform: rotate(-45deg); }
+#rfs[data-layout="xmb"] .xb-it.note { cursor: default; }
+#rfs[data-layout="xmb"] .xb-it.note .art > svg.rf-ic { opacity: .7; }
+/* inside a shelf the other categories step back, the way the console dims the bar when a folder is open */
+#rfs[data-layout="xmb"] .xb.in-sub .xb-cat:not(.on) { opacity: .28; }
+#rfs[data-layout="xmb"] .xb.in-sub .xb-cat.on small { color: #fff; text-shadow: var(--xb-tglow); }
+
+/* friends: square avatars (the text column stays where the game rows have it), a status light on the corner */
+#rfs[data-layout="xmb"] .xb-it.fr .art { width: 49px; margin-inline-start: 91px; border-radius: 8px; overflow: visible; background: var(--img) center / cover no-repeat, linear-gradient(160deg, rgba(255, 255, 255, .2), rgba(255, 255, 255, .05)); }
+#rfs[data-layout="xmb"] .xb-it.fr.sel .art { width: 82px; height: 82px; margin-inline-start: 94px; border-radius: 12px; }
+#rfs[data-layout="xmb"] .xb-it.fr .art::after {
+  content: ''; position: absolute; inset-block-end: -3px; inset-inline-end: -3px; width: 11px; height: 11px; border-radius: 50%;
+  background: #7f8aa3; box-shadow: 0 0 0 2px var(--xb-2, #0d2a66);
+}
+#rfs[data-layout="xmb"] .xb-it.fr.r0 .art::after { background: #9af0b0; box-shadow: 0 0 0 2px var(--xb-2, #0d2a66), 0 0 10px #9af0b0; }
+#rfs[data-layout="xmb"] .xb-it.fr.r1 .art::after { background: #8fd0ff; box-shadow: 0 0 0 2px var(--xb-2, #0d2a66), 0 0 10px #8fd0ff; }
+#rfs[data-layout="xmb"] .xb-it.fr.r2 .art::after { background: #ffd58a; }
+#rfs[data-layout="xmb"] .xb-it.fr.r0 .h { color: #b9f0c8; }
+#rfs[data-layout="xmb"] .xb-it.fr.r1 .h { color: #bfe2ff; }
+#rfs[data-layout="xmb"] .xb-it.fr.r3:not(.sel) .t { color: rgba(255, 255, 255, .62); }
+#rfs[data-layout="xmb"] .xb-it.fr.r3 .art { opacity: .6; }
+#rfs[data-layout="xmb"] .xb-it.fr.r3.sel .art { opacity: 1; }
+#rfs[data-layout="xmb"] .xb-fr { display: flex; align-items: center; gap: 14px; min-width: 0; }
+#rfs[data-layout="xmb"] .xb-fr .av {
+  flex: none; width: 64px; height: 64px; border-radius: 14px; background: rgba(255, 255, 255, .1) center / cover no-repeat;
+  box-shadow: 0 0 0 1.5px rgba(255, 255, 255, .85), 0 0 18px rgba(var(--xb-g), .6);
+}
+#rfs[data-layout="xmb"] .xb-fr h2 { min-width: 0; }
+#rfs[data-layout="xmb"] .xb-run.st { color: var(--xb-dim); font-weight: 400; }
+#rfs[data-layout="xmb"] .xb-run.st .dot { width: 9px; height: 9px; border-radius: 50%; background: #7f8aa3; }
+#rfs[data-layout="xmb"] .xb-run.st.r0 { color: #b9f0c8; font-weight: 600; }
+#rfs[data-layout="xmb"] .xb-run.st.r0 .dot { background: #9af0b0; box-shadow: 0 0 10px #9af0b0; }
+#rfs[data-layout="xmb"] .xb-run.st.r1 { color: #bfe2ff; }
+#rfs[data-layout="xmb"] .xb-run.st.r1 .dot { background: #8fd0ff; box-shadow: 0 0 10px #8fd0ff; }
+#rfs[data-layout="xmb"] .xb-run.st.r2 .dot { background: #ffd58a; }
+
+/* ═════════════ the console bar: every page that is not the Crossbar home (xmb.js Chrome) ═════════════
+   It stands exactly where Steam's top bar was (that bar keeps 44 px, invisible), so the store's own view starts right
+   under it. One still gradient in the chosen background colour, a hairline of light below, thin glowing type. */
+#xb-nav {
+  --xb-1: #1d4fa6; --xb-2: #0d2a66; --xb-3: #040c24; --xb-g: 120, 175, 255;
+  --xb-dim: rgba(222, 234, 255, .7); --xb-tglow: 0 0 12px rgba(var(--xb-g), .55), 0 0 2px rgba(255, 255, 255, .35);
+  position: fixed; z-index: 9000; top: 0; inset-inline: 0; height: 44px; box-sizing: border-box;
+  display: flex; align-items: center; gap: 4px; padding-inline: 10px 4px; color: #fff; user-select: none;
+  font-family: var(--rf-font-ui); font-size: 14px; font-weight: 300; font-variant-numeric: tabular-nums;
+  background:
+    radial-gradient(ellipse 46% 220% at 50% -90%, rgba(var(--xb-g), .42), transparent 70%),
+    linear-gradient(180deg, var(--xb-1), var(--xb-2));
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, .22), inset 0 1px 0 rgba(255, 255, 255, .1);
+  -webkit-app-region: drag;
+}
+html:not(.xb-away) #xb-nav, html.xb-peek #xb-nav, html.rfs-bpm #xb-nav { display: none; }
+#xb-nav button {
+  flex: none; display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 30px; padding: 0; border: 0; border-radius: 99px;
+  font: inherit; color: rgba(255, 255, 255, .9); background: transparent; cursor: pointer; -webkit-app-region: no-drag;
+  transition: background-color .12s, box-shadow .12s, opacity .12s;
+}
+#xb-nav button > svg.rf-ic { width: 17px; height: 17px; margin: 0; stroke: currentColor; filter: none; }
+#xb-nav button > svg.rf-ic :is(.f, rect, ellipse, circle:not(.s)) { fill: none; }
+#xb-nav .xn-b { width: 34px; }
+#xb-nav button:hover { color: #fff; background: rgba(255, 255, 255, .14); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .3), 0 0 12px rgba(var(--xb-g), .45); }
+#xb-nav button:focus-visible { outline: 0; box-shadow: inset 0 0 0 1.5px #fff, 0 0 14px rgba(var(--xb-g), .7); }
+#xb-nav button:active { background: rgba(255, 255, 255, .24); }
+#xb-nav button:disabled { opacity: .3; pointer-events: none; }
+/* back to the Crossbar: the lit pill, the one main step of the bar */
+#xb-nav .xn-home {
+  padding-inline: 12px 16px; margin-inline-end: 6px; font-weight: 400; color: #fff;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .26), rgba(255, 255, 255, .08));
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .5), 0 0 14px rgba(var(--xb-g), .45);
+}
+#xb-nav .xn-home:hover { background: linear-gradient(180deg, rgba(255, 255, 255, .36), rgba(255, 255, 255, .14)); box-shadow: inset 0 0 0 1px #fff, 0 0 18px rgba(var(--xb-g), .8); }
+#xb-nav .xn-title { flex: 1 1 auto; min-width: 0; display: flex; align-items: baseline; gap: 10px; padding-inline: 12px; white-space: nowrap; overflow: hidden; }
+#xb-nav .xn-title small { flex: none; font-size: 12px; font-weight: 400; color: var(--xb-dim); }
+#xb-nav .xn-title small:empty { display: none; }
+#xb-nav .xn-title b { min-width: 0; overflow: hidden; text-overflow: ellipsis; font-size: 15.5px; font-weight: 300; text-shadow: var(--xb-tglow); }
+#xb-nav .xn-quick { flex: none; display: flex; align-items: center; gap: 2px; }
+#xb-nav .xn-clock { flex: none; margin-inline: 8px 4px; padding-inline-start: 14px; font-size: 15px; font-weight: 300; line-height: 20px; text-shadow: var(--xb-tglow); border-inline-start: 1px solid rgba(255, 255, 255, .28); white-space: nowrap; }
+#xb-nav .xn-win { flex: none; display: flex; align-items: center; gap: 2px; }
+#xb-nav .xn-win button { width: 40px; height: 28px; border-radius: 8px; }
+#xb-nav .xn-win button.w-x:hover { background: rgba(232, 72, 88, .9); box-shadow: none; }
+#xb-nav .xn-win .w-min { width: 11px; height: 1.5px; background: currentColor; }
+#xb-nav .xn-win .w-max { width: 10px; height: 10px; border: 1.5px solid currentColor; border-radius: 2px; box-sizing: border-box; }
+#xb-nav .xn-win svg.rf-ic { width: 13px; height: 13px; }
+@media (max-width: 900px) { #xb-nav .xn-home span, #xb-nav .xn-quick .xn-b:not([data-n="steam"]) { display: none; } }
+@media (prefers-reduced-motion: reduce) { #xb-nav button { transition: none; } }

@@ -2,6 +2,81 @@
 
 How fast the themes are on a live Steam, measured. Steam runs with `-dev`, CDP at `http://127.0.0.1:8080`.
 
+## 2026-11-10 — the store felt heavy, even under "Steam Original"
+
+Measured in a hidden Chromium (Steam's user agent, software rendering, warm cache; medians of 2-3 runs, ms of
+main-thread time; the script and raw results are not in the repo). "Scroll" = 30 wheel steps down and back.
+
+| Page · style | Load before → after | Scroll before → after | No theme at all (load · scroll) |
+|---|---|---|---|
+| Store home · Steam Original | 1219 → **459** | 773 → **198** | 461 · 196 |
+| Store home · Glass Gallery | 2250 → **1020** | 684 → **211** | |
+| Store home · Steam Wine | 1438 → **710** | 949 → **261** | |
+| Game page · Steam Original | 1408 → **616** | 1654 → **373** | 740 · 351 |
+| Game page · Glass Gallery | 1836 → **1101** | 2272 → **388** | |
+| Game page · Steam Wine | 1964 → **1038** | 2095 → **581** | |
+
+### What was slow
+1. **Every style's store rules in one file.** `webkit.css` imported `webkit-styles.css` (all 24 styles, 1.2 MB, each
+   rule scoped `html[data-rfs-style="…"]`). Parsing was cheap (13 ms); matching was not: selectors are matched right
+   to left, so ~3,000 selectors of the other styles were tried against every element on every style pass before the
+   `html` test failed — 92 % of all selector-matching time, 26× the cost of one style pass, under every style.
+   **Fix:** `tools/build.mjs` writes `src/css/web-styles/<id>.css`; `webkit.js` (`styleCss`) links only the active
+   one and swaps it on a live switch. `webkit-styles.css` is now a stub.
+2. **`markDiscounts` wrote an attribute, then read the next element's computed style** — one page-wide style pass
+   per element (one call: 713 ms on a game page under Glass), every 1.2 s. Now: reads first, writes after; only
+   after the page changed (an observer raises a flag); not at all for Original / SpaceTheme / Material.
+3. **Quick links re-measured on every scroll frame** (three `elementFromPoint` + forced layouts). Now the place is
+   worked out once and the button follows the search box with one measurement per frame.
+4. **The page-wide font rule under Steam Original in English** (120-150 ms of style work for Steam's own font).
+   Not injected there any more; Arabic keeps it.
+5. `syncStyle` (every 3 s) re-ran the tint sync and re-read the style's variables when nothing had changed.
+
+## 2026-11-10 — theme switching (the owner's main complaint: "3-4 seconds until Steam takes the change")
+
+Measured on the owner's PC, 908 games, window on screen, by calling `__rfsShelf.Themes.apply()` and reading
+`__rfsShelf.Themes.perf` (ms from the click: `ready` sheet loaded + choice saved, `styled` sheets flipped,
+`built` new home design in the DOM, `painted` second frame after that).
+
+| Switch | Before (new design visible) | After (painted) |
+|---|---|---|
+| Glass → RPG Vault | ~1830 | ~500 |
+| Vault → Glass | ~1540 | ~410 |
+| Glass → Shelter OS | ~1550 | 810–1020 |
+| Shelter / Crossbar → Glass | ~1310 | 510–710 |
+| Glass → Crossbar | — | ~300 |
+
+### What was slow
+1. **The old home design was restyled for a sheet it would never be shown with.** Glass kept ~9,180 elements in the
+   page (two thirds of the whole window). The switch added the new sheet next to the old one, removed the old one and
+   rewrote `html[data-rfs-style]`: two or three page-wide style passes over 13,600 elements (~1.1 s main thread).
+   **Fix (`shelf.js` `Themes.live`):** the new sheet loads switched off, then ONE step empties the old design,
+   flips the sheets, names the style, runs the window's restyle hooks and builds the new design.
+2. **Flipping a sheet with the `media` attribute is not immediate.** Chromium fetches the file again and swaps the
+   result in later, so for a frame the window had no theme sheet at all (drawn once unstyled, once styled, and the
+   first build picked the wrong home design). **Fix:** `sheetOn(link, on)` writes `link.sheet.media.mediaText`,
+   which applies in the same task. Used for the theme sheet, the design sheets and SpaceTheme's "home" part.
+3. **A new design's CSS was switched on while the old design was still in the page** (one more full pass). It now
+   loads off (`loadLayout(id, true)`) and is turned on in the same step.
+4. **The ~25 hidden menu windows were restyled right after the main window**, 16 ms apart, on the same thread as
+   the new design's first frames. Visible ones follow at once; hidden ones one per idle callback.
+5. **Glass built 10 elements per game for the whole library.** A card's light rim and quick-play button are now
+   added when the card comes near the screen: 9,182 → ~5,600 elements. Every page-wide style pass in Glass is
+   cheaper (the picker opening, a switch to or from it).
+6. Fonts: the target style's web fonts are fetched when its card is pointed at (`warmFonts`), so they are in the
+   browser cache when the style arrives instead of re-laying the window out a second later.
+
+### Still slow / not done
+- Switching between a designed style and the Steam Original family still reloads Steam's interface (SpaceTheme's
+  JS rewrites parts of the title bar and cannot be unloaded). Switches inside each family are live.
+- The floor is ~250 ms: one style pass over Steam's own ~4,500 elements against its 35,000 rules.
+
+### Menu windows after a switch
+Steam sizes each menu's popup window from the menu's measured box. After a live switch the stored box changed but
+the hidden window kept its old size, so the menu showed cut off at the end edge with square corners.
+`skin.js` `menuFit` re-runs Steam's own positioning when a menu window is shown, after a restyle and when its fonts
+arrive. (`PositionPopupWindow()` only takes effect while Steam's main window is on screen.)
+
 ## 2026-11-08 — page changes, theme switching, idle cost
 
 ### How it was measured

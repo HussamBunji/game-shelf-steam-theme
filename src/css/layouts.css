@@ -6,6 +6,7 @@
 @import url("../layouts/vinyl.preview.css");
 @import url("../layouts/cork.preview.css");
 @import url("../layouts/arcade.preview.css");
+@import url("../layouts/steam-tints.preview.css");
 @import url("../layouts/magazine.preview.css");
 @import url("../layouts/cupertino.preview.css");
 @import url("../layouts/cyberpunk.preview.css");
@@ -28,8 +29,10 @@ html.rfs-home-on:not(.rfs-show-news) [data-rfs-home] > :has([data-rfs-upd]) { di
    Two views of one list. FLOW: the top panel (filter strip + view toggle + section rail), the 3D coverflow, the focused
    game's deck (state · play time · last played · achievements · PLAY / Details / Game page / Store), key hints.
    GRID: the same top panel stuck to the top, then every game in sections. Only ~15 covers exist in FLOW; covers move with
-   transform / opacity only, dimming is an overlay (no per-item filters). Big Picture extras: src/css/bigpicture.css. */
-#rfs .cf-wrap { --nm-rgb: var(--rf-glow, 255, 62, 165); --mono: var(--ne-mono, 'JetBrains Mono', Consolas, monospace); position: relative; }
+   transform / opacity only, dimming is an overlay (no per-item filters). Big Picture extras: src/css/bigpicture.css.
+   Motion: one curve (--cf-ease), transform and opacity only. Hover answers at once: colours snap, glows are
+   pseudo-elements that fade in 120 ms, buttons dip when pressed. The covers glide in 320 ms. */
+#rfs .cf-wrap { --nm-rgb: var(--rf-glow, 255, 62, 165); --mono: var(--ne-mono, 'JetBrains Mono', Consolas, monospace); --cf-ease: cubic-bezier(.22, .9, .24, 1); position: relative; }
 #rfs .cf-wrap.is-flow { height: 100%; display: flex; flex-direction: column; overflow: hidden; }
 #rfs .cf-wrap > :is(.cf-stage, .cf-deck, .cf-keys, .cf-grid) { position: relative; z-index: 1; }
 #rfs .cf-wrap > .cf-top { position: relative; z-index: 60; }
@@ -38,7 +41,7 @@ html.rfs-home-on:not(.rfs-show-news) [data-rfs-home] > :has([data-rfs-upd]) { di
 #rfs .cf-bg { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
 #rfs .cf-bg-img {
   position: absolute; inset: -60px; background-size: cover; background-position: center;
-  filter: blur(34px) saturate(1.5) brightness(.4); opacity: 0; transition: opacity .7s ease;
+  filter: blur(34px) saturate(1.5) brightness(.4); opacity: 0; transition: opacity .32s ease-out;
 }
 #rfs .cf-bg::after {
   content: ''; position: absolute; inset: 0;
@@ -62,8 +65,9 @@ html.rfs-home-on:not(.rfs-show-news) [data-rfs-home] > :has([data-rfs-upd]) { di
 #rfs .cf-view {
   display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px; border: 0; border-radius: 1px; cursor: pointer;
   font: 700 11.5px var(--font); text-transform: uppercase; letter-spacing: var(--ne-track, .12em); color: var(--muted); background: none;
-  transition: color .12s, background .12s;
+  transition: transform .09s var(--cf-ease);
 }
+#rfs .cf-view:active { transform: scale(.96); }
 #rfs .cf-view > svg.rf-ic { width: 15px; height: 15px; margin: 0; }
 #rfs .cf-view:hover { color: var(--ink); background: rgba(var(--acc-rgb), .08); }
 #rfs .cf-view.on { color: #00131c; background: linear-gradient(180deg, #8ff8ff, var(--accent) 50%, #1fb8ff); box-shadow: 0 0 12px rgba(var(--acc-rgb), .55); }
@@ -73,8 +77,9 @@ html.rfs-home-on:not(.rfs-show-news) [data-rfs-home] > :has([data-rfs-upd]) { di
 #rfs .cf-sec {
   flex: none; display: inline-flex; align-items: center; gap: 7px; height: 28px; padding: 0 11px; cursor: pointer; white-space: nowrap;
   font: 600 12px var(--font); color: var(--muted); background: rgba(var(--acc-rgb), .04);
-  border: 1px solid rgba(var(--acc-rgb), .16); border-radius: var(--rf-radius); transition: color .12s, border-color .12s, background .12s;
+  border: 1px solid rgba(var(--acc-rgb), .16); border-radius: var(--rf-radius); transition: transform .09s var(--cf-ease);
 }
+#rfs .cf-sec:active { transform: scale(.96); }
 #rfs .cf-sec > b { font: 700 10.5px var(--mono) !important; color: rgba(var(--nm-rgb), .95); }
 #rfs .cf-secs.abc { gap: 3px; }
 #rfs .cf-secs.abc .cf-sec { min-width: 27px; padding: 0 6px; justify-content: center; font: 700 12px var(--mono) !important; }
@@ -100,7 +105,7 @@ html.rfs-home-on:not(.rfs-show-news) [data-rfs-home] > :has([data-rfs-upd]) { di
 #rfs .cf-track { --ch: clamp(160px, 68cqh, 480px); --cw: calc(var(--ch) * 2 / 3); position: absolute; left: 50%; top: 6cqh; width: 0; height: var(--ch); transform-style: preserve-3d; }
 #rfs .cf-item {
   position: absolute; left: 0; top: 0; width: var(--cw); height: var(--ch); cursor: pointer;
-  transform-style: preserve-3d; will-change: transform; transition: transform .42s cubic-bezier(.2, .8, .2, 1), opacity .3s;
+  transform-style: preserve-3d; will-change: transform; transition: transform .32s var(--cf-ease), opacity .22s ease-out;
 }
 #rfs .cf-cover {
   position: relative; width: 100%; height: 100%; border-radius: var(--rf-radius-lg);
@@ -109,7 +114,7 @@ html.rfs-home-on:not(.rfs-show-news) [data-rfs-home] > :has([data-rfs-upd]) { di
   -webkit-box-reflect: below 6px linear-gradient(transparent 68%, rgba(255, 255, 255, .2));
 }
 /* side covers are dimmed by an overlay (cheap opacity), not a filter */
-#rfs .cf-cover::after { content: ''; position: absolute; inset: 0; border-radius: inherit; background: rgba(6, 5, 13, .5); transition: opacity .3s; }
+#rfs .cf-cover::after { content: ''; position: absolute; inset: 0; border-radius: inherit; background: rgba(6, 5, 13, .5); transition: opacity .22s ease-out; }
 #rfs .cf-item.center .cf-cover::after { opacity: 0; }
 #rfs .cf-item:not(.center):hover .cf-cover::after { opacity: .3; transition-duration: .08s; }
 /* not installed: a magenta tube along the cover's foot */
@@ -124,10 +129,17 @@ html.rfs-home-on:not(.rfs-show-news) [data-rfs-home] > :has([data-rfs-upd]) { di
   position: absolute; top: 40cqh; z-index: 300; transform: translateY(-50%);
   display: grid; place-items: center; width: 40px; height: 76px; padding: 0; cursor: pointer; color: var(--accent);
   background: rgba(6, 5, 13, .6); border: 1px solid rgba(var(--acc-rgb), .45); border-radius: var(--rf-radius);
-  transition: box-shadow .12s, background .12s;
 }
-#rfs .cf-nav > svg.rf-ic { width: 22px; height: 22px; }
-#rfs .cf-nav:hover { background: rgba(var(--acc-rgb), .12); box-shadow: 0 0 18px rgba(var(--acc-rgb), .6); }
+/* the tube's glow is a layer that fades in (no animated shadow); the chevron leans the way it steps */
+#rfs .cf-nav::after { content: ''; position: absolute; inset: -1px; border-radius: inherit; pointer-events: none; opacity: 0; box-shadow: 0 0 18px rgba(var(--acc-rgb), .6), inset 0 0 10px rgba(var(--acc-rgb), .16); transition: opacity .12s linear; }
+#rfs .cf-nav > svg.rf-ic { width: 22px; height: 22px; transition: transform .12s var(--cf-ease); }
+#rfs .cf-nav:hover { background: rgba(var(--acc-rgb), .12); border-color: var(--accent); }
+#rfs .cf-nav:hover::after { opacity: 1; }
+#rfs .cf-nav.prev:hover > svg.rf-ic { transform: translateX(3px); }
+#rfs .cf-nav.next:hover > svg.rf-ic { transform: translateX(-3px); }
+html[data-rfs-lang="en"] #rfs .cf-nav.prev:hover > svg.rf-ic { transform: translateX(-3px); }
+html[data-rfs-lang="en"] #rfs .cf-nav.next:hover > svg.rf-ic { transform: translateX(3px); }
+#rfs .cf-nav:active > svg.rf-ic { transform: scale(.86); }
 #rfs .cf-nav.prev { inset-inline-start: 18px; }
 #rfs .cf-nav.next { inset-inline-end: 18px; }
 
@@ -168,19 +180,25 @@ html.rfs-home-on:not(.rfs-show-news) [data-rfs-home] > :has([data-rfs-upd]) { di
 #rfs .cf-btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding: 0 18px; cursor: pointer; white-space: nowrap;
   font: 700 12.5px var(--font); text-transform: uppercase; letter-spacing: var(--ne-track, .12em); color: #d9f8ff;
-  background: rgba(8, 6, 20, .78); border: 1px solid rgba(var(--acc-rgb), .5); border-radius: var(--rf-radius);
-  transition: box-shadow .12s, background .12s;
+  position: relative; background: rgba(8, 6, 20, .78); border: 1px solid rgba(var(--acc-rgb), .5); border-radius: var(--rf-radius);
+  transition: transform .09s var(--cf-ease);
 }
+/* every deck button lights the same way: its colour snaps, its glow (a layer) fades in, it dips when pressed */
+#rfs .cf-btn::after { content: ''; position: absolute; inset: -1px; border-radius: inherit; pointer-events: none; opacity: 0; box-shadow: 0 0 16px rgba(var(--acc-rgb), .5), inset 0 0 10px rgba(var(--acc-rgb), .15); transition: opacity .12s linear; }
+#rfs .cf-btn:hover::after { opacity: 1; }
+#rfs .cf-btn:active { transform: scale(.97); }
 #rfs .cf-btn > svg.rf-ic { width: 16px; height: 16px; margin: 0; }
-#rfs .cf-btn:hover { background: rgba(var(--acc-rgb), .13); box-shadow: 0 0 16px rgba(var(--acc-rgb), .5), inset 0 0 10px rgba(var(--acc-rgb), .15); }
+#rfs .cf-btn:hover { background: rgba(var(--acc-rgb), .13); border-color: var(--accent); }
 #rfs .cf-btn.store { color: #ffd9ef; border-color: rgba(var(--nm-rgb), .7); }
-#rfs .cf-btn.store:hover { background: rgba(var(--nm-rgb), .14); box-shadow: 0 0 16px rgba(var(--nm-rgb), .5); }
+#rfs .cf-btn.store::after { box-shadow: 0 0 16px rgba(var(--nm-rgb), .5); }
+#rfs .cf-btn.store:hover { background: rgba(var(--nm-rgb), .14); border-color: rgb(var(--nm-rgb)); }
 #rfs .cf-btn.play {
   min-width: 176px; height: 44px; padding: 0 26px; font-size: 14.5px; color: var(--rf-play-ink, #00131c);
   background: linear-gradient(180deg, #8ff8ff, var(--rf-play-1, #3ef0ff) 45%, var(--rf-play-2, #1b7bff)); border: 1px solid #c8fcff;
   box-shadow: 0 0 18px rgba(var(--acc-rgb), .55), inset 0 0 0 1px rgba(255, 255, 255, .3);
 }
-#rfs .cf-btn.play:hover { box-shadow: 0 0 26px rgba(var(--acc-rgb), .9), 0 0 2px #fff, inset 0 0 0 1px rgba(255, 255, 255, .45); background: linear-gradient(180deg, #b5fbff, #5ef3ff 45%, #3a8fff); }
+#rfs .cf-btn.play::after { box-shadow: 0 0 26px rgba(var(--acc-rgb), .9), 0 0 2px #fff; }
+#rfs .cf-btn.play:hover { background: linear-gradient(180deg, #b5fbff, #5ef3ff 45%, #3a8fff); border-color: #fff; }
 #rfs .cf-btn.play > small { font: 700 11px var(--mono) !important; letter-spacing: 0; opacity: .78; }
 #rfs .cf-btn.play.is-running { background: linear-gradient(180deg, #b5ffd0, #2bd47a); border-color: #c9ffe0; box-shadow: 0 0 16px rgba(107, 255, 158, .6); }
 #rfs .cf-keys { flex: none; display: flex; justify-content: center; flex-wrap: wrap; gap: 6px 18px; padding: 2px 16px 10px; font-size: 11.5px; color: var(--muted); opacity: .85; }
@@ -208,7 +226,7 @@ html.rfs-home-on:not(.rfs-show-news) [data-rfs-home] > :has([data-rfs-upd]) { di
 #rfs .nf-art {
   position: relative; aspect-ratio: 2 / 3; border-radius: var(--rf-radius);
   background: var(--cap) center / cover, linear-gradient(160deg, #1d1640, #0b0918);
-  box-shadow: 0 0 0 1px rgba(var(--acc-rgb), .18); transition: box-shadow .12s, transform .12s;
+  box-shadow: 0 0 0 1px rgba(var(--acc-rgb), .18); transition: transform .12s var(--cf-ease);   /* the frame lights at once; only the lift eases */
 }
 #rfs .nf-card.ni .nf-art::after { content: ''; position: absolute; inset: 0; border-radius: inherit; background: rgba(6, 5, 13, .4); box-shadow: inset 0 -3px 0 rgb(var(--nm-rgb)); }
 #rfs .nf-card:hover .nf-art { transform: translateY(-3px); box-shadow: 0 0 0 1px var(--accent), 0 0 16px rgba(var(--acc-rgb), .5), 0 0 34px rgba(var(--nm-rgb), .25); }
@@ -221,18 +239,25 @@ html.rfs-home-on:not(.rfs-show-news) [data-rfs-home] > :has([data-rfs-upd]) { di
 #rfs .nf-play {
   position: absolute; inset-inline-start: 8px; bottom: 9px; z-index: 1; display: grid; place-items: center; width: 36px; height: 36px; padding: 0; cursor: pointer;
   color: #00131c; background: linear-gradient(180deg, #8ff8ff, var(--accent) 45%, #1fb8ff); border: 1px solid #c8fcff; border-radius: var(--rf-radius);
-  box-shadow: 0 0 12px rgba(var(--acc-rgb), .6); opacity: 0; transition: opacity .1s;
+  box-shadow: 0 0 12px rgba(var(--acc-rgb), .6); opacity: 0; transform: translateY(5px); transition: opacity .1s linear, transform .12s var(--cf-ease);
 }
 #rfs .nf-play > svg.rf-ic { width: 17px; height: 17px; margin: 0; filter: none; }
 #rfs .nf-play > svg.rf-ic, #rfs .nf-play > svg.rf-ic * { stroke: currentColor; }
-#rfs .nf-card:hover .nf-play { opacity: 1; }
+#rfs .nf-card:hover .nf-play { opacity: 1; transform: none; }
+#rfs .nf-play:active { transform: scale(.92); }
 #rfs .cf-grid > .rf-empty { grid-column: 1 / -1; }
+@media (prefers-reduced-motion: reduce) {
+  #rfs .cf-item, #rfs .cf-cover::after, #rfs .cf-bg-img, #rfs .nf-art, #rfs .nf-play, #rfs :is(.cf-btn, .cf-nav)::after, #rfs .cf-nav > svg.rf-ic { transition-duration: .01s; }
+  #rfs :is(.cf-btn, .cf-view, .cf-sec, .nf-play):active, #rfs .nf-card:hover .nf-art { transform: none; }
+}
 
-/* ═════════════ 3. GLASS GALLERY ═════════════ */
-#rfs .gl { padding: 18px 22px 34px; }
+/* ═════════════ 3. GLASS GALLERY ═════════════
+   Motion: one curve (--gl-ease), transform and opacity only. A card lifts in 140 ms while its light rim (the .gl-shine
+   layer) fades in; chips and buttons answer at once and squeeze when pressed; nothing animates at rest. */
+#rfs .gl { --gl-ease: cubic-bezier(.2, .8, .2, 1); padding: 18px 22px 34px; }
 #rfs .gl-hero { position: relative; height: 290px; border-radius: var(--rf-radius-lg); overflow: hidden; border: var(--rf-card-border); }
-#rfs .gl-hero-bg { position: absolute; inset: 0; background-size: cover; background-position: center 28%; transform: scale(1.04); transition: transform 6s ease; }
-#rfs .gl-hero:hover .gl-hero-bg { transform: scale(1.09); }
+#rfs .gl-hero-bg { position: absolute; inset: 0; background-size: cover; background-position: center 28%; transform: scale(1.04); transition: transform .7s var(--gl-ease); }
+#rfs .gl-hero:hover .gl-hero-bg { transform: scale(1.065); }
 #rfs .gl-hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to left, rgba(8,13,22,.94), rgba(8,13,22,.6) 42%, transparent 78%), linear-gradient(to top, rgba(8,13,22,.6), transparent 45%); }
 #rfs .gl-hero-body { position: absolute; inset: 0; z-index: 1; padding: 26px 30px; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-start; gap: 12px; max-width: 58%; }
 #rfs .gl-kicker { font-size: 12px; font-weight: 700; color: var(--accent); letter-spacing: .04em; }
@@ -244,15 +269,17 @@ html.rfs-home-on:not(.rfs-show-news) [data-rfs-home] > :has([data-rfs-upd]) { di
 #rfs .gl-btn {
   padding: 10px 18px; border-radius: var(--rf-radius); cursor: pointer; font: 600 14px var(--font); color: #fff;
   background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.16); backdrop-filter: blur(10px);
-  transition: background .2s, transform .15s;
+  transition: transform .12s var(--gl-ease);
 }
-#rfs .gl-btn:hover { background: rgba(255,255,255,.2); transform: translateY(-1px); }
+#rfs .gl-btn:hover { background: rgba(255,255,255,.2); border-color: rgba(255,255,255,.34); transform: translateY(-1px); }
+#rfs .gl-btn:active { transform: scale(.97); }
 #rfs .gl-btn.play { border: 0; padding: 11px 26px; font-weight: 800; color: var(--rf-play-ink); background: linear-gradient(135deg, var(--rf-play-1), var(--rf-play-2)); box-shadow: 0 8px 24px rgba(0,0,0,.35); }
 #rfs .gl-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 16px; }
 #rfs .gl-chip {
   padding: 6px 13px; border-radius: 99px; cursor: pointer; font: 600 12.5px var(--font); color: var(--muted);
-  background: var(--rf-card); border: var(--rf-card-border); backdrop-filter: blur(var(--rf-blur)); transition: all .2s;
+  background: var(--rf-card); border: var(--rf-card-border); backdrop-filter: blur(var(--rf-blur)); transition: transform .1s var(--gl-ease);
 }
+#rfs .gl-chip:active { transform: scale(.95); }
 #rfs .gl-chip b { font-weight: 600; opacity: .6; margin-inline-start: 3px; }
 #rfs .gl-chip:hover { color: var(--ink); }
 #rfs .gl-chip.on { color: var(--rf-accent-ink); background: var(--accent); border-color: transparent; }
@@ -263,30 +290,34 @@ html.rfs-home-on:not(.rfs-show-news) [data-rfs-home] > :has([data-rfs-upd]) { di
   background: var(--rf-card); border: var(--rf-card-border); backdrop-filter: blur(var(--rf-blur));
   /* no 3D tilt — the card only lifts, so it never slides out from under the cursor and the play button stays clickable */
   transform: translateY(var(--lift));
-  transition: transform .2s ease-out, box-shadow .25s;
+  transition: transform .14s var(--gl-ease);   /* the shadow snaps on; only the lift eases (no animated shadow on ~900 cards) */
 }
 #rfs .gl-card:hover { --lift: -5px; box-shadow: var(--rf-card-hover-shadow); }
 #rfs .gl-card.running { box-shadow: 0 0 0 2px var(--rf-play-1); }
 #rfs .gl-art { position: relative; aspect-ratio: 2 / 3; background: var(--cap) center / cover, #18202c; }
 #rfs .gl-shine {
-  position: absolute; inset: 0; opacity: 0; transition: opacity .25s; mix-blend-mode: overlay;
+  position: absolute; inset: 0; opacity: 0; transition: opacity .14s linear; mix-blend-mode: overlay;
   background: radial-gradient(circle at calc(50% + var(--tx, 0) * 50%) calc(50% + var(--ty, 0) * 50%), rgba(255,255,255,.45), transparent 55%);
 }
 #rfs .gl-card:hover .gl-shine { opacity: 1; }
 #rfs .gl-quick {
   position: absolute; left: 10px; bottom: 10px; width: 40px; height: 40px; border-radius: 50%; border: 0; cursor: pointer;
   font-size: 15px; color: var(--rf-play-ink); background: linear-gradient(135deg, var(--rf-play-1), var(--rf-play-2));
-  box-shadow: 0 6px 18px rgba(0,0,0,.5); opacity: 0; transform: scale(.7); transition: opacity .2s, transform .2s;
+  box-shadow: 0 6px 18px rgba(0,0,0,.5); opacity: 0; transform: scale(.8); transition: opacity .12s linear, transform .14s var(--gl-ease);
 }
 #rfs .gl-card:hover .gl-quick { opacity: 1; transform: scale(1); }
+#rfs .gl-quick:hover { transform: scale(1.08); }
+#rfs .gl-quick:active { transform: scale(.94); }
 #rfs .gl-badge { position: absolute; top: 8px; right: 8px; font-size: 10.5px; font-weight: 700; padding: 3px 8px; border-radius: 99px; color: var(--rf-play-ink); background: var(--rf-play-1); }
 #rfs .gl-cap { padding: 8px 10px 10px; }
 #rfs .gl-title { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--ink); }
 #rfs .gl-sub { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
 
 /* ═════════════ v3 additions ═════════════ */
-#rfs .gl-card.ni .gl-art { filter: saturate(.5) brightness(.75); transition: filter .3s; }
-#rfs .gl-card.ni:hover .gl-art { filter: none; }
+/* not installed: dimmed with a veil that fades away when you point at the card (a filter on every such card was
+   re-rasterised as it scrolled; the veil is one pseudo-element whose opacity changes) */
+#rfs .gl-card.ni .gl-art::before { content: ''; position: absolute; inset: 0; background: rgba(9, 15, 25, .5); transition: opacity .14s linear; }
+#rfs .gl-card.ni:hover .gl-art::before { opacity: 0; }
 #rfs .gl-badge.dim { color: var(--ink); background: rgba(0,0,0,.6); }
 
 /* quick buttons inside Steam's title bar (every page) */
@@ -600,6 +631,11 @@ html[data-rfs-native] :is(#rfs-bar, #rfs-themes, #rfs-toast) * { font-family: va
 #rfs .gl-card { backdrop-filter: none; transform: none; }
 #rfs .gl-card:hover { transform: translateY(-5px); }
 #rfs .gl-chip, #rfs .gl-btn { backdrop-filter: none; }
+@media (prefers-reduced-motion: reduce) {
+  #rfs :is(.gl-card, .gl-hero-bg, .gl-quick, .gl-shine, .gl-btn, .gl-chip), #rfs .gl-card.ni .gl-art::before { transition-duration: .01s; }
+  #rfs .gl-card:hover, #rfs .gl-hero:hover .gl-hero-bg { transform: none; }
+  #rfs .gl-hero:hover .gl-hero-bg { transform: scale(1.04); }
+}
 #rfs .gl-hero-meta span { backdrop-filter: none; background: rgba(0, 0, 0, .38); }
 #rfs .gl-btn:not(.play) { background: rgba(0, 0, 0, .38); }
 /* (no content-visibility on cards: re-styling them as they scroll in cost more than it saved — measured) */
@@ -629,6 +665,24 @@ html:is([data-rfs-style="glass"], [data-rfs-style="magazine"], [data-rfs-style="
 #rfs-themes .tp-card.pg-off { display: none !important; }
 #rfs-themes .tp-foot { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 18px; }
 #rfs-themes .tp-foot .tp-close { margin-top: 0; }
+/* "Remove Game Shelf": a quiet link between the pager and Close; a click turns it into the question */
+#rfs-themes .tp-rm { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; justify-content: flex-end; }
+#rfs-themes .tp-rm-ask {
+  display: inline-flex; align-items: center; gap: 7px; padding: 8px 12px; cursor: pointer; border-radius: var(--rf-radius, 8px);
+  border: 1px solid transparent; background: transparent; color: var(--ink); opacity: .55; font: 500 12.5px var(--font);
+  transition: opacity .12s, color .12s, border-color .12s, background-color .12s;
+}
+#rfs-themes .tp-rm-ask > svg.rf-ic { width: 15px; height: 15px; margin: 0; stroke: currentColor; filter: none; }
+#rfs-themes .tp-rm-ask > svg.rf-ic * { stroke: currentColor; }
+#rfs-themes .tp-rm-ask:is(:hover, :focus-visible) { opacity: 1; color: #ff9aa5; border-color: rgba(255, 120, 135, .4); background: rgba(255, 90, 110, .08); }
+#rfs-themes .tp-rm-sure { display: flex; align-items: center; gap: 10px; min-width: 0; font: 500 12.5px var(--font); color: var(--ink); }
+#rfs-themes .tp-rm-sure[hidden], #rfs-themes .tp-rm-ask[hidden] { display: none; }
+#rfs-themes .tp-rm-sure span { min-width: 0; text-align: end; line-height: 1.45; }
+#rfs-themes .tp-rm-sure button { flex: none; padding: 8px 14px; cursor: pointer; border-radius: var(--rf-radius, 8px); border: 1px solid rgba(255, 255, 255, .15); background: rgba(255, 255, 255, .06); color: var(--ink); font: 600 12.5px var(--font); }
+#rfs-themes .tp-rm-sure .tp-rm-yes { border-color: rgba(255, 110, 125, .6); background: #b3303f; color: #fff; }
+#rfs-themes .tp-rm-sure .tp-rm-yes:is(:hover, :focus-visible) { background: #cf3a4b; }
+#rfs-themes .tp-rm-sure .tp-rm-no:is(:hover, :focus-visible) { background: rgba(255, 255, 255, .14); }
+#rfs-themes.busy .tp-rm { opacity: .45; pointer-events: none; }
 #rfs-themes .tp-pager { display: inline-flex; align-items: center; gap: 10px; }
 #rfs-themes .tp-pager[hidden] { display: none; }
 #rfs-themes .tp-pg {

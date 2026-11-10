@@ -109,7 +109,7 @@ html[data-rfs-style="cork"] .DialogButton {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .7), 0 2px 5px rgba(0, 0, 0, .3) !important;
   text-shadow: none !important;
   font-weight: 700 !important;
-  transition: transform .12s ease-out, background .12s, box-shadow .12s !important;
+  transition: transform .12s cubic-bezier(.2, .8, .3, 1) !important;
 }
 html[data-rfs-style="cork"] .DialogButton:not(:disabled):hover,
 html[data-rfs-style="cork"] .DialogButton.gpfocus {
@@ -350,7 +350,7 @@ html[data-rfs-style="cork"] :is(.tab_row_item, .tab_item, .search_result_row, .g
   background: linear-gradient(180deg, #fffdf8, #f6eedd) !important;
   border: 1px solid rgba(96, 64, 32, .2) !important; border-bottom-color: rgba(96, 64, 32, .34) !important; border-radius: 2px !important;
   box-shadow: 0 3px 6px -3px rgba(30, 15, 4, .55) !important;
-  transition: background-color .1s, box-shadow .1s !important;
+  transition: transform .13s cubic-bezier(.2, .8, .3, 1) !important;
 }
 html[data-rfs-style="cork"] :is(.tab_row_item, .tab_item, .search_result_row, .game_area_dlc_row, .market_listing_row, .market_recent_listing_row, .forum_topic,
   .wishlist_row, .help_wizard_button, .discussion_search_result):is(:hover, .focus) {
@@ -446,7 +446,7 @@ html[data-rfs-style="cork"] :is(.btn_green_steamui, .btn_green_white_innerfade, 
   border: 1px solid rgba(30, 70, 24, .55) !important; border-radius: 3px !important;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .35), 0 2px 4px rgba(0, 0, 0, .3) !important;
   text-shadow: 0 1px 0 rgba(20, 60, 16, .45) !important;
-  transition: transform .12s ease-out, background .12s !important;
+  transition: transform .12s cubic-bezier(.2, .8, .3, 1) !important;
 }
 html[data-rfs-style="cork"] :is(.btn_green_steamui, .btn_green_white_innerfade, .btnv6_green_white_innerfade, .item_market_action_button_green, .btn_addtocart > a):hover {
   background: linear-gradient(#8fd17f, #52a64b) !important; transform: translateY(-1px) rotate(-.5deg);
@@ -660,7 +660,7 @@ html[data-rfs-style="cork"] #rfs-bar:is(.inhome, .float) :is(.tb-btn, .tb-seg bu
   background: linear-gradient(#fffaf0, #efe3cc);
   border: 1px solid var(--ck-edge); border-bottom-color: rgba(96, 64, 32, .44);
   border-radius: 3px;
-  transition: background .12s, transform .12s ease-out;
+  transition: transform .12s cubic-bezier(.2, .8, .3, 1);
 }
 html[data-rfs-style="cork"] #rfs-bar:is(.inhome, .float) :is(.tb-btn, .tb-seg button):hover {
   background: linear-gradient(#fffdf8, #fff0c2); transform: translateY(-1px);
@@ -803,7 +803,7 @@ html[data-rfs-style="cork"] #rfs-rail .rr-btn {
   color: var(--ck-ink) !important;
   background: linear-gradient(#fbf1dc, #ebdabb);
   border: 1px solid var(--ck-edge); border-bottom-color: rgba(96, 64, 32, .46); border-radius: 3px;
-  transition: background .12s, transform .12s ease-out;
+  transition: transform .12s cubic-bezier(.2, .8, .3, 1);
 }
 html[data-rfs-style="cork"] #rfs-rail .rr-btn:hover { background: linear-gradient(#fffbea, #ffe89a); transform: translateY(-1px); }
 html[data-rfs-style="cork"] #rfs-rail .rr-btn.go {
@@ -884,3 +884,237 @@ html[data-rfs-page="wishlist"][data-rfs-style="cork"][data-rfs-wlview="cards"] [
 
 /* downloads page + install / settings dialogs (skin.js --rf-dl-* hooks) */
 html[data-rfs-style="cork"] { --rf-dl-btn-radius: 3px; --rf-dl-check-radius: 3px; }
+
+/* ═════════════ the store on the cork board, part two: polaroids, price tags, index cards, motion ═════════════
+   Web pages only (html.responsive). What the first pass left in Steam's own clothes joins the board: the React
+   shelves are felt sheets held by two push pins, capsules are polaroids that lift and tilt a little when pointed at,
+   every discount is the red sale sticker on a paper tag, "See more" links are paper labels, the carousel arrows are
+   paper tabs, hover cards and menus are index cards, the React pages (cart, wishlist) use warm felt instead of navy.
+   Motion: one curve (--ck-ease); hover = 130 ms on transform only (highlighter and shadows switch at once); cards and
+   menus drop onto the board in 180 ms. Nothing runs at rest; no filters, no blur. */
+html.responsive[data-rfs-style="cork"] { --ck-ease: cubic-bezier(.2, .8, .3, 1); --ck-fast: 130ms;
+  --ck-label: linear-gradient(#fffbf2, #f0e4cc); --ck-kraft-btn: linear-gradient(#6b5139, #564030);
+  --ck-pins: radial-gradient(circle at 13px 11px, rgba(255, 255, 255, .85) 0 1.1px, transparent 2px), radial-gradient(circle at 14px 12px, #f0654b 0 3.6px, #a32d1c 4.8px, rgba(20, 10, 4, .45) 5.4px, transparent 6.8px),
+    radial-gradient(circle at calc(100% - 15px) 11px, rgba(255, 255, 255, .85) 0 1.1px, transparent 2px), radial-gradient(circle at calc(100% - 14px) 12px, #f5bd3a 0 3.6px, #a77610 4.8px, rgba(20, 10, 4, .45) 5.4px, transparent 6.8px); }
+
+/* ---- Steam's React pages (cart, wishlist, menus) draw with design tokens: warm felt surfaces, push-pin red fills ---- */
+html.responsive[data-rfs-style="cork"][data-accent-color], html.responsive[data-rfs-style="cork"] [data-accent-color]:not([data-accent-color="dull"]) {
+  --color-accent-1: #1f1a15; --color-accent-2: #2a211a; --color-accent-3: #3a271d; --color-accent-4: #4b2c20;
+  --color-accent-5: #5e3123; --color-accent-6: #773827; --color-accent-7: #96402b; --color-accent-8: #b8402b;
+  --color-accent-9: #c8432e; --color-accent-10: #dc533a; --color-accent-11: #ffb19c; --color-accent-12: #fff1ea;
+  --color-accent-contrast: #fff;
+}
+html.responsive[data-rfs-style="cork"][data-dull-color], html.responsive[data-rfs-style="cork"] [data-dull-color], html.responsive[data-rfs-style="cork"] [data-accent-color="dull"] {
+  --color-dull-1: #1f1b17; --color-dull-2: #26211b; --color-dull-3: #2d2720; --color-dull-4: #352e26;
+  --color-dull-5: #3e362c; --color-dull-6: #4a4034; --color-dull-7: #5e5142; --color-dull-8: #776753;
+  --color-dull-9: #a3927a; --color-dull-10: #b5a48b; --color-dull-11: #eadcc4; --color-dull-12: #fbf6ea;
+}
+html.responsive[data-rfs-style="cork"] [data-accent-color="dull"] {
+  --color-accent-1: #1f1b17; --color-accent-2: #26211b; --color-accent-3: #2d2720; --color-accent-4: #352e26;
+  --color-accent-5: #3e362c; --color-accent-6: #4a4034; --color-accent-7: #5e5142; --color-accent-8: #3e362c;
+  --color-accent-9: #776753; --color-accent-10: #4a4034; --color-accent-11: #eadcc4; --color-accent-12: #fbf6ea;
+}
+
+/* ---- every shelf title on the home board is written by hand (the React ones were left in white type) ---- */
+html.responsive[data-rfs-style="cork"] :is(#discounts_and_events_title, .home_title :is(a, span, b)) {
+  font-family: var(--rf-heading-font) !important; font-size: 30px !important; font-weight: 700 !important; line-height: 1.15 !important; letter-spacing: 0 !important; text-transform: none !important;
+  color: #2a1a0b !important; text-shadow: 0 1px 0 rgba(255, 238, 210, .35) !important;
+}
+html.responsive[data-rfs-style="cork"] .game_description_column h2:not(.bb_tag, .title) { font-family: var(--rf-heading-font) !important; font-size: 25px !important; font-weight: 700 !important; letter-spacing: 0 !important; text-transform: none !important; color: #2a1a0b !important; text-shadow: 0 1px 0 rgba(255, 238, 210, .35) !important; }
+
+/* ---- the shelves: a felt sheet held by two push pins ---- */
+html.responsive[data-rfs-style="cork"] .home_page_body_ctn :is(.home_discount_games_ctn, .carousel__slider) {
+  background: var(--ck-pins), linear-gradient(180deg, #2f251c, #261d15) !important; border-radius: 2px !important; padding-top: 22px !important;
+}
+html.responsive[data-rfs-style="cork"] .content_hub_capsule_ctn .gradient { background: linear-gradient(180deg, transparent 40%, rgba(36, 27, 19, .92)) !important; }
+/* capsules are polaroids: a white border; the one you point at lifts and tilts a little (transform only) */
+html.responsive[data-rfs-style="cork"] :is(.store_capsule, .home_area_spotlight, .special_tiny_cap, .content_hub_capsule_ctn, .dailydeal_cap) {
+  border-radius: 1px !important; transition: transform var(--ck-fast) var(--ck-ease) !important;
+}
+html.responsive[data-rfs-style="cork"] :is(.store_capsule, .home_area_spotlight, .special_tiny_cap, .content_hub_capsule_ctn, .dailydeal_cap):is(:hover, .focus) {
+  transform: translateY(-4px) rotate(-.8deg); outline: 0;
+  box-shadow: 0 0 0 4px #fffdf8, 0 16px 22px -8px rgba(30, 15, 4, .8) !important;
+}
+html.responsive[dir="rtl"][data-rfs-style="cork"] :is(.store_capsule, .home_area_spotlight, .special_tiny_cap, .content_hub_capsule_ctn, .dailydeal_cap):is(:hover, .focus) { transform: translateY(-4px) rotate(.8deg); }
+/* React discounts (webkit.js tags them .rfs-pct, their box .rfs-price): the red sale sticker on a paper price tag */
+html.responsive[data-rfs-style="cork"] .rfs-pct {
+  color: #fff !important; background: var(--ck-red) !important; font-weight: 800 !important; border-radius: 2px !important;
+  outline: 1px dashed rgba(255, 255, 255, .55); outline-offset: -3px; text-shadow: none !important;
+}
+html.responsive[data-rfs-style="cork"] .rfs-price {
+  color: #2b2116 !important; background: linear-gradient(180deg, #fffdf6, #f5ead2) !important; border-radius: 2px !important;
+  box-shadow: 0 0 0 1px rgba(96, 64, 32, .3), 0 2px 4px rgba(30, 15, 4, .35) !important;
+}
+html.responsive[data-rfs-style="cork"] .rfs-price:not(.discount_block) > :not(.rfs-pct), html.responsive[data-rfs-style="cork"] .rfs-price:not(.discount_block) > :not(.rfs-pct) * { color: #2b2116 !important; background: transparent !important; text-shadow: none !important; }
+/* "See More" / "View All" (.rfs-btn2), the DLC "Browse all" note, compare, the queue's sign-in, follow: paper labels in ink */
+html.responsive[data-rfs-style="cork"] :is(a.rfs-btn2:not(.app_tag, .tags > a), .game_area_dlc_section .note, .WidgetHeaderCtn .rmgCh57vTjU-, .FollowButton, .game_purchase_options_editions_header_compare_button) {
+  color: var(--ck-ink) !important; background: var(--ck-label) !important; border: 1px solid var(--ck-edge) !important; border-bottom-color: rgba(96, 64, 32, .5) !important; border-radius: 3px !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .7), 0 2px 5px rgba(0, 0, 0, .3) !important; font-weight: 700 !important; text-shadow: none !important; opacity: 1 !important;
+  padding-inline: 12px !important; transition: transform var(--ck-fast) var(--ck-ease) !important;
+}
+html.responsive[data-rfs-style="cork"] :is(.WidgetHeaderCtn .rmgCh57vTjU-, .FollowButton) * { color: inherit !important; }
+html.responsive[data-rfs-style="cork"] :is(a.rfs-btn2:not(.app_tag, .tags > a), .game_area_dlc_section .note, .WidgetHeaderCtn .rmgCh57vTjU-, .FollowButton, .game_purchase_options_editions_header_compare_button):hover {
+  color: #2b2116 !important; background: linear-gradient(#fffdf8, #fff0c4) !important; transform: translateY(-1px) rotate(-.6deg);
+}
+
+/* ---- carousel arrows: a paper tab with an ink chevron (Steam's arrow art is hidden) ---- */
+html.responsive[data-rfs-style="cork"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button),
+html.responsive[data-rfs-style="cork"] .carousel_container .arrow > div {
+  background: none !important; background-color: transparent !important; box-shadow: none !important; border: 0 !important; border-radius: 0 !important; opacity: 1 !important;
+}
+html.responsive[data-rfs-style="cork"] .carousel_container .arrow > div,
+html.responsive[data-rfs-style="cork"] :is(.carousel__back-button, .carousel__next-button) > svg { opacity: 0 !important; }
+html.responsive[data-rfs-style="cork"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button)::after {
+  content: '\2039'; direction: ltr; unicode-bidi: isolate; position: absolute; top: 50%; left: 50%; width: 30px; height: 44px; margin: -22px 0 0 -15px; box-sizing: border-box; pointer-events: none;
+  display: grid; place-items: center; padding-bottom: 4px; font: 700 26px/1 Georgia, serif; color: #33251a;
+  background: linear-gradient(180deg, #fffdf7, #f1e6d0); border: 1px solid rgba(96, 64, 32, .35); border-radius: 2px;
+  box-shadow: 0 8px 12px -6px rgba(30, 15, 4, .75), 0 1px 2px rgba(30, 15, 4, .3); transition: transform var(--ck-fast) var(--ck-ease);
+}
+html.responsive[data-rfs-style="cork"] :is(.carousel_container .arrow.right, .carousel__next-button)::after { content: '\203A'; }
+html.responsive[data-rfs-style="cork"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button):hover::after { color: var(--ck-red); background: linear-gradient(180deg, #fffbe6, #ffe68a); transform: translateY(-2px) rotate(-2deg); }
+html.responsive[data-rfs-style="cork"] :is(.carousel__back-button, .carousel__next-button):disabled { opacity: 0 !important; pointer-events: none; }
+html.responsive[data-rfs-style="cork"] .carousel_wide_mode .carousel_container .arrow.left::after { left: auto; right: 4px; margin: -22px 0 0 0; }
+html.responsive[data-rfs-style="cork"] .carousel_wide_mode .carousel_container .arrow.right::after { left: 4px; margin: -22px 0 0 0; }
+/* Arabic: Steam swaps the arrows' sides, so the chevrons swap too */
+html.responsive[dir="rtl"][data-rfs-style="cork"] :is(.carousel_container .arrow.left, .carousel__back-button)::after { content: '\203A'; }
+html.responsive[dir="rtl"][data-rfs-style="cork"] :is(.carousel_container .arrow.right, .carousel__next-button)::after { content: '\2039'; direction: ltr; unicode-bidi: isolate; }
+html.responsive[dir="rtl"][data-rfs-style="cork"] .carousel_wide_mode .carousel_container .arrow.left::after { left: 4px; right: auto; }
+html.responsive[dir="rtl"][data-rfs-style="cork"] .carousel_wide_mode .carousel_container .arrow.right::after { left: auto; right: 4px; }
+html.responsive[data-rfs-style="cork"] .carousel_container .carousel_thumbs { background: transparent !important; }
+
+/* ---- paper strips: the one you point at slides a little along the board (transform only; highlighter at once) ---- */
+html.responsive[data-rfs-style="cork"] :is(.tab_row_item, .search_result_row, .game_area_dlc_row, .market_listing_row, .market_recent_listing_row, .forum_topic, .wishlist_row, .help_wizard_button,
+  .discussion_search_result, .apphub_Card) { transition: transform var(--ck-fast) var(--ck-ease) !important; }
+html.responsive[data-rfs-style="cork"] :is(.tab_row_item, .search_result_row, .game_area_dlc_row):is(:hover, .focus) { transform: translateX(3px); }
+html.responsive[dir="rtl"][data-rfs-style="cork"] :is(.tab_row_item, .search_result_row, .game_area_dlc_row):is(:hover, .focus) { transform: translateX(-3px); }
+html.responsive[data-rfs-style="cork"] .apphub_Card.interactable:hover { transform: translateY(-3px) rotate(-.4deg); box-shadow: 0 16px 20px -10px rgba(30, 15, 4, .8) !important; }
+/* tags in the list preview and the hover card: the same kraft luggage labels */
+html.responsive[data-rfs-style="cork"] :is(.tab_preview .tags a, .game_hover_box .hover_tag_row > *, .deep_dive_tag) {
+  color: #4a3520 !important; background: #e8d3ad !important; border: 0 !important; border-radius: 2px !important; box-shadow: 0 1px 0 rgba(0, 0, 0, .3) !important;
+}
+html.responsive[data-rfs-style="cork"] .tab_preview .tags a:hover { color: #2b2116 !important; background: var(--ck-note) !important; }
+/* the hover card over a game and the store menus: index cards (cream, a red margin line on top, dark ink) */
+html.responsive[data-rfs-style="cork"] :is(.game_hover_box, .popup_block_new .popup_body) {
+  color: #2b2116 !important; border: 1px solid rgba(96, 64, 32, .3) !important; border-radius: 2px !important;
+  background: linear-gradient(180deg, transparent 5px, rgba(200, 67, 46, .55) 5px 6px, transparent 6px), linear-gradient(180deg, #fffdf8, #f6eedd) !important;
+  box-shadow: 0 18px 30px -12px rgba(30, 15, 4, .8), 0 2px 4px rgba(30, 15, 4, .3) !important;
+}
+html.responsive[data-rfs-style="cork"] .game_hover_box :not(img, svg, svg *, .discount_block, .discount_block *) { color: #2b2116 !important; text-shadow: none !important; }
+html.responsive[data-rfs-style="cork"] .game_hover_box :is(h4, .hover_title) { font-family: var(--rf-heading-font) !important; font-size: 22px !important; font-weight: 700 !important; color: #1f2a5c !important; }
+html.responsive[data-rfs-style="cork"] .game_hover_box :is(.hover_review_summary, .hover_body .hover_review_summary) { background: rgba(232, 211, 173, .45) !important; border-radius: 2px !important; }
+html.responsive[data-rfs-style="cork"] .game_hover :is(.hover_arrow_left, .hover_arrow_right) { display: none !important; }
+html.responsive[data-rfs-style="cork"] .popup_body .popup_menu_item { color: #2b2116 !important; }
+html.responsive[data-rfs-style="cork"] .popup_body .popup_menu_item:hover { color: #2b2116 !important; background: linear-gradient(transparent 12%, rgba(255, 222, 102, .65) 12% 88%, transparent 88%) !important; }
+html.responsive[data-rfs-style="cork"] .popup_body :is(.popup_menu_subheader, .popup_menu_subheader a) { color: #7d6a52 !important; }
+
+/* ---- the game page ---- */
+html.responsive[data-rfs-style="cork"] .highlight_strip_item.focus { outline: 3px solid #fff; outline-offset: -3px; }
+html.responsive[data-rfs-style="cork"] :is(.slider_left, .slider_right) { background: var(--ck-kraft-btn) !important; border-radius: 2px !important; }
+html.responsive[data-rfs-style="cork"] .slider_ctn .slider { background: #1c150f !important; border-radius: 2px !important; }
+html.responsive[data-rfs-style="cork"] .slider_ctn .slider .handle { background: #e8d3ad !important; border-radius: 2px !important; }
+/* the React rows in the feature list (accessibility, controllers): kraft rows like their neighbours */
+html.responsive[data-rfs-style="cork"] #category_block :is(a:not(.game_area_details_specs_ctn) > div, summary, summary > div) { background: rgba(232, 211, 173, .45) !important; border-radius: 2px !important; }
+html.responsive[data-rfs-style="cork"] #category_block :is(a:not(.game_area_details_specs_ctn) > div, summary):hover { background: rgba(255, 222, 102, .6) !important; }
+html.responsive[data-rfs-style="cork"] #category_block :is(a:not(.game_area_details_specs_ctn), summary) :is(span, div) { color: #2b2116 !important; }
+html.responsive[data-rfs-style="cork"] .dlc_highlight_reason { color: #2b2116 !important; background: var(--ck-note) !important; border-radius: 2px !important; font-weight: 800 !important; }
+html.responsive[data-rfs-style="cork"] .game_page_autocollapse_readmore { color: #2c5aa0 !important; font-weight: 700 !important; }
+
+/* ---- community hub ---- */
+html.responsive[data-rfs-style="cork"] .apphub_CardTextContent :is(.bb_h1, .bb_h2) { color: #1f2a5c !important; }
+html.responsive[data-rfs-style="cork"] .apphub_CardTextContent :is(b, u, li, i) { color: inherit !important; }
+html.responsive[data-rfs-style="cork"] :is(.apphub_CardContentNewsTitle, .apphub_CardContentTitle) { font-family: var(--rf-heading-font) !important; font-size: 24px !important; font-weight: 700 !important; line-height: 1.15 !important; color: #1f2a5c !important; }
+html.responsive[data-rfs-style="cork"] :is(.apphub_StorePrice, .apphub_StoreAppData .apphub_StorePrice) { background: linear-gradient(180deg, #fffdf6, #f5ead2) !important; border: 1px solid rgba(96, 64, 32, .3) !important; border-radius: 2px !important; }
+html.responsive[data-rfs-style="cork"] :is(.appHubIconHolder, .appHubIconHolder img) { border-radius: 1px !important; }
+
+/* ---- motion: labels press back onto the board; cards and menus drop on with a small turn ---- */
+html.responsive[data-rfs-style="cork"] :is(.btn_green_steamui, .btn_green_white_innerfade, .btnv6_green_white_innerfade, .item_market_action_button_green, .btn_addtocart > a, .btn_blue_steamui, .btnv6_blue_hoverfade,
+  .btnv6_white_transparent, .btn_grey_steamui, .btnv6_grey_black, .btn_grey_black, .btn_darkblue_white_innerfade, .btnv6_blue_blue_innerfade, .btn_grey_white_innerfade, .btn_profile_action, .pagebtn) {
+  transition: transform var(--ck-fast) var(--ck-ease) !important;
+}
+html.responsive[data-rfs-style="cork"] :is(.btn_blue_steamui, .btnv6_blue_hoverfade, .btnv6_white_transparent, .btn_grey_steamui, .btnv6_grey_black, .btn_grey_black, .btn_darkblue_white_innerfade,
+  .btnv6_blue_blue_innerfade, .btn_grey_white_innerfade, .btn_profile_action, .pagebtn):not(.btn_disabled):hover { transform: translateY(-1px) rotate(-.5deg); }
+html.responsive[data-rfs-style="cork"] :is(.btn_green_steamui, .btn_green_white_innerfade, .btnv6_green_white_innerfade, .btn_addtocart > a, .btn_blue_steamui, .btnv6_blue_hoverfade, .btnv6_white_transparent,
+  .btn_grey_steamui, .btnv6_grey_black, .btn_grey_black, .btn_darkblue_white_innerfade, .btn_grey_white_innerfade, .btn_profile_action, .pagebtn, .rfs-btn2):not(.btn_disabled):active { transform: translateY(1px); }
+html.responsive[data-rfs-style="cork"] :is(.popup_block_new .popup_body, .game_hover_box) { animation: ck-pin 180ms var(--ck-ease) both; }
+@keyframes ck-pin { from { opacity: 0; transform: translateY(-8px) rotate(-1.2deg); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  html.responsive[data-rfs-style="cork"] :is(.popup_block_new .popup_body, .game_hover_box) { animation: none; }
+  html.responsive[data-rfs-style="cork"] :is(.store_capsule, .home_area_spotlight, .special_tiny_cap, .content_hub_capsule_ctn, .dailydeal_cap, .tab_row_item, .search_result_row, .game_area_dlc_row, .apphub_Card,
+    .btn_green_steamui, .btn_blue_steamui, .btnv6_blue_hoverfade, .btn_grey_steamui, .btnv6_white_transparent, .btn_profile_action, .rfs-btn2, .btn_addtocart > a) { transition: none !important; }
+  html.responsive[data-rfs-style="cork"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button)::after { transition: none; }
+}
+
+/* ---- the React rows of the feature list sit inside #category_block: kraft rows like their neighbours ---- */
+html.responsive[data-rfs-style="cork"] #category_block a:not(.game_area_details_specs_ctn) { background: transparent !important; }
+/* the hub cards carry a paper margin: keep it inside the width Steam gives each card, so the second column stays beside the first */
+html.responsive[data-rfs-style="cork"] .apphub_Card { box-sizing: border-box !important; }
+
+/* ═════════════ part three: guides, discussions, workshop and the reviews pinned to the board ═════════════
+   These pages were still stock Steam blue. Guides: category tiles, guide rows, the side column (search, browse list).
+   Discussions: the quiet meta text. Workshop hub (React, hashed): its titles. Game page foot: the React reviews block
+   ([data-featuretarget="appreviews"]; its inner class names are hashed, the same ones Steam ships today). Plain CSS, nothing animated. */
+html.responsive[data-rfs-style="cork"] :is(.guides_home_section_title, .huRHJiZfYko- :is(h1, h2)) { font-family: var(--rf-heading-font) !important; font-size: 26px !important; font-weight: 700 !important; letter-spacing: 0 !important; text-transform: none !important; color: #2a1a0b !important; text-shadow: 0 1px 0 rgba(255, 238, 210, .35) !important; background: none !important; }
+html.responsive[data-rfs-style="cork"] :is(.guides_home_view_all_link a, .workshopItemAuthorName, .rightbox_list_option_content a, .huRHJiZfYko- a) { color: #2c5aa0 !important; }
+html.responsive[data-rfs-style="cork"] :is(.guides_home_view_all_link a, .rightbox_list_option_content a):hover { color: #c8432e !important; }
+html.responsive[data-rfs-style="cork"] #GuideCategories.detailBox { background-image: none !important; }
+html.responsive[data-rfs-style="cork"] a.guide_home_category_selection { background: linear-gradient(180deg, #fffdf8, #f8f1e3) !important; border: 1px solid rgba(96, 64, 32, .24) !important; box-shadow: 0 10px 18px -10px rgba(30, 15, 4, .75), 0 1px 2px rgba(30, 15, 4, .3) !important; border-radius: 2px !important; }
+html.responsive[data-rfs-style="cork"] a.guide_home_category_selection:hover { background: linear-gradient(transparent 8%, rgba(255, 222, 102, .55) 8% 92%, transparent 92%), linear-gradient(180deg, #fffdf8, #f6eedd) !important; box-shadow: 0 6px 12px -5px rgba(30, 15, 4, .6) !important; }
+html.responsive[data-rfs-style="cork"] .guide_home_category_name { color: #1f2a5c !important; font-weight: 700 !important; }
+html.responsive[data-rfs-style="cork"] .guide_home_category_count { color: #6b5a45 !important; }
+html.responsive[data-rfs-style="cork"] a.workshopItemCollection { background: linear-gradient(180deg, #fffdf8, #f6eedd) !important; border: 1px solid rgba(96, 64, 32, .24) !important; box-shadow: 0 10px 18px -10px rgba(30, 15, 4, .75), 0 1px 2px rgba(30, 15, 4, .3) !important; border-radius: 2px !important; }
+html.responsive[data-rfs-style="cork"] a.workshopItemCollection:hover { background: linear-gradient(transparent 8%, rgba(255, 222, 102, .55) 8% 92%, transparent 92%), linear-gradient(180deg, #fffdf8, #f6eedd) !important; box-shadow: 0 6px 12px -5px rgba(30, 15, 4, .6) !important; }
+html.responsive[data-rfs-style="cork"] .workshopItemCollection .workshopItemTitle { color: #1f2a5c !important; font-weight: 700 !important; }
+html.responsive[data-rfs-style="cork"] .workshopItemCollection .workshopItemAuthorLine { color: #6b5a45 !important; }
+html.responsive[data-rfs-style="cork"] .workshopItemCollection .workshopItemShortDesc { color: #2b2116 !important; }
+html.responsive[data-rfs-style="cork"] .workshopItemCollection .workshopItemPreviewHolder { border-radius: 1px !important; }
+html.responsive[data-rfs-style="cork"] :is(.searchTextContainer, .discussionSearchTextContainer) { background: #fffefb !important; border: 1px solid rgba(96, 64, 32, .38) !important; border-radius: 2px !important; box-shadow: none !important; box-sizing: border-box; }
+html.responsive[data-rfs-style="cork"] :is(.searchTextContainer input.searchText, input.discussionSearchText) { color: #2b2116 !important; background: transparent !important; border: 0 !important; box-shadow: none !important; }
+html.responsive[data-rfs-style="cork"] .sidebar .panel { background: linear-gradient(180deg, #fffdf8, #f8f1e3) !important; border: 1px solid rgba(96, 64, 32, .24) !important; box-shadow: 0 10px 18px -10px rgba(30, 15, 4, .75), 0 1px 2px rgba(30, 15, 4, .3) !important; border-radius: 2px !important; }
+html.responsive[data-rfs-style="cork"] .sidebar :is(.rightSectionTopTitle, .guide_category_tags_title, .rightSectionTitle, .tag_category_desc) { color: #6b5a45 !important; }
+html.responsive[data-rfs-style="cork"] .sidebar :is(.filterOption, .filterOption label) { color: #2b2116 !important; }
+html.responsive[data-rfs-style="cork"] .rightbox_list_selection_background { background: linear-gradient(transparent 12%, rgba(255, 222, 102, .65) 12% 88%, transparent 88%) !important;  }
+html.responsive[data-rfs-style="cork"] .browseOption.selected a { color: #2b2116 !important; font-weight: 700 !important; }
+html.responsive[data-rfs-style="cork"] :is(.forum_topic_op, .forum_topic_lastpost, .forum_paging_summary, .forum_paging_summary span) { color: #6b5a45 !important; }
+html.responsive[data-rfs-style="cork"] :is(#rfs-x, .block_header .right) a { color: var(--ck-ink) !important; background: var(--ck-label) !important; border: 1px solid var(--ck-edge) !important; border-radius: 3px !important; font-weight: 700 !important; box-shadow: none !important; text-shadow: none !important; }
+html.responsive[data-rfs-style="cork"] :is(#rfs-x, .block_header .right) a:hover { color: #2b2116 !important; background: linear-gradient(#fffdf8, #fff0c4) !important; }
+/* the React reviews */
+html.responsive[data-rfs-style="cork"] [data-featuretarget="appreviews"] { box-sizing: border-box; padding: 14px 18px 18px !important; color: #2b2116 !important; background: linear-gradient(180deg, #fffdf8, #f8f1e3) !important; border: 1px solid rgba(96, 64, 32, .24); border-radius: 2px; box-shadow: 0 10px 18px -10px rgba(30, 15, 4, .75), 0 1px 2px rgba(30, 15, 4, .3); }
+html.responsive[data-rfs-style="cork"] [data-featuretarget="appreviews"] :not(svg, svg *, img, button, button *, .DialogButton, .H2acnhvyOf8-, .H2acnhvyOf8- *) { color: #2b2116 !important; text-shadow: none !important; }
+html.responsive[data-rfs-style="cork"] [data-featuretarget="appreviews"] :is(._4rFF1L9jPC8-, .PwTlk5b4Rh0-, ._3tTNLTWh51g-, .nS3iAoyO-XI-) { background: rgba(232, 211, 173, .35) !important; border: 0 !important; box-shadow: none !important; }
+html.responsive[data-rfs-style="cork"] [data-featuretarget="appreviews"] .dAKtJif-TvE- > h2 { font-family: var(--rf-heading-font) !important; font-size: 26px !important; font-weight: 700 !important; letter-spacing: 0 !important; text-transform: none !important; color: #2a1a0b !important; text-shadow: 0 1px 0 rgba(255, 238, 210, .35) !important; }
+html.responsive[data-rfs-style="cork"] [data-featuretarget="appreviews"] h1 { color: #1f2a5c !important; }
+html.responsive[data-rfs-style="cork"] [data-featuretarget="appreviews"] :is(span, li, p) > a.Focusable { color: #2c5aa0 !important; }
+html.responsive[data-rfs-style="cork"] [data-featuretarget="appreviews"] :is(span, li, p) > a.Focusable:hover { color: #c8432e !important; }
+html.responsive[data-rfs-style="cork"] [data-featuretarget="appreviews"] .ev-4YE2674o- { background: rgba(232, 211, 173, .45) !important; border-radius: 1px !important; color: #6b5a45 !important; }
+html.responsive[data-rfs-style="cork"] [data-featuretarget="appreviews"] .ev-4YE2674o- * { color: inherit !important; }
+html.responsive[data-rfs-style="cork"] [data-featuretarget="appreviews"] .PaJFVCJu0g0- { background: rgba(232, 211, 173, .45) !important; border-radius: 1px !important; }
+html.responsive[data-rfs-style="cork"] [data-featuretarget="appreviews"] .H2acnhvyOf8- { background: radial-gradient(circle at 34% 28%, #ffd6c8 0 7%, #f87a5f 32%, #d94a33 68%, #9c2c1b 100%) !important; color: #fff !important; border-radius: 1px !important; }
+html.responsive[data-rfs-style="cork"] [data-featuretarget="appreviews"] .ar-Pie428S4- { color: #2f7d32 !important; }
+html.responsive[data-rfs-style="cork"] [data-featuretarget="appreviews"] .nQmgFD0Ujec- { background: rgba(96, 64, 32, .25) !important; }
+html.responsive[data-rfs-style="cork"] .guides_home_section_title { text-shadow: 0 1px 0 rgba(255, 238, 210, .35) !important; }
+html.responsive[data-rfs-style="cork"] :is(.forum_topic_op, .forum_topic_lastpost) { color: #6b5a45 !important; }
+/* links Steam left in its own blue (reviewer names, search preferences, Deck notes) */
+html.responsive[data-rfs-style="cork"] [data-featuretarget="appreviews"] a.Focusable, html.responsive[data-rfs-style="cork"] :is(#search_manage_lang_preferences_btn a, #deck_compat_learn_more_btn, .search_results_filtered_warning a) { color: #2c5aa0 !important; }
+html.responsive[data-rfs-style="cork"] [data-featuretarget="appreviews"] a.Focusable:hover, html.responsive[data-rfs-style="cork"] :is(#search_manage_lang_preferences_btn a, #deck_compat_learn_more_btn):hover { color: #c8432e !important; }
+html.responsive[data-rfs-style="cork"] [data-featuretarget="appreviews"] ._2URjSD6c0qk- { color: #1f2a5c !important; }
+/* the pale radial wash Steam lays behind "More like this" and the curators block at the foot of a game page */
+html.responsive[data-rfs-style="cork"] :is(.related_items_ctn, .nKsKxQO2ePs-) { background: none !important; }
+/* written straight on the cork (no paper under them): dark ink instead of pale blue / white */
+html.responsive[data-rfs-style="cork"] .guides_home_view_all_link a { color: #3d2a17 !important; font-weight: 800 !important; }
+html.responsive[data-rfs-style="cork"] .guides_home_view_all_link a:hover { color: var(--ck-red) !important; }
+html.responsive[data-rfs-style="cork"] .guides_home_section_title :is(span, div, a) { color: #4a3520 !important; font-weight: 700 !important; text-shadow: none !important; }
+/* the curators note: a paper strip; the reviews' filter menu: ink on its kraft bar */
+html.responsive[data-rfs-style="cork"] .steam_curators_block .no_curators_followed { color: #2b2116 !important; background: linear-gradient(180deg, #fffdf8, #f6eedd) !important; border: 1px solid rgba(96, 64, 32, .2); border-radius: 2px; box-shadow: 0 3px 6px -3px rgba(30, 15, 4, .55); }
+html.responsive[data-rfs-style="cork"] .steam_curators_block .no_curators_followed a { color: #2c5aa0 !important; font-weight: 700 !important; }
+html.responsive[data-rfs-style="cork"] [data-featuretarget="appreviews"] .nS3iAoyO-XI- :is(button, button *) { color: #2b2116 !important; fill: currentColor; }
+/* discussions: the paging strip above and below the topics */
+html.responsive[data-rfs-style="cork"] .forum_paging { background: linear-gradient(180deg, #fffdf8, #f6eedd) !important; border-radius: 2px !important; color: #6b5a45 !important; }
+/* the React workshop hub (#CommunityTemplate; its class names are hashed): the current tab's rule, the sub-menu links,
+   the section titles and the button shape. Its fills already come from the --color-accent / --color-dull scales above. */
+html.responsive[data-rfs-style="cork"] #CommunityTemplate .Ldik1p0iuKE- { border-bottom-color: #f0654b !important; }
+html.responsive[data-rfs-style="cork"] #CommunityTemplate .bt37JYoalu8- a { color: #ffd9a8 !important; }
+html.responsive[data-rfs-style="cork"] #CommunityTemplate .bt37JYoalu8- a:hover { color: #fff !important; }
+html.responsive[data-rfs-style="cork"] #CommunityTemplate :is(h2, h3) { font-family: var(--rf-heading-font) !important; font-weight: 700 !important; color: #fff6e2 !important; }
+html.responsive[data-rfs-style="cork"] #CommunityTemplate .inqz7Zdx9Xg- { border-radius: 3px !important; font-weight: 700 !important; }
+html.responsive[data-rfs-style="cork"] a.forum_paging_pagelink { color: #2c5aa0 !important; }
+html.responsive[data-rfs-style="cork"] a.forum_paging_pagelink:hover { color: #c8432e !important; }

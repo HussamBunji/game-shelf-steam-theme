@@ -403,15 +403,16 @@
       api.sfx('slide');
       const dim = $('.cp-dim', sheet), scroll = $('.cp-scroll', card);
       await Promise.all([
-        dim.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 220, easing: 'ease-out' }),
+        dim.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, easing: 'ease-out' }),
         card.animate([
           { opacity: 0, transform: 'translateY(10px) scale(.965)' },
           { opacity: 1, transform: 'none' },
-        ], { duration: 280, easing: EASE, fill: 'backwards' }),
+        ], { duration: 260, easing: EASE, fill: 'backwards' }),
+        // the data rises into place just behind the card (transform + opacity only; all done by 320 ms)
         scroll.animate([
-          { clipPath: 'inset(0 0 100% 0)' },
-          { clipPath: 'inset(0 0 0% 0)' },
-        ], { duration: 340, delay: 40, easing: 'cubic-bezier(.3,.6,.2,1)', fill: 'backwards' }),
+          { opacity: 0, transform: 'translateY(10px)' },
+          { opacity: 1, transform: 'none' },
+        ], { duration: 240, delay: 80, easing: EASE, fill: 'backwards' }),
       ].map(a => a.finished.catch(() => null)));
       if (card.isConnected) { card.classList.toggle('ready', true); card.focus({ preventScroll: true }); }
     },
@@ -425,7 +426,7 @@
       const f = { fill: 'forwards' };
       await Promise.all([
         card.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(6px) scale(.975)' }], { duration: 190, easing: 'cubic-bezier(.4,0,.6,1)', ...f }),
-        dim ? dim.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 220, easing: 'ease-in', ...f }) : null,
+        dim ? dim.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 190, easing: 'ease-in', ...f }) : null,
       ].filter(Boolean).map(a => a.finished.catch(() => null)));
     },
   };

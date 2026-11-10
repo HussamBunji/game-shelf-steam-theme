@@ -51,6 +51,14 @@
     { value: 'Cyberpunk', sid: 'cyberpunk', modes: 'both', ar: 'سايبربنك', en: 'Cyberpunk', dar: 'ذهبي وفيروزي بزوايا مقصوصة', den: 'Gold and teal, angular HUD', c: ['#0b0f16', '#121822', '#e6e1d6', '#d9b45a', '#5fc4c8', '#d9b45a', '#15120b', 0] },
     { value: 'Shelter OS', sid: 'shelter', modes: 'both', ar: 'الملجأ', en: 'Shelter OS', dar: 'شاشة ملجأ خضراء متوهجة', den: 'A glowing green shelter terminal', c: ['#020a05', '#04110a', '#8ff5b8', '#1bff80', '#18dc6e', '#4dff9c', '#021208', 4] },
     { value: 'Crossbar', sid: 'xmb', modes: 'both', ar: 'الكونسول', en: 'Crossbar', dar: 'قائمة كونسول فوق موجة متحركة', den: 'A console menu over a flowing wave', c: ['#06122e', '#0c1f4a', '#ffffff', '#8cc4ff', '#c6e2ff', '#ffffff', '#061636', 12] },
+    { value: 'Steam OLED Black', sid: 'steam-oled', modes: 'both', ar: 'ستيم الأسود', en: 'Steam OLED Black', dar: 'ستيم الأصلي بخلفية سوداء صافية — مريح للعين ولشاشات OLED', den: 'Stock Steam on true black — easy on the eyes and on OLED screens', c: ['#000000', '#040404', '#dcdedf', '#1a9fff', '#6fbfec', '#70d61d', '#ffffff', 4] },
+    { value: 'Steam Graphite', sid: 'steam-graphite', modes: 'both', ar: 'ستيم الرمادي', en: 'Steam Graphite', dar: 'ستيم الأصلي برمادي داكن محايد بدون الزرقة', den: 'Stock Steam in neutral dark grey, without the blue cast', c: ['#0c0d0f', '#17191b', '#dcdedf', '#699ed3', '#97b9d6', '#70d61d', '#ffffff', 4] },
+    { value: 'Steam Midnight', sid: 'steam-midnight', modes: 'both', ar: 'ستيم الكحلي', en: 'Steam Midnight', dar: 'ستيم الأصلي بلون كحلي غامق', den: 'Stock Steam in a deep midnight navy', c: ['#010310', '#070d1e', '#dcdedf', '#6b93ff', '#90b5f7', '#70d61d', '#ffffff', 4] },
+    { value: 'Steam Forest', sid: 'steam-forest', modes: 'both', ar: 'ستيم الأخضر', en: 'Steam Forest', dar: 'ستيم الأصلي بأخضر الغابات الداكن', den: 'Stock Steam in dark forest green', c: ['#020d05', '#0a190f', '#dcdedf', '#00b48e', '#7ec7a7', '#70d61d', '#ffffff', 4] },
+    { value: 'Steam Wine', sid: 'steam-wine', modes: 'both', ar: 'ستيم العنابي', en: 'Steam Wine', dar: 'ستيم الأصلي بلون عنابي غامق', den: 'Stock Steam in deep wine red', c: ['#140507', '#210f13', '#dcdedf', '#e86a89', '#e99bb1', '#70d61d', '#ffffff', 4] },
+    { value: 'Steam Royal Purple', sid: 'steam-royal', modes: 'both', ar: 'ستيم البنفسجي', en: 'Steam Royal Purple', dar: 'ستيم الأصلي بالبنفسجي الملكي', den: 'Stock Steam in royal purple', c: ['#0b0616', '#171223', '#dcdedf', '#a580f3', '#b6a9f2', '#70d61d', '#ffffff', 4] },
+    { value: 'Steam Coffee', sid: 'steam-coffee', modes: 'both', ar: 'ستيم القهوة', en: 'Steam Coffee', dar: 'ستيم الأصلي ببني القهوة الدافئ ولمسات كهرمانية', den: 'Stock Steam in warm coffee brown with amber highlights', c: ['#140801', '#201408', '#dcdedf', '#d28700', '#dda976', '#70d61d', '#ffffff', 4] },
+    { value: 'Steam Ocean', sid: 'steam-ocean', modes: 'both', ar: 'ستيم المحيط', en: 'Steam Ocean', dar: 'ستيم الأصلي بأزرق المحيط المخضر', den: 'Stock Steam in deep ocean teal', c: ['#000d0f', '#01191c', '#dcdedf', '#00afb1', '#60c9c4', '#70d61d', '#ffffff', 4] },
     { value: 'Steam Original', sid: 'original', modes: 'both', ar: 'ستيم الأصلي', en: 'Steam Original', dar: 'بيغ بكتشر مثل ما يجي من ستيم', den: 'Big Picture exactly as Valve ships it', c: ['#0e141b', '#1a1f27', '#dcdedf', '#1a9fff', '#66c0f4', '#70d61d', '#ffffff', 4] },
     { value: 'SpaceTheme', sid: 'space', modes: 'both', ar: 'SpaceTheme', en: 'SpaceTheme', dar: 'داكن ومرتب بلون بنفسجي', den: 'Dark and tidy with a violet accent', c: ['#0a0a0a', '#111111', '#ebebf0', '#878cff', '#666cff', '#27b964', '#ffffff', 8] },
     { value: 'Material You', sid: 'material', modes: 'both', ar: 'Material You', en: 'Material You', dar: 'أسطح ناعمة وزوايا دائرية', den: 'Soft tonal surfaces, round corners', c: ['#111318', '#1d2026', '#e2e2e9', '#aac7ff', '#d6e3ff', '#aac7ff', '#0a305f', 12] },
@@ -304,14 +312,15 @@
   /* =================================================================
      mode + style sync
      ================================================================= */
-  const curSid = () => cssVar('--rf-style-id').replace(/["']/g, '');
+  const curSid = () => (cssVar('--tint-id') || cssVar('--rf-style-id')).replace(/["']/g, ''); // a colour variant of Steam Original names itself with --tint-id
   const curStyle = () => STYLES.find(s => s.sid === curSid()) || null;
   function sync() {
     const st = curStyle();
     const sid = curSid();
-    const mode = sid === 'original' ? 'off' : (st && !inBpm(st)) || !st ? 'neutral' : 'on';
+    const tinted = /^steam-/.test(sid), ds = tinted ? 'original' : sid;
+    const mode = sid === 'original' || tinted ? 'off' : (st && !inBpm(st)) || !st ? 'neutral' : 'on';
     if (html.dataset.rfsBpm !== mode) html.dataset.rfsBpm = mode;
-    if (sid && html.dataset.rfsStyle !== sid) html.dataset.rfsStyle = sid;
+    if (ds && html.dataset.rfsStyle !== ds) html.dataset.rfsStyle = ds;
     paintDoc(document);
     for (const w of menuWindows()) { try { paintMenu(w); } catch (e) { /* a menu window closing */ } }
     placeButton();
@@ -542,7 +551,7 @@
   async function themeNative() {
     try { const r = await ctx.MILLENNIUM_API.ffi('core', 'Core_GetActiveTheme')(); const o = typeof r === 'string' ? JSON.parse(r) : r; return (o && o.native) || 'rf-shelf'; } catch (e) { return 'rf-shelf'; }
   }
-  const base = sid => sid === 'material' ? 'material' : sid === 'original' ? 'none' : 'space';
+  const base = sid => sid === 'material' ? 'material' : sid === 'original' || /^steam-/.test(sid) ? 'none' : 'space';
   async function applySel() {
     const st = list()[sel];
     if (!st || busy) return;

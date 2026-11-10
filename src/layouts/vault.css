@@ -12,6 +12,8 @@
   --vt-end: right; --vt-start: left;
   --vt-socket: radial-gradient(circle at 50% 38%, #2a2119, #100c09 78%);
   --vt-gold-hi: #f3dc9c;
+  /* motion: one curve for everything that moves; hover = 120 ms on transform only (glow and frame switch at once) */
+  --vt-ease: cubic-bezier(.2, .8, .25, 1);
   --vt-gold-text: linear-gradient(180deg, #fff3c8 0%, #f0cf7d 45%, #c08d3c 100%);
   /* one gem per installed item: emerald set in a gold rim */
   --vt-gem: radial-gradient(circle, #eaffef 0 1px, #63e08c 1.8px, #1d8a46 3.6px, #0b3a1c 4.4px, #e2bf6e 4.9px 5.9px, rgba(0, 0, 0, .8) 6.3px 7px, transparent 7.4px);
@@ -137,7 +139,7 @@ html[data-rfs-lang="ar"] :is(#rfs, #rfs-sheet)[data-layout="vault"] { --vt-end: 
     var(--vt-socket);
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .7), inset 0 0 14px rgba(var(--rc), var(--rg)),
     0 0 0 1px #0a0806, 0 0 0 2px rgba(201, 162, 78, .3), 0 5px 10px rgba(0, 0, 0, .6);
-  transition: transform .1s ease-out, box-shadow .12s, border-color .12s;
+  transition: transform .12s var(--vt-ease);
 }
 #rfs[data-layout="vault"] .vt-q { width: 58px; }
 #rfs[data-layout="vault"] .vt-q.empty { cursor: default; --rc: 217, 176, 102; --rb: .14; --rg: 0; --rt: 0; }
@@ -229,8 +231,9 @@ html[data-rfs-lang="ar"] :is(#rfs, #rfs-sheet)[data-layout="vault"] { --vt-end: 
   background: linear-gradient(180deg, #3d352c, #29231d 50%, #1d1915);
   box-shadow: inset 0 0 0 2px #17130f, inset 0 0 0 3px rgba(217, 176, 102, .42), inset 0 6px 6px -3px rgba(255, 240, 205, .12),
     0 1px 0 rgba(0, 0, 0, .6), 0 3px 8px rgba(0, 0, 0, .4);
-  transition: background .12s, border-color .12s, color .12s;
+  transition: transform .09s var(--vt-ease);
 }
+#rfs[data-layout="vault"] .vt-btn:active { transform: translateY(1px); }
 #rfs[data-layout="vault"] .vt-btn svg.rf-ic { width: 15px; height: 15px; margin-inline-end: 6px; }
 #rfs[data-layout="vault"] .vt-btn:hover { color: #fff3d0; border-color: #e6c477; background: linear-gradient(180deg, #4c4236, #322a22 50%, #231e19); }
 #rfs[data-layout="vault"] .vt-btn:active { box-shadow: inset 0 0 0 2px #17130f, inset 0 0 0 3px rgba(217, 176, 102, .42), inset 0 3px 6px rgba(0, 0, 0, .6); }
@@ -321,8 +324,9 @@ html[data-rfs-lang="ar"] :is(#rfs, #rfs-sheet)[data-layout="vault"] { --vt-end: 
   font-size: 12.5px; font-weight: 700; color: rgb(var(--rc)); white-space: nowrap;
   background: linear-gradient(180deg, #2b241d, #1a1511); border: 1px solid rgba(var(--rc), .36);
   box-shadow: inset 0 1px 0 rgba(255, 240, 205, .06), 0 1px 2px rgba(0, 0, 0, .5);
-  transition: border-color .1s, background .1s;
+  transition: transform .09s var(--vt-ease);
 }
+#rfs[data-layout="vault"] .vt-chip:active:not(:disabled) { transform: translateY(1px); }
 #rfs[data-layout="vault"] .vt-chip::before {
   content: ''; flex: none; width: 8px; height: 8px; transform: rotate(45deg); border: 1px solid rgba(0, 0, 0, .8);
   background: linear-gradient(135deg, rgba(255, 255, 255, .8), rgb(var(--rc)) 45%, rgba(var(--rc), .5));
@@ -368,12 +372,13 @@ html[data-rfs-lang="ar"] :is(#rfs, #rfs-sheet)[data-layout="vault"] { --vt-end: 
   background:
     linear-gradient(var(--vt-veil, transparent), var(--vt-veil, transparent)),
     var(--vt-gem) top 3px var(--vt-end) 3px / 16px 16px no-repeat,
-    linear-gradient(to top, rgba(var(--rc), var(--rt)), transparent 42%),
+    linear-gradient(rgb(var(--rc)), rgb(var(--rc))) bottom / 100% 3px no-repeat,   /* the rarity band */
+    linear-gradient(to top, rgba(var(--rc), calc(var(--rt) + .14)), transparent 42%),
     var(--img, none) center / cover no-repeat,
     var(--vt-socket);
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .7), inset 0 0 14px rgba(var(--rc), var(--rg)),
     0 0 0 1px #090705, 0 0 0 2px rgba(201, 162, 78, .17), 0 4px 8px rgba(0, 0, 0, .55);
-  transition: transform .1s ease-out, box-shadow .1s, border-color .1s;
+  transition: transform .12s var(--vt-ease);
 }
 #rfs[data-layout="vault"] .vt-slot.ni { --vt-veil: rgba(14, 10, 8, .46); --vt-gem: none; }
 #rfs[data-layout="vault"] .vt-slot.r4 {
@@ -399,7 +404,7 @@ html[data-rfs-lang="ar"] :is(#rfs, #rfs-sheet)[data-layout="vault"] { --vt-end: 
 }
 /* the stack count = your hours in it */
 #rfs[data-layout="vault"] .vt-slot[data-h]::after {
-  content: attr(data-h); position: absolute; bottom: 5px; inset-inline-end: 5px; height: 16px; padding: 0 5px; border-radius: 2px;
+  content: attr(data-h); position: absolute; bottom: 7px; inset-inline-end: 5px; height: 16px; padding: 0 5px; border-radius: 2px;
   font-size: 11px; font-weight: 700; line-height: 14px; color: #f8ecd2; text-shadow: 0 1px 0 #000; pointer-events: none;
   background: rgba(12, 9, 7, .86); border: 1px solid rgba(var(--rc), .55);
 }
@@ -415,6 +420,8 @@ html[data-rfs-lang="ar"] :is(#rfs, #rfs-sheet)[data-layout="vault"] { --vt-end: 
 #rfs[data-layout="vault"] :is(.vt-q, .vt-eqslot) .vt-run { top: auto; bottom: 5px; }
 #rfs[data-layout="vault"] .vt-run svg.rf-ic { width: 12px; height: 12px; margin: 0; stroke: currentColor; filter: none; }
 @keyframes vt-run { 50% { opacity: .45; } }
+/* the one small accent holds still while an item card covers the bag */
+html.rfs-sheet-on #rfs[data-layout="vault"] .vt-run { animation-play-state: paused; }
 /* hover: only this slot lifts and lights up */
 #rfs[data-layout="vault"] .vt-slot:hover {
   z-index: 1; transform: translateY(-3px); --vt-veil: transparent; border-color: rgb(var(--rc));
@@ -580,8 +587,9 @@ html[data-rfs-lang="ar"] :is(#rfs, #rfs-sheet)[data-layout="vault"] { --vt-end: 
   background: linear-gradient(180deg, #3d352c, #29231d 50%, #1d1915);
   box-shadow: inset 0 0 0 2px #17130f, inset 0 0 0 3px rgba(217, 176, 102, .42), inset 0 7px 7px -4px rgba(255, 240, 205, .12),
     0 1px 0 rgba(0, 0, 0, .6), 0 4px 10px rgba(0, 0, 0, .45);
-  transition: background .12s, border-color .12s, color .12s;
+  transition: transform .09s var(--vt-ease);
 }
+#rfs-sheet[data-layout="vault"] .rf-act:active { transform: translateY(1px); }
 #rfs-sheet[data-layout="vault"] .rf-act > svg.rf-ic { width: 16px; height: 16px; margin-inline-end: 7px; }
 #rfs-sheet[data-layout="vault"] .rf-act:hover { color: #fff3d0; border-color: #e6c477; background: linear-gradient(180deg, #4c4236, #322a22 50%, #231e19); }
 #rfs-sheet[data-layout="vault"] .rf-act:active { box-shadow: inset 0 0 0 2px #17130f, inset 0 0 0 3px rgba(217, 176, 102, .42), inset 0 3px 6px rgba(0, 0, 0, .6); }
@@ -626,3 +634,9 @@ html[data-rfs-lang="ar"] #rfs[data-layout="vault"] .vt-tip :is(.tt-name, .tt-gen
 html[data-rfs-lang="ar"] #rfs-sheet[data-layout="vault"] .vx-kick { font-size: 12px; }
 html[data-rfs-lang="ar"] #rfs-sheet[data-layout="vault"] .vx-flav { font-style: normal; }
 html[data-rfs-lang="ar"] #rfs-sheet[data-layout="vault"] .rf-act { font-size: 14px; }
+
+/* Windows animation effects off: nothing eases (hover states still switch, at once) and the running mark stops pulsing */
+@media (prefers-reduced-motion: reduce) {
+  #rfs[data-layout="vault"] :is(.vt-slot, .vt-q, .vt-eqslot, .vt-btn, .vt-chip), #rfs-sheet[data-layout="vault"] .rf-act { transition: none; }
+  #rfs[data-layout="vault"] .vt-run { animation: none; }
+}

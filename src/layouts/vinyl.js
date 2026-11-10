@@ -191,7 +191,7 @@
      follows --D, the record's diameter, so the tonearm lands on the outer groove at any size. Beside the booth sit
      the liner notes: a cream insert with the facts as a track list, the description and the wired buttons. */
   // NOTE: no prefers-reduced-motion gate here: Windows reports "reduce" whenever its animation effects are off (they
-  // are on the owner's PC), and this short entrance is the thing he asked for. It stays under 600 / 400 ms.
+  // are on the owner's PC), and this short entrance is the thing he asked for. It stays under 350 ms (transform + opacity only).
   const ARM_REST = 'rotate(3deg)', ARM_PLAY = 'rotate(30deg)';
   const EASE = 'cubic-bezier(.2,.8,.2,1)', EASE_IO = 'cubic-bezier(.6,0,.3,1)';
 
@@ -499,19 +499,20 @@
       }
       api.sfx('slide');
       const anims = [
-        scrim.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 220, easing: 'ease-out' }),
-        plinth.animate([{ opacity: 0, transform: 'translateY(18px)' }, { opacity: 1, transform: 'none' }], { duration: 300, easing: EASE, fill: 'backwards' }),
+        scrim.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 180, easing: 'ease-out' }),
+        plinth.animate([{ opacity: 0, transform: 'translateY(18px)' }, { opacity: 1, transform: 'none' }], { duration: 220, easing: EASE, fill: 'backwards' }),
+        // The whole entrance is settled by 350 ms; the three steps overlap instead of queueing.
         // 1. the sleeve leaves the crate
-        sl.animate([{ transform: slFrom, opacity: slOp }, { transform: 'none', opacity: 1 }], { duration: 300, easing: EASE, fill: 'backwards' }),
+        sl.animate([{ transform: slFrom, opacity: slOp }, { transform: 'none', opacity: 1 }], { duration: 220, easing: EASE, fill: 'backwards' }),
         // 2. the record slides out of it onto the platter (hidden until the sleeve is in place)
         rec.animate([{ transform: inSleeve, opacity: 0 }, { transform: inSleeve, opacity: 1, offset: 0.01 }, { transform: 'none', opacity: 1 }],
-          { duration: 300, delay: 240, easing: EASE_IO, fill: 'backwards' }),
+          { duration: 200, delay: 110, easing: EASE_IO, fill: 'backwards' }),
         // 3. the tonearm swings in
-        arm.animate([{ transform: ARM_REST }, { transform: ARM_PLAY }], { duration: 200, delay: 380, easing: 'ease-in-out', fill: 'both' }),
-        notes.animate([{ opacity: 0, transform: `translateX(${28 * dir}px)` }, { opacity: 1, transform: 'none' }], { duration: 320, delay: 110, easing: EASE, fill: 'backwards' }),
+        arm.animate([{ transform: ARM_REST }, { transform: ARM_PLAY }], { duration: 150, delay: 200, easing: 'ease-in-out', fill: 'both' }),
+        notes.animate([{ opacity: 0, transform: `translateX(${28 * dir}px)` }, { opacity: 1, transform: 'none' }], { duration: 220, delay: 70, easing: EASE, fill: 'backwards' }),
       ];
       // 4. the label turns once the record is down (33 1/3 rpm; the grooves are round, so only the small label moves)
-      this.spin = label.animate([{ transform: 'rotate(0deg)' }, { transform: 'rotate(360deg)' }], { duration: 1800, delay: 540, iterations: Infinity });
+      this.spin = label.animate([{ transform: 'rotate(0deg)' }, { transform: 'rotate(360deg)' }], { duration: 1800, delay: 350, iterations: Infinity });
       await Promise.all(anims.map(a => a.finished.catch(() => null)));
       if (view.isConnected) { view.classList.toggle('ready', true); view.focus({ preventScroll: true }); api.sfx('snap'); }
     },
@@ -538,13 +539,13 @@
       api.sfx('close');
       const f = { fill: 'forwards' };
       await Promise.all([
-        notes.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: `translateX(${20 * dir}px)` }], { duration: 180, easing: 'ease-in', ...f }),
-        arm.animate([{ transform: ARM_PLAY }, { transform: ARM_REST }], { duration: 150, easing: 'ease-in-out', ...f }),
+        notes.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: `translateX(${20 * dir}px)` }], { duration: 150, easing: 'ease-in', ...f }),
+        arm.animate([{ transform: ARM_PLAY }, { transform: ARM_REST }], { duration: 120, easing: 'ease-in-out', ...f }),
         rec.animate([{ transform: 'none', opacity: 1 }, { transform: inSleeve, opacity: 1, offset: 0.97 }, { transform: inSleeve, opacity: 0 }],
-          { duration: 230, delay: 60, easing: EASE_IO, ...f }),
-        sl.animate([{ transform: 'none', opacity: 1 }, slTo], { duration: 170, delay: 220, easing: 'cubic-bezier(.5,0,.6,1)', ...f }),
-        plinth.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(14px)' }], { duration: 170, delay: 200, easing: 'ease-in', ...f }),
-        scrim.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 190, delay: 200, ...f }),
+          { duration: 190, delay: 40, easing: EASE_IO, ...f }),
+        sl.animate([{ transform: 'none', opacity: 1 }, slTo], { duration: 150, delay: 180, easing: 'cubic-bezier(.5,0,.6,1)', ...f }),
+        plinth.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(14px)' }], { duration: 150, delay: 180, easing: 'ease-in', ...f }),
+        scrim.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, delay: 180, ...f }),
       ].map(a => a.finished.catch(() => null)));
       done();
     },

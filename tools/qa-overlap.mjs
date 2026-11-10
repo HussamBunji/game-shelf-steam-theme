@@ -345,8 +345,8 @@ export function summary(res) {
    install dialog is CANCELLED, the settings window is closed again, nothing is typed into a chat.
    ====================================================================================================== */
 const sleep = ms => new Promise(r => setTimeout(r, ms));
-export const SID = { 'Classic Shelf': 'classic', 'Glass Gallery': 'glass', 'Neon Coverflow': 'neon', 'Terminal': 'terminal', 'RPG Vault': 'vault', 'Vinyl Records': 'vinyl', 'Corkboard': 'cork', 'Retro Arcade': 'arcade', 'Magazine': 'magazine', 'Cupertino Dark': 'cupertino', 'Cyberpunk': 'cyberpunk', 'Shelter OS': 'shelter', 'Crossbar': 'xmb', 'Steam Original': 'original', 'SpaceTheme': 'space', 'Material You': 'material' };
-const NATIVE_HOME = new Set(['original', 'space', 'material']);
+export const SID = { 'Classic Shelf': 'classic', 'Glass Gallery': 'glass', 'Neon Coverflow': 'neon', 'Terminal': 'terminal', 'RPG Vault': 'vault', 'Vinyl Records': 'vinyl', 'Corkboard': 'cork', 'Retro Arcade': 'arcade', 'Magazine': 'magazine', 'Cupertino Dark': 'cupertino', 'Cyberpunk': 'cyberpunk', 'Shelter OS': 'shelter', 'Crossbar': 'xmb', 'Steam Original': 'original', 'SpaceTheme': 'space', 'Material You': 'material', 'Steam OLED Black': 'steam-oled', 'Steam Graphite': 'steam-graphite', 'Steam Midnight': 'steam-midnight', 'Steam Forest': 'steam-forest', 'Steam Wine': 'steam-wine', 'Steam Royal Purple': 'steam-royal', 'Steam Coffee': 'steam-coffee', 'Steam Ocean': 'steam-ocean' };
+const NATIVE_HOME = new Set(['original', 'space', 'material', 'steam-oled', 'steam-graphite', 'steam-midnight', 'steam-forest', 'steam-wine', 'steam-royal', 'steam-coffee', 'steam-ocean']);
 const WEB = [
   ['store', 'https://store.steampowered.com/'],
   ['store-app', 'https://store.steampowered.com/app/1091500/'],

@@ -159,7 +159,7 @@ html[data-rfs-style="cyberpunk"] .DialogButton {
   text-transform: uppercase; letter-spacing: var(--cp-track) !important; text-shadow: none !important;
   background: var(--cp-ghost-bg) !important; box-shadow: var(--cp-ghost-line) !important;
   clip-path: var(--cp-notch);
-  transition: background-color .15s, color .15s, transform .15s var(--cp-ease) !important;
+  transition: transform .12s var(--cp-ease) !important;
 }
 html[data-rfs-style="cyberpunk"] .DialogButton:not(:disabled):not(.Disabled):hover { color: #fff !important; background: var(--cp-ghost-bg-hi) !important; box-shadow: var(--cp-ghost-line-hi) !important; }
 html[data-rfs-style="cyberpunk"] .DialogButton:not(:disabled):not(.Disabled):active { transform: translateY(1px); }
@@ -262,11 +262,11 @@ html.responsive[data-rfs-style="cyberpunk"] .store_nav .tab {
 html.responsive[data-rfs-style="cyberpunk"] .store_nav .tab > span,
 html.responsive[data-rfs-style="cyberpunk"] .store_nav .tab .pulldown > span {
   color: #9aa3ad !important; font-weight: 600 !important; text-transform: uppercase !important; letter-spacing: var(--cp-track) !important;
-  transition: color .15s !important;
+  transition: none !important;
 }
 html.responsive[data-rfs-style="cyberpunk"] .store_nav .tab::after {
   content: ''; position: absolute; inset-inline: 10px; bottom: 5px; height: 2px; background: #d9b45a;
-  transform: scaleX(0); transition: transform .2s var(--cp-ease); pointer-events: none;
+  transform: scaleX(0); transition: transform .12s var(--cp-ease); pointer-events: none;
 }
 html.responsive[data-rfs-style="cyberpunk"] .store_nav .tab:is(:hover, .focus, .active)::after { transform: none; }
 html.responsive[data-rfs-style="cyberpunk"] .store_nav .tab:is(:hover, .focus, .active) > span,
@@ -294,7 +294,7 @@ html.responsive[data-rfs-style="cyberpunk"] .store_main_capsule .info { backgrou
 html.responsive[data-rfs-style="cyberpunk"] .store_main_capsule .app_name { color: #e6e1d6 !important; font-weight: 700 !important; text-transform: uppercase; letter-spacing: var(--cp-track); }
 html.responsive[data-rfs-style="cyberpunk"] .store_capsule {
   border-radius: 0 !important; overflow: hidden; background: #121822 !important; clip-path: var(--cp-clip-s); /* Steam positions it (its flags sit inside) */
-  box-shadow: none !important; transition: transform .18s var(--cp-ease) !important;
+  box-shadow: none !important; transition: transform .12s var(--cp-ease) !important;
 }
 /* the frame is an overlay (the art would cover an inset line): hairline + the two diagonals */
 html.responsive[data-rfs-style="cyberpunk"] .store_capsule::after {
@@ -330,7 +330,7 @@ html.responsive[data-rfs-style="cyberpunk"] :is(.carousel_container .arrow, .car
     linear-gradient(to top right, transparent calc(50% - 1px), rgba(217, 180, 90, .55) calc(50% - 1px) 50%, transparent 50%) right top / 8px 8px no-repeat border-box,
     linear-gradient(to bottom left, transparent calc(50% - 1px), rgba(217, 180, 90, .55) calc(50% - 1px) 50%, transparent 50%) left bottom / 8px 8px no-repeat border-box,
     rgba(14, 19, 28, .9);
-  transition: transform .15s var(--cp-ease);
+  transition: transform .12s var(--cp-ease);
 }
 html.responsive[data-rfs-style="cyberpunk"] :is(.carousel_container .arrow, .carousel__back-button, .carousel__next-button)::after {
   background: center / 16px 16px no-repeat;
@@ -383,7 +383,7 @@ html.responsive[data-rfs-style="cyberpunk"] .carousel_container .carousel_thumbs
 /* ---- 5. tab lists: dark rows, a brass start bar on hover; the home tab strip is a HUD segment bar ---- */
 html.responsive[data-rfs-style="cyberpunk"] .tab_item {
   position: relative; border: 0 !important; border-radius: 0 !important; background: #121822 !important; box-shadow: none !important;
-  margin-bottom: 2px !important; transition: background-color .15s !important;
+  margin-bottom: 2px !important; transition: none !important;
 }
 html.responsive[data-rfs-style="cyberpunk"] .tab_item::before {
   content: ''; position: absolute; inset-block: 0; inset-inline-start: 0; width: 2px; z-index: 2; background: transparent; pointer-events: none;
@@ -413,7 +413,7 @@ html.responsive[data-rfs-style="cyberpunk"] :is(.tab_preview_container, .home_ri
 /* search results and other repeated rows: the same dark rows with the start bar */
 html.responsive[data-rfs-style="cyberpunk"] :is(.search_result_row, .game_area_dlc_row, .market_listing_row, .badge_row, .forum_topic, .help_wizard_button) {
   position: relative; border: 0 !important; border-radius: 0 !important; background: #121822 !important; box-shadow: none !important;
-  margin-bottom: 2px !important; transition: background-color .15s !important;
+  margin-bottom: 2px !important; transition: none !important;
 }
 html.responsive[data-rfs-style="cyberpunk"] :is(.search_result_row, .game_area_dlc_row, .market_listing_row, .badge_row, .forum_topic, .help_wizard_button)::before {
   content: ''; position: absolute; inset-block: 0; inset-inline-start: 0; width: 2px; z-index: 2; background: transparent; pointer-events: none;
@@ -461,7 +461,7 @@ html.responsive[data-rfs-style="cyberpunk"] .btn_addtocart { border-radius: 0; }
 html.responsive[data-rfs-style="cyberpunk"] :is(.btn_green_steamui, .btn_blue_steamui, .btnv6_blue_hoverfade, .btnv6_grey_black, .btn_grey_steamui, .btnv6_white_transparent,
   .btn_grey_black, .btn_grey_white_innerfade, .btn_darkblue_white_innerfade, .btn_green_white_innerfade, .btnv6_lightblue_blue, .btn_profile_action, .help_site_button) {
   border: 0 !important; border-radius: 0 !important; text-shadow: none !important; clip-path: var(--cp-notch);
-  transition: background-color .15s, color .15s, transform .15s var(--cp-ease) !important;
+  transition: transform .12s var(--cp-ease) !important;
 }
 html.responsive[data-rfs-style="cyberpunk"] :is(.btn_green_steamui, .btn_blue_steamui, .btnv6_blue_hoverfade, .btnv6_grey_black, .btn_grey_steamui, .btnv6_white_transparent,
   .btn_grey_black, .btn_grey_white_innerfade, .btn_darkblue_white_innerfade, .btn_green_white_innerfade, .btnv6_lightblue_blue, .btn_profile_action):not(.btn_disabled):active { transform: translateY(1px); }
@@ -553,7 +553,7 @@ html[data-rfs-style="cyberpunk"] #rfs-bar.inhome .tb-btn {
   --ink: #e6e1d6;
   height: 30px; border: 0; border-radius: 0; color: #e6e1d6; font-weight: 600; text-transform: uppercase; letter-spacing: var(--cp-track);
   background: var(--cp-ghost-bg); box-shadow: var(--cp-ghost-line); clip-path: var(--cp-notch);
-  transition: background-color .15s, color .15s, transform .15s var(--cp-ease);
+  transition: transform .12s var(--cp-ease);
 }
 html[data-rfs-style="cyberpunk"] #rfs-bar.inhome .tb-btn:hover { --ink: #fff; color: #fff; background: var(--cp-ghost-bg-hi); box-shadow: var(--cp-ghost-line-hi); }
 html[data-rfs-style="cyberpunk"] #rfs-bar.inhome .tb-btn:active { transform: translateY(1px); }
@@ -565,14 +565,14 @@ html[data-rfs-style="cyberpunk"] #rfs-bar.inhome .tb-seg button,
 html[data-rfs-style="cyberpunk"] #rfs-bar.inhome .tb-seg button:is(:first-child, :last-child) {
   --ink: #9aa3ad;
   height: 30px; border: 0; border-radius: 0; color: #9aa3ad; font-weight: 600; background: transparent; box-shadow: none;
-  text-transform: uppercase; letter-spacing: var(--cp-track); transition: background-color .15s, color .15s;
+  text-transform: uppercase; letter-spacing: var(--cp-track); transition: none;
 }
 html[data-rfs-style="cyberpunk"] #rfs-bar.inhome .tb-seg button:hover { --ink: #e6e1d6; color: #e6e1d6; background: rgba(154, 163, 173, .08); }
 html[data-rfs-style="cyberpunk"] #rfs-bar.inhome .tb-seg button.on { --ink: #8fd8db; color: #8fd8db; background: rgba(95, 196, 200, .12); box-shadow: inset 0 -2px 0 #5fc4c8; }
 /* the search: a near-black field with a brass start tick, cyan line on focus */
 html[data-rfs-style="cyberpunk"] #rfs-bar:is(.inhome, .float) .tb-search {
   height: 32px; border-radius: 0; border: 1px solid rgba(154, 163, 173, .24); border-inline-start: 2px solid #d9b45a;
-  background: #0b0f16; box-shadow: none; transition: border-color .15s, box-shadow .15s;
+  background: #0b0f16; box-shadow: none; transition: none;
 }
 html[data-rfs-style="cyberpunk"] #rfs-bar:is(.inhome, .float) .tb-search:focus-within { border-color: #5fc4c8; box-shadow: 0 0 0 1px rgba(95, 196, 200, .28); }
 html[data-rfs-style="cyberpunk"] #rfs-bar .tb-q { color: #e6e1d6; font-weight: 500; font-size: 13.5px; }
@@ -630,7 +630,7 @@ html[data-rfs-lang="ar"][data-rfs-style="cyberpunk"] :is(#rfs-rail, #rfs-data, #
 html[data-rfs-style="cyberpunk"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) h4 small { color: #6d7782; letter-spacing: 0; text-transform: none; }
 /* rows: full-width, a start bar shows on hover (cyan) and on the current one (brass) */
 html[data-rfs-style="cyberpunk"] :is(#rfs-rail .rr-link, #rfs-qmenu .ql, #rfs-data .rd-row) {
-  border-radius: 0; margin-inline: 0; padding-inline: 14px; border-inline-start: 2px solid transparent; transition: background-color .15s;
+  border-radius: 0; margin-inline: 0; padding-inline: 14px; border-inline-start: 2px solid transparent; transition: none;
 }
 html[data-rfs-style="cyberpunk"] :is(#rfs-rail .rr-link, #rfs-qmenu .ql):hover { background: rgba(95, 196, 200, .08); border-inline-start-color: #5fc4c8; }
 html[data-rfs-style="cyberpunk"] :is(#rfs-rail .rr-link, #rfs-qmenu .ql).cur { background: rgba(217, 180, 90, .1); border-inline-start-color: #d9b45a; color: #e3c274 !important; }
@@ -645,7 +645,7 @@ html[data-rfs-style="cyberpunk"] #rfs-rail .rr-price i {
 html[data-rfs-style="cyberpunk"] #rfs-rail .rr-btn {
   border: 0; border-radius: 0; color: #e6e1d6 !important; font-weight: 600; text-transform: uppercase; letter-spacing: var(--cp-track);
   background: var(--cp-ghost-bg); box-shadow: var(--cp-ghost-line); clip-path: var(--cp-notch);
-  transition: background-color .15s, color .15s, transform .15s var(--cp-ease);
+  transition: transform .12s var(--cp-ease);
 }
 html[data-rfs-style="cyberpunk"] #rfs-rail .rr-btn:hover { color: #fff !important; background: var(--cp-ghost-bg-hi); box-shadow: var(--cp-ghost-line-hi); }
 html[data-rfs-style="cyberpunk"] #rfs-rail .rr-btn:active { transform: translateY(1px); }
@@ -678,7 +678,7 @@ html[data-rfs-style="cyberpunk"] #rfs-data .rd-link:hover { color: #8fd8db; back
 /* the header Quick links button: the ghost slab */
 html[data-rfs-style="cyberpunk"] #rfs-qbtn {
   color: #e6e1d6; border: 0; border-radius: 0; background: var(--cp-ghost-bg); box-shadow: var(--cp-ghost-line); clip-path: var(--cp-notch);
-  text-transform: uppercase; letter-spacing: var(--cp-track); transition: background-color .15s, color .15s;
+  text-transform: uppercase; letter-spacing: var(--cp-track); transition: none;
 }
 html[data-rfs-style="cyberpunk"] #rfs-qbtn:hover { color: #fff; background: var(--cp-ghost-bg-hi); box-shadow: var(--cp-ghost-line-hi); }
 html[data-rfs-style="cyberpunk"] #rfs-qbtn svg.rf-ic { stroke: currentColor; }
@@ -771,3 +771,296 @@ html[data-rfs-page="wishlist"][data-rfs-style="cyberpunk"] [data-rfs-wl="row"]:h
 
 /* downloads page + install / settings dialogs (skin.js --rf-dl-* hooks): notched corners, gold selection with a teal hairline */
 html[data-rfs-style="cyberpunk"] { --rf-dl-btn-radius: 0; --rf-dl-check-radius: 0; --rf-dl-clip: var(--cp-notch-s); --rf-dl-sel-bg: linear-gradient(90deg, rgba(217, 180, 90, .26), rgba(95, 196, 200, .08)); --rf-dl-hero-empty: linear-gradient(100deg, rgba(217, 180, 90, .3) 0%, rgba(95, 196, 200, .12) 60%, transparent 100%); --rf-dl-rule: linear-gradient(90deg, #d9b45a 0 24px, rgba(217, 180, 90, .25) 24px 100%); --rf-dl-pri-shadow: none; }
+
+/* ═══════════════ the netrunner store: every shelf is a HUD section, every item a data shard ═══════════════
+   On top of the dressing above, the store uses the home design's own parts: the store bar is the "SCAN // FILTER"
+   plate with a mono label riding its top line; each shelf title is a numbered HUD header (a brass index plate, caps,
+   a dotted trace running on); capsules, list rows and search cards are shards (a cut corner, a brass rule on the top
+   start that runs across when pointed at, a cyan frame that fades in); list rows carry the 4-digit mono index of the
+   library shards; prices are mono readouts and the discount a solid brass parallelogram; tabs are angular plates;
+   side blocks get "//" mono labels; the game title sits under a mono kicker; each edition has a hazard strip.
+   Plain CSS only: clip-paths and gradients, no filters, no blur; motion is transform / opacity on the hovered item
+   (120 ms). */
+html.responsive[data-rfs-style="cyberpunk"] { --cp-skew: polygon(7px 0, 100% 0, calc(100% - 7px) 100%, 0 100%); --cp-shard: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%); }
+html.responsive[dir="rtl"][data-rfs-style="cyberpunk"] { --cp-shard: polygon(12px 0, 100% 0, 100% 100%, 0 100%, 0 12px); }
+
+/* ---- the store bar (React StoreMenu, both builds): the angular plate with a cut top-end corner (drawn, not
+   clipped: the bar holds its menus) and a mono label on its top line ---- */
+html.responsive[data-rfs-style="cyberpunk"] :is(.XLbP8xOkCYw-, .WCG-2-OYepA-, .StoreMenuLoadingPlaceholder .PlaceholderInner) {
+  position: relative; border-radius: 0 !important;
+  background:
+    linear-gradient(to top right, transparent calc(50% - 1px), rgba(217, 180, 90, .6) calc(50% - 1px) 50%, #0b0f16 50%) right top / 12px 12px no-repeat border-box,
+    linear-gradient(90deg, rgba(217, 180, 90, .07), transparent 32%), #121822 !important;
+  box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .2), inset 2px 0 0 #d9b45a !important;
+}
+html.responsive[dir="rtl"][data-rfs-style="cyberpunk"] :is(.XLbP8xOkCYw-, .WCG-2-OYepA-, .StoreMenuLoadingPlaceholder .PlaceholderInner) {
+  background:
+    linear-gradient(to top left, transparent calc(50% - 1px), rgba(217, 180, 90, .6) calc(50% - 1px) 50%, #0b0f16 50%) left top / 12px 12px no-repeat border-box,
+    linear-gradient(270deg, rgba(217, 180, 90, .07), transparent 32%), #121822 !important;
+  box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .2), inset -2px 0 0 #d9b45a !important;
+}
+html.responsive[data-rfs-style="cyberpunk"] [role="navigation"] button[role="button"] { position: relative; color: #9aa3ad !important; font-weight: 600 !important; text-transform: uppercase; letter-spacing: var(--cp-track); text-shadow: none !important; }
+html.responsive[data-rfs-style="cyberpunk"] [role="navigation"] button[role="button"]::after {
+  content: ''; position: absolute; inset-inline: 0; bottom: -5px; height: 2px; background: #d9b45a; transform: scaleX(0); transform-origin: 0 50%; pointer-events: none;
+  transition: transform .12s var(--cp-ease);
+}
+html.responsive[dir="rtl"][data-rfs-style="cyberpunk"] [role="navigation"] button[role="button"]::after { transform-origin: 100% 50%; }
+html.responsive[data-rfs-style="cyberpunk"] [role="navigation"] button[role="button"]:is(:hover, :focus-visible, [aria-expanded="true"]) { color: #e3c274 !important; }
+html.responsive[data-rfs-style="cyberpunk"] [role="navigation"] button[role="button"]:is(:hover, :focus-visible, [aria-expanded="true"])::after { transform: none; }
+html.responsive[data-rfs-style="cyberpunk"] [role="navigation"] button[role="button"] > div > div { display: none !important; }
+/* the store search: a near-black field with a brass start tick; cyan when in use */
+html.responsive[data-rfs-style="cyberpunk"] [role="navigation"] form[role="search"] {
+  border-radius: 0 !important; background-color: #0b0f16 !important; box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .26), inset 2px 0 0 #d9b45a !important; transition: none !important;
+}
+html.responsive[dir="rtl"][data-rfs-style="cyberpunk"] [role="navigation"] form[role="search"] { box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .26), inset -2px 0 0 #d9b45a !important; }
+html.responsive[data-rfs-style="cyberpunk"] [role="navigation"] form[role="search"]:focus-within { box-shadow: inset 0 0 0 1px #5fc4c8 !important; }
+html.responsive[data-rfs-style="cyberpunk"] [role="navigation"] form[role="search"] input[role="combobox"] { color: #e6e1d6 !important; caret-color: #5fc4c8; }
+html.responsive[data-rfs-style="cyberpunk"] [role="navigation"] form[role="search"] input[role="combobox"]::placeholder { color: #6d7782 !important; }
+html.responsive[data-rfs-style="cyberpunk"] [id^="searchSuggestions"] { background: #121822 !important; border-radius: 0 !important; box-shadow: inset 0 0 0 1px rgba(217, 180, 90, .32), 0 18px 40px rgba(0, 0, 0, .6) !important; }
+html.responsive[data-rfs-style="cyberpunk"] [id^="searchSuggestions"] a { border-inline-start: 2px solid transparent; }
+html.responsive[data-rfs-style="cyberpunk"] [id^="searchSuggestions"] a:is(:hover, :focus-visible) { background: rgba(95, 196, 200, .12) !important; border-inline-start-color: #5fc4c8; }
+
+/* ---- shelf titles: a HUD header — a brass "//" plate, caps, a dotted trace running on (Steam contains each shelf's
+   styles, so a page-wide counter cannot number them) ---- */
+html.responsive[data-rfs-style="cyberpunk"] :is(.home_title, .home_section_title, #discounts_and_events_title) {
+  position: relative; width: fit-content !important; max-width: calc(100% - 60px); padding: 0 !important; margin-bottom: 16px !important; background: none !important;
+  font-size: 20px !important; line-height: 22px !important; font-weight: 600 !important; text-transform: uppercase !important; letter-spacing: var(--rf-heading-spacing) !important; color: #e6e1d6 !important;
+}
+html.responsive[data-rfs-style="cyberpunk"] :is(.home_title, .home_section_title, #discounts_and_events_title)::before {
+  content: '//'; display: inline-block; vertical-align: top; min-width: 28px; height: 22px; margin-inline-end: 12px; padding: 0 6px; box-sizing: border-box;
+  color: #15120b; background: #d9b45a; clip-path: var(--cp-notch-s); font: 600 11.5px/22px var(--cp-mono); letter-spacing: 0; text-align: center;
+}
+html.responsive[data-rfs-style="cyberpunk"] :is(.home_title, .home_section_title, #discounts_and_events_title)::after {
+  content: ''; position: absolute; top: 11px; inset-inline-start: calc(100% + 14px); width: 300px; height: 1px; pointer-events: none;
+  background: repeating-linear-gradient(90deg, rgba(154, 163, 173, .38) 0 2px, transparent 2px 6px);
+  -webkit-mask: linear-gradient(90deg, #000 50%, transparent); mask: linear-gradient(90deg, #000 50%, transparent);
+}
+html.responsive[dir="rtl"][data-rfs-style="cyberpunk"] :is(.home_title, .home_section_title, #discounts_and_events_title)::after { -webkit-mask: linear-gradient(270deg, #000 50%, transparent); mask: linear-gradient(270deg, #000 50%, transparent); }
+html.responsive[data-rfs-style="cyberpunk"] .home_discounts_block .home_section_title::after { width: 120px !important; }
+html.responsive[data-rfs-style="cyberpunk"] .title_grid .see_more_link { position: relative; z-index: 1; }
+html.responsive[data-rfs-style="cyberpunk"] .home_section_subtitle { color: #5fc4c8 !important; font-family: var(--cp-mono) !important; font-size: 10.5px !important; text-transform: uppercase; letter-spacing: .14em; }
+html.responsive[data-rfs-lang="ar"][data-rfs-style="cyberpunk"] .home_section_subtitle { letter-spacing: 0; font-size: 12px !important; }
+/* game page / search section titles: a brass "//" before the caps */
+html.responsive[data-rfs-style="cyberpunk"] :is(.game_area_description h2, .game_area_dlc_section h2, .early_access_announcements h2, #game_area_reviews > h2, .pagesubheader)::before { content: '//'; margin-inline-end: 9px; color: #d9b45a; font-family: var(--cp-mono); font-weight: 500; letter-spacing: 0; }
+
+/* ---- the featured capsule: the "featured target" panel ---- */
+html.responsive[data-rfs-style="cyberpunk"] .store_main_capsule .app_name { display: block !important; }
+html.responsive[data-rfs-style="cyberpunk"] .store_main_capsule .app_name::before {
+  content: 'FEATURED TARGET'; display: block; white-space: nowrap; margin-bottom: 6px; padding-inline-start: 13px; color: #5fc4c8; font: 500 10px/1.4 var(--cp-mono); letter-spacing: .16em;
+  background: linear-gradient(#d9b45a, #d9b45a) left center / 6px 6px no-repeat;
+}
+html.responsive[data-rfs-lang="ar"][data-rfs-style="cyberpunk"] .store_main_capsule .app_name::before { content: 'الهدف المميّز'; letter-spacing: 0; font-size: 11.5px; background-position: right center; }
+html.responsive[data-rfs-style="cyberpunk"] .store_main_capsule .info { background: linear-gradient(180deg, #151c27, #121822) !important; box-shadow: inset 2px 0 0 rgba(217, 180, 90, .5) !important; }
+html.responsive[dir="rtl"][data-rfs-style="cyberpunk"] .store_main_capsule .info { box-shadow: inset -2px 0 0 rgba(217, 180, 90, .5) !important; }
+html.responsive[data-rfs-style="cyberpunk"] .store_main_capsule .screenshots > div { clip-path: var(--cp-notch-s); }
+
+/* ---- shards: capsules with a cut top-end corner, a brass rule on the top start that runs across when pointed
+   at (scaleX), and a cyan frame that fades in ---- */
+html.responsive[data-rfs-style="cyberpunk"] :is(.sale_capsule, .content_hub_capsule_ctn, .carousel__inner-slide a.Focusable, a.OtherEvents_EventCtn) {
+  position: relative; border-radius: 0 !important; background: #121822 !important; box-shadow: none !important; clip-path: var(--cp-shard);
+  transition: transform .12s var(--cp-ease) !important;
+}
+html.responsive[data-rfs-style="cyberpunk"] :is(.sale_capsule, .content_hub_capsule_ctn, .carousel__inner-slide a.Focusable, a.OtherEvents_EventCtn, .search_result_row)::before {
+  content: ''; position: absolute; z-index: 4; top: 0; inset-inline: 0; height: 2px; background: #d9b45a; pointer-events: none;
+  transform: scaleX(.38); transform-origin: 0 50%; transition: transform .12s var(--cp-ease);
+}
+html.responsive[dir="rtl"][data-rfs-style="cyberpunk"] :is(.sale_capsule, .content_hub_capsule_ctn, .carousel__inner-slide a.Focusable, a.OtherEvents_EventCtn, .search_result_row)::before { transform-origin: 100% 50%; }
+html.responsive[data-rfs-style="cyberpunk"] :is(.sale_capsule, .content_hub_capsule_ctn, .carousel__inner-slide a.Focusable, a.OtherEvents_EventCtn, .search_result_row)::after {
+  content: ''; position: absolute; inset: 0; z-index: 3; pointer-events: none; box-shadow: inset 0 0 0 1px rgba(95, 196, 200, .8);
+  opacity: 0; transition: opacity .12s var(--cp-ease);
+}
+html.responsive[data-rfs-style="cyberpunk"] :is(.sale_capsule, .content_hub_capsule_ctn, .carousel__inner-slide a.Focusable, a.OtherEvents_EventCtn, .search_result_row):is(:hover, :focus-visible)::before { transform: none; }
+html.responsive[data-rfs-style="cyberpunk"] :is(.sale_capsule, .content_hub_capsule_ctn, .carousel__inner-slide a.Focusable, a.OtherEvents_EventCtn, .search_result_row):is(:hover, :focus-visible)::after { opacity: 1; }
+html.responsive[data-rfs-style="cyberpunk"] :is(.sale_capsule, .content_hub_capsule_ctn, .carousel__inner-slide a.Focusable):is(:hover, :focus-visible) { transform: translateY(-2px); }
+html.responsive[data-rfs-style="cyberpunk"] .carousel__inner-slide a.Focusable > div:last-child { background: #121822 !important; }
+/* category capsules: the label is a brass slab */
+html.responsive[data-rfs-style="cyberpunk"] .content_hub_capsule_ctn .label {
+  color: #15120b !important; background: #d9b45a !important; border-radius: 0 !important; clip-path: var(--cp-notch-s);
+  font-weight: 700 !important; text-transform: uppercase; letter-spacing: var(--cp-track); text-shadow: none !important; box-shadow: none !important;
+}
+/* the page dots of both carousels: slanted ticks, the current one brass */
+html.responsive[data-rfs-style="cyberpunk"] .carousel_container .carousel_thumbs { background: transparent !important; }
+html.responsive[data-rfs-style="cyberpunk"] :is(.carousel_thumbs > div, .carousel__dot) { height: 6px !important; border-radius: 0 !important; background: rgba(154, 163, 173, .3) !important; clip-path: polygon(3px 0, 100% 0, calc(100% - 3px) 100%, 0 100%); }
+html.responsive[data-rfs-style="cyberpunk"] :is(.carousel_thumbs > div.focus, .carousel__dot--selected) { background: #d9b45a !important; }
+
+/* ---- prices: mono readouts; the discount is a solid brass parallelogram ---- */
+html.responsive[data-rfs-style="cyberpunk"] :is(.discount_block, .rfs-price) { border-radius: 0 !important; background: #0b0f16 !important; box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .18) !important; }
+html.responsive[data-rfs-style="cyberpunk"] .discount_block .discount_pct,
+html.responsive[data-rfs-style="cyberpunk"] .discount_pct,
+html.responsive[data-rfs-style="cyberpunk"] .rfs-pct {
+  color: #15120b !important; background: #d9b45a !important; border-radius: 0 !important; clip-path: var(--cp-skew); box-shadow: none !important;
+  font-family: var(--cp-mono) !important; font-weight: 700 !important; padding-inline: 11px !important; margin: 4px !important;
+}
+html.responsive[data-rfs-style="cyberpunk"] .discount_block:not(.no_discount) .discount_final_price { color: #e3c274 !important; }
+html.responsive[data-rfs-style="cyberpunk"] .bundle_base_discount { color: #9aa3ad !important; background: transparent !important; font-family: var(--cp-mono) !important; }
+
+/* ---- the home tab strip: angular plates on a hairline; the list is shard rows with the 4-digit index ---- */
+html.responsive[data-rfs-style="cyberpunk"] .home_tabs_row_ctn { gap: 2px !important; padding: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: inset 0 -1px 0 rgba(154, 163, 173, .22) !important; }
+html.responsive[data-rfs-style="cyberpunk"] .home_tabs_row_ctn .home_tab_button { margin: 0 !important; padding: 7px 18px !important; border: 0 !important; border-radius: 0 !important; background: rgba(154, 163, 173, .07) !important; box-shadow: none !important; clip-path: var(--cp-skew); }
+html.responsive[data-rfs-style="cyberpunk"] .home_tabs_row_ctn .home_tab_button .tab_content { color: #9aa3ad !important; background: transparent !important; box-shadow: none !important; font-weight: 600 !important; text-transform: uppercase; letter-spacing: var(--cp-track); }
+html.responsive[data-rfs-style="cyberpunk"] .home_tabs_row_ctn .home_tab_button:hover { background: rgba(95, 196, 200, .14) !important; }
+html.responsive[data-rfs-style="cyberpunk"] .home_tabs_row_ctn .home_tab_button:hover .tab_content { color: #e6e1d6 !important; }
+html.responsive[data-rfs-style="cyberpunk"] .home_tabs_row_ctn .home_tab_button.active { background: #d9b45a !important; }
+html.responsive[data-rfs-style="cyberpunk"] .home_tabs_row_ctn .home_tab_button.active .tab_content { color: #15120b !important; }
+html.responsive[data-rfs-style="cyberpunk"] :is(.home_tab_bg_ctn, .home_tabs_columns, .home_tabs_sections, .tab_content_items) { background: transparent !important; }
+html.responsive[data-rfs-style="cyberpunk"] .tab_content_items { counter-reset: cprow; }
+html.responsive[data-rfs-style="cyberpunk"] .tab_row_item {
+  position: relative; counter-increment: cprow; border: 0 !important; border-radius: 0 !important; background: #121822 !important; box-shadow: none !important;
+  margin-bottom: 3px !important; clip-path: var(--cp-notch); transition: transform .12s var(--cp-ease) !important;
+}
+html.responsive[data-rfs-style="cyberpunk"] .tab_row_item::before {
+  content: ''; position: absolute; inset-block: 0; inset-inline-start: 0; width: 2px; background: #d9b45a; pointer-events: none;
+  transform: scaleY(0); transform-origin: 50% 0; transition: transform .12s var(--cp-ease);
+}
+html.responsive[data-rfs-style="cyberpunk"] .tab_row_item:is(:hover, .focus) { background: #182130 !important; transform: translateX(3px); }
+html.responsive[dir="rtl"][data-rfs-style="cyberpunk"] .tab_row_item:is(:hover, .focus) { transform: translateX(-3px); }
+html.responsive[data-rfs-style="cyberpunk"] .tab_row_item:is(:hover, .focus)::before { transform: none; }
+html.responsive[data-rfs-style="cyberpunk"] .tab_row_item .tab_item_title { color: #e6e1d6 !important; font-weight: 600 !important; }
+html.responsive[data-rfs-style="cyberpunk"] .tab_row_item .tab_item_tags::before { content: '00' counter(cprow, decimal-leading-zero); margin-inline-end: 9px; color: rgba(95, 196, 200, .75); font: 400 11px/1 var(--cp-mono); }
+html.responsive[data-rfs-style="cyberpunk"] .tab_row_item :is(.tab_item_tags, .top_tag) { color: #9aa3ad !important; }
+html.responsive[data-rfs-style="cyberpunk"] .tab_row_item .tab_item_release_date { color: #6d7782 !important; font-family: var(--cp-mono) !important; font-size: 10.5px !important; text-transform: uppercase; letter-spacing: .08em; }
+html.responsive[data-rfs-lang="ar"][data-rfs-style="cyberpunk"] .tab_row_item .tab_item_release_date { letter-spacing: 0; font-size: 11.5px !important; }
+html.responsive[data-rfs-style="cyberpunk"] .tab_row_item :is(.discount_block, .rfs-price) { background: transparent !important; box-shadow: none !important; }
+html.responsive[data-rfs-style="cyberpunk"] :is(.tab_preview_container, #tab_preview_container) { background: var(--cp-brk), #121822 !important; border-radius: 0 !important; box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .16) !important; }
+html.responsive[data-rfs-style="cyberpunk"] .tab_preview .tab_title { color: #e6e1d6 !important; font-weight: 700 !important; text-transform: uppercase; letter-spacing: var(--cp-track); }
+html.responsive[data-rfs-style="cyberpunk"] .tab_preview .screenshot { border-radius: 0 !important; clip-path: var(--cp-notch-s); }
+
+/* ---- the discovery queue strip + other React widgets ---- */
+html.responsive[data-rfs-style="cyberpunk"] .WidgetHeaderCtn > div:first-child { color: #e6e1d6 !important; font-weight: 700 !important; text-transform: uppercase; letter-spacing: var(--cp-track); }
+html.responsive[data-rfs-style="cyberpunk"] .WidgetHeaderCtn > div:nth-child(2) { color: #9aa3ad !important; }
+html.responsive[data-rfs-style="cyberpunk"] .WidgetHeaderCtn > div:nth-child(3) {
+  color: #15120b !important; background: #d9b45a !important; border-radius: 0 !important; clip-path: var(--cp-notch); box-shadow: none !important;
+  font-weight: 700 !important; text-transform: uppercase; letter-spacing: var(--cp-track);
+}
+html.responsive[data-rfs-style="cyberpunk"] .WidgetHeaderCtn > div:nth-child(3):hover { background: #e3c274 !important; }
+
+/* ---- the game page: a dossier ---- */
+html.responsive[data-rfs-style="cyberpunk"] .apphub_AppName::before { content: 'SYS://STORE.TARGET'; display: block; margin-bottom: 5px; color: #5fc4c8; font: 500 10px/1.3 var(--cp-mono); letter-spacing: .16em; text-transform: none; }
+html.responsive[data-rfs-lang="ar"][data-rfs-style="cyberpunk"] .apphub_AppName::before { letter-spacing: .08em; }
+/* each edition: a hazard strip on its top start, the brass start bar */
+html.responsive[data-rfs-style="cyberpunk"] .game_area_purchase_game {
+  background:
+    repeating-linear-gradient(135deg, rgba(217, 180, 90, .55) 0 5px, transparent 5px 10px) left top / 150px 5px no-repeat,
+    var(--cp-brk), linear-gradient(90deg, rgba(217, 180, 90, .05), transparent 40%), #121822 !important;
+  box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .15) !important;
+}
+html.responsive[dir="rtl"][data-rfs-style="cyberpunk"] .game_area_purchase_game {
+  background:
+    repeating-linear-gradient(45deg, rgba(217, 180, 90, .55) 0 5px, transparent 5px 10px) right top / 150px 5px no-repeat,
+    var(--cp-brk), linear-gradient(270deg, rgba(217, 180, 90, .05), transparent 40%), #121822 !important;
+}
+html.responsive[data-rfs-style="cyberpunk"] .game_purchase_action :is(.game_purchase_price, .price) { color: #e3c274 !important; font-size: 15px !important; }
+html.responsive[data-rfs-style="cyberpunk"] :is(.block.responsive_apppage_details_right, .block.responsive_apppage_details_left, .rightcol .block, .block.search_collapse_block, .steam_curators_block, .rightbox) {
+  box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .15) !important;
+}
+/* the labels of the side blocks: mono data labels after a brass "//" */
+html.responsive[data-rfs-style="cyberpunk"] :is(.block_title, .responsive_block_header) {
+  color: #5fc4c8 !important; font-family: var(--cp-mono) !important; font-size: 10.5px !important; font-weight: 500 !important; text-transform: uppercase; letter-spacing: .14em;
+}
+html.responsive[data-rfs-style="cyberpunk"] :is(.block_title, .responsive_block_header)::before { content: '//'; margin-inline-end: 6px; color: #d9b45a; letter-spacing: 0; }
+html.responsive[data-rfs-lang="ar"][data-rfs-style="cyberpunk"] :is(.block_title, .responsive_block_header) { letter-spacing: 0; font-size: 12px !important; }
+html.responsive[data-rfs-style="cyberpunk"] .game_area_details_specs_ctn .icon { filter: none !important; opacity: .75; }
+html.responsive[data-rfs-style="cyberpunk"] .game_language_options :is(td, th) { border-color: rgba(154, 163, 173, .16) !important; }
+/* DLC rows: notched shard rows */
+html.responsive[data-rfs-style="cyberpunk"] .game_area_dlc_row { clip-path: var(--cp-notch-s); margin-bottom: 2px !important; transition: transform .12s var(--cp-ease) !important; }
+html.responsive[data-rfs-style="cyberpunk"] .game_area_dlc_row:hover { transform: translateX(3px); }
+html.responsive[dir="rtl"][data-rfs-style="cyberpunk"] .game_area_dlc_row:hover { transform: translateX(-3px); }
+html.responsive[data-rfs-style="cyberpunk"] .game_page_autocollapse_fade { background: linear-gradient(180deg, rgba(11, 15, 22, 0), #0b0f16) !important; }
+
+/* ---- search: result cards are shards ---- */
+html.responsive[data-rfs-style="cyberpunk"] .searchbar { background: var(--cp-brk), #121822 !important; border: 0 !important; border-radius: 0 !important; box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .16) !important; }
+html.responsive[data-rfs-style="cyberpunk"] .search_result_row { border-radius: 0 !important; background: #121822 !important; clip-path: var(--cp-shard); transition: transform .12s var(--cp-ease) !important; }
+html.responsive[data-rfs-style="cyberpunk"] .search_result_row::before { width: auto !important; inset-block: 0 auto !important; }
+html.responsive[data-rfs-style="cyberpunk"] .search_result_row:hover { transform: translateY(-2px); background: #182130 !important; }
+html.responsive[data-rfs-style="cyberpunk"] .search_result_row :is(.discount_block, .rfs-price) { background: transparent !important; box-shadow: none !important; }
+html.responsive[data-rfs-style="cyberpunk"] .search_results_filtered_warning { border: 0 !important; border-radius: 0 !important; background: #121822 !important; box-shadow: inset 2px 0 0 #d9b45a, inset 0 0 0 1px rgba(154, 163, 173, .16) !important; }
+html.responsive[dir="rtl"][data-rfs-style="cyberpunk"] .search_results_filtered_warning { box-shadow: inset -2px 0 0 #d9b45a, inset 0 0 0 1px rgba(154, 163, 173, .16) !important; }
+html.responsive[data-rfs-style="cyberpunk"] .search_results_filtered_warning > div:first-child { background: transparent !important; border: 0 !important; box-shadow: none !important; }
+html.responsive[data-rfs-style="cyberpunk"] .tab_filter_control_row { border-radius: 0 !important; }
+html.responsive[data-rfs-style="cyberpunk"] .tab_filter_control_row:hover { background: rgba(95, 196, 200, .1) !important; }
+html.responsive[data-rfs-style="cyberpunk"] .st-search-view-toggle .st-btn { border-radius: 0 !important; }
+html.responsive[data-rfs-style="cyberpunk"] .st-search-view-toggle .st-btn.active { background: #d9b45a !important; color: #15120b !important; }
+
+/* ---- community hub: angular tabs, plates with a hairline ---- */
+html.responsive[data-rfs-style="cyberpunk"] .apphub_HeaderTop { background: transparent !important; }
+html.responsive[data-rfs-style="cyberpunk"] .apphub_sectionTabs { box-shadow: inset 0 -1px 0 rgba(154, 163, 173, .22); }
+html.responsive[data-rfs-style="cyberpunk"] .apphub_sectionTab { margin: 0 2px 0 0 !important; padding: 7px 16px !important; border: 0 !important; border-radius: 0 !important; color: #9aa3ad !important; background: rgba(154, 163, 173, .07) !important; clip-path: var(--cp-skew); }
+html.responsive[data-rfs-style="cyberpunk"] .apphub_sectionTab span { border: 0 !important; color: inherit !important; font-weight: 600 !important; text-transform: uppercase; letter-spacing: var(--cp-track); }
+html.responsive[data-rfs-style="cyberpunk"] .apphub_sectionTab:hover { color: #e6e1d6 !important; background: rgba(95, 196, 200, .14) !important; }
+html.responsive[data-rfs-style="cyberpunk"] .apphub_sectionTab.active { color: #15120b !important; background: #d9b45a !important; }
+html.responsive[data-rfs-style="cyberpunk"] :is(.apphub_HubDivider, .apphub_sectionTabsHR) { background: linear-gradient(90deg, #d9b45a 0 40px, rgba(154, 163, 173, .2) 40px) !important; height: 1px !important; border: 0 !important; }
+html.responsive[data-rfs-style="cyberpunk"] .apphub_StorePrice .price { color: #e3c274 !important; background: #0b0f16 !important; border-radius: 0 !important; box-shadow: inset 2px 0 0 #d9b45a, inset 0 0 0 1px rgba(154, 163, 173, .2); font-family: var(--cp-mono) !important; font-weight: 600 !important; }
+html.responsive[data-rfs-style="cyberpunk"] .apphub_Card { border: 0 !important; border-radius: 0 !important; background: #121822 !important; box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .16) !important; }
+html.responsive[data-rfs-style="cyberpunk"] .apphub_Card:hover { box-shadow: inset 0 0 0 1px rgba(95, 196, 200, .7) !important; }
+html.responsive[data-rfs-style="cyberpunk"] :is(.apphub_CardContentMain, .apphub_CardContentAuthorBlock, .apphub_CardMetaData, .apphub_CardContentType, .apphub_CardContentDiscussionAuthorBlock, .UserReviewCardContent_Footer, .apphub_CardContentNewsFade) { background: transparent !important; }
+html.responsive[data-rfs-style="cyberpunk"] .apphub_CardContentAuthorBlock { box-shadow: inset 0 1px 0 rgba(154, 163, 173, .16); }
+html.responsive[data-rfs-style="cyberpunk"] :is(.apphub_CardContentNewsTitle, .apphub_CardContentGuideTitle, .apphub_CardContentDiscussionTitle, .apphub_CardContentTitle) { color: #e6e1d6 !important; font-weight: 700 !important; text-transform: uppercase; letter-spacing: var(--cp-track); }
+html.responsive[data-rfs-style="cyberpunk"] :is(.apphub_CardTextContent, .apphub_CardContentNewsDesc, .apphub_CardContentDiscussionText, .apphub_CardContentGuideDesc) { color: #c9c6bd !important; }
+html.responsive[data-rfs-style="cyberpunk"] .apphub_Card :is(.bb_h1, .bb_h2, .bb_h3, h2.bb_tag) { text-transform: none !important; letter-spacing: 0 !important; font-weight: 600 !important; }
+html.responsive[data-rfs-style="cyberpunk"] :is(.apphub_CardContentNewsDate, .apphub_CardContentAuthorName, .apphub_CardContentDiscussionDate, .date_posted, .hours) { color: #6d7782 !important; font-family: var(--cp-mono) !important; }
+html.responsive[data-rfs-style="cyberpunk"] .apphub_GetMoreContent { background: transparent !important; }
+
+/* ---- Steam's React pages (cart, wishlist, the store bar's menus) draw with design tokens: --color-accent-1…12 and
+   --color-dull-1…12. Both scales are re-tinted: dull = the blue-charcoal surfaces, accent = brass (dark type on the solid steps) ---- */
+html.responsive[data-rfs-style="cyberpunk"][data-accent-color], html.responsive[data-rfs-style="cyberpunk"] [data-accent-color]:not([data-accent-color="dull"]) {
+  --color-accent-1: #0b0f16; --color-accent-2: #121822; --color-accent-3: #1c1a12; --color-accent-4: #26210f; --color-accent-5: #332b12; --color-accent-6: #43381a;
+  --color-accent-7: #5c4c22; --color-accent-8: #7a652c; --color-accent-9: #c9a24a; --color-accent-10: #d9b45a; --color-accent-11: #e3c274; --color-accent-12: #f3e3b8;
+  --color-accent-contrast: #15120b;
+}
+html.responsive[data-rfs-style="cyberpunk"][data-dull-color], html.responsive[data-rfs-style="cyberpunk"] [data-dull-color], html.responsive[data-rfs-style="cyberpunk"] [data-accent-color="dull"] {
+  --color-dull-1: #0b0f16; --color-dull-2: #0f141d; --color-dull-3: #121822; --color-dull-4: #182130; --color-dull-5: #1c2636; --color-dull-6: #1f2a3c;
+  --color-dull-7: #2a3850; --color-dull-8: #344560; --color-dull-9: #6d7782; --color-dull-10: #7d8792; --color-dull-11: #c9c6bd; --color-dull-12: #e6e1d6;
+}
+html.responsive[data-rfs-style="cyberpunk"] [data-accent-color="dull"] {
+  --color-accent-1: #0b0f16; --color-accent-2: #0f141d; --color-accent-3: #121822; --color-accent-4: #182130; --color-accent-5: #1c2636; --color-accent-6: #1f2a3c;
+  --color-accent-7: #2a3850; --color-accent-8: #344560; --color-accent-9: #6d7782; --color-accent-10: #7d8792; --color-accent-11: #c9c6bd; --color-accent-12: #e6e1d6;
+}
+
+/* ---- the deeper pages: the game page's related shelves and reviews (newer React blocks that keep Steam's own
+   slate and blue), discussions, guides, workshop lists, the hub's filters: square plates with a hairline, no stock blue left ---- */
+html.responsive[data-rfs-style="cyberpunk"] :is(.related_items_ctn, .related_items_ctn > .page_content, .review_ctn) { background: transparent !important; box-shadow: none !important; }
+html.responsive[data-rfs-style="cyberpunk"] .related_items_ctn [data-featuretarget] > div > .Panel { background: #121822 !important; border-radius: 0px !important; box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .18) !important; }
+html.responsive[data-rfs-style="cyberpunk"] .related_items_ctn [data-featuretarget] a.Focusable { border-radius: 0px !important; overflow: hidden; }
+html.responsive[data-rfs-style="cyberpunk"] .FollowButton { color: #5fc4c8 !important; background: #0b0f16 !important; border-radius: 0px !important; box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .18) !important; }
+html.responsive[data-rfs-style="cyberpunk"] .FollowButton .FollowBtnText { color: inherit !important; }
+html.responsive[data-rfs-style="cyberpunk"] :is(.steam_curators_block .right > a, .dev_row .more_btn, .dlc_highlight_reason) { color: #e6e1d6 !important; background: var(--cp-ghost-bg) !important; box-shadow: var(--cp-ghost-line) !important; border-radius: 0 !important; }
+html.responsive[data-rfs-style="cyberpunk"] :is(.review_ctn h2, #app_reviews_hash h2, .guides_home_section_title) { font-family: var(--rf-heading-font) !important; font-weight: 600 !important; font-size: 17px !important; text-transform: uppercase; letter-spacing: var(--rf-heading-spacing); color: #e6e1d6 !important; background: none !important; }
+html.responsive[data-rfs-style="cyberpunk"] #app_reviews_hash [role="list"] [role="button"] { background: #121822 !important; border-radius: 0px !important; box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .18) !important; overflow: hidden; }
+html.responsive[data-rfs-style="cyberpunk"] #app_reviews_hash [role="list"] [role="button"] .Panel { background-image: none !important; background-color: transparent !important; }
+html.responsive[data-rfs-style="cyberpunk"] #app_reviews_hash [role="list"] [role="button"] .Panel > .Panel > div:not(.Panel),
+html.responsive[data-rfs-style="cyberpunk"] #app_reviews_hash a.Focusable > .Focusable > div { background: #182130 !important; }
+html.responsive[data-rfs-style="cyberpunk"] #app_reviews_hash h1 { color: #e6e1d6 !important; text-shadow: none !important; }
+/* discussions */
+html.responsive[data-rfs-style="cyberpunk"] .forum_paging { background: #121822 !important; border-radius: 0px !important; box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .18) !important; }
+html.responsive[data-rfs-style="cyberpunk"] .forum_paging .pagebtn { color: #5fc4c8 !important; background: #0b0f16 !important; border-radius: 0px !important; }
+html.responsive[data-rfs-style="cyberpunk"] :is(.forum_paging_pagelink, .forum_paging_summary, .forum_paging_summary span, .forum_topic_lastpost, .forum_topic_op, .rightbox_list_header div, .apphub_SectionFilterLabel, .tag_category_desc, .tagSearch, .guides_home_section_desc) { color: #9aa3ad !important; }
+html.responsive[data-rfs-style="cyberpunk"] .forum_paging_pagelink.active { color: #5fc4c8 !important; }
+html.responsive[data-rfs-style="cyberpunk"] :is(.discussionSearchTextContainer, .searchTextContainer) { background: #0b0f16 !important; border-radius: 0px !important; box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .18) !important; }
+html.responsive[data-rfs-style="cyberpunk"] :is(.discussionSearchText, .searchTextContainer input) { color: #e6e1d6 !important; background: transparent !important; border: 0 !important; box-shadow: none !important; }
+html.responsive[data-rfs-style="cyberpunk"] .rightbox_list_selection_background { background-image: none !important; background: rgba(217, 180, 90, .1) !important; box-shadow: inset 2px 0 0 #d9b45a; }
+html.responsive[data-rfs-style="cyberpunk"] :is(.rightbox_list_option.selected, .browseOption.selected) :is(.forum_list_postcount, .forum_list_name a, a) { color: #e6e1d6 !important; }
+html.responsive[data-rfs-style="cyberpunk"] img.discussionSearchTextSubmitImg { filter: grayscale(1); opacity: .85; }
+/* the hub's sub-pages: filters, guides, workshop lists */
+html.responsive[data-rfs-style="cyberpunk"] :is(.subtitle_ctn, .apphub_SectionFilter) { background: #121822 !important; border-radius: 0px !important; box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .18) !important; }
+html.responsive[data-rfs-style="cyberpunk"] .subtitle_ctn .subtitle { color: #e6e1d6 !important; }
+html.responsive[data-rfs-style="cyberpunk"] .filterselect { background: #0b0f16 !important; border-radius: 0px !important; box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .18) !important; }
+html.responsive[data-rfs-style="cyberpunk"] .filterselect :is(.option, .filterselect_subtext) { color: #5fc4c8 !important; }
+html.responsive[data-rfs-style="cyberpunk"] .filterselect_options { background: #121822 !important; border-radius: 0px !important; box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .18), 0 18px 40px rgba(0, 0, 0, .6) !important; }
+html.responsive[data-rfs-style="cyberpunk"] :is(.detailBox, #GuideCategoryTags, .panel.guide_category_tags) { background: #121822 !important; border: 0 !important; border-radius: 0px !important; box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .18) !important; }
+html.responsive[data-rfs-style="cyberpunk"] a.guide_home_category_selection { color: #5fc4c8 !important; background: #0b0f16 !important; border: 0 !important; border-radius: 0px !important; box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .18) !important; }
+html.responsive[data-rfs-style="cyberpunk"] a.guide_home_category_selection:hover { background: #182130 !important; }
+html.responsive[data-rfs-style="cyberpunk"] a.workshopItemCollection { background: #121822 !important; border-radius: 0px !important; box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .18) !important; }
+html.responsive[data-rfs-style="cyberpunk"] a.workshopItemCollection:hover { background: #182130 !important; }
+html.responsive[data-rfs-style="cyberpunk"] .workshopItemAuthorName { color: #5fc4c8 !important; }
+html.responsive[data-rfs-style="cyberpunk"] :is(.workshopItemTitle, .rightSectionTitle) { color: #e6e1d6 !important; }
+html.responsive[data-rfs-style="cyberpunk"] :is(.workshopItemPreviewHolder, .workshopItemPreviewHolder img, .appHubIconHolder, .appHubIconHolder img) { border-radius: 0px !important; }
+html.responsive[data-rfs-style="cyberpunk"] :is(.appHubIconHolder, .appHubIconHolder img) { background-image: none !important; background-color: #182130 !important; }
+/* Arabic (RTL): Steam stretches the LIVE badge across the capsule and leaves the platform icon under the buy button */
+html.responsive[dir="rtl"][data-rfs-style="cyberpunk"] .broadcast_live_stream_icon { width: fit-content !important; left: auto !important; }
+html.responsive[dir="rtl"][data-rfs-style="cyberpunk"] .game_area_purchase_platform { left: auto !important; right: 22px !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  html.responsive[data-rfs-style="cyberpunk"] :is(.sale_capsule, .content_hub_capsule_ctn, .carousel__inner-slide a.Focusable, a.OtherEvents_EventCtn, .search_result_row, .tab_row_item, .game_area_dlc_row) { transition: none !important; transform: none !important; }
+  html.responsive[data-rfs-style="cyberpunk"] :is(.sale_capsule, .content_hub_capsule_ctn, .carousel__inner-slide a.Focusable, a.OtherEvents_EventCtn, .search_result_row, .tab_row_item, [role="navigation"] button[role="button"])::before,
+  html.responsive[data-rfs-style="cyberpunk"] :is(.sale_capsule, .content_hub_capsule_ctn, .carousel__inner-slide a.Focusable, a.OtherEvents_EventCtn, .search_result_row, [role="navigation"] button[role="button"])::after { transition: none; }
+}

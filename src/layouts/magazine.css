@@ -4,7 +4,8 @@
    and the FEATURE SPREAD a game opens into (#rfs-sheet[data-layout="magazine"]).
    Colours and fonts come from src/styles/magazine.css. Scoped to #rfs[data-layout="magazine"].
    Written with logical properties: right-to-left in Arabic, left-to-right in English.
-   Hover is instant: highlights change with :hover and no transition.
+   Hover is instant: highlights change with :hover and no transition. The only things that move are the page turn of
+   an opened story (magazine.js, 350 ms) and, in it, the arrow of a call-out leaning toward the page it turns to.
    =================================================================== */
 #rfs[data-layout="magazine"], #rfs-sheet[data-layout="magazine"] {
   --mg-cream: var(--rf-text, #efe6d6);
@@ -530,3 +531,12 @@ html[data-rfs-lang="en"] #rfs-sheet[data-layout="magazine"] .mg-sp-dek::first-le
   #rfs-sheet[data-layout="magazine"] .mg-cta .rf-act.play { grid-column: 1 / -1; }
   #rfs-sheet[data-layout="magazine"] .mg-facts dl { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* ───────────── motion (transform only, 120 ms; colours and rules still answer at once) ───────────── */
+/* a call-out's arrow leans toward the page it turns to; a pressed call-out / close button moves down 1 px */
+#rfs-sheet[data-layout="magazine"] .mg-cta .rf-act::after { transition: transform .12s cubic-bezier(.3, .7, .25, 1); }
+#rfs-sheet[data-layout="magazine"] .mg-cta .rf-act:is(:hover, :focus-visible)::after { transform: translateX(-4px) rotate(-45deg); }
+html[data-rfs-lang="en"] #rfs-sheet[data-layout="magazine"] .mg-cta .rf-act:is(:hover, :focus-visible)::after { transform: translateX(4px) rotate(45deg); }
+#rfs-sheet[data-layout="magazine"] :is(.mg-cta .rf-act, .mg-sp-x):active { transform: translateY(1px); }
+#rfs[data-layout="magazine"] .mg-play:active { transform: translateY(1px); }
+@media (prefers-reduced-motion: reduce) { #rfs-sheet[data-layout="magazine"] .mg-cta .rf-act::after { transition: none; } }

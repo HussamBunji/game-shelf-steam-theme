@@ -15,7 +15,12 @@
    Rules followed (docs/THEME-KIT.md): only a window of ~20 rows exists in the DOM (4 elements each), images via
    api.lazy with the small header art, the hero image once (the faded backdrop), transforms only on those rows and the
    category row, the waves are the one large animation, DOM writes only in render() and on input (plus the wave frames
-   and the clock's text once a minute). */
+   and the clock's text once a minute).
+   Nothing leaves the console (2026-11): Friends is a column of your friends (in a game first, then online, then
+   offline; Enter = message / profile), Store is a column of shelves (Specials, Top sellers, New, Coming soon, Most
+   played) that open like console folders into games with their price — read from Steam's public store services —
+   and on every other page (store, community, a game page, downloads) Steam's top bar is replaced by a slim console
+   bar: back to the Crossbar, back / forward, the page's name, the clock (Chrome, below). */
 (function () {
   'use strict';
   const api = window.__rfsLayoutApi;
@@ -226,6 +231,110 @@
   const win = () => { try { return window.SteamClient && window.SteamClient.Window ? window.SteamClient.Window : null; } catch (e) { return null; } };
   const dlInfo = () => { const d = document.getElementById('rfs-dl'), p = d && d.querySelector('.pct'); return { busy: !!d && d.classList.contains('busy'), pct: p ? p.textContent.trim() : '' }; };
   const url = u => { try { api.steamUrl(u); } catch (e) { api.toast(T('ما قدرت أفتحها', 'Couldn\'t open that')); } };
+  /** Steam's shared context (its stores and services) */
+  const CTX = () => { try { return api.steam() || window; } catch (e) { return window; } };
+  const fmtDay = (() => { try { const f = new Intl.DateTimeFormat(LOC, { day: 'numeric', month: 'short', year: 'numeric' }); return sec => f.format(new Date(sec * 1000)); } catch (e) { return sec => new Date(sec * 1000).toDateString(); } })();
+
+  /* ---- the store inside the cross: shelves that open like console folders. The lists come from the store's own
+     public search (which games are on a shelf) and Steam's store service (name, art, price in the user's country,
+     reviews) — both answer this window directly; nothing is scraped from a page. Kept 10 minutes. */
+  const ASSET = 'https://shared.fastly.steamstatic.com/store_item_assets/';
+  const SHOP = [
+    { id: 'specials', icon: 'percent', name: T('العروض', 'Specials'), sub: T('ألعاب عليها خصم الحين', 'Games on sale right now'), q: 'specials=1' },
+    { id: 'topsellers', icon: 'trend', name: T('الأكثر مبيعاً', 'Top sellers'), sub: T('اللي الناس تشتريه هالأيام', 'What people are buying'), q: 'filter=topsellers' },
+    { id: 'popularnew', icon: 'sparkle', name: T('جديد ورائج', 'New & trending'), sub: T('إصدارات جديدة عليها إقبال', 'Fresh releases doing well'), q: 'filter=popularnew&sort_by=Released_DESC' },
+    { id: 'comingsoon', icon: 'calendar', name: T('قريباً', 'Coming soon'), sub: T('ألعاب منتظرة', 'Popular upcoming games'), q: 'filter=comingsoon' },
+    { id: 'mostplayed', icon: 'chart', name: T('الأكثر لعباً الحين', 'Most played'), sub: T('أعلى الألعاب بعدد اللاعبين', 'The biggest games by players'), charts: true },
+  ];
+  const Shop = {
+    cc: null, cache: new Map(), TTL: 10 * 60e3,
+    async country() {
+      if (this.cc != null) return this.cc;
+      try { const c = await CTX().SteamClient.User.GetIPCountry(); this.cc = /^[A-Z]{2}$/.test(c) ? c : ''; } catch (e) { this.cc = ''; }
+      return this.cc;
+    },
+    async json(u) { const r = await fetch(u); if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); },
+    async ids(sec) {
+      if (sec.charts) {
+        const r = await this.json('https://api.steampowered.com/ISteamChartsService/GetMostPlayedGames/v1/');
+        return ((r.response && r.response.ranks) || []).slice(0, 40).map(x => x.appid);
+      }
+      const r = await this.json(`https://store.steampowered.com/search/results/?${sec.q}&json=1&count=40&l=${LTR ? 'english' : 'arabic'}`);
+      const out = [];
+      for (const i of r.items || []) { const m = /\/apps\/(\d+)\//.exec(i.logo || ''); if (m && !out.includes(+m[1])) out.push(+m[1]); }
+      return out;
+    },
+    async items(ids) {
+      const cc = await this.country();
+      const context = { language: LTR ? 'english' : 'arabic' };
+      if (cc) context.country_code = cc;
+      const q = { ids: ids.map(appid => ({ appid })), context, data_request: { include_assets: true, include_basic_info: true, include_release: true, include_reviews: true } };
+      const r = await this.json('https://api.steampowered.com/IStoreBrowseService/GetItems/v1/?input_json=' + encodeURIComponent(JSON.stringify(q)));
+      const by = new Map();
+      for (const it of (r.response && r.response.store_items) || []) {
+        if (!it || it.success !== 1 || !it.name || it.visible === false) continue;
+        const a = it.assets || {}, f = a.asset_url_format || '', pic = n => (n && f ? ASSET + f.replace('${FILENAME}', n) : '');
+        const b = it.best_purchase_option || {}, rv = it.reviews && it.reviews.summary_filtered, rel = it.release || {}, bi = it.basic_info || {};
+        by.set(it.id, {
+          appid: it.id, name: it.name, img: pic(a.header) || pic(a.main_capsule), hero: pic(a.library_hero) || pic(a.header),
+          price: b.formatted_final_price || '', was: b.formatted_original_price || '', pct: b.discount_pct | 0, free: !!it.is_free,
+          soon: !!rel.is_coming_soon, date: +rel.steam_release_date || 0,
+          rev: rv && rv.review_count ? `${rv.review_score_label} · ${rv.percent_positive}%` : '',
+          desc: (bi.short_description || '').replace(/\s+/g, ' ').trim(), dev: ((bi.developers || [])[0] || {}).name || '',
+        });
+      }
+      return ids.map(i => by.get(i)).filter(Boolean);
+    },
+    async load(sec) {
+      const c = this.cache.get(sec.id);
+      if (c && Date.now() - c.t < this.TTL) return c.items;
+      const ids = await this.ids(sec);
+      const items = ids.length ? await this.items(ids) : [];
+      this.cache.set(sec.id, { t: Date.now(), items });
+      return items;
+    },
+  };
+  /** the price line of a store game: "-25%  11.24 KD  14.99 KD" · Free to play · Coming soon · date */
+  function priceHTML(s) {
+    if (s.soon) return `<span class="pr soon">${esc(T('قريباً', 'Coming soon'))}${s.date ? ' · ' + esc(fmtDay(s.date)) : ''}</span>`;
+    if (s.free) return `<span class="pr">${esc(T('مجانية', 'Free to play'))}</span>`;
+    if (!s.price) return '';
+    return (s.pct ? `<span class="pc" dir="ltr">-${s.pct}%</span>` : '') + `<span class="pr" dir="ltr">${esc(s.price)}</span>` + (s.pct && s.was ? `<s dir="ltr">${esc(s.was)}</s>` : '');
+  }
+
+  /* ---- friends, as the console lists them: in a game first, then online, away, offline (Steam's own friend store) */
+  const PSTATE = [T('غير متصل', 'Offline'), T('متصل', 'Online'), T('مشغول', 'Busy'), T('بعيد', 'Away'), T('نايم', 'Snooze'), T('يبي يتبادل', 'Looking to trade'), T('يبي يلعب', 'Looking to play'), T('غير متصل', 'Offline')];
+  function friendRows() {
+    const out = [];
+    try {
+      const fs = CTX().friendStore;
+      for (const fr of (fs && fs.allFriends) || []) {
+        if (fr.efriendrelationship !== 3) continue; // friends only (not invites / blocked)
+        const p = fr.persona || {};
+        let name = ''; try { name = fr.display_name || ''; } catch (e) { /* not loaded */ }
+        name = name || p.m_strPlayerName || '';
+        if (!name) { try { if (fr.LoadIfNecessary) fr.LoadIfNecessary(); } catch (e) { /* later */ } continue; }
+        const gid = p.m_gameid && String(p.m_gameid) !== '0' ? String(p.m_gameid) : '', st = p.m_ePersonaState | 0;
+        let game = '', rp = '';
+        if (gid) {
+          try { game = fr.current_game_name || ''; } catch (e) { /* app info not ready */ }
+          game = game || p.m_strGameExtraInfo || '';
+          try { rp = fr.current_game_rich_presence || ''; } catch (e) { /* none */ }
+        }
+        out.push({
+          id: fr.accountid, sid: fr.steamid64, name, avatar: p.avatar_url_full || p.avatar_url_medium || '', state: st,
+          appid: gid ? +p.m_unGamePlayedAppID || 0 : 0, game, rp: typeof rp === 'string' ? rp : '', last: +p.m_rtLastSeenOnline || 0,
+          rank: gid ? 0 : st === 1 || st === 5 || st === 6 ? 1 : st >= 2 && st <= 4 ? 2 : 3,
+        });
+      }
+    } catch (e) { /* the friend store is not ready */ }
+    return out.sort((a, b) => a.rank - b.rank || a.name.localeCompare(b.name));
+  }
+  const friendLine = f => f.rank === 0 ? (f.game ? T(`يلعب ${f.game}`, `Playing ${f.game}`) : T('داخل لعبة', 'In a game'))
+    : f.rank === 3 ? (f.last ? `${PSTATE[0]} · ${fmtAgo(f.last)}` : PSTATE[0]) : PSTATE[f.state] || PSTATE[1];
+  /** the slim console bar on every other page (an Option; on by default) */
+  const BAR_KEY = 'rfs.xmb.bar';
+  const barOn = () => { try { return localStorage.getItem(BAR_KEY) !== '0'; } catch (e) { return true; } };
   /* ---- the items of the categories that came from Steam's top bar (a console "settings column" each) */
   const ACTS = {
     profile: [
@@ -234,8 +343,10 @@
       { id: 'family', icon: 'users', name: T('العائلة', 'Family'), sub: () => T('إدارة عائلة ستيم', 'Manage your Steam Family'), run: () => url('steam://url/FamilyManagement') },
     ],
     store: [
-      { id: 'storehome', icon: 'cart', name: T('واجهة المتجر', 'Store home'), sub: () => T('العروض والجديد', 'Deals and new releases'), run: () => url('steam://url/StoreFrontPage') },
+      { id: 'wishlist', icon: 'star', name: T('قائمة الرغبات', 'Wishlist'), sub: () => T('الألعاب اللي ناوي عليها', 'The games you are waiting for'), run: () => url('steam://url/UserWishlist') },
       { id: 'storesearch', icon: 'search', name: T('البحث في المتجر', 'Search the store'), sub: () => T('كل ألعاب ستيم', 'Every game on Steam'), run: () => url('steam://url/StoreGameSearchPage') },
+      { id: 'storehome', icon: 'cart', name: T('واجهة المتجر الكاملة', 'The full store'), sub: () => T('صفحة المتجر بثيم الكونسول', 'The store front, in the console look'), run: () => url('steam://url/StoreFrontPage') },
+      { id: 'cart', icon: 'receipt', name: T('السلة', 'Cart'), sub: () => T('اللي اخترته للشراء', 'What you picked to buy'), run: () => url('steam://url/StoreCart') },
       { id: 'points', icon: 'medal', name: T('متجر النقاط', 'Points Shop'), sub: () => T('استبدل نقاطك', 'Spend your points'), run: () => url('steam://url/PointsShop') },
     ],
     community: [
@@ -274,14 +385,22 @@
       ],
     };
   }
-  /* ---- the desktop chrome: while the Crossbar home is on screen, Steam's whole top bar is hidden (the design takes
-     the full window; a thin drag strip + fade-in window buttons in the top-end corner keep it usable). Leaving the home
-     (store, a game page …), switching theme or Big Picture brings Steam's bar back at once. */
+  /* ---- the desktop chrome. Steam's top bar never shows in this style:
+       • on the Crossbar home it is gone (the design takes the full window; a thin drag strip + fade-in window buttons
+         in the top-end corner keep the window usable);
+       • on every other page (store, community, a game page, downloads …) a slim console bar takes its place: back to
+         the Crossbar, back / forward, the page's name, shortcuts, the clock, the window buttons. Steam's bar keeps
+         44 px of height, invisible, and the console bar sits exactly there — the store page is a native view placed
+         under that height, so nothing may float over it. "Steam bar" shows the real bar for a moment (account menu,
+         Steam / View / Help menus); the Option "Console bar on every page" turns the replacement off.
+     Switching theme or Big Picture brings Steam's bar back at once. */
   const Chrome = {
-    style: null, obs: null,
+    style: null, obs: null, nav: null, timer: 0, peekT: 0, peekMode: '', sig: '',
+    top() { return steamClass('TopBar', 'OuterFrame', 'ContentFrame') || '_3Z7VQ1IMk4E3HsHvrkLNgo'; },
     css() {
-      const top = steamClass('TopBar', 'OuterFrame', 'ContentFrame') || '_3Z7VQ1IMk4E3HsHvrkLNgo';
-      return `html.xb-full:not(.rfs-bpm):not(.xb-peek) .${top} { display: none !important; }`;
+      const top = this.top();
+      return `html.xb-full:not(.rfs-bpm):not(.xb-peek) .${top} { display: none !important; }
+html.xb-away:not(.rfs-bpm):not(.xb-peek) .${top} { flex: none !important; height: 44px !important; min-height: 44px !important; max-height: 44px !important; overflow: hidden !important; visibility: hidden !important; }`;
     },
     init() {
       if (this.obs) return;
@@ -289,22 +408,124 @@
       document.head.appendChild(this.style);
       this.obs = new MutationObserver(() => this.sync());
       this.obs.observe(api.root, { attributes: true, attributeFilter: ['class', 'data-layout'] });
+      this.obs.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'data-rfs-style'] });
       this.sync();
     },
+    main() { try { return CTX().SteamUIStore.WindowStore.MainWindowInstance; } catch (e) { return null; } },
+    route() { try { return this.main().m_history.location.pathname || ''; } catch (e) { return ''; } },
     sync() {
       const h = document.documentElement, r = api.root;
-      const on = r.classList.contains('on') && r.dataset.layout === 'xmb' && !h.classList.contains('rfs-bpm');
+      const mine = h.dataset.rfsStyle === 'xmb' && !h.classList.contains('rfs-bpm');
+      const on = mine && r.classList.contains('on') && r.dataset.layout === 'xmb';
+      const away = mine && !on && barOn() && !/^\/library\/home/.test(this.route());
       if (h.classList.contains('xb-full') !== on) h.classList.toggle('xb-full', on);
-      if (!on && h.classList.contains('xb-peek')) h.classList.toggle('xb-peek', false);
+      if (h.classList.contains('xb-away') !== away) h.classList.toggle('xb-away', away);
+      if (h.classList.contains('xb-peek') && !(this.peekMode === 'home' ? on : away)) this.unpeek();
+      if (away) this.showNav(); else this.hideNav();
     },
     /** Notifications live in Steam's bar: show it for a moment and press its bell (the bar hides again on the next move) */
     peekNotifications() {
       const h = document.documentElement;
+      this.peekMode = 'home';
       h.classList.toggle('xb-peek', true);
       const c = steamClass('NotificationsButton', 'TitleBarControls');
       requestAnimationFrame(() => { const b = c && document.querySelector('.' + c); if (b) b.click(); });
     },
-    unpeek() { const h = document.documentElement; if (h.classList.contains('xb-peek')) h.classList.toggle('xb-peek', false); },
+    /** away from home: Steam's real bar for a moment (it leaves again shortly after the pointer does) */
+    peekAway() {
+      const h = document.documentElement, tb = document.querySelector('.' + this.top());
+      this.peekMode = 'away';
+      h.classList.toggle('xb-peek', true);
+      clearTimeout(this.peekT);
+      const off = () => { if (tb) { tb.removeEventListener('mouseleave', leave); tb.removeEventListener('mouseenter', enter); } this.unpeek(); };
+      const leave = () => { clearTimeout(this.peekT); this.peekT = setTimeout(off, 2500); };
+      const enter = () => clearTimeout(this.peekT);
+      if (tb) { tb.addEventListener('mouseleave', leave); tb.addEventListener('mouseenter', enter); }
+      this.peekT = setTimeout(off, 9000);
+    },
+    unpeek() { clearTimeout(this.peekT); const h = document.documentElement; if (h.classList.contains('xb-peek')) h.classList.toggle('xb-peek', false); },
+
+    /* ---------- the console bar ---------- */
+    showNav() {
+      if (this.nav && this.nav.isConnected) return;
+      const n = this.nav = document.createElement('div');
+      n.id = 'xb-nav'; n.dir = LTR ? 'ltr' : 'rtl'; n.setAttribute('role', 'navigation'); n.setAttribute('aria-label', T('شريط الكونسول', 'Console bar'));
+      const b = (k, icon, label, cls) => `<button type="button" class="xn-b${cls ? ' ' + cls : ''}" data-n="${k}" title="${esc(label)}" aria-label="${esc(label)}">${ic(icon)}</button>`;
+      n.innerHTML = `<button type="button" class="xn-home" data-n="home" title="${esc(T('رجوع لقائمة الكونسول', 'Back to the Crossbar'))}">${ic('grid')}<span>${esc(T('الكونسول', 'Crossbar'))}</span></button>
+        ${b('back', LTR ? 'chevL' : 'chevR', T('رجوع', 'Back'))}${b('fwd', LTR ? 'chevR' : 'chevL', T('قدّام', 'Forward'))}
+        <div class="xn-title"><small></small><b dir="auto"></b></div>
+        <div class="xn-quick">${b('store', 'cart', T('المتجر', 'Store'))}${b('community', 'globe', T('المجتمع', 'Community'))}${b('friends', 'msg', T('الأصدقاء', 'Friends'))}${b('downloads', 'download', T('التنزيلات', 'Downloads'))}${b('steam', 'more', T('شريط ستيم (الحساب والقوائم)', 'Steam bar (account and menus)'))}</div>
+        <div class="xn-clock" dir="ltr"></div>
+        <div class="xn-win">
+          <button type="button" data-n="min" title="${esc(T('تصغير', 'Minimize'))}" aria-label="${esc(T('تصغير', 'Minimize'))}"><i class="w-min"></i></button>
+          <button type="button" data-n="max" title="${esc(T('تكبير / استعادة', 'Maximize / restore'))}" aria-label="${esc(T('تكبير', 'Maximize'))}"><i class="w-max"></i></button>
+          <button type="button" data-n="close" class="w-x" title="${esc(T('إغلاق', 'Close'))}" aria-label="${esc(T('إغلاق', 'Close'))}">${ic('x')}</button>
+        </div>`;
+      applyTint(n, tintId());
+      n.addEventListener('click', e => this.navClick(e));
+      document.body.appendChild(n);
+      this.sig = ''; this.paintNav();
+      clearInterval(this.timer); this.timer = setInterval(() => this.paintNav(), 1000);
+    },
+    hideNav() {
+      clearInterval(this.timer); this.timer = 0;
+      if (this.nav) { this.nav.remove(); this.nav = null; }
+    },
+    /** where we are: the page's kind + name, and whether back / forward have somewhere to go */
+    info() {
+      const W = CTX(), lib = T('المكتبة', 'Library');
+      let path = '', canB = false, canF = false, kind = '', title = '';
+      try { const hh = this.main().m_history; path = hh.location.pathname || ''; canB = hh.index > 0; canF = hh.index < hh.length - 1; } catch (e) { /* older Steam */ }
+      const app = /^\/library\/app\/(\d+)/.exec(path);
+      if (app) { const g = api.byId(+app[1]); kind = lib; title = g ? g.name : ''; }
+      else if (/^\/library\/downloads/.test(path)) { kind = lib; title = T('التنزيلات', 'Downloads'); }
+      else if (/^\/library/.test(path)) { kind = lib; title = /collection/.test(path) ? T('المجموعات', 'Collections') : ''; }
+      else {
+        let u = '', t = '';
+        try { const bm = W.MainWindowBrowserManager; u = bm.m_URL || ''; t = bm.m_strTitle || ''; } catch (e) { /* none */ }
+        kind = /steamcommunity\.com/.test(u) ? T('المجتمع', 'Community') : /help\.steampowered/.test(u) ? T('الدعم', 'Support') : /steampowered\.com/.test(u) ? T('المتجر', 'Store') : 'Steam';
+        title = /^(data:|https?:|about:)/.test(t) ? '' : t;
+      }
+      return { path, canB, canF, kind, title };
+    },
+    /** once a second while the bar is up: one read, a write only when something changed */
+    paintNav() {
+      const n = this.nav;
+      if (!n || !n.isConnected) { this.hideNav(); return; }
+      if (document.hidden) return;
+      const i = this.info(), clock = clockText()[0];
+      if (/^\/library\/home/.test(i.path) && api.root.classList.contains('on')) { this.sync(); return; }
+      const sig = [i.kind, i.title, i.canB, i.canF, clock].join('\n');
+      if (sig === this.sig) return;
+      this.sig = sig;
+      n.querySelector('.xn-title small').textContent = i.kind;
+      n.querySelector('.xn-title b').textContent = i.title;
+      n.querySelector('[data-n="back"]').disabled = !i.canB;
+      n.querySelector('[data-n="fwd"]').disabled = !i.canF;
+      n.querySelector('.xn-clock').textContent = clock;
+    },
+    navClick(e) {
+      const k = e.target.closest('[data-n]');
+      if (!k) return;
+      const mw = this.main(), w = win();
+      try {
+        switch (k.dataset.n) {
+          case 'home': CTX().SteamUIStore.Navigate('/library/home'); break;
+          case 'back': if (mw.NavigateBack) mw.NavigateBack(); else mw.m_history.goBack(); break;
+          case 'fwd': mw.m_history.goForward(); break;
+          case 'store': url('steam://url/StoreFrontPage'); break;
+          case 'community': url('steam://url/CommunityFrontPage'); break;
+          case 'friends': url('steam://open/friends'); break;
+          case 'downloads': url('steam://open/downloads'); break;
+          case 'steam': this.peekAway(); break;
+          case 'min': if (w) w.Minimize(); break;
+          case 'max': if (w) w.ToggleMaximize(); break;
+          case 'close': if (w) w.Close(); break;
+        }
+      } catch (err) { /* Steam changed something: the real bar is one click away ("Steam bar") */ }
+      sfx('tick');
+      setTimeout(() => this.paintNav(), 250);
+    },
   };
   /* ---- the console Options (everything the old filter strip did) */
   const OPTS = [
@@ -316,6 +537,7 @@
     { id: 'amb', icon: 'volume', name: T('أجواء الخلفية', 'Background ambience'), menu: false },
     { id: 'msfx', icon: 'pulse', name: T('أصوات القائمة', 'Menu sounds'), menu: false },
     { id: 'family', icon: 'owned', name: T('وضع العائلة', 'Family mode'), menu: false },
+    { id: 'bar', icon: 'monitor', name: T('شريط الكونسول بكل الصفحات', 'Console bar on every page'), menu: false },
     { id: 'settings', icon: 'sliders', name: T('إعدادات ستيم', 'Steam settings'), menu: false },
     { id: 'themes', icon: 'sparkle', name: T('تصاميم الثيم', 'Theme designs'), menu: false },
   ];
@@ -335,6 +557,7 @@
     if (id === 'amb') return XA() && XA().amb ? ON : OFF;
     if (id === 'msfx') return XA() && XA().sfx ? ON : OFF;
     if (id === 'family') { const f = document.getElementById('rfs-family'); return f && f.classList.contains('on') ? ON : OFF; }
+    if (id === 'bar') return barOn() ? ON : OFF;
     if (id === 'settings') return T('التنزيلات والحساب والواجهة', 'Downloads, account, interface');
     return T('اختر شكل ستيم كله', 'Choose the look of all of Steam');
   }
@@ -368,6 +591,7 @@
     dockInside: true,
     el: null, list: null, row: null, info: null, art: null, clock: null, om: null,
     lists: {}, cat: 'recent', sel: 0, selBy: {}, pool: new Map(), G: null,
+    acts: null, sub: null, frT: 0, // the Steam items of this mode · the open store shelf · the friends refresh timer
     lastQ: '', lastGenre: '', wheelAcc: 0, wheelT: 0, artUrl: '', artTok: 0, settle: 0,
 
     render(games, w, h) {
@@ -386,12 +610,15 @@
       const genres = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 40).map(([t, n]) => ({ genre: t, n }));
       if (st.genre) genres.unshift({ genre: '', n: (st.games || []).length, clear: true });
       const all = games.map(g => ({ g }));
-      const acts = isBpm() ? bpmActs() : ACTS, opts = isBpm() ? OPTS.filter(o => o.id !== 'amb' && o.id !== 'msfx') : OPTS; // Big Picture keeps its own sounds
+      const acts = isBpm() ? bpmActs() : ACTS, opts = isBpm() ? OPTS.filter(o => o.id !== 'amb' && o.id !== 'msfx' && o.id !== 'bar') : OPTS; // Big Picture keeps its own sounds
       this.lists = {
         search: all, recent: recent.map(g => ({ g })), installed: games.filter(g => g.installed).map(g => ({ g })),
         all, top: top.map(g => ({ g })), genres, options: opts.map(o => ({ opt: o })),
         ...Object.fromEntries(Object.entries(acts).map(([k, v]) => [k, v.map(a => ({ act: a }))])),
       };
+      this.acts = acts;
+      this.lists.store = this.storeList();
+      this.lists.friends = this.friendList();
       // a new search shows its matches under Search; a new genre in All games — from the first one
       if (q && q !== this.lastQ) { this.cat = 'search'; this.selBy.search = null; }
       else if (st.genre && st.genre !== this.lastGenre) { this.cat = 'all'; this.selBy.all = null; }
@@ -461,6 +688,7 @@
       // restore the place in this category
       this.sel = this.indexOf(this.cat, this.selBy[this.cat]);
       el.classList.toggle('searching', this.cat === 'search');
+      el.classList.toggle('in-sub', this.cat === 'store' && !!this.sub);
       this.paintCats(false);
       this.place();
       this.focusChanged(false);
@@ -482,11 +710,89 @@
       if (!clockTimer) clockTimer = setInterval(paintClock, 15000);
       // the strip writes its labels right after this render: the Options rows read them then
       if (this.cat === 'options') Promise.resolve().then(() => this.refreshOpts());
+      this.watchFriends();
+    },
+
+    /* ---------- the store shelves and the friends column ---------- */
+    /** Store: the shelves + page links — or, inside a shelf, a way back and its games */
+    storeList() {
+      const acts = (this.acts && this.acts.store) || [], sub = this.sub;
+      if (!sub) return [...SHOP.map(sec => ({ sec })), ...acts.map(a => ({ act: a }))];
+      const rows = [{ up: sub.sec }];
+      if (sub.err) rows.push({ note: 'err' });
+      else if (!sub.items) rows.push({ note: 'load' });
+      else if (!sub.items.length) rows.push({ note: 'empty' });
+      else for (const it of sub.items) rows.push({ s: it });
+      return rows;
+    },
+    /** Friends: "Friends & chat", then every friend, then the other Steam items */
+    friendList() {
+      const acts = (this.acts && this.acts.friends) || [];
+      return [...acts.filter(a => a && a.id === 'chat').map(a => ({ act: a })), ...friendRows().map(f => ({ f })), ...acts.filter(a => a && a.id !== 'chat').map(a => ({ act: a }))];
+    },
+    /** a category's rows changed (a shelf opened or its games arrived, a friend came online): rebuild its column */
+    reList(cat, sel, anim) {
+      if (cat === 'store') this.lists.store = this.storeList();
+      if (cat === 'friends') this.lists.friends = this.friendList();
+      this.paintCatSub(cat);
+      if (this.cat !== cat || !this.el || !this.el.isConnected) return;
+      const L = this.cur();
+      this.sel = Math.max(0, Math.min(L.length - 1, sel == null ? this.indexOf(cat, this.selBy[cat]) : sel));
+      this.selBy[cat] = this.keyOf(L[this.sel]);
+      this.el.classList.toggle('in-sub', cat === 'store' && !!this.sub);
+      this.list.replaceChildren(); this.pool = new Map();
+      this.place();
+      if (anim && !reduced()) this.list.animate([{ opacity: 0, transform: `translateX(${(LTR ? 1 : -1) * (anim < 0 ? -22 : 22)}px)` }, { opacity: 1, transform: 'none' }], { duration: 240, easing: EASE });
+      this.focusChanged(true);
+    },
+    enterSub(sec) {
+      this.sub = { sec, items: null, err: false };
+      sfx('confirm');
+      this.reList('store', 1, 1);
+      this.loadSub();
+    },
+    loadSub() {
+      const sub = this.sub;
+      if (!sub) return;
+      const again = sub.err;
+      sub.err = false; sub.items = null;
+      if (again) this.reList('store', 1, 0);
+      Shop.load(sub.sec).then(
+        items => { if (this.sub === sub) { sub.items = items; this.reList('store', 1, 0); } },
+        () => { if (this.sub === sub) { sub.err = true; this.reList('store', 1, 0); } });
+    },
+    leaveSub() {
+      const sub = this.sub;
+      if (!sub) return;
+      this.sub = null;
+      sfx('close');
+      this.reList('store', Math.max(0, SHOP.indexOf(sub.sec)), -1);
+    },
+    /** while Friends is the open category: look again every 15 s, rebuild only when someone's state changed */
+    watchFriends() {
+      clearInterval(this.frT); this.frT = 0;
+      if (this.cat !== 'friends') return;
+      const sig = L => L.map(r => (r.f ? [r.f.id, r.f.rank, r.f.appid, r.f.name, r.f.state].join(':') : '')).join('|');
+      this.frT = setInterval(() => {
+        if (!this.el || !this.el.isConnected || this.cat !== 'friends') { clearInterval(this.frT); this.frT = 0; return; }
+        if (document.hidden || this.om || api.openId != null) return;
+        if (sig(this.friendList()) !== sig(this.lists.friends || [])) this.reList('friends', null, 0);
+      }, 15000);
+    },
+    friendMenu(f) {
+      const items = [{ v: 'msg', label: T('أرسل رسالة', 'Send a message') }, { v: 'profile', label: T('الملف الشخصي', 'View profile') }];
+      if (f.appid) items.push({ v: 'game', label: T('اللعبة اللي يلعبها', 'The game they are playing') });
+      this.showMenu({ id: 'friend', icon: 'users', name: f.name }, items, c => {
+        sfx('confirm');
+        if (c.v === 'msg') url('steam://friends/message/' + f.sid);
+        else if (c.v === 'profile') url('steam://url/SteamIDPage/' + f.sid);
+        else { const g = api.byId(f.appid); if (g && api.openHub) api.openHub(g); else api.openStore(f.appid); }
+      });
     },
 
     /* ---------- state helpers ---------- */
     cur() { return this.lists[this.cat] || []; },
-    keyOf(x) { return x ? (x.g ? String(x.g.appid) : x.opt ? 'o:' + x.opt.id : x.act ? 'a:' + x.act.id : 'g:' + x.genre) : null; },
+    keyOf(x) { return x ? (x.g ? String(x.g.appid) : x.opt ? 'o:' + x.opt.id : x.act ? 'a:' + x.act.id : x.s ? 's:' + x.s.appid : x.f ? 'u:' + x.f.id : x.sec ? 'f:' + x.sec.id : x.up ? 'up' : x.note ? 'note' : 'g:' + x.genre) : null; },
     /** the small line under a category's label */
     catSub(id, n, q, me) {
       if (id === 'options') return isBpm() ? '' : 'F2';
@@ -494,8 +800,14 @@
       if (id === 'search') return q ? countGames(n) : isBpm() ? '' : 'Ctrl K';
       if (id === 'profile') return me && me.name ? T('الملف الشخصي', 'Profile') : '';
       if (id === 'downloads') { const d = dlInfo(); return d.busy ? d.pct : d.pct ? T(`${d.pct} بالطابور`, `${d.pct} queued`) : ''; }
+      if (id === 'store') return this.sub ? this.sub.sec.name : '';
+      if (id === 'friends') { const k = (this.lists.friends || []).filter(x => x.f && x.f.rank < 3).length; return k ? T(`${NUM.format(k)} متصل`, `${NUM.format(k)} online`) : ''; }
       if (ACTS[id]) return '';
       return countGames(n);
+    },
+    paintCatSub(id) {
+      const b = this.row && this.row.querySelector(`.xb-cat[data-c="${id}"] small`);
+      if (b) { const t = this.catSub(id, 0, '', null); if (b.textContent !== t) b.textContent = t; }
     },
     /** live values of the Steam items (download %, the exit confirmation) */
     refreshActs() {
@@ -547,6 +859,9 @@
       this.sel = this.indexOf(id, this.selBy[id]);
       sfx('cat');
       this.el.classList.toggle('searching', id === 'search');
+      this.el.classList.toggle('in-sub', id === 'store' && !!this.sub);
+      if (id === 'friends') { this.lists.friends = this.friendList(); this.sel = this.indexOf(id, this.selBy[id]); this.paintCatSub(id); }
+      this.watchFriends();
       this.paintCats(true);
       // the column is rebuilt for the new category and drops in softly
       this.list.replaceChildren(); this.pool = new Map();
@@ -566,7 +881,7 @@
     },
     makeRow(i, x) {
       const r = document.createElement('div');
-      r.className = 'xb-it' + (x.g ? '' : ' gen') + (x.opt ? ' opt' : '') + (x.g && api.running().has(x.g.appid) ? ' running' : '') + (x.g && !x.g.installed ? ' ni' : '');
+      r.className = 'xb-it' + (x.g || x.s || x.f ? '' : ' gen') + (x.opt ? ' opt' : '') + (x.g && api.running().has(x.g.appid) ? ' running' : '') + (x.g && !x.g.installed ? ' ni' : '');
       r.dataset.i = i;
       r.setAttribute('role', 'option');
       if (x.g) {
@@ -576,6 +891,31 @@
         r.innerHTML = `<div class="art"></div><div class="tx"><b class="t" dir="auto" title="${esc(g.name)}">${esc(g.name)}</b><span class="h">${esc(subLine(g, api.running().has(g.appid)))}${ach}</span></div>`;
         const art = r.firstElementChild;
         lazy(r, gg => { const u = cssUrl(first(gg.images.header) || first(gg.images.capsule)); if (art._u !== u) { art._u = u; art.style.setProperty('--img', u); } });
+      } else if (x.s) {
+        const it = x.s, own = !!api.byId(it.appid);
+        r.dataset.shop = it.appid;
+        r.classList.add('shop');
+        r.innerHTML = `<div class="art"></div><div class="tx"><b class="t" dir="auto" title="${esc(it.name)}">${esc(it.name)}</b><span class="h">${priceHTML(it)}${own ? `<i class="own">${esc(T('عندك بالمكتبة', 'In your library'))}</i>` : ''}</span></div>`;
+        if (it.img) r.firstElementChild.style.setProperty('--img', cssUrl(it.img));
+      } else if (x.f) {
+        const f = x.f;
+        r.dataset.friend = f.id;
+        r.classList.add('fr', 'r' + f.rank);
+        r.innerHTML = `<div class="art"></div><div class="tx"><b class="t" dir="auto">${esc(f.name)}</b><span class="h" dir="auto">${esc(friendLine(f))}</span></div>`;
+        if (f.avatar) r.firstElementChild.style.setProperty('--img', cssUrl(f.avatar));
+      } else if (x.sec) {
+        r.dataset.sec = x.sec.id;
+        r.classList.add('opt', 'dir');
+        r.innerHTML = `<div class="art">${ic(x.sec.icon)}</div><div class="tx"><b class="t">${esc(x.sec.name)}</b><span class="h" dir="auto">${esc(x.sec.sub)}</span></div>`;
+      } else if (x.up) {
+        r.classList.add('opt', 'upr');
+        r.innerHTML = `<div class="art">${ic(LTR ? 'chevL' : 'chevR')}</div><div class="tx"><b class="t">${esc(T('رجوع للمتجر', 'Back to Store'))}</b><span class="h" dir="auto">${esc(x.up.name)}</span></div>`;
+      } else if (x.note) {
+        r.classList.add('opt', 'note');
+        const t = x.note === 'load' ? [T('جاري التحميل…', 'Loading…'), T('أجيب القائمة من متجر ستيم', 'Getting the list from the Steam store')]
+          : x.note === 'err' ? [T('ما قدرت أوصل للمتجر', 'Couldn\'t reach the store'), T('اضغط Enter للمحاولة مرة ثانية', 'Press Enter to try again')]
+            : [T('ما في شي هنا الحين', 'Nothing here right now'), ''];
+        r.innerHTML = `<div class="art">${ic(x.note === 'err' ? 'refresh' : x.note === 'load' ? 'hourglass' : 'info')}</div><div class="tx"><b class="t">${esc(t[0])}</b><span class="h" dir="auto">${esc(t[1])}</span></div>`;
       } else if (x.act) {
         r.dataset.act = x.act.id;
         r.classList.add('opt');
@@ -637,7 +977,12 @@
       const x = this.cur()[this.sel];
       this.paintInfo(x);
       clearTimeout(this.settle);
-      if (!x || !x.g) { if (!x || !(x.opt || x.act)) this.setArt(''); return; }
+      if (x && (x.s || x.f)) {
+        const art = x.s ? x.s.hero : x.f.appid ? `${ASSET}steam/apps/${x.f.appid}/library_hero.jpg` : '';
+        this.settle = setTimeout(() => { if (this.cur()[this.sel] === x) this.setArt(art); }, soon ? 140 : 0);
+        return;
+      }
+      if (!x || !x.g) { if (!x || !(x.opt || x.act || x.sec || x.up || x.note)) this.setArt(''); return; }
       const g = x.g;
       // the big art + details only once the focus rests (holding ↓ must not load a hero image per row)
       this.settle = setTimeout(() => {
@@ -677,8 +1022,10 @@
     paintInfo(x) {
       const box = this.info;
       if (!box) return;
-      const L = this.cur(), catName = (CATS.find(c => c.id === this.cat) || CATS[0]).name;
-      const pos = L.length ? `${NUM.format(this.sel + 1)} / ${NUM.format(L.length)}` : '';
+      const L = this.cur(), inSub = this.cat === 'store' && this.sub;
+      const catName = (CATS.find(c => c.id === this.cat) || CATS[0]).name + (inSub ? ' · ' + this.sub.sec.name : '');
+      const games = inSub ? L.filter(r => r.s).length : L.length, at = inSub ? this.sel : this.sel + 1;
+      const pos = games && at > 0 && (!inSub || (x && x.s)) ? `${NUM.format(at)} / ${NUM.format(games)}` : '';
       const kick = `<span class="xb-kick">${esc(catName)}${pos ? `<i dir="ltr">${esc(pos)}</i>` : ''}</span>`;
       const kbd = k => `<kbd>${esc(k)}</kbd>`;
       if (!x) { box.innerHTML = kick; return; }
@@ -687,6 +1034,39 @@
         box.innerHTML = `${kick}<h2>${esc(a.name)}</h2>
           <p class="xb-sub" dir="auto">${esc(a.sub())}</p>
           <div class="xb-hint"><span>${kbd('Enter')}${esc(T('فتح', 'Open'))}</span></div>`;
+        return;
+      }
+      if (x.sec || x.up || x.note) {
+        const name = x.sec ? x.sec.name : x.up ? T('رجوع للمتجر', 'Back to Store') : x.note === 'load' ? T('جاري التحميل…', 'Loading…') : x.note === 'err' ? T('ما قدرت أوصل للمتجر', 'Couldn\'t reach the store') : T('ما في شي هنا الحين', 'Nothing here right now');
+        const sub = x.sec ? x.sec.sub : x.up ? x.up.name : x.note === 'err' ? T('تأكد من الاتصال وجرّب مرة ثانية', 'Check the connection and try again') : '';
+        const hint = x.note && x.note !== 'err' ? '' : `<div class="xb-hint"><span>${kbd('Enter')}${esc(x.sec ? T('فتح الرف', 'Open the shelf') : x.up ? T('رجوع', 'Back') : T('إعادة المحاولة', 'Try again'))}</span></div>`;
+        box.innerHTML = `${kick}<h2>${esc(name)}</h2>${sub ? `<p class="xb-sub" dir="auto">${esc(sub)}</p>` : ''}${hint}`;
+        return;
+      }
+      if (x.s) {
+        const it = x.s, own = !!api.byId(it.appid);
+        const facts = [];
+        if (it.rev) facts.push(['star', T('التقييم', 'Reviews'), it.rev]);
+        if (it.date && !it.soon) facts.push(['calendar', T('الإصدار', 'Released'), fmtDay(it.date)]);
+        if (it.dev) facts.push(['users', T('المطوّر', 'Developer'), it.dev]);
+        box.innerHTML = `${kick}<h2 dir="auto" title="${esc(it.name)}">${esc(it.name)}</h2>
+          <div class="xb-price">${priceHTML(it) || `<span class="pr soon">${esc(T('السعر بصفحة المتجر', 'See the store page for the price'))}</span>`}</div>
+          ${own ? `<span class="xb-run">${ic('owned')}${esc(T('عندك بالمكتبة', 'In your library'))}</span>` : ''}
+          ${facts.length ? `<dl class="xb-facts">${facts.map(([i, k, v]) => `<div><dt>${ic(i)}${esc(k)}</dt><dd dir="auto" title="${esc(v)}">${esc(v)}</dd></div>`).join('')}</dl>` : ''}
+          ${it.desc ? `<p class="xb-sub xb-clamp" dir="auto">${esc(it.desc)}</p>` : ''}
+          <div class="xb-hint"><span>${kbd('Enter')}${esc(T('صفحة المتجر', 'Store page'))}</span><span>${kbd('Esc')}${esc(T('رجوع', 'Back'))}</span></div>`;
+        return;
+      }
+      if (x.f) {
+        const f = x.f;
+        const facts = [];
+        if (f.game) facts.push(['gamepad', T('يلعب', 'Playing'), f.game]);
+        if (f.rp) facts.push(['info', T('الحالة باللعبة', 'In-game status'), f.rp]);
+        if (f.rank === 3 && f.last) facts.push(['clock', T('آخر ظهور', 'Last online'), fmtAgo(f.last)]);
+        box.innerHTML = `${kick}<div class="xb-fr"><i class="av"${f.avatar ? ` style="background-image:${esc(cssUrl(f.avatar))}"` : ''}></i><h2 dir="auto" title="${esc(f.name)}">${esc(f.name)}</h2></div>
+          <span class="xb-run st r${f.rank}"><i class="dot"></i>${esc(f.rank === 0 ? T('داخل لعبة', 'In a game') : f.rank === 3 ? PSTATE[0] : PSTATE[f.state] || PSTATE[1])}</span>
+          ${facts.length ? `<dl class="xb-facts">${facts.map(([i, k, v]) => `<div><dt>${ic(i)}${esc(k)}</dt><dd dir="auto" title="${esc(v)}">${esc(v)}</dd></div>`).join('')}</dl>` : ''}
+          <div class="xb-hint"><span>${kbd('Enter')}${esc(T('رسالة · الملف الشخصي', 'Message · profile'))}</span></div>`;
         return;
       }
       if (x.opt) {
@@ -729,13 +1109,17 @@
       else if (id === 'genre') items = ddChoices('tb-genre', 'data-g');
       else if (id === 'tint') { const cur = tintId(); items = ['month', ...Object.keys(TINTS)].map(k => ({ v: k, label: TINT_NAMES[k], on: k === cur, c: tintOf(k)[0] })); }
       if (!o || !items.length) return;
-      const box = $('.xb-om', this.el);
+      this.showMenu(o, items, null);
+    },
+    /** the end-edge menu itself: o = { id, icon, name }, items = [{ v, label, n?, on?, c? }], pick(item) for anything that is not an Option */
+    showMenu(o, items, pick) {
+      const id = o.id, box = $('.xb-om', this.el);
       const i0 = Math.max(0, items.findIndex(c => c.on));
       box.innerHTML = `<div class="xb-om-h">${ic(o.icon)}<b>${esc(o.name)}</b></div>
-        <div class="xb-om-list">${items.map((c, i) => `<button type="button" class="xb-omi${c.on ? ' on' : ''}${i === i0 ? ' sel' : ''}" data-i="${i}" tabindex="-1">${c.c ? `<i class="sw" style="--c:${c.c}"></i>` : '<i class="dot"></i>'}<span dir="auto">${esc(c.label)}</span>${c.n ? `<b>${esc(c.n)}</b>` : ''}</button>`).join('')}</div>
+        <div class="xb-om-list">${items.map((c, i) => `<button type="button" class="xb-omi${c.on ? ' on' : ''}${i === i0 ? ' sel' : ''}" data-i="${i}" tabindex="-1">${c.c ? `<i class="sw" style="--c:${c.c}"></i>` : pick ? '' : '<i class="dot"></i>'}<span dir="auto">${esc(c.label)}</span>${c.n ? `<b>${esc(c.n)}</b>` : ''}</button>`).join('')}</div>
         <div class="xb-hint"><span><kbd>Enter</kbd>${esc(T('اختيار', 'Choose'))}</span><span><kbd>Esc</kbd>${esc(T('رجوع', 'Back'))}</span></div>`;
       box.hidden = false;
-      this.om = { id, items, i: i0, box };
+      this.om = { id, items, i: i0, box, pick };
       this.el.classList.toggle('om-on', true);
       sfx('slide');
       const sel = box.querySelector('.xb-omi.sel'); if (sel) sel.scrollIntoView({ block: 'nearest' });
@@ -764,6 +1148,7 @@
       const c = m.items[i];
       this.closeMenu();
       if (!c) return;
+      if (m.pick) { m.pick(c); return; }
       if (m.id === 'tint') {
         try { localStorage.setItem(TINT_KEY, c.v); } catch (e) { /* private */ }
         applyTint(this.el, c.v); sfx('confirm'); this.refreshOpts();
@@ -791,6 +1176,7 @@
       if (o.menu) { this.openMenu(id); return; }
       if (id === 'family') { const f = document.getElementById('rfs-family'); if (f) f.click(); Promise.resolve().then(() => this.refreshOpts()); return; }
       if (id === 'settings') { url('steam://open/settings'); return; }
+      if (id === 'bar') { try { localStorage.setItem(BAR_KEY, barOn() ? '0' : '1'); } catch (e) { /* private */ } sfx('confirm'); Chrome.sync(); this.refreshOpts(); return; }
       if (id === 'themes' && isBpm() && window.__rfsBpm && window.__rfsBpm.open) { window.__rfsBpm.open(); return; } // Big Picture's own picker
       if (id === 'amb' || id === 'msfx') { const a = XA(); if (a) { if (id === 'amb') a.setAmb(!a.amb); else a.setSfx(!a.sfx); } this.refreshOpts(); return; }
       const b = bar(), btn = b && b.querySelector(id === 'news' ? '.tb-news' : id === 'sound' ? '.tb-snd' : '.tb-theme');
@@ -803,6 +1189,11 @@
       if (!x) return;
       if (x.opt) { this.optAct(x.opt.id); return; }
       if (x.act) { sfx('confirm'); x.act.run(); return; }
+      if (x.sec) { this.enterSub(x.sec); return; }
+      if (x.up) { this.leaveSub(); return; }
+      if (x.note) { if (x.note === 'err') this.loadSub(); return; }
+      if (x.s) { sfx('confirm'); api.openStore(x.s.appid); return; }
+      if (x.f) { this.friendMenu(x.f); return; }
       if (!x.g) {
         api.state.genre = x.clear ? '' : x.genre;
         if (!x.clear) { this.cat = 'all'; this.selBy.all = null; }
@@ -835,7 +1226,7 @@
       const k = e.target.closest('.xb-k');
       if (k) { this.type(k.dataset.k); return; }
       const c = e.target.closest('.xb-cat');
-      if (c) { this.setCat(c.dataset.c); if (c.dataset.c === 'search') this.focusSearch(); return; }
+      if (c) { if (c.dataset.c === 'store' && this.cat === 'store' && this.sub) this.leaveSub(); else this.setCat(c.dataset.c); if (c.dataset.c === 'search') this.focusSearch(); return; }
       const r = e.target.closest('.xb-it');
       if (!r || e.detail > 1) return;
       const i = +r.dataset.i;
@@ -881,6 +1272,11 @@
       if (e.ctrlKey) return false;
       if (k === 'Escape' && this.cat === 'search' && api.state.query) { this.setQuery(''); return true; }
       const fwd = LTR ? 'ArrowRight' : 'ArrowLeft', back = LTR ? 'ArrowLeft' : 'ArrowRight';
+      // inside a store shelf the cross works like a console folder: back / Esc / Backspace leave it
+      if (this.cat === 'store' && this.sub) {
+        if (k === back || k === 'Escape' || k === 'Backspace') { this.leaveSub(); return true; }
+        if (k === fwd) { sfx('edge'); return true; }
+      }
       if (k === fwd || k === back) { this.stepCat(k === fwd ? 1 : -1); return true; }
       // ↑ on the first result goes back up into the field
       if (k === 'ArrowUp' && this.cat === 'search' && this.sel === 0) { this.focusSearch(); return true; }

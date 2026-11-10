@@ -1,7 +1,7 @@
 {
   "name": "game-shelf-installer",
   "productName": "Game Shelf Installer",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "description": "Installer for the Game Shelf (رف الألعاب) Millennium theme for Steam",
   "author": "Yousef (yousf612-alwazzan)",
   "license": "MIT",
@@ -40,7 +40,8 @@
         "from": "../src",
         "to": "theme/src",
         "filter": [
-          "**/*"
+          "**/*",
+          "!css/tint-web.css"
         ]
       }
     ],

@@ -267,7 +267,7 @@
         <span class="fname"><i></i><span>${esc(styleName(st))}</span></span>
       </div>`;
     };
-    const groups = [['core', 'groupCore'], ['community', 'groupCommunity']];
+    const groups = [['core', 'groupCore'], ['tints', 'groupTints'], ['community', 'groupCommunity']];
     grid.innerHTML = groups.map(([g, title]) => {
       const items = S.styles.map((st, i) => [st, i]).filter(([st]) => st.group === g);
       if (!items.length) return '';
@@ -347,7 +347,7 @@
     $('#viewer').style.setProperty('--vibe', vibe(st));
     $('.panel').style.setProperty('--vibe', vibe(st));
     $('#vIndex').textContent = `${pad(S.view.i + 1)} / ${pad(S.styles.length)}`;
-    $('#vGroup').textContent = t(st.group === 'community' ? 'groupCommunity' : 'groupCore');
+    $('#vGroup').textContent = t(st.group === 'community' ? 'groupCommunity' : st.group === 'tints' ? 'groupTints' : 'groupCore');
     $('#vName').textContent = styleName(st);
     $('#vDesc').textContent = styleDesc(st);
     $$('#vTabs [data-tab]').forEach((b) => {
@@ -782,7 +782,7 @@
     const info = await gs.info();
     if (info.ok) {
       S.styles = info.styles;
-      S.styles.forEach((s) => { if (s.group === 'core') S.selected.add(s.value); });
+      S.styles.forEach((s) => { if (s.group === 'core' || s.group === 'tints') S.selected.add(s.value); });
       $('#fakeBadge').hidden = !info.fake;
       if (info.version) $('#tbVer').textContent = 'Installer ' + info.version;
     }

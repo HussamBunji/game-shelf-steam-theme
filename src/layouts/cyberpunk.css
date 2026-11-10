@@ -142,7 +142,7 @@ html[data-rfs-lang="en"] #rfs-sheet[data-layout="cyberpunk"] {
   color: #e6e1d6; clip-path: var(--cp-nt);
   background: linear-gradient(var(--cp-dn), transparent calc(50% - 1px), var(--edge) calc(50% - 1px) 50%, transparent 50%) var(--cp-pn) / 10px 10px no-repeat border-box, var(--fill);
   box-shadow: inset 0 0 0 1px var(--edge);
-  transition: background-color .15s, color .15s, transform .15s var(--cp-ease, ease);
+  transition: transform .12s var(--cp-ease, ease);
 }
 #rfs[data-layout="cyberpunk"] .cp-btn:hover,
 #rfs-sheet[data-layout="cyberpunk"] .rf-act:hover { --edge: rgba(95, 196, 200, .85); --fill: rgba(95, 196, 200, .14); color: #fff; transform: translateX(1px); }
@@ -222,14 +222,16 @@ html[data-rfs-lang="en"] #rfs[data-layout="cyberpunk"] .rf-dock::after { content
 #rfs[data-layout="cyberpunk"] .cp-t {
   --img: none; --cut: 12px; --lw: 1px; --edge: rgba(154, 163, 173, .2);
   position: relative; min-width: 0; cursor: pointer; clip-path: var(--cp-sh-m); background: #121822;
-  transition: transform .18s var(--cp-ease, ease), background-color .18s;
+  transition: transform .14s var(--cp-ease, ease);
 }
 #rfs[data-layout="cyberpunk"] .cp-t::before {
-  content: ''; position: absolute; z-index: 3; top: 0; inset-inline-start: 0; width: 42%; height: 2px; background: #d9b45a; pointer-events: none;
-  transition: width .18s var(--cp-ease, ease);
+  content: ''; position: absolute; z-index: 3; top: 0; inset-inline: 0; height: 2px; background: #d9b45a; pointer-events: none;
+  /* the rule grows by scaling (no layout): 42 % wide at rest, full when pointed at */
+  transform: scaleX(.42); transform-origin: var(--cp-o, 0) 50%; transition: transform .14s var(--cp-ease, ease);
 }
 #rfs[data-layout="cyberpunk"] .cp-t.ni::before { background: rgba(95, 196, 200, .7); }
-#rfs[data-layout="cyberpunk"] .cp-t.running::before { width: 100%; background: #5fc4c8; }
+#rfs[data-layout="cyberpunk"] .cp-t.running::before { transform: none; background: #5fc4c8; }
+html[data-rfs-lang="ar"] #rfs[data-layout="cyberpunk"] .cp-t { --cp-o: 100%; }
 #rfs[data-layout="cyberpunk"] .cp-t::after {
   content: ''; position: absolute; inset: 0; z-index: 3; pointer-events: none; border: var(--lw) solid var(--edge);
   background:
@@ -244,7 +246,7 @@ html[data-rfs-lang="en"] #rfs[data-layout="cyberpunk"] .rf-dock::after { content
 #rfs[data-layout="cyberpunk"] .cp-t .art::after {
   content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
   background: linear-gradient(0deg, rgba(18, 24, 34, .7) 0%, rgba(18, 24, 34, 0) 42%), rgba(11, 15, 22, .2);
-  transition: opacity .18s;
+  transition: opacity .14s var(--cp-ease, ease);
 }
 #rfs[data-layout="cyberpunk"] .cp-t.ni .art::after { background: linear-gradient(0deg, rgba(18, 24, 34, .75) 0%, rgba(18, 24, 34, 0) 42%), rgba(11, 15, 22, .46); }
 #rfs[data-layout="cyberpunk"] .cp-t .t {
@@ -263,7 +265,7 @@ html[data-rfs-lang="en"] #rfs[data-layout="cyberpunk"] .cp-t .t { text-align: le
 #rfs[data-layout="cyberpunk"] .cp-t:is(:hover, .kf) { transform: translateY(-3px); background: #182130; }
 #rfs[data-layout="cyberpunk"] .cp-t:hover { --edge: rgba(95, 196, 200, .8); }
 #rfs[data-layout="cyberpunk"] .cp-t:is(:hover, .kf) .art::after { opacity: 0; }
-#rfs[data-layout="cyberpunk"] .cp-t:is(:hover, .kf)::before { width: 100%; }
+#rfs[data-layout="cyberpunk"] .cp-t:is(:hover, .kf)::before { transform: none; }
 #rfs[data-layout="cyberpunk"] .cp-t:hover .t { animation: cp-glitch .18s linear 1; }
 @keyframes cp-glitch {
   0% { transform: none; text-shadow: none; }
@@ -279,7 +281,7 @@ html.rfs-sheet-on #rfs[data-layout="cyberpunk"] .cp-t.taken .art { opacity: .4; 
 #rfs[data-layout="cyberpunk"] .cp-t .pl {
   position: absolute; z-index: 4; inset-block-end: 8px; inset-inline-end: 8px; width: 32px; height: 30px; padding: 0; border: 0; border-radius: 0;
   display: grid; place-items: center; cursor: pointer; color: #15120b; background: #d9b45a; clip-path: var(--cp-nt-s);
-  opacity: 0; transform: translateY(3px); transition: opacity .15s, transform .15s var(--cp-ease, ease), background-color .15s;
+  opacity: 0; transform: translateY(3px); transition: opacity .12s var(--cp-ease, ease), transform .12s var(--cp-ease, ease);
 }
 #rfs[data-layout="cyberpunk"] .cp-t:is(:hover, .kf) .pl { opacity: 1; transform: none; }
 #rfs[data-layout="cyberpunk"] .cp-t .pl:hover { background: #e3c274; }
@@ -301,7 +303,16 @@ html.rfs-sheet-on #rfs[data-layout="cyberpunk"] .cp-t.taken .art { opacity: .4; 
 #rfs[data-layout="cyberpunk"] .cp.tiny .cp-ro { min-width: 0; padding: 6px 10px; }
 #rfs[data-layout="cyberpunk"] .cp.tiny .cp-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 14px 12px; }
 
+/* arriving home: the target panel's lines slide in from the start edge, one after the other (done in 300 ms) */
+#rfs[data-layout="cyberpunk"] .cp-hero-in > * { animation: cp-in .22s var(--cp-ease, ease) both; }
+#rfs[data-layout="cyberpunk"] .cp-hero-in > :nth-child(2) { animation-delay: .03s; }
+#rfs[data-layout="cyberpunk"] .cp-hero-in > :nth-child(3) { animation-delay: .06s; }
+#rfs[data-layout="cyberpunk"] .cp-hero-in > :nth-child(n+4) { animation-delay: .08s; }
+@keyframes cp-in { from { opacity: 0; transform: translateX(calc(-12px * var(--cp-dir, 1))); } to { opacity: 1; transform: none; } }
+html[data-rfs-lang="ar"] #rfs[data-layout="cyberpunk"] .cp-hero-in { --cp-dir: -1; }
+
 @media (prefers-reduced-motion: reduce) {
+  #rfs[data-layout="cyberpunk"] .cp-hero-in > * { animation: none; }
   #rfs[data-layout="cyberpunk"] :is(.cp-t, .cp-t .pl, .cp-btn) { transition: none; }
   #rfs[data-layout="cyberpunk"] .cp-t::before,
   #rfs[data-layout="cyberpunk"] .cp-t .art::after { transition: none; }
@@ -348,7 +359,7 @@ html.rfs-sheet-on #rfs[data-layout="cyberpunk"] .cp-t.taken .art { opacity: .4; 
   position: absolute; z-index: 7; top: 16px; inset-inline-end: 18px; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 0;
   display: grid; place-items: center; cursor: pointer; color: #e6e1d6;
   background: rgba(11, 15, 22, .78); box-shadow: inset 0 0 0 1px rgba(154, 163, 173, .3);
-  transition: background-color .15s, color .15s, box-shadow .15s;
+  transition: none;
 }
 #rfs-sheet[data-layout="cyberpunk"] .cp-x:hover { color: #fff; background: rgba(196, 92, 138, .26); box-shadow: inset 0 0 0 1px rgba(196, 92, 138, .7); }
 #rfs-sheet[data-layout="cyberpunk"] .cp-x > svg.rf-ic { width: 14px; height: 14px; margin: 0; stroke: currentColor; filter: none; }

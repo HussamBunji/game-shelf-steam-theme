@@ -25,6 +25,14 @@ const THEMES = [
   { id: 'shelter', en: 'Shelter OS', ar: 'الملجأ', den: 'A green shelter terminal with a raise-to-view wrist computer.', dar: 'ملجأ أخضر وجهاز ذراع ترفعه بيدك.', c: '#a6e86a', lib: 1, store: 1 },
   { id: 'xmb', en: 'Crossbar', ar: 'الكونسول', den: 'A console menu over a flowing wave.', dar: 'قائمة كونسول فوق موجة متحركة.', c: '#7cb8ff', lib: 1, store: 1 },
   { id: 'original', en: 'Steam Original', ar: 'ستيم الأصلي', den: 'Stock Steam, plus the Themes button and store panels.', dar: 'ستيم مثل ما هو، مع زر الثيمات ولوحات المتجر.', c: '#66c0f4', lib: 0, store: 1, extra: 1 },
+  { id: 'steam-oled', en: 'Steam OLED Black', ar: 'ستيم الأسود', den: 'Stock Steam on true black, easy on the eyes and on OLED screens.', dar: 'ستيم الأصلي بخلفية سوداء صافية، مريح للعين ولشاشات OLED.', c: '#6fbfec', lib: 0, store: 1, extra: 1 },
+  { id: 'steam-graphite', en: 'Steam Graphite', ar: 'ستيم الرمادي', den: 'Stock Steam in neutral dark grey, without the blue cast.', dar: 'ستيم الأصلي برمادي داكن محايد بدون الزرقة.', c: '#97b9d6', lib: 0, store: 1, extra: 1 },
+  { id: 'steam-midnight', en: 'Steam Midnight', ar: 'ستيم الكحلي', den: 'Stock Steam in a deep midnight navy.', dar: 'ستيم الأصلي بلون كحلي غامق.', c: '#90b5f7', lib: 0, store: 1, extra: 1 },
+  { id: 'steam-forest', en: 'Steam Forest', ar: 'ستيم الأخضر', den: 'Stock Steam in dark forest green.', dar: 'ستيم الأصلي بأخضر الغابات الداكن.', c: '#7ec7a7', lib: 0, store: 1, extra: 1 },
+  { id: 'steam-wine', en: 'Steam Wine', ar: 'ستيم العنابي', den: 'Stock Steam in deep wine red.', dar: 'ستيم الأصلي بلون عنابي غامق.', c: '#e99bb1', lib: 0, store: 1, extra: 1 },
+  { id: 'steam-royal', en: 'Steam Royal Purple', ar: 'ستيم البنفسجي', den: 'Stock Steam in royal purple.', dar: 'ستيم الأصلي بالبنفسجي الملكي.', c: '#b6a9f2', lib: 0, store: 1, extra: 1 },
+  { id: 'steam-coffee', en: 'Steam Coffee', ar: 'ستيم القهوة', den: 'Stock Steam in warm coffee brown with amber highlights.', dar: 'ستيم الأصلي ببني القهوة الدافئ ولمسات كهرمانية.', c: '#dda976', lib: 0, store: 1, extra: 1 },
+  { id: 'steam-ocean', en: 'Steam Ocean', ar: 'ستيم المحيط', den: 'Stock Steam in deep ocean teal.', dar: 'ستيم الأصلي بأزرق المحيط المخضر.', c: '#60c9c4', lib: 0, store: 1, extra: 1 },
   { id: 'space', en: 'SpaceTheme', ar: 'SpaceTheme', den: 'The popular dark community theme (MIT).', dar: 'ثيم المجتمع المشهور، داكن ومرتّب (MIT).', c: '#9aa8ff', lib: 1, store: 1, extra: 1 },
   { id: 'material', en: 'Material You', ar: 'Material You', den: "Google's Material 3 design (MIT).", dar: 'تصميم Material 3 من Google (MIT).', c: '#a8c7fa', lib: 1, store: 0, extra: 1 },
 ];
@@ -34,12 +42,12 @@ const HERO_IDS = ['classic', 'neon', 'vinyl', 'arcade', 'glass', 'cork', 'vault'
 /* ===== Text ===== */
 const T = {
   en: {
-    docTitle: 'Game Shelf: 16 new looks for your Steam library',
-    docDesc: 'Sixteen themes for the Steam library and store: a wooden bookcase, a neon carousel, a record store, an arcade cabinet and more. Free for Windows, Steam Deck and Linux. Arabic and English.',
+    docTitle: 'Game Shelf: 24 new looks for your Steam library',
+    docDesc: 'Twenty-four themes for the Steam library and store: a wooden bookcase, a neon carousel, a record store, an arcade cabinet and more. Free for Windows, Steam Deck and Linux. Arabic and English.',
     skip: 'Skip to content', brand: 'Game Shelf', navLabel: 'Main', navThemes: 'Themes', navFeatures: 'Features', navInstall: 'Install', navFaq: 'FAQ',
     langSwitch: 'التبديل إلى العربية', langOther: 'العربية',
     dlShort: 'Download', dlAria: 'Download the Game Shelf installer for Windows',
-    over: 'Themes for Steam', overCount: '16 looks',
+    over: 'Themes for Steam', overCount: '24 looks',
     heroTitle: 'Every game you own,<br>on a better shelf.',
     heroLead: 'Hand-built themes for the Steam library and store: a wooden bookcase, a neon carousel, a 70s record shop, an arcade cabinet. Switch looks in one click. Arabic and English.',
     platLabel: 'Platform', tabLx: 'Steam Deck / Linux',
@@ -49,8 +57,8 @@ const T = {
     lxNote: 'Needs Millennium installed first (the free theme loader, from steambrew.app). No sudo, nothing outside your home folder. Theme files only: GameShelf-Theme.zip in the releases.',
     factsLabel: 'Requirements', fWin: 'Windows 10/11', fDeck: 'Steam Deck', fLinux: 'Linux', fFree: 'Free', fSteam: 'Needs Steam',
     nowLabel: 'On the wall', nowAria: 'See {name} in the collection',
-    thKicker: 'The collection', thTitle: 'Sixteen looks.<br><em>One click apart.</em>',
-    thLead: 'Thirteen Game Shelf originals plus three favourites from the community. Every one dresses the library and the store.',
+    thKicker: 'The collection', thTitle: 'Twenty-four looks.<br><em>One click apart.</em>',
+    thLead: 'Thirteen Game Shelf originals, Steam itself in nine colours, and two favourites from the community. Every one dresses the library and the store.',
     groupCore: 'Game Shelf themes', groupExtra: 'Also included', railLabel: 'All themes',
     viewLabel: 'View', tabLib: 'Library', tabStore: 'Store', soon: 'Preview coming soon', soonSub: 'Included in the installer',
     altLib: '{name} theme: the Steam library', altStore: '{name} theme: the Steam store',
@@ -87,12 +95,12 @@ const T = {
     credits: 'Includes <a href="https://github.com/SpaceTheme/Steam" rel="noopener">SpaceTheme</a> and <a href="https://github.com/kuska1/Material-Theme" rel="noopener">Material Theme</a>, both MIT licensed. Theme loader: <a href="https://github.com/SteamClientHomebrew/Millennium" rel="noopener">Millennium</a>.',
   },
   ar: {
-    docTitle: 'رف الألعاب: 16 شكلًا جديدًا لمكتبة ستيم',
-    docDesc: 'ستة عشر ثيم لمكتبة ستيم والمتجر: رف خشب، دوّار نيون، متجر أسطوانات، شاشة أركيد وغيرها. مجاني لويندوز وستيم ديك ولينكس، بالعربي والإنجليزي.',
+    docTitle: 'رف الألعاب: 24 شكلًا جديدًا لمكتبة ستيم',
+    docDesc: 'أربعة وعشرون ثيم لمكتبة ستيم والمتجر: رف خشب، دوّار نيون، متجر أسطوانات، شاشة أركيد وغيرها. مجاني لويندوز وستيم ديك ولينكس، بالعربي والإنجليزي.',
     skip: 'انتقل إلى المحتوى', brand: 'رف الألعاب', navLabel: 'القائمة', navThemes: 'الثيمات', navFeatures: 'المميزات', navInstall: 'التثبيت', navFaq: 'أسئلة',
     langSwitch: 'Switch to English', langOther: 'English',
     dlShort: 'تحميل', dlAria: 'تحميل مثبّت رف الألعاب لويندوز',
-    over: 'ثيمات لستيم', overCount: '16 شكلًا',
+    over: 'ثيمات لستيم', overCount: '24 شكلًا',
     heroTitle: 'كل ألعابك،<br>على رفٍّ يليق بها.',
     heroLead: 'ثيمات مصنوعة بعناية لمكتبة ستيم والمتجر: رف خشب، دوّار نيون، متجر أسطوانات من السبعينات، شاشة أركيد. بدّل الشكل بضغطة وحدة. بالعربي والإنجليزي.',
     platLabel: 'النظام', tabLx: 'ستيم ديك / لينكس',
@@ -102,8 +110,8 @@ const T = {
     lxNote: 'يحتاج Millennium مثبّت قبل (محمّل الثيمات المجاني من steambrew.app). بدون sudo، وما يلمس شي برا مجلدك. ملفات الثيم بس: GameShelf-Theme.zip في صفحة الإصدارات.',
     factsLabel: 'المتطلبات', fWin: 'ويندوز 10/11', fDeck: 'ستيم ديك', fLinux: 'لينكس', fFree: 'مجاني', fSteam: 'يحتاج ستيم',
     nowLabel: 'على الجدار الآن', nowAria: 'اعرض {name} في المعرض',
-    thKicker: 'المجموعة', thTitle: 'ستة عشر شكلًا.<br><em>بينها ضغطة وحدة.</em>',
-    thLead: 'ثلاثة عشر ثيم أصلي من رف الألعاب، وثلاثة ثيمات محبوبة من المجتمع. كلها تلبّس المكتبة والمتجر.',
+    thKicker: 'المجموعة', thTitle: 'أربعة وعشرون شكلًا.<br><em>بينها ضغطة وحدة.</em>',
+    thLead: 'ثلاثة عشر ثيم أصلي من رف الألعاب، وستيم نفسه بتسعة ألوان، وثيمين محبوبين من المجتمع. كلها تلبّس المكتبة والمتجر.',
     groupCore: 'ثيمات رف الألعاب', groupExtra: 'مضمّنة أيضًا', railLabel: 'كل الثيمات',
     viewLabel: 'العرض', tabLib: 'المكتبة', tabStore: 'المتجر', soon: 'المعاينة قريبًا', soonSub: 'موجود في المثبّت',
     altLib: 'ثيم {name}: مكتبة ستيم', altStore: 'ثيم {name}: متجر ستيم',
@@ -208,7 +216,7 @@ if (/Linux/.test(navigator.userAgent) && !/Android/.test(navigator.userAgent)) s
 /* ===== hero wall: columns of real screenshots drifting on a tilted plane ===== */
 const wall = $('#wall'), hero = $('.hero');
 const SHOTS = THEMES.flatMap((th) => views(th).map((v) => ({ id: th.id, v })))
-  .filter((s) => s.id !== 'material' && s.id !== 'original'); // keep the wall to Game Shelf looks
+  .filter((s) => s.id !== 'material' && s.id !== 'original' && !/^steam-/.test(s.id)); // keep the wall to Game Shelf looks
 let wallCols = 0;
 function buildWall() {
   const w = innerWidth, cols = w < 700 ? 3 : w < 1200 ? 4 : 5;

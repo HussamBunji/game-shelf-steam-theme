@@ -396,12 +396,14 @@
 
       const anims = [];
       const A = (node, kf, o) => { const a = node.animate(kf, { fill: 'backwards', easing: 'cubic-bezier(.2,.8,.25,1)', ...o }); anims.push(a.finished.catch(() => {})); };
-      A($('.vx-dim', sheet), [{ opacity: 0 }, { opacity: 1 }], { duration: 220, easing: 'ease-out' });
-      A($('.vx-glow', sheet), [{ opacity: 0, transform: 'scale(.55)' }, { opacity: 1, transform: 'none' }], { duration: 520, delay: 60 });
-      A($('.vx-frame', card), [{ opacity: 0, transform: 'scale(.9)' }, { opacity: 1, transform: 'none' }], { duration: 340, delay: 90 });
-      A(body, [{ opacity: 0, transform: `translateX(${api.LTR ? -14 : 14}px)` }, { opacity: 1, transform: 'none' }], { duration: 330, delay: 230 });
-      A($('.vx-close', card), [{ opacity: 0 }, { opacity: 1 }], { duration: 260, delay: 300 });
-      A(art, this.flight(art, from), { duration: 470, easing: 'cubic-bezier(.22,.9,.3,1.04)' });
+      // one curve, transform + opacity only, everything settled by 350 ms: the room dims and the rarity light swells
+      // while the item flies from its socket; the card's frame opens under it, then the text slides in from the item
+      A($('.vx-dim', sheet), [{ opacity: 0 }, { opacity: 1 }], { duration: 180, easing: 'ease-out' });
+      A($('.vx-glow', sheet), [{ opacity: 0, transform: 'scale(.6)' }, { opacity: 1, transform: 'none' }], { duration: 320 });
+      A($('.vx-frame', card), [{ opacity: 0, transform: 'scale(.94)' }, { opacity: 1, transform: 'none' }], { duration: 260, delay: 40 });
+      A(body, [{ opacity: 0, transform: `translateX(${api.LTR ? -12 : 12}px)` }, { opacity: 1, transform: 'none' }], { duration: 220, delay: 130 });
+      A($('.vx-close', card), [{ opacity: 0 }, { opacity: 1 }], { duration: 160, delay: 190 });
+      A(art, this.flight(art, from), { duration: 330, easing: 'cubic-bezier(.22,.9,.3,1.04)' });
       await Promise.all(anims);
     },
     async close(sheet) {
@@ -412,12 +414,12 @@
       const back = this.openFrom && this.openFrom.isConnected && this.openFrom.offsetParent !== null ? this.openFrom : null;
       const opt = { fill: 'forwards', easing: 'cubic-bezier(.5,0,.75,0)' };
       const anims = [
-        $('.vx-body', card).animate([{ opacity: 1 }, { opacity: 0 }], { ...opt, duration: 140 }),
-        $('.vx-close', card).animate([{ opacity: 1 }, { opacity: 0 }], { ...opt, duration: 120 }),
-        $('.vx-frame', card).animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'scale(.94)' }], { ...opt, duration: 230, delay: 50 }),
-        $('.vx-glow', sheet).animate([{ opacity: 1 }, { opacity: 0 }], { ...opt, duration: 220 }),
-        $('.vx-dim', sheet).animate([{ opacity: 1 }, { opacity: 0 }], { ...opt, duration: 260, delay: 110 }),
-        art.animate(this.flight(art, back).reverse(), { fill: 'forwards', duration: 330, easing: 'cubic-bezier(.45,0,.2,1)' }),
+        $('.vx-body', card).animate([{ opacity: 1 }, { opacity: 0 }], { ...opt, duration: 110 }),
+        $('.vx-close', card).animate([{ opacity: 1 }, { opacity: 0 }], { ...opt, duration: 100 }),
+        $('.vx-frame', card).animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'scale(.95)' }], { ...opt, duration: 200, delay: 40 }),
+        $('.vx-glow', sheet).animate([{ opacity: 1 }, { opacity: 0 }], { ...opt, duration: 200 }),
+        $('.vx-dim', sheet).animate([{ opacity: 1 }, { opacity: 0 }], { ...opt, duration: 210, delay: 80 }),
+        art.animate(this.flight(art, back).reverse(), { fill: 'forwards', duration: 280, easing: 'cubic-bezier(.45,0,.2,1)' }),
       ];
       await Promise.all(anims.map(a => a.finished.catch(() => {})));
       this.untake();
