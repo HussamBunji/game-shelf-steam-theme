@@ -55,6 +55,25 @@
     nl.onload = done; nl.onerror = done;
     (document.head || html).appendChild(nl);
   }
+  /* Millennium links this theme's web files several times over on a store page — measured in Steam 2026-11:
+     webkit.css ×8, family-on.css ×8, lang/en.css ×4, and the DEFAULT style's whole file (src/styles/classic.css) ×8,
+     whatever style is chosen. Each copy is matched against every element on every style pass: with them a store page
+     spent 620-1050 ms of style work per scroll pass and froze for 120-400 ms each time the floating store bar slid
+     in or out (a change of scroll direction); without them 135-165 ms and no freeze. One copy of each file stays;
+     the default style's raw file goes entirely (the chosen style's rules come from web-styles/<id>.css above). */
+  function trimSheets() {
+    const seen = new Set();
+    for (const l of document.querySelectorAll('link[rel="stylesheet"]')) {
+      const u = l.href || '';
+      if (!u.startsWith(BASE0)) continue;
+      const k = u.replace(/[?#].*$/, '');
+      if (/\/src\/styles\/[^/]+\.css$/.test(k) || seen.has(k)) l.remove(); else seen.add(k);
+    }
+  }
+  trimSheets();
+  document.addEventListener('DOMContentLoaded', trimSheets);
+  addEventListener('load', trimSheets);
+  [150, 600, 1500].forEach(ms => setTimeout(trimSheets, ms));
   const setStyle = id => {
     const tint = /^steam-/.test(id) ? id : '';
     const sid = tint ? 'original' : id;
@@ -168,6 +187,7 @@
     const api = window.MILLENNIUM_API;
     if (!api || !api.ffi) return false;
     try {
+      trimSheets();
       const c = await readConditions(api);
       const id = STYLE_IDS[c.Style] || 'classic';
       const lang = c.Language === 'Arabic' ? 'ar' : 'en';

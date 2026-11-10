@@ -353,8 +353,9 @@ html[data-rfs-lang="ar"] #rfs-sheet[data-layout="xmb"] .xo-body h2 { text-align:
 html.xb-full:not(.rfs-bpm) #rfs[data-layout="xmb"] .xb-drag { display: block; position: absolute; z-index: 45; top: 0; inset-inline: 0 150px; height: 12px; -webkit-app-region: drag; }
 html.xb-full:not(.rfs-bpm) #rfs[data-layout="xmb"] .xb-win {
   display: flex; position: absolute; z-index: 46; top: 0; inset-inline-end: 0; height: 34px; padding: 0 6px; gap: 2px; align-items: center;
-  opacity: 0; transition: opacity .25s var(--xb-ease);
+  opacity: .78; transition: opacity .15s var(--xb-ease);
 }
+/* the three window buttons are always on screen (they used to appear only under the pointer: nobody found them) */
 html.xb-full:not(.rfs-bpm) #rfs[data-layout="xmb"] .xb-win:is(:hover, :focus-within) { opacity: 1; }
 #rfs[data-layout="xmb"] .xb-win button {
   width: 40px; height: 26px; padding: 0; border: 0; border-radius: 8px; cursor: pointer; display: grid; place-items: center;
@@ -493,3 +494,77 @@ html:not(.xb-away) #xb-nav, html.xb-peek #xb-nav, html.rfs-bpm #xb-nav { display
 #xb-nav .xn-win svg.rf-ic { width: 13px; height: 13px; }
 @media (max-width: 900px) { #xb-nav .xn-home span, #xb-nav .xn-quick .xn-b:not([data-n="steam"]) { display: none; } }
 @media (prefers-reduced-motion: reduce) { #xb-nav button { transition: none; } }
+
+/* Steam's page container around the Crossbar home: no scroll bar down the end edge (xmb.js Chrome.sync) */
+.xb-noscroll { overflow: hidden !important; }
+
+/* Search with a mouse and keyboard is just the field: the on-screen keys are the controller's (Big Picture) */
+html:not(.rfs-bpm) #rfs[data-layout="xmb"] .xb-osk { display: none; }
+
+/* ═════════════ console sheets: a store game, "Add a friend" (xmb.js openSheet) ═════════════
+   One panel over the wave, the cross dimmed behind it. No blur: a flat veil and a solid glass panel. */
+#rfs[data-layout="xmb"] .xb-sheetwrap {
+  position: absolute; inset: 0; z-index: 60; display: grid; place-items: center; padding: 40px 32px;
+  background: radial-gradient(ellipse 80% 70% at 50% 45%, rgba(2, 8, 26, .55), rgba(2, 8, 26, .82));
+}
+#rfs[data-layout="xmb"] .xb.sheet-on :is(.xb-cats, .xb-list, .xb-info) { opacity: .25; pointer-events: none; }
+#rfs[data-layout="xmb"] .xb-sheet {
+  display: flex; gap: 28px; width: min(1040px, 100%); max-height: 100%; box-sizing: border-box; padding: 28px; border-radius: 22px; overflow: hidden;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, 0) 38%), linear-gradient(180deg, var(--xb-2), var(--xb-3));
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .26), 0 0 46px rgba(var(--xb-g), .26), 0 30px 80px rgba(2, 8, 26, .6);
+}
+#rfs[data-layout="xmb"] .xb-sheet.narrow { width: min(560px, 100%); }
+#rfs[data-layout="xmb"] .xs-side { flex: 0 0 44%; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+#rfs[data-layout="xmb"] .xs-art {
+  aspect-ratio: 460 / 215; border-radius: 12px; background: rgba(255, 255, 255, .06) center / cover no-repeat;
+  box-shadow: 0 0 0 1.5px rgba(255, 255, 255, .85), 0 0 26px rgba(var(--xb-g), .55);
+}
+#rfs[data-layout="xmb"] .xs-shots { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+#rfs[data-layout="xmb"] .xs-shots i { aspect-ratio: 16 / 9; border-radius: 8px; background: rgba(255, 255, 255, .05) center / cover no-repeat; box-shadow: 0 0 0 1px rgba(255, 255, 255, .18); }
+#rfs[data-layout="xmb"] .xs-main { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; }
+#rfs[data-layout="xmb"] .xs-main h2 {
+  margin: 0; font-size: 30px; font-weight: 300; line-height: 1.18; color: #fff; text-shadow: var(--xb-tglow);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere;
+}
+#rfs[data-layout="xmb"] .xs-main .xb-sub { margin: 0; font-size: 14px; font-weight: 400; line-height: 1.55; color: var(--xb-dim); display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
+#rfs[data-layout="xmb"] .xs-genres[hidden] { display: none; }
+/* the choices: a column of console pills — the lit one is the main step, focus is the white ring of light */
+#rfs[data-layout="xmb"] .xs-acts { display: flex; flex-direction: column; gap: 8px; margin-top: auto; padding-top: 6px; }
+#rfs[data-layout="xmb"] .xs-b {
+  display: flex; align-items: center; gap: 12px; height: 46px; padding: 0 20px; border: 0; border-radius: 99px; cursor: pointer;
+  font: inherit; font-size: 15.5px; font-weight: 300; color: rgba(255, 255, 255, .9); text-align: start;
+  background: rgba(255, 255, 255, .06); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .18);
+  transition: background-color .12s, box-shadow .12s, color .12s;
+}
+#rfs[data-layout="xmb"] .xs-b > svg.rf-ic { flex: none; width: 18px; height: 18px; margin: 0; stroke: currentColor; filter: none; }
+#rfs[data-layout="xmb"] .xs-b > svg.rf-ic :is(.f, rect, ellipse, circle:not(.s)) { fill: none; }
+#rfs[data-layout="xmb"] .xs-b.main { font-weight: 400; color: #fff; background: linear-gradient(180deg, rgba(255, 255, 255, .26), rgba(255, 255, 255, .09)); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .5), 0 0 16px rgba(var(--xb-g), .4); }
+#rfs[data-layout="xmb"] .xs-b.small { height: 32px; padding: 0 14px; font-size: 13px; }
+#rfs[data-layout="xmb"] .xs-b:hover { color: #fff; background: rgba(255, 255, 255, .14); }
+#rfs[data-layout="xmb"] .xs-b:is(:focus-visible, .rfs-padf) { outline: 0; color: #fff; background: linear-gradient(180deg, rgba(255, 255, 255, .3), rgba(255, 255, 255, .12)); box-shadow: inset 0 0 0 1.5px #fff, 0 0 20px rgba(var(--xb-g), .75); text-shadow: var(--xb-tglow); }
+#rfs[data-layout="xmb"] .xs-b:disabled { opacity: .38; cursor: default; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .14); }
+#rfs[data-layout="xmb"] .xs-main > .xb-hint { margin-top: 4px; }
+/* "Add a friend": your code, their code, who that is */
+#rfs[data-layout="xmb"] .xf-row { display: flex; align-items: center; gap: 14px; min-height: 44px; padding: 0 6px 0 16px; border-radius: 14px; background: rgba(4, 12, 32, .42); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .16); }
+#rfs[data-layout="xmb"] .xf-row > span { flex: none; min-width: 96px; font-size: 13px; font-weight: 400; color: var(--xb-dim); }
+#rfs[data-layout="xmb"] .xf-row > b { flex: 1 1 auto; font-size: 22px; font-weight: 300; letter-spacing: .06em; color: #fff; text-shadow: var(--xb-tglow); user-select: text; }
+#rfs[data-layout="xmb"] .xf-in {
+  flex: 1 1 auto; min-width: 0; height: 40px; border: 0; outline: 0; background: transparent; color: #fff; caret-color: #fff;
+  font: 300 22px/1 var(--rf-font-ui); letter-spacing: .06em;
+}
+#rfs[data-layout="xmb"] .xf-in::placeholder { color: rgba(222, 234, 255, .32); }
+#rfs[data-layout="xmb"] .xf-row:focus-within { box-shadow: inset 0 0 0 1.5px rgba(255, 255, 255, .85), 0 0 18px rgba(var(--xb-g), .5); }
+#rfs[data-layout="xmb"] .xf-found { display: flex; align-items: center; gap: 14px; padding: 4px 6px; }
+#rfs[data-layout="xmb"] .xf-found[hidden] { display: none; }
+#rfs[data-layout="xmb"] .xf-found .av { flex: none; width: 54px; height: 54px; border-radius: 12px; background: rgba(255, 255, 255, .1) center / cover no-repeat; box-shadow: 0 0 0 1.5px rgba(255, 255, 255, .85), 0 0 16px rgba(var(--xb-g), .6); }
+#rfs[data-layout="xmb"] .xf-found b { display: block; font-size: 19px; font-weight: 300; color: #fff; text-shadow: var(--xb-tglow); }
+#rfs[data-layout="xmb"] .xf-found span { font-size: 12.5px; font-weight: 400; color: var(--xb-dim); }
+#rfs[data-layout="xmb"] .xf-keys { display: flex; flex-wrap: wrap; gap: 6px; }
+#rfs[data-layout="xmb"] .xb.narrow .xs-side, #rfs[data-layout="xmb"] .xb.tiny .xs-side { display: none; }
+@media (prefers-reduced-motion: reduce) { #rfs[data-layout="xmb"] .xs-b { transition: none; } }
+/* the cart: the count sits at the end of "Open the cart"; a game already in the cart shows it in mint */
+#rfs[data-layout="xmb"] .xs-b > span { flex: 1 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#rfs[data-layout="xmb"] .xs-b .xs-n { flex: none; min-width: 22px; height: 22px; padding: 0 7px; box-sizing: border-box; border-radius: 99px; display: inline-grid; place-items: center; font-size: 12px; font-weight: 700; color: #06204d; background: #fff; box-shadow: 0 0 10px rgba(var(--xb-g), .7); }
+#rfs[data-layout="xmb"] .xs-b .xs-n:empty { display: none; }
+#rfs[data-layout="xmb"] .xs-b.in { color: #d9ffe6; box-shadow: inset 0 0 0 1px rgba(154, 240, 176, .7), 0 0 16px rgba(154, 240, 176, .3); }
+#rfs[data-layout="xmb"] .xs-b[data-busy] { opacity: .6; pointer-events: none; }

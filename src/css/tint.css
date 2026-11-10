@@ -12,7 +12,11 @@ html[data-rfs-tint] .DialogButton:enabled:active { opacity: .86; }
 html[data-rfs-tint] :is(.DialogButton, .DialogInput, .DialogDropDown, .DialogCheckbox):focus-visible {
   outline: 2px solid rgba(var(--rf-accent-rgb), .75); outline-offset: 2px;
 }
-html[data-rfs-tint] ::selection { background: rgba(var(--rf-accent-rgb), .35); }
+/* text selection in the palette colour — on text fields only. As a rule for every element (html[data-rfs-tint] ::selection)
+   it gave each element a highlight style that depends on an inherited variable: Steam's floating store menu animates
+   a variable on the page root while you scroll, and with that rule each step restyled 4,000-8,800 elements instead
+   of ~1,600 (33-55 ms hitches, three per scroll pass on a game page). */
+html[data-rfs-tint] :is(input, textarea)::selection { background: rgba(var(--rf-accent-rgb), .35); }
 
 /* our own game page, where a layout opens it from Steam Original: the palette instead of Steam's blue */
 html[data-rfs-tint] #rfs-hub { background: linear-gradient(180deg, var(--rf-panel-3), var(--rf-bg) 300px); }

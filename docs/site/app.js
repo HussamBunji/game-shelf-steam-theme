@@ -21,7 +21,7 @@ const THEMES = [
   { id: 'arcade', en: 'Retro Arcade', ar: 'الأركيد', den: 'A Select-your-game arcade screen.', dar: 'شاشة "اختر لعبتك" مثل صالات الأركيد.', c: '#ff4f8b', lib: 1, store: 1 },
   { id: 'magazine', en: 'Magazine', ar: 'المجلة', den: 'An editorial cover and columns.', dar: 'غلاف مجلة وأعمدة تحريرية.', c: '#f1ece2', lib: 1, store: 1 },
   { id: 'cupertino', en: 'Cupertino Dark', ar: 'كوبرتينو الداكن', den: 'The dark Mac and TV-app look.', dar: 'أسلوب الماك الداكن وزر تشغيل أبيض.', c: '#d8dbe2', lib: 1, store: 1 },
-  { id: 'cyberpunk', en: 'Cyberpunk', ar: 'سايبربنك', den: 'Cyberpunk atmosphere in eye-friendly tones.', dar: 'أجواء سايبربنك بألوان مريحة للعين.', c: '#f3e600', lib: 0, store: 1 },
+  { id: 'cyberpunk', en: 'Cyberpunk', ar: 'سايبربنك', den: 'Cyberpunk atmosphere in eye-friendly tones.', dar: 'أجواء سايبربنك بألوان مريحة للعين.', c: '#f3e600', lib: 1, store: 1 },
   { id: 'shelter', en: 'Shelter OS', ar: 'الملجأ', den: 'A green shelter terminal with a raise-to-view wrist computer.', dar: 'ملجأ أخضر وجهاز ذراع ترفعه بيدك.', c: '#a6e86a', lib: 1, store: 1 },
   { id: 'xmb', en: 'Crossbar', ar: 'الكونسول', den: 'A console menu over a flowing wave.', dar: 'قائمة كونسول فوق موجة متحركة.', c: '#7cb8ff', lib: 1, store: 1 },
   { id: 'original', en: 'Steam Original', ar: 'ستيم الأصلي', den: 'Stock Steam, plus the Themes button and store panels.', dar: 'ستيم مثل ما هو، مع زر الثيمات ولوحات المتجر.', c: '#66c0f4', lib: 0, store: 1, extra: 1 },

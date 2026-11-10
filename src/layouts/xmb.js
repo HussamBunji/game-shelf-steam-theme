@@ -278,6 +278,7 @@
         by.set(it.id, {
           appid: it.id, name: it.name, img: pic(a.header) || pic(a.main_capsule), hero: pic(a.library_hero) || pic(a.header),
           price: b.formatted_final_price || '', was: b.formatted_original_price || '', pct: b.discount_pct | 0, free: !!it.is_free,
+          pkg: b.packageid | 0, bundle: b.bundleid | 0, // what "Add to cart" adds (Steam's own button uses the same pair)
           soon: !!rel.is_coming_soon, date: +rel.steam_release_date || 0,
           rev: rv && rv.review_count ? `${rv.review_score_label} · ${rv.percent_positive}%` : '',
           desc: (bi.short_description || '').replace(/\s+/g, ' ').trim(), dev: ((bi.developers || [])[0] || {}).name || '',
@@ -292,6 +293,84 @@
       const items = ids.length ? await this.items(ids) : [];
       this.cache.set(sec.id, { t: Date.now(), items });
       return items;
+    },
+  };
+  /* ---- the account's cart, so a game can be added without opening Steam's store page. Steam's own "Add to cart"
+     button talks to the AccountCart service over the client's own signed-in connection; that service object is not
+     exported, so the same three requests (GetCart, AddItemsToCart, RemoveItemFromCart) are built here from the
+     message helpers Steam does export — found by strings of this Steam build, hence the try / catch: if a Steam
+     update moves them, "Add to cart" simply falls back to opening the store page. Paying happens on Steam's own
+     cart and checkout pages; nothing here can buy. */
+  const Cart = {
+    api: undefined, lines: [], n: 0,
+    build() {
+      const W = CTX();
+      let req; W.webpackChunksteamui.push([[Symbol('rfs-cart')], {}, r => { req = r; }]);
+      const mod = str => { const id = Object.keys(req.m).find(k => { try { return req.m[k].toString().includes(str); } catch (e) { return false; } }); return id ? req(id) : null; };
+      const H = Object.values(mod('Reader func not set for field number'));
+      const CProtoBufMsg = Object.values(mod('Exception parsing protobuf message body of type')).find(v => v && v.InitFromObject);
+      const cm = Object.values(mod('getClassName(){return"CartAmount"'));
+      const cls = n => cm.find(v => v && v.prototype && v.prototype.getClassName && v.prototype.getClassName() === n);
+      const CartAmount = cls('CartAmount'), CartGiftInfo = cls('CartGiftInfo'), N = Object.getPrototypeOf(CartAmount);
+      const fn = str => H.find(f => typeof f === 'function' && f.toString().includes(str));
+      const qM = H.find(v => v && typeof v.readUint32 === 'function'), gp = H.find(v => v && typeof v.writeUint32 === 'function');
+      const Sg = fn('set_${'), w0 = H.find(f => typeof f === 'function' && /\{fields:/.test(f.toString()) && f.toString().length < 120);
+      const Uq = fn('==null)return'), BT = fn('toObjectList'), zj = fn('nextField()'), i0 = fn('writeRepeatedMessage');
+      const R = qM.constructor, Wr = gp.constructor;
+      const mk = (name, fields, rep) => {
+        class C extends N {
+          constructor(o = null) { super(); N.initialize(this, o, 0, -1, rep, null); }
+          static M() { return C.sm_m || (C.sm_m = { proto: C, fields }); } static MBF() { return C.sm_mbf || (C.sm_mbf = w0(C.M())); }
+          toObject(i = false) { return BT(C.M(), i, this); } static toObject(i, m) { return BT(C.M(), i, m); } static fromObject(o) { return Uq(C.M(), o); }
+          static deserializeBinary(b) { return C.deserializeBinaryFromReader(new C, new R(b)); } static deserializeBinaryFromReader(m, r) { return zj(C.MBF(), m, r); }
+          serializeBinary() { const w = new Wr; C.serializeBinaryToWriter(this, w); return w.getResultBuffer(); } static serializeBinaryToWriter(m, w) { i0(C.M(), m, w); }
+          getClassName() { return name; }
+        }
+        Sg(C.M()); return C;
+      };
+      const f = (n, t) => ({ n, br: qM['read' + t], bw: gp['write' + t] });
+      const Details = mk('AccountCartValidationDetails', { validation_failure: { n: 1, d: 0, br: qM.readEnum, bw: gp.writeEnum } });
+      const Flags = mk('AccountCartLineItemFlags', { is_gift: f(1, 'Bool'), is_private: f(2, 'Bool') });
+      const Line = mk('AccountCartLineItem', { line_item_id: f(1, 'Uint64String'), type: f(2, 'Enum'), packageid: f(3, 'Uint32'), bundleid: f(4, 'Uint32'), is_valid: f(8, 'Bool'),
+        validation_details: { n: 9, c: Details }, time_added: f(10, 'Uint32'), price_when_added: { n: 11, c: CartAmount }, gift_info: { n: 12, c: CartGiftInfo }, flags: { n: 13, c: Flags }, gidcoupon_applied: f(14, 'Uint64String') });
+      const Contents = mk('AccountCartContents', { line_items: { n: 1, c: Line, r: true, q: true }, subtotal: { n: 2, c: CartAmount }, is_valid: f(3, 'Bool'), validation_details: { n: 4, c: Details } }, [1]);
+      const GetReq = mk('CAccountCart_GetCart_Request', { user_country: f(1, 'String') });
+      const GetResp = mk('CAccountCart_GetCart_Response', { cart: { n: 1, c: Contents } });
+      const Item = mk('CAccountCart_AddItemsToCart_Request_ItemToAdd', { packageid: f(1, 'Uint32'), bundleid: f(2, 'Uint32'), gift_info: { n: 10, c: CartGiftInfo }, flags: { n: 11, c: Flags } });
+      const AddReq = mk('CAccountCart_AddItemsToCart_Request', { user_country: f(1, 'String'), items: { n: 2, c: Item, r: true, q: true } }, [2]);
+      const AddResp = mk('CAccountCart_AddItemsToCart_Response', { line_item_ids: { n: 1, r: true, q: true, br: qM.readUint64String, bw: gp.writeRepeatedUint64String },
+        cart: { n: 2, c: Contents }, replaced_packages: { n: 3, r: true, q: true, br: qM.readUint32, bw: gp.writeRepeatedUint32 },
+        existing_billing_agreementid: f(4, 'Uint64String'), new_billing_agreement_recurring_packageid: f(5, 'Uint32') }, [1, 3]);
+      const RemReq = mk('CAccountCart_RemoveItemFromCart_Request', { line_item_id: f(1, 'Uint64String'), user_country: f(2, 'String') });
+      const RemResp = mk('CAccountCart_RemoveItemFromCart_Response', { cart: { n: 1, c: Contents } });
+      return { CProtoBufMsg, GetReq, GetResp, AddReq, AddResp, RemReq, RemResp };
+    },
+    get A() { if (this.api === undefined) { try { this.api = this.build(); } catch (e) { this.api = null; } } return this.api; },
+    get ready() { return !!this.A; },
+    keep(cart) { this.lines = (cart && cart.line_items) || []; this.n = this.lines.length; },
+    async send(name, Req, body, Resp, opt) {
+      const c = this.A;
+      if (!c) throw new Error('no cart service');
+      const r = await CTX().appInfoStore.CMInterface.GetServiceTransport().SendMsg(`AccountCart.${name}#1`, c.CProtoBufMsg.InitFromObject(Req, body), Resp, opt);
+      const o = r.Body() && r.Body().toObject();
+      return { ok: r.BSuccess(), eresult: r.GetEResult(), body: o || {} };
+    },
+    async get() {
+      const c = this.A, r = await this.send('GetCart', c.GetReq, { user_country: await Shop.country() }, c.GetResp, { bConstMethod: true, ePrivilege: 1 });
+      if (!r.ok) throw new Error('GetCart ' + r.eresult);
+      this.keep(r.body.cart);
+      return this.lines;
+    },
+    lineOf(it) { return this.lines.find(l => (it.pkg && l.packageid === it.pkg) || (it.bundle && l.bundleid === it.bundle)) || null; },
+    async add(it) {
+      const c = this.A, r = await this.send('AddItemsToCart', c.AddReq, { user_country: await Shop.country(), items: [it.pkg ? { packageid: it.pkg } : { bundleid: it.bundle }] }, c.AddResp, { ePrivilege: 1 });
+      if (r.ok && r.body.cart) this.keep(r.body.cart);
+      return r;
+    },
+    async remove(line) {
+      const c = this.A, r = await this.send('RemoveItemFromCart', c.RemReq, { line_item_id: line.line_item_id, user_country: await Shop.country() }, c.RemResp, { ePrivilege: 1 });
+      if (r.ok) this.keep(r.body.cart);
+      return r;
     },
   };
   /** the price line of a store game: "-25%  11.24 KD  14.99 KD" · Free to play · Coming soon · date */
@@ -346,7 +425,7 @@
       { id: 'wishlist', icon: 'star', name: T('قائمة الرغبات', 'Wishlist'), sub: () => T('الألعاب اللي ناوي عليها', 'The games you are waiting for'), run: () => url('steam://url/UserWishlist') },
       { id: 'storesearch', icon: 'search', name: T('البحث في المتجر', 'Search the store'), sub: () => T('كل ألعاب ستيم', 'Every game on Steam'), run: () => url('steam://url/StoreGameSearchPage') },
       { id: 'storehome', icon: 'cart', name: T('واجهة المتجر الكاملة', 'The full store'), sub: () => T('صفحة المتجر بثيم الكونسول', 'The store front, in the console look'), run: () => url('steam://url/StoreFrontPage') },
-      { id: 'cart', icon: 'receipt', name: T('السلة', 'Cart'), sub: () => T('اللي اخترته للشراء', 'What you picked to buy'), run: () => url('steam://url/StoreCart') },
+      { id: 'cart', icon: 'receipt', name: T('السلة', 'Cart'), sub: () => (Cart.n ? T(Cart.n === 1 ? 'لعبة وحدة بالعربة' : `${NUM.format(Cart.n)} بالعربة`, `${NUM.format(Cart.n)} in the cart`) : T('اللي اخترته للشراء', 'What you picked to buy')), run: () => url('steam://url/StoreCart') },
       { id: 'points', icon: 'medal', name: T('متجر النقاط', 'Points Shop'), sub: () => T('استبدل نقاطك', 'Spend your points'), run: () => url('steam://url/PointsShop') },
     ],
     community: [
@@ -355,7 +434,7 @@
     ],
     friends: [
       { id: 'chat', icon: 'msg', name: T('الأصدقاء والدردشة', 'Friends & chat'), sub: () => T('افتح قائمة الأصدقاء', 'Open the friends list'), run: () => url('steam://open/friends') },
-      { id: 'addfriend', icon: 'users', name: T('إضافة صديق', 'Add a friend'), sub: () => T('بالاسم أو الرابط', 'By name or invite link'), run: () => url('steam://url/CommunityAddFriends') },
+      { id: 'addfriend', icon: 'users', name: T('إضافة صديق', 'Add a friend'), sub: () => T('بالاسم أو الرابط', 'By name or invite link'), run: () => Layout.openSheet({ kind: 'friend' }) },
       { id: 'notes', icon: 'news', name: T('التنبيهات', 'Notifications'), sub: () => T('تنبيهات ستيم', 'Steam notifications'), run() { Chrome.peekNotifications(); } },
     ],
     downloads: [
@@ -419,6 +498,15 @@ html.xb-away:not(.rfs-bpm):not(.xb-peek) .${top} { flex: none !important; height
       const on = mine && r.classList.contains('on') && r.dataset.layout === 'xmb';
       const away = mine && !on && barOn() && !/^\/library\/home/.test(this.route());
       if (h.classList.contains('xb-full') !== on) h.classList.toggle('xb-full', on);
+      // Steam's page container scrolls by a pixel under the design and draws its scroll bar down the end edge of the
+      // console: while the Crossbar home is up, the containers around it don't scroll (it is one fixed screen)
+      if (on) {
+        const rr = r.getBoundingClientRect(), scrolls = e => /auto|scroll|overlay/.test(getComputedStyle(e).overflowY);
+        const list = [...document.querySelectorAll('.InnerContainer')].filter(e => { const b = e.getBoundingClientRect(); return b.width && b.right > rr.left + 40 && b.left < rr.right - 40; });
+        for (let e = r.parentElement; e && e !== document.body; e = e.parentElement) list.push(e);
+        for (const e of list) if (!e.classList.contains('xb-noscroll') && scrolls(e)) e.classList.toggle('xb-noscroll', true);
+      }
+      else for (const e of document.querySelectorAll('.xb-noscroll')) e.classList.toggle('xb-noscroll', false);
       if (h.classList.contains('xb-away') !== away) h.classList.toggle('xb-away', away);
       if (h.classList.contains('xb-peek') && !(this.peekMode === 'home' ? on : away)) this.unpeek();
       if (away) this.showNav(); else this.hideNav();
@@ -592,6 +680,7 @@ html.xb-away:not(.rfs-bpm):not(.xb-peek) .${top} { flex: none !important; height
     el: null, list: null, row: null, info: null, art: null, clock: null, om: null,
     lists: {}, cat: 'recent', sel: 0, selBy: {}, pool: new Map(), G: null,
     acts: null, sub: null, frT: 0, // the Steam items of this mode · the open store shelf · the friends refresh timer
+    sheet: null, sheetArg: null, //   the open console sheet (a store game, "Add a friend") and what it shows
     lastQ: '', lastGenre: '', wheelAcc: 0, wheelT: 0, artUrl: '', artTok: 0, settle: 0,
 
     render(games, w, h) {
@@ -711,6 +800,182 @@ html.xb-away:not(.rfs-bpm):not(.xb-peek) .${top} { flex: none !important; height
       // the strip writes its labels right after this render: the Options rows read them then
       if (this.cat === 'options') Promise.resolve().then(() => this.refreshOpts());
       this.watchFriends();
+      this.sheet = null;
+      if (this.sheetArg) this.openSheet(this.sheetArg, true);
+    },
+
+    /* ---------- console sheets: a store game and "Add a friend" open INSIDE the cross, as a panel over the wave —
+       not as a Steam web page. ↑ / ↓ move between the buttons, Enter chooses, Esc / Backspace go back. Buying itself
+       happens on Steam's own page (the first button opens it): a purchase can only be made there. ---------- */
+    openSheet(arg, quiet) {
+      if (!this.el || !this.el.isConnected) return;
+      this.closeMenu();
+      const old = this.el.querySelector('.xb-sheetwrap'); if (old) old.remove();
+      const wrap = document.createElement('div');
+      wrap.className = 'xb-sheetwrap';
+      const kbd = k => `<kbd>${esc(k)}</kbd>`;
+      const hint = `<div class="xb-hint"><span>${kbd('↑')}${kbd('↓')}${esc(T('تنقّل', 'Move'))}</span><span>${kbd('Enter')}${esc(T('اختيار', 'Choose'))}</span><span>${kbd('Esc')}${esc(T('رجوع', 'Back'))}</span></div>`;
+      if (arg.kind === 'shop') {
+        const it = arg.s, own = api.byId(it.appid);
+        const canCart = !own && !it.free && !it.soon && !!(it.pkg || it.bundle) && Cart.ready;
+        const facts = [];
+        if (it.rev) facts.push(['star', T('التقييم', 'Reviews'), it.rev]);
+        if (it.date) facts.push(['calendar', it.soon ? T('موعد الإصدار', 'Release date') : T('الإصدار', 'Released'), fmtDay(it.date)]);
+        if (it.dev) facts.push(['users', T('المطوّر', 'Developer'), it.dev]);
+        wrap.innerHTML = `<div class="xb-sheet" role="dialog" aria-label="${esc(it.name)}">
+            <div class="xs-side"><div class="xs-art"${it.img ? ` style="background-image:${esc(cssUrl(it.img))}"` : ''}></div><div class="xs-shots"></div></div>
+            <div class="xs-main">
+              <span class="xb-kick">${esc(T('المتجر', 'Store'))}${this.sub ? ' · ' + esc(this.sub.sec.name) : ''}</span>
+              <h2 dir="auto">${esc(it.name)}</h2>
+              <div class="xb-price">${priceHTML(it) || `<span class="pr soon">${esc(T('السعر بصفحة المتجر', 'See the store page for the price'))}</span>`}</div>
+              ${own ? `<span class="xb-run">${ic('owned')}${esc(T('عندك بالمكتبة', 'In your library'))}</span>` : ''}
+              <dl class="xb-facts">${facts.map(([i, k, v]) => `<div><dt>${ic(i)}${esc(k)}</dt><dd dir="auto" title="${esc(v)}">${esc(v)}</dd></div>`).join('')}<div class="xs-genres" hidden><dt>${ic('tag')}${esc(T('النوع', 'Genre'))}</dt><dd dir="auto"></dd></div></dl>
+              ${it.desc ? `<p class="xb-sub" dir="auto">${esc(it.desc)}</p>` : ''}
+              <div class="xs-acts">
+                ${canCart ? `<button type="button" class="xs-b main" data-a="cart" data-pad>${ic('cart')}<span>${esc(T('أضف للعربة', 'Add to cart'))}</span></button>
+                <button type="button" class="xs-b" data-a="opencart" data-pad>${ic('receipt')}<span>${esc(T('افتح العربة وادفع', 'Open the cart and pay'))}</span><b class="xs-n"></b></button>` : ''}
+                <button type="button" class="xs-b${canCart ? '' : ' main'}" data-a="buy" data-pad>${ic(canCart ? 'external' : 'cart')}${esc(own ? T('صفحة اللعبة بالمتجر', 'Its store page') : it.soon ? T('صفحة المتجر (أمنيات / متابعة)', 'Store page (wishlist / follow)') : it.free ? T('صفحة المتجر للتنزيل', 'Store page to get it') : canCart ? T('صفحة اللعبة بالمتجر', 'Its store page') : T('صفحة الشراء بالمتجر', 'Store page to buy'))}</button>
+                ${own ? `<button type="button" class="xs-b" data-a="lib" data-pad>${ic('library')}${esc(T('افتحها بمكتبتك', 'Open it in your library'))}</button>` : ''}
+                <button type="button" class="xs-b" data-a="back" data-pad>${ic(LTR ? 'chevL' : 'chevR')}${esc(T('رجوع للرف', 'Back to the shelf'))}</button>
+              </div>
+              ${hint}
+            </div>
+          </div>`;
+        if (canCart) Cart.get().then(() => { if (wrap.isConnected) this.paintCart(wrap, it); }, () => { /* the button still adds */ });
+        // screenshots and genres arrive a moment later (the store's own details service)
+        fetch(`https://store.steampowered.com/api/appdetails?appids=${it.appid}&l=${LTR ? 'english' : 'arabic'}&filters=screenshots,genres`).then(r => r.json()).then(j => {
+          const d = j && j[it.appid] && j[it.appid].data;
+          if (!d || !wrap.isConnected) return;
+          const shots = (d.screenshots || []).slice(0, 4).map(x => x.path_thumbnail).filter(Boolean);
+          const box = wrap.querySelector('.xs-shots');
+          if (box && shots.length) box.innerHTML = shots.map(u => `<i style="background-image:${esc(cssUrl(u))}"></i>`).join('');
+          const g = (d.genres || []).map(x => x.description).filter(Boolean).slice(0, 4).join(LTR ? ', ' : '، ');
+          const row = wrap.querySelector('.xs-genres');
+          if (row && g) { row.hidden = false; row.querySelector('dd').textContent = g; }
+        }).catch(() => { /* the panel stands without them */ });
+      } else {
+        let myCode = '';
+        try { myCode = (BigInt(CTX().App.m_CurrentUser.strSteamID) - 76561197960265728n).toString(); } catch (e) { /* not signed in yet */ }
+        const digits = isBpm() ? `<div class="xf-keys" aria-hidden="true">${'1234567890'.split('').map(k => `<button type="button" class="xb-k" data-fk="${k}" data-pad tabindex="-1">${k}</button>`).join('')}<button type="button" class="xb-k wide" data-fk="back" data-pad tabindex="-1">${esc(T('حذف', 'Delete'))}</button></div>` : '';
+        wrap.innerHTML = `<div class="xb-sheet narrow" role="dialog" aria-label="${esc(T('إضافة صديق', 'Add a friend'))}">
+            <div class="xs-main">
+              <span class="xb-kick">${esc(T('الأصدقاء', 'Friends'))}</span>
+              <h2>${esc(T('إضافة صديق', 'Add a friend'))}</h2>
+              <p class="xb-sub">${esc(T('كل حساب ستيم له رمز صديق. عطِ رمزك لصاحبك، أو اكتب رمزه هنا.', 'Every Steam account has a friend code. Give yours to a friend, or type theirs here.'))}</p>
+              ${myCode ? `<div class="xf-row"><span>${esc(T('رمزك', 'Your code'))}</span><b dir="ltr">${esc(myCode)}</b><button type="button" class="xs-b small" data-a="copy" data-code="${esc(myCode)}" data-pad>${esc(T('نسخ', 'Copy'))}</button></div>` : ''}
+              <label class="xf-row"><span>${esc(T('رمز صاحبك', 'Their code'))}</span><input class="xf-in" type="text" inputmode="numeric" autocomplete="off" spellcheck="false" maxlength="12" dir="ltr" placeholder="123456789" aria-label="${esc(T('رمز الصديق', 'Friend code'))}"></label>
+              ${digits}
+              <div class="xf-found" hidden><i class="av"></i><div><b dir="auto"></b><span></span></div></div>
+              <div class="xs-acts">
+                <button type="button" class="xs-b main" data-a="send" data-pad disabled>${ic('users')}${esc(T('أرسل طلب صداقة', 'Send a friend request'))}</button>
+                <button type="button" class="xs-b" data-a="name" data-pad>${ic('search')}${esc(T('ابحث بالاسم بصفحة ستيم', 'Search by name on Steam\'s page'))}</button>
+                <button type="button" class="xs-b" data-a="back" data-pad>${ic(LTR ? 'chevL' : 'chevR')}${esc(T('رجوع', 'Back'))}</button>
+              </div>
+              ${hint}
+            </div>
+          </div>`;
+        const input = wrap.querySelector('.xf-in'), found = wrap.querySelector('.xf-found'), send = wrap.querySelector('[data-a="send"]');
+        let tok = 0, timer = 0;
+        const look = () => {
+          const code = input.value.replace(/\D/g, '');
+          if (input.value !== code) input.value = code;
+          clearTimeout(timer); found.hidden = true; send.disabled = true; delete send.dataset.sid;
+          if (code.length < 3 || code === myCode) return;
+          const mine = ++tok;
+          timer = setTimeout(() => fetch(`https://steamcommunity.com/miniprofile/${code}/json`).then(r => r.json()).then(mp => {
+            if (mine !== tok || !wrap.isConnected || !mp || !mp.persona_name) return;
+            found.hidden = false;
+            found.querySelector('.av').style.backgroundImage = mp.avatar_url ? cssUrl(mp.avatar_url) : '';
+            found.querySelector('b').textContent = mp.persona_name;
+            found.querySelector('span').textContent = mp.level != null ? T(`المستوى ${NUM.format(mp.level)}`, `Level ${NUM.format(mp.level)}`) : '';
+            send.disabled = false; send.dataset.sid = (76561197960265728n + BigInt(code)).toString();
+          }).catch(() => { /* no such code, or offline: nothing to show */ }), 380);
+        };
+        input.addEventListener('input', look);
+        wrap._look = look;
+      }
+      this.el.appendChild(wrap);
+      this.el.classList.toggle('sheet-on', true);
+      this.sheet = wrap; this.sheetArg = arg;
+      wrap.addEventListener('keydown', e => { if (this.sheetKey(e)) { e.preventDefault(); } e.stopPropagation(); });
+      if (!quiet) {
+        sfx('slide');
+        if (!reduced()) wrap.firstElementChild.animate([{ opacity: 0, transform: 'translateY(14px) scale(.985)' }, { opacity: 1, transform: 'none' }], { duration: 240, easing: EASE });
+      }
+      const first = wrap.querySelector('.xf-in') || wrap.querySelector('.xs-b.main:not(:disabled)') || wrap.querySelector('.xs-b');
+      if (first && !isBpm()) first.focus({ preventScroll: true });
+    },
+    closeSheet() {
+      const w = this.sheet;
+      this.sheet = null; this.sheetArg = null;
+      if (!w) return;
+      w.remove();
+      if (this.el) this.el.classList.toggle('sheet-on', false);
+      sfx('close');
+    },
+    sheetAct(b) {
+      const a = b.dataset.a, arg = this.sheetArg || {};
+      if (b.dataset.fk) { // the controller's digit keys (Big Picture)
+        const i = this.sheet.querySelector('.xf-in'); if (!i) return;
+        i.value = b.dataset.fk === 'back' ? i.value.slice(0, -1) : (i.value + b.dataset.fk).slice(0, 12);
+        if (this.sheet._look) this.sheet._look(); sfx('tick'); return;
+      }
+      if (a === 'back') { this.closeSheet(); return; }
+      sfx('confirm');
+      if (a === 'cart') { this.cartToggle(b, arg.s); return; }
+      if (a === 'opencart') { this.closeSheet(); url('steam://url/StoreCart'); return; }
+      if (a === 'buy') { const id = arg.s.appid; this.closeSheet(); api.openStore(id); }
+      else if (a === 'lib') { const g = api.byId(arg.s.appid); this.closeSheet(); if (g) { if (api.openHub) api.openHub(g); else api.openGame(g, null); } }
+      else if (a === 'copy') {
+        const code = b.dataset.code;
+        const done = () => api.toast(T('انسخ رمزك', 'Your code is copied'), 2500);
+        try { navigator.clipboard.writeText(code).then(done, () => { try { CTX().SteamClient.System.CopyStringToClipboard(code); done(); } catch (e) { /* show it: he can read it */ } }); } catch (e) { /* older Steam */ }
+      }
+      else if (a === 'send' && b.dataset.sid) { url('steam://friends/add/' + b.dataset.sid); api.toast(T('ستيم يكمّل طلب الصداقة', 'Steam takes the friend request from here'), 4000); }
+      else if (a === 'name') { this.closeSheet(); url('steam://url/CommunityAddFriends'); }
+    },
+    /** the cart button says what it will do: "Add to cart", or "In your cart — remove"; the cart button counts */
+    paintCart(wrap, it) {
+      const b = wrap.querySelector('[data-a="cart"]'), n = wrap.querySelector('.xs-n'), inCart = !!Cart.lineOf(it);
+      if (b) { b.classList.toggle('in', inCart); b.querySelector('span').textContent = inCart ? T('بالعربة ✓ — اضغط للإزالة', 'In your cart ✓ — press to remove') : T('أضف للعربة', 'Add to cart'); }
+      if (n) n.textContent = Cart.n ? NUM.format(Cart.n) : '';
+      this.refreshActs();
+    },
+    async cartToggle(b, it) {
+      if (b.dataset.busy) return;
+      b.dataset.busy = '1';
+      const wrap = this.sheet, line = Cart.lineOf(it);
+      try {
+        const r = line ? await Cart.remove(line) : await Cart.add(it);
+        if (!r.ok) throw new Error('eresult ' + r.eresult);
+        sfx('confirm');
+        api.toast(line ? T('انشالت من العربة', 'Removed from your cart') : T('انضافت للعربة', 'Added to your cart'), 2500);
+      } catch (e) {
+        // Steam said no (already owned, not sold in this country …) or changed its cart service: its own page explains
+        api.toast(T('ما قدرت أضيفها من هنا — أفتح لك صفحتها بالمتجر', 'Couldn\'t add it from here — opening its store page'), 4000);
+        if (wrap === this.sheet) { this.closeSheet(); api.openStore(it.appid); }
+        return;
+      } finally { delete b.dataset.busy; }
+      if (wrap && wrap.isConnected) {
+        this.paintCart(wrap, it);
+        if (!line) { const o = wrap.querySelector('[data-a="opencart"]'); if (o && !isBpm()) o.focus({ preventScroll: true }); }
+      }
+    },
+    sheetKey(e) {
+      const w = this.sheet, k = e.key;
+      if (!w) return false;
+      const inField = e.target && e.target.matches && e.target.matches('.xf-in');
+      const back = LTR ? 'ArrowLeft' : 'ArrowRight';
+      if (k === 'Escape' || (!inField && (k === 'Backspace' || k === back))) { this.closeSheet(); return true; }
+      if (k === 'ArrowDown' || k === 'ArrowUp') {
+        const f = [...w.querySelectorAll('.xf-in, .xs-b:not(:disabled)')];
+        const i = f.indexOf(document.activeElement);
+        const n = f[(i < 0 ? 0 : i + (k === 'ArrowDown' ? 1 : -1) + f.length) % f.length];
+        if (n) { n.focus({ preventScroll: true }); sfx('tick'); }
+        return true;
+      }
+      if (k === 'Enter' && inField) { const b = w.querySelector('[data-a="send"]:not(:disabled)'); if (b) this.sheetAct(b); return true; }
+      return false; // Enter / Space on a button click it; letters and digits go to the field
     },
 
     /* ---------- the store shelves and the friends column ---------- */
@@ -1054,7 +1319,7 @@ html.xb-away:not(.rfs-bpm):not(.xb-peek) .${top} { flex: none !important; height
           ${own ? `<span class="xb-run">${ic('owned')}${esc(T('عندك بالمكتبة', 'In your library'))}</span>` : ''}
           ${facts.length ? `<dl class="xb-facts">${facts.map(([i, k, v]) => `<div><dt>${ic(i)}${esc(k)}</dt><dd dir="auto" title="${esc(v)}">${esc(v)}</dd></div>`).join('')}</dl>` : ''}
           ${it.desc ? `<p class="xb-sub xb-clamp" dir="auto">${esc(it.desc)}</p>` : ''}
-          <div class="xb-hint"><span>${kbd('Enter')}${esc(T('صفحة المتجر', 'Store page'))}</span><span>${kbd('Esc')}${esc(T('رجوع', 'Back'))}</span></div>`;
+          <div class="xb-hint"><span>${kbd('Enter')}${esc(T('التفاصيل', 'Details'))}</span><span>${kbd('Esc')}${esc(T('رجوع', 'Back'))}</span></div>`;
         return;
       }
       if (x.f) {
@@ -1192,7 +1457,7 @@ html.xb-away:not(.rfs-bpm):not(.xb-peek) .${top} { flex: none !important; height
       if (x.sec) { this.enterSub(x.sec); return; }
       if (x.up) { this.leaveSub(); return; }
       if (x.note) { if (x.note === 'err') this.loadSub(); return; }
-      if (x.s) { sfx('confirm'); api.openStore(x.s.appid); return; }
+      if (x.s) { this.openSheet({ kind: 'shop', s: x.s }); return; }
       if (x.f) { this.friendMenu(x.f); return; }
       if (!x.g) {
         api.state.genre = x.clear ? '' : x.genre;
@@ -1217,6 +1482,12 @@ html.xb-away:not(.rfs-bpm):not(.xb-peek) .${top} { flex: none !important; height
       Chrome.unpeek();
       const wb = e.target.closest('[data-win]');
       if (wb) { const w = win(); if (w) { if (wb.dataset.win === 'min') w.Minimize(); else if (wb.dataset.win === 'max') w.ToggleMaximize(); else w.Close(); } return; }
+      if (this.sheet) {
+        const b = e.target.closest('.xs-b, [data-fk]');
+        if (b && !b.disabled) this.sheetAct(b);
+        else if (!e.target.closest('.xb-sheet')) this.closeSheet();
+        return;
+      }
       if (this.om) {
         const it = e.target.closest('.xb-omi');
         if (it) this.menuPick(+it.dataset.i);
@@ -1234,7 +1505,7 @@ html.xb-away:not(.rfs-bpm):not(.xb-peek) .${top} { flex: none !important; height
       this.activate(this.cur()[i], false);
     },
     onWheel(e) {
-      if (e.target.closest('#rfs-bar, .xb-info, .rf-dd-menu, .xb-search')) return;
+      if (e.target.closest('#rfs-bar, .xb-info, .rf-dd-menu, .xb-search, .xb-sheetwrap')) return;
       e.preventDefault();
       const horiz = e.shiftKey || Math.abs(e.deltaX) > Math.abs(e.deltaY);
       const d = horiz ? (e.deltaX || e.deltaY) : e.deltaY;
@@ -1254,6 +1525,7 @@ html.xb-away:not(.rfs-bpm):not(.xb-peek) .${top} { flex: none !important; height
     key(e) {
       if (e.altKey || e.metaKey || !this.el || !this.el.isConnected) return false;
       if (this.om) return this.menuKey(e);
+      if (this.sheet) return this.sheetKey(e);
       Chrome.unpeek();
       const k = e.key, L = this.cur();
       if (k === 'F2') { this.setCat('options'); return true; }

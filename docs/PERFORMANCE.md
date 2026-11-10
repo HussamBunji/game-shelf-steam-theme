@@ -2,6 +2,33 @@
 
 How fast the themes are on a live Steam, measured. Steam runs with `-dev`, CDP at `http://127.0.0.1:8080`.
 
+## 2026-11-10 (evening) — store scroll froze on every change of direction (measured IN Steam)
+
+The hidden-Chromium harness did not show this one: it only exists in the real client. Measured on the store page
+open in the owner's Steam through CDP (wheel 12-25 steps down / up, `Performance.getMetrics` per phase, long tasks
+and frame gaps > 40 ms).
+
+| Store front in Steam | Style work per scroll phase | Freezes at a direction change |
+|---|---|---|
+| Steam Coffee / Steam Original, before | 620-1100 ms | 3 × 270-400 ms (120-180 ms on a fresh, shorter page) |
+| Glass Gallery, before | 660-1070 ms | none (many small passes) |
+| Steam Original, every theme sheet switched off | 115-135 ms | none |
+| Steam Coffee, after the fix | 135-160 ms | none |
+
+**Cause:** Millennium links the theme's web files several times on a store page: `webkit.css` ×8, `family-on.css`
+×8, `lang/en.css` ×4 and the DEFAULT style's whole file `src/styles/classic.css` ×8 (whatever style is chosen),
+plus `webkit.js` / `skin.js` ×4. Every copy is matched against every element on every style pass. Steam's floating
+store bar animates a variable on the page root while it slides in or out (a change of scroll direction): each step
+then cost a full pass through all those copies.
+
+**Fix:** `webkit.js` `trimSheets()` keeps one copy of each of the theme's sheets and removes the default style's raw
+file (the chosen style's rules come from `web-styles/<id>.css`). It runs at start, on DOMContentLoaded / load, and
+with the 3 s style check. Every style gains: this was 4-5× of all style work on a store page.
+
+Also that evening: the colour variants' `html[data-rfs-tint] ::selection` rule (a highlight style on every element
+that depends on an inherited variable) made each of those passes restyle 4,000-8,800 elements instead of ~1,600;
+it now applies to text fields only.
+
 ## 2026-11-10 — the store felt heavy, even under "Steam Original"
 
 Measured in a hidden Chromium (Steam's user agent, software rendering, warm cache; medians of 2-3 runs, ms of

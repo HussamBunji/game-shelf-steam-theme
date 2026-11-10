@@ -697,7 +697,11 @@ html[data-rfs-style]:not([data-rfs-style="original"]) .profile_animated_backgrou
 html[data-rfs-tint] #rfs-data :is(.rd-fact, .rd-link) { background: rgba(var(--rf-accent-rgb), .08); }
 html[data-rfs-tint] #rfs-qbtn { background: rgba(var(--rf-accent-rgb), .12); }
 html[data-rfs-tint] #rfs-qbtn:hover { background: rgba(var(--rf-accent-rgb), .22); }
-html[data-rfs-tint] ::selection { background: rgba(var(--rf-accent-rgb), .35); }
+/* text selection in the palette colour — on text fields only. As a rule for every element (html[data-rfs-tint] ::selection)
+   it gave each element a highlight style that depends on an inherited variable: Steam's floating store menu animates
+   a variable on the page root while you scroll, and with that rule each step restyled 4,000-8,800 elements instead
+   of ~1,600 (33-55 ms hitches, three per scroll pass on a game page). */
+html[data-rfs-tint] :is(input, textarea)::selection { background: rgba(var(--rf-accent-rgb), .35); }
 html[data-rfs-tint] :is(.btn_green_steamui, .btn_blue_steamui, .btnv6_blue_hoverfade, .btnv6_lightblue_blue, .btnv6_blue_blue_innerfade, .btnv6_green_white_innerfade, .btn_darkblue_white_innerfade, .btn_grey_steamui, .btnv6_grey_black):active { opacity: .86; }
 html[data-rfs-tint] :is(.btn_green_steamui, .btn_blue_steamui, .btnv6_blue_hoverfade, .btnv6_lightblue_blue, .btnv6_blue_blue_innerfade, .btnv6_green_white_innerfade, .btn_darkblue_white_innerfade, .btn_grey_steamui, .btnv6_grey_black):focus-visible {
   outline: 2px solid rgba(var(--rf-accent-rgb), .75); outline-offset: 2px;
