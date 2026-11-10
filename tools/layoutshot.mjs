@@ -3,6 +3,7 @@
 //
 //   node tools/layoutshot.mjs --style arcade [--lang en|ar] [--out shots] [--w 1600 --h 1000]
 //        [--hover 3]                 hover the 4th game: shots right after (60 ms) and later (400 ms) — hover must be instant
+//        [--menu 0]                  right-click the 1st game (game menu + its sub-menu), then "Options" in the opened game
 //        [--open 0]                  click the 1st game: shots at 120 / 350 / 800 / 1500 ms (the theme's open animation),
 //                                    then Esc and a shot 600 ms later
 //        [--search "elden"]          type into the one search box
@@ -19,7 +20,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const args = process.argv.slice(2);
-const opt = { style: 'arcade', lang: 'en', out: path.join(ROOT, 'shots'), w: 1600, h: 1000, hover: '', open: '', search: '', key: '', eval: '' };
+const opt = { style: 'arcade', lang: 'en', out: path.join(ROOT, 'shots'), w: 1600, h: 1000, hover: '', open: '', menu: '', hub: '', search: '', key: '', eval: '' };
 for (let i = 0; i < args.length; i++) { const k = args[i].replace(/^--/, ''); opt[k] = ['w', 'h'].includes(k) ? +args[++i] : args[++i]; }
 const NAMES = { classic: 'Classic Shelf', neon: 'Neon Coverflow', glass: 'Glass Gallery', terminal: 'Terminal', vault: 'RPG Vault', vinyl: 'Vinyl Records', cork: 'Corkboard', arcade: 'Retro Arcade', magazine: 'Magazine' };
 if (!NAMES[opt.style]) { console.log('style id, one of:', Object.keys(NAMES).join(', ')); process.exit(1); }
@@ -67,7 +68,7 @@ function harness() {
     installed: i % 3 !== 2, size: (i % 3 !== 2) ? Math.round((8 + (i * 37) % 140) * 1024 ** 3) : 0,
     last: i < 40 ? now - Math.round(i * i * 9000 + i * 3600) : 0, play: i < 45 ? Math.round(6000 / (i + 1) + (i * 53) % 400) : 0,
   }));
-  return `<!doctype html><html lang="${opt.lang}"><head><meta charset="utf-8">
+  return `<!doctype html><html lang="${opt.lang}" data-rfs-style="${opt.style}"><head><meta charset="utf-8">
 <link rel="stylesheet" href="/src/lang/${opt.lang}.css"><link rel="stylesheet" href="/src/styles/${opt.style}.css">
 <link rel="stylesheet" href="/src/css/shelf.css"><link rel="stylesheet" href="/src/css/layouts.css">
 <style>html,body{margin:0;height:100%;background:#101216;color:#ddd;overflow:hidden}
@@ -84,13 +85,47 @@ function harness() {
   window.__harnessLog = [];
   window.appStore = { GetCachedVerticalCapsuleURL: o => [CDN + o.appid + '/library_600x900.jpg'], GetVerticalCapsuleURLForApp: o => CDN + o.appid + '/library_600x900_2x.jpg',
     GetIconURLForApp: () => '', GetLocalizationForStoreTag: t => t };
-  window.collectionStore = { collectionsFromStorage: new Map(), allGamesCollection: { allApps: ov }, localGamesCollection: { allApps: ov.filter(o => o.installed) }, userCollections: [] };
+  // two user collections + favourites / hidden, so the game menu's actions can be exercised (they log, change nothing)
+  const coll = (id, name, ids) => { const c = { id, displayName: name, bAllowsDragAndDrop: true, apps: new Set(ids) };
+    c.AsDragDropCollection = () => ({ AddApps: a => { a.forEach(o => c.apps.add(o.appid)); __harnessLog.push('AddApps ' + id + ' ' + a.map(o => o.appid)); },
+      RemoveApps: a => { a.forEach(o => c.apps.delete(o.appid)); __harnessLog.push('RemoveApps ' + id + ' ' + a.map(o => o.appid)); } }); return c; };
+  const fav = new Set([G[0].appid]), hid = new Set();
+  window.collectionStore = { collectionsFromStorage: new Map(), allGamesCollection: { allApps: ov }, localGamesCollection: { allApps: ov.filter(o => o.installed) },
+    userCollections: [coll('uc-rpg', 'RPG', [G[0].appid, G[2].appid]), coll('uc-coop', 'Co-op nights', [G[1].appid])],
+    BIsFavorite: id => fav.has(id), SetAppsAsFavorite: (ids, on) => { ids.forEach(i => on ? fav.add(i) : fav.delete(i)); __harnessLog.push('Favorite ' + ids + ' ' + on); },
+    BIsHidden: id => hid.has(id), SetAppsAsHidden: (ids, on) => { ids.forEach(i => on ? hid.add(i) : hid.delete(i)); __harnessLog.push('Hidden ' + ids + ' ' + on); },
+    BIsSystemCollectionId: id => /^(favorite|hidden|type-)/.test(id), BIsPartnerCollectionId: () => false };
   window.appDetailsStore = {
-    GetAppDetails: id => ({ strDeveloperName: by[id] ? by[id].dev : '', strInstallFolder: 'D:\\\\SteamLibrary\\\\' + id, lDiskUsageBytes: by[id] ? by[id].size : 0 }),
+    GetAppDetails: id => ({ strDeveloperName: by[id] ? by[id].dev : '', strInstallFolder: 'D:\\\\SteamLibrary\\\\' + id, lDiskUsageBytes: by[id] ? by[id].size : 0,
+      bCloudEnabledForApp: true, bCloudEnabledForAccount: true, eCloudStatus: 3,
+      vecDLC: [[2778580, 'Shadow of the Erdtree', 1700000000, 'installed'], [2778590, 'Digital Artbook & Soundtrack', 0, ''], [2778600, 'Season Pass', 0, '']].map(([a, n, p, s]) => ({ unAppID: a, strName: n, rtPurchaseDate: p, strState: s })) }),
     RequestAppDetails: () => Promise.resolve(), GetHeroImages: o => [CDN + o.appid + '/library_hero.jpg'], GetLogoImages: o => [CDN + o.appid + '/logo.png'],
     GetHeaderImages: o => [CDN + o.appid + '/header.jpg'],
+    GetAssociations: id => ({ rgDevelopers: [{ strName: by[id] ? by[id].dev : '' }], rgPublishers: [{ strName: 'Bandai Namco' }] }),
+    BIsWorkshopVisible: () => false, BHasMarketPresence: () => true,
     GetDescriptions: id => ({ strSnippet: (by[id] ? by[id].name : 'This game') + ' — a stand-in description for the test page, about two lines long so the panel shows how real text wraps.' }) };
-  window.SteamClient = { Apps: { RunGame: id => __harnessLog.push('RunGame ' + id) }, URL: { ExecuteSteamURL: u => __harnessLog.push('URL ' + u) }, Browser: { RestartJSContext() {} } };
+  window.SteamClient = { Apps: { RunGame: id => __harnessLog.push('RunGame ' + id), OpenAppSettingsDialog: id => __harnessLog.push('Properties ' + id),
+      GetMyAchievementsForApp: async id => window.SteamClient_ach(+id),
+      CreateDesktopShortcutForApp: id => { __harnessLog.push('Shortcut ' + id); return Promise.resolve(); } },
+    System: { OpenLocalDirectoryInSystemExplorer: d => __harnessLog.push('OpenDir ' + d) },
+    URL: { ExecuteSteamURL: u => __harnessLog.push('URL ' + u) }, Browser: { RestartJSContext() {} } };
+  // the game page's sources (src/js/hub.js): news, achievements, friends, DLC, badge — shaped like Steam's
+  // like Steam: per-language text in a MobX ObservableMap (has get/values, but is NOT instanceof Map)
+  const lang0 = s => ({ get: k => (k === 0 ? s : undefined), has: k => k === 0, keys: () => [0][Symbol.iterator](), values: () => [s][Symbol.iterator](), [Symbol.toStringTag]: 'Map' });
+  // odd posts use Steam's newer markup ([p align], [img src="…"], quoted youtube ids, [dynamiclink]), even ones the classic
+  const BODY_OLD = appid => '[h2]What\\'s new[/h2]Hello, Tarnished! This update brings [b]new bosses[/b], balance changes and fixes.\\n\\n[img]' + CDN + appid + '/header.jpg[/img]\\n\\n[list][*]New area: the Shadow Keep[*]Better performance on older PCs[*]Fixed a crash when loading saves[/list]\\n[url=https://store.steampowered.com/app/' + appid + ']Store page[/url] · [quote]Thank you for playing![/quote]';
+  const BODY_NEW = appid => '[p align="justify"]Thank you for your support. This patch adds [b]audio options[/b] and fixes.[/p][p][/p][h2][b]New Features[/b][/h2][list][*][p]Added hit sound options[/p][/*][*][p]Better frame pacing[/p][/*][/list][p][img src="' + CDN + appid + '/header.jpg"][/img][/p][previewyoutube="hXyPbvj7A7w;full"][/previewyoutube][p][url="https://store.steampowered.com/app/' + appid + '"]Support page[/url] — keep the [good friends\\' rule][/p][dynamiclink href="https://store.steampowered.com/app/' + appid + '/_/"][/dynamiclink]';
+  window.partnerEventStore = {
+    LoadAdjacentPartnerEvents: async (gid, clan, appid) => [0, 1, 2, 3, 4].map(i => ({
+      GID: String(9000 + i), AnnouncementGID: String(9000 + i), clanSteamID: { toString: () => '[object Object]' }, vecTags: i === 0 ? ['patchnotes'] : [], type: i === 1 ? 13 : 28,
+      name: lang0((by[appid] ? by[appid].name : 'Game') + (i === 0 ? ' — Patch 1.12 is live' : ' — Community update #' + (20 - i))),
+      description: lang0(i % 2 ? BODY_NEW(appid) : BODY_OLD(appid)),
+      GetImageURL: () => CDN + appid + '/header.jpg', GetPostTimeAndDateUnixSeconds: () => ${now} - i * 6 * 86400 - 3600 })),
+    GetAppImportantUpdate: () => ({ date: ${now} - 2 * 86400 }) };
+  window.friendStore = { GetFriendsInGame: appid => appid === G[0].appid ? [{ steamid64: '76561198000000001', nickname: 'Sanad', persona: { m_strPlayerName: 'Sanad', avatar_url_medium: '', is_online: true } }] : [] };
+  window.badgeStore = { GetBadgeData: appid => ({ strName: 'Tarnished', strIconURL: '', nLevel: 2, nMaxLevel: 5, rgCards: [1, 2, 3, 4, 5, 6].map(i => ({ strTitle: 'Card ' + i, strImgURL: CDN + appid + '/library_600x900.jpg', nOwned: i % 3 ? 1 : 0 })) }) };
+  window.SteamClient_ach = appid => ({ result: 1, data: { rgAchievements: Array.from({ length: 14 }, (_, i) => ({ strID: 'A' + i, strName: ['Elden Lord', 'Shardbearer', 'Legendary Armaments', 'Great Rune', 'Roundtable Hold', 'Age of Stars', 'Lord of Frenzied Flame', 'Godslayer', 'Dragonkin', 'Rennala', 'Malenia', 'Radahn', 'Morgott', 'Rykard'][i],
+    strDescription: 'Stand-in achievement text number ' + (i + 1) + ' for the test page.', strImage: CDN + appid + '/header.jpg', bAchieved: i % 3 !== 2, bHidden: i === 13, rtUnlocked: i % 3 !== 2 ? ${now} - i * 9 * 86400 : 0, flAchieved: Math.round((60 - i * 4) * 10) / 10 })) } });
   window.MainWindowBrowserManager = { m_lastLocation: { pathname: '/library/home' }, m_browser: null };
   window.SteamUIStore = { RunningApps: [], Navigate: p => { MainWindowBrowserManager.m_lastLocation.pathname = p; __harnessLog.push('Navigate ' + p); } };
   window.MILLENNIUM_API = { classMapList: [], ffi: () => async () => ({ success: true }) };
@@ -192,6 +227,43 @@ try {
       await S('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 });
       await sleep(600); await shot('closed');
     }
+  }
+  if (opt.menu !== undefined && opt.menu !== '') {
+    // the game menu: right-click a game → shot, hover its "Manage" → shot, Esc; then open the game and use "Options"
+    const esc = async () => { await S('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 }); await S('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 }); };
+    const b = await itemBox(opt.menu);
+    if (!b) console.log('no visible game item #' + opt.menu);
+    else {
+      await mouse('mouseMoved', b.x, b.y);
+      await S('Input.dispatchMouseEvent', { type: 'mousePressed', x: b.x, y: b.y, button: 'right', clickCount: 1 });
+      await S('Input.dispatchMouseEvent', { type: 'mouseReleased', x: b.x, y: b.y, button: 'right', clickCount: 1 });
+      await sleep(250); await shot('menu');
+      const m = await ev(`(() => { const p = document.querySelector('#rfs-gmenu.on .gm-panel'); if (!p) return null; const it = [...p.querySelectorAll('button[data-i]')].map(x => x.textContent.trim()); const s = [...p.querySelectorAll('.gm-has-sub')].pop(); const r = s && s.getBoundingClientRect(); return { items: it, sub: r ? { x: r.left + r.width / 2, y: r.top + r.height / 2 } : null }; })()`);
+      console.log('menu:', JSON.stringify(m && m.items));
+      if (m && m.sub) { await mouse('mouseMoved', m.sub.x, m.sub.y); await sleep(250); await shot('menu-sub'); console.log('sub:', JSON.stringify(await ev(`[...document.querySelectorAll('#rfs-gmenu .gm-sub button')].map(x => x.textContent.trim())`))); }
+      await esc(); await esc(); await sleep(200);
+      await mouse('mouseMoved', b.x, b.y); await mouse('mousePressed', b.x, b.y); await mouse('mouseReleased', b.x, b.y);
+      await sleep(1600);
+      const mb = await ev(`(() => { const x = [...document.querySelectorAll('#rfs-sheet [data-act="more"], #rfs-viewer [data-act="more"]')].find(e => e.getBoundingClientRect().width > 0); if (!x) return null; const r = x.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; })()`);
+      if (!mb) console.log('no Options button in the opened game');
+      else { await mouse('mouseMoved', mb.x, mb.y); await mouse('mousePressed', mb.x, mb.y); await mouse('mouseReleased', mb.x, mb.y); await sleep(300); await shot('menu-ingame'); }
+      await esc(); await sleep(150); await esc(); await sleep(600);
+    }
+  }
+  if (opt.hub) {
+    // the game page of the first game: one shot per tab named in --hub (overview,news,ach,friends,dlc[,post])
+    await ev(`(() => { const g = __rfsLayoutApi.visibleGames()[0]; __rfsLayoutApi.openHub(g, 'overview'); return true; })()`);
+    for (let i = 0; i < 40; i++) { await sleep(150); if (await ev(`!!(window.__rfsHub && __rfsHub.isOpen())`)) break; }
+    for (const tab of opt.hub.split(',')) {
+      if (tab === 'post') { await ev(`(() => { const b = document.querySelector('#rfs-hub [data-post]'); if (b) b.click(); return !!b; })()`); }
+      else if (tab === 'post2') { await ev(`(() => { const b = document.querySelector('#rfs-hub [data-post="9001"]'); if (b) b.click(); return !!b; })()`); } // Steam's newer markup
+      else await ev(`(() => { const b = document.querySelector('#rfs-hub .hb-tab[data-tab="${tab}"]'); if (b) b.click(); return !!b; })()`);
+      await sleep(1400); await shot('hub-' + tab);
+    }
+    console.log('hub:', JSON.stringify(await ev(`(() => { const h = document.querySelector('#rfs-hub'); return h ? { on: h.classList.contains('on'), tabs: [...h.querySelectorAll('.hb-tab')].map(t => t.textContent.trim()), body: (h.querySelector('.hb-body') || {}).textContent?.trim().slice(0, 160) } : null; })()`)));
+    await S('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 });
+    await S('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Escape', code: 'Escape', windowsVirtualKeyCode: 27 });
+    await sleep(300);
   }
   if (opt.key) {
     for (const k of opt.key.split(',')) {

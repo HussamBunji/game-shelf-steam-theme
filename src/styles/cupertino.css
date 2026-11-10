@@ -508,14 +508,14 @@ html[data-rfs-style="cupertino"] #rfs-bar .tb-ico svg.rf-ic { stroke: rgba(235, 
 html[data-rfs-style="cupertino"] #rfs-bar .tb-ico svg.rf-ic :is(.f, circle:not(.s)) { fill: none; }
 html[data-rfs-style="cupertino"] #rfs-bar .tb-kbd { color: rgba(235, 235, 245, .6); background: rgba(120, 120, 128, .24); border-radius: 5px; }
 /* dropdowns + quick results: a solid menu panel, hairline edge, the highlighted row blue with white text */
-html[data-rfs-style="cupertino"] #rfs-bar :is(.rf-dd-menu, .tb-results) {
+html[data-rfs-style="cupertino"] :is(#rfs-bar, #rfs-gmenu) :is(.rf-dd-menu, .tb-results) {
   color: #fff; background: #2c2c2e; border: 0; border-radius: 12px; padding: 5px;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), 0 0 0 .5px rgba(255, 255, 255, .14), 0 24px 60px rgba(0, 0, 0, .7);
 }
-html[data-rfs-style="cupertino"] #rfs-bar .rf-dd-menu button { color: #fff; border-radius: 6px; }
-html[data-rfs-style="cupertino"] #rfs-bar .rf-dd-menu button b { color: rgba(235, 235, 245, .55); font-variant-numeric: tabular-nums; }
-html[data-rfs-style="cupertino"] #rfs-bar .rf-dd-menu button:is(:hover, .on) { color: #fff; background: #0a84ff; }
-html[data-rfs-style="cupertino"] #rfs-bar .rf-dd-menu button:is(:hover, .on) b { color: rgba(255, 255, 255, .8); }
+html[data-rfs-style="cupertino"] :is(#rfs-bar, #rfs-gmenu) .rf-dd-menu button { color: #fff; border-radius: 6px; }
+html[data-rfs-style="cupertino"] :is(#rfs-bar, #rfs-gmenu) .rf-dd-menu button b { color: rgba(235, 235, 245, .55); font-variant-numeric: tabular-nums; }
+html[data-rfs-style="cupertino"] :is(#rfs-bar, #rfs-gmenu) .rf-dd-menu button:is(:hover, .on) { color: #fff; background: #0a84ff; }
+html[data-rfs-style="cupertino"] :is(#rfs-bar, #rfs-gmenu) .rf-dd-menu button:is(:hover, .on) b { color: rgba(255, 255, 255, .8); }
 html[data-rfs-style="cupertino"] #rfs-bar .pl-item { color: #fff; border-radius: 6px; }
 html[data-rfs-style="cupertino"] #rfs-bar :is(.pl-item.sel, .pl-item:hover) { background: #0a84ff; }
 html[data-rfs-style="cupertino"] #rfs-bar :is(.pl-item.sel, .pl-item:hover) .pl-meta { color: rgba(255, 255, 255, .8); }

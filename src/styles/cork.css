@@ -686,16 +686,16 @@ html[data-rfs-style="cork"] #rfs-bar:is(.inhome, .float) :not(.rf-ict, .play, .g
 html[data-rfs-style="cork"] #rfs-bar:is(.inhome, .float) :not(.rf-ict, .play, .go, .tb-theme) > svg.rf-ic :is(.f, rect, ellipse, circle:not(.s)) { fill: rgba(200, 67, 46, .14); }
 html[data-rfs-style="cork"] #rfs-bar:is(.inhome, .float) :is(.tb-btn.on, .tb-seg button.on) > svg.rf-ic { stroke: var(--ck-red); }
 /* dropdowns + search results: a paper card; hover draws a highlighter band */
-html[data-rfs-style="cork"] #rfs-bar:is(.inhome, .float) :is(.rf-dd-menu, .tb-results) {
+html[data-rfs-style="cork"] :is(#rfs-bar:is(.inhome, .float), #rfs-gmenu) :is(.rf-dd-menu, .tb-results) {
   background: #fffaf0;
   border: 1px solid rgba(96, 64, 32, .25); border-radius: 3px;
   box-shadow: 0 18px 34px -12px rgba(40, 20, 5, .65), 0 2px 4px rgba(40, 20, 5, .2);
 }
-html[data-rfs-style="cork"] #rfs-bar:is(.inhome, .float) :is(.rf-dd-menu button, .pl-item) { border-radius: 2px; }
-html[data-rfs-style="cork"] #rfs-bar:is(.inhome, .float) :is(.rf-dd-menu button:hover, .pl-item:hover, .pl-item.sel) {
+html[data-rfs-style="cork"] :is(#rfs-bar:is(.inhome, .float), #rfs-gmenu) :is(.rf-dd-menu button, .pl-item) { border-radius: 2px; }
+html[data-rfs-style="cork"] :is(#rfs-bar:is(.inhome, .float), #rfs-gmenu) :is(.rf-dd-menu button:hover, .pl-item:hover, .pl-item.sel) {
   background: linear-gradient(transparent 14%, rgba(255, 222, 102, .6) 14% 86%, transparent 86%);
 }
-html[data-rfs-style="cork"] #rfs-bar:is(.inhome, .float) .rf-dd-menu button.on { color: #b23a26; background: rgba(255, 222, 102, .32); }
+html[data-rfs-style="cork"] :is(#rfs-bar:is(.inhome, .float), #rfs-gmenu) .rf-dd-menu button.on { color: #b23a26; background: rgba(255, 222, 102, .32); }
 html[data-rfs-style="cork"] #rfs-bar:is(.inhome, .float) .pl-sec {
   font-family: var(--rf-heading-font) !important; font-size: 19px; font-weight: 700; color: var(--ck-pen);
 }

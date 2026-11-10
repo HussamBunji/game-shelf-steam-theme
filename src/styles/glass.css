@@ -339,7 +339,7 @@ html[data-rfs-style="glass"] #rfs .rf-merge .gl-chip { color: #c4d4e6; backgroun
 html[data-rfs-style="glass"] #rfs .rf-merge .gl-chip:hover { color: #fff; background: rgba(102, 192, 244, .18); }
 html[data-rfs-style="glass"] #rfs .rf-merge .gl-chip.on { color: var(--rf-accent-ink); background: var(--rf-accent); border-color: transparent; }
 /* menus and quick results open over the cards: nearly opaque, so their text never mixes with the art behind */
-html[data-rfs-style="glass"] #rfs-bar :is(.rf-dd-menu, .tb-results) { background: rgba(11, 19, 31, .97); border-color: rgba(160, 210, 255, .24); }
+html[data-rfs-style="glass"] :is(#rfs-bar, #rfs-gmenu) :is(.rf-dd-menu, .tb-results) { background: rgba(11, 19, 31, .97); border-color: rgba(160, 210, 255, .24); }
 /* Ctrl+K anywhere else: the floating search gets the same frosted panel */
 html[data-rfs-style="glass"] #rfs-bar.float { background: rgba(12, 21, 34, .9); backdrop-filter: blur(18px) saturate(1.4); }
 

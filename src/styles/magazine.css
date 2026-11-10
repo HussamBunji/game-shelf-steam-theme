@@ -513,17 +513,17 @@ html[data-rfs-style="magazine"] #rfs-bar .tb-seg button:last-child { border-radi
 html[data-rfs-style="magazine"] #rfs-bar .tb-theme { border: 0; border-radius: 0; background: var(--rf-accent); color: #fff5ea; }
 html[data-rfs-style="magazine"] #rfs-bar .tb-theme:hover { filter: none; background: #f04a3d; }
 /* dropdowns + search results: magazine sidebars — ink sheet, red top rule, hairlines */
-html[data-rfs-style="magazine"] #rfs-bar :is(.rf-dd-menu, .tb-results) {
+html[data-rfs-style="magazine"] :is(#rfs-bar, #rfs-gmenu) :is(.rf-dd-menu, .tb-results) {
   border-radius: 0; background: var(--mg-sheet); border: 1px solid rgba(239, 230, 214, .18); border-top: 2px solid var(--rf-accent);
   box-shadow: 0 18px 44px rgba(0, 0, 0, .6);
 }
-html[data-rfs-style="magazine"] #rfs-bar .rf-dd-menu { padding: 4px 0; }
-html[data-rfs-style="magazine"] #rfs-bar .rf-dd-menu button {
+html[data-rfs-style="magazine"] :is(#rfs-bar, #rfs-gmenu) .rf-dd-menu { padding: 4px 0; }
+html[data-rfs-style="magazine"] :is(#rfs-bar, #rfs-gmenu) .rf-dd-menu button {
   border-radius: 0; padding: 8px 14px; border-inline-start: 2px solid transparent; font-size: 13px;
 }
-html[data-rfs-style="magazine"] #rfs-bar .rf-dd-menu button:hover { background: rgba(239, 230, 214, .05); border-inline-start-color: rgba(239, 230, 214, .4); }
-html[data-rfs-style="magazine"] #rfs-bar .rf-dd-menu button.on { background: rgba(230, 59, 46, .1); color: #fff; border-inline-start-color: var(--rf-accent); }
-html[data-rfs-style="magazine"] #rfs-bar .rf-dd-menu button b {
+html[data-rfs-style="magazine"] :is(#rfs-bar, #rfs-gmenu) .rf-dd-menu button:hover { background: rgba(239, 230, 214, .05); border-inline-start-color: rgba(239, 230, 214, .4); }
+html[data-rfs-style="magazine"] :is(#rfs-bar, #rfs-gmenu) .rf-dd-menu button.on { background: rgba(230, 59, 46, .1); color: #fff; border-inline-start-color: var(--rf-accent); }
+html[data-rfs-style="magazine"] :is(#rfs-bar, #rfs-gmenu) .rf-dd-menu button b {
   font-family: var(--rf-heading-font) !important; font-weight: 700; color: var(--rf-text-dim); font-variant-numeric: lining-nums tabular-nums;
 }
 html[data-rfs-style="magazine"] #rfs-bar .pl-item { border-radius: 0; border-inline-start: 2px solid transparent; }

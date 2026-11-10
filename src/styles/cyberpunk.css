@@ -583,15 +583,15 @@ html[data-rfs-style="cyberpunk"] #rfs-bar .tb-kbd { color: #9aa3ad; background: 
 html[data-rfs-style="cyberpunk"] #rfs-bar .tb-clear { border-radius: 0; background: rgba(154, 163, 173, .12); }
 html[data-rfs-style="cyberpunk"] #rfs-bar .tb-clear:hover { background: rgba(196, 92, 138, .3); color: #fff; }
 /* dropdowns + quick results: a dark plate with a brass hairline; the hovered row gets a cyan start bar */
-html[data-rfs-style="cyberpunk"] #rfs-bar :is(.rf-dd-menu, .tb-results) {
+html[data-rfs-style="cyberpunk"] :is(#rfs-bar, #rfs-gmenu) :is(.rf-dd-menu, .tb-results) {
   color: #e6e1d6; background: #121822; border: 0; border-radius: 0; padding: 5px;
   box-shadow: inset 0 0 0 1px rgba(217, 180, 90, .32), 0 22px 54px rgba(0, 0, 0, .65);
 }
-html[data-rfs-style="cyberpunk"] #rfs-bar .rf-dd-menu button { color: #e6e1d6; border-radius: 0; border-inline-start: 2px solid transparent; }
-html[data-rfs-style="cyberpunk"] #rfs-bar .rf-dd-menu button b { color: #6d7782; font-family: var(--cp-mono) !important; font-weight: 500; }
-html[data-rfs-style="cyberpunk"] #rfs-bar .rf-dd-menu button:hover { color: #fff; background: rgba(95, 196, 200, .1); border-inline-start-color: #5fc4c8; }
-html[data-rfs-style="cyberpunk"] #rfs-bar .rf-dd-menu button.on { color: #e3c274; background: rgba(217, 180, 90, .1); border-inline-start-color: #d9b45a; }
-html[data-rfs-style="cyberpunk"] #rfs-bar .rf-dd-menu button:is(:hover, .on) b { color: #9aa3ad; }
+html[data-rfs-style="cyberpunk"] :is(#rfs-bar, #rfs-gmenu) .rf-dd-menu button { color: #e6e1d6; border-radius: 0; border-inline-start: 2px solid transparent; }
+html[data-rfs-style="cyberpunk"] :is(#rfs-bar, #rfs-gmenu) .rf-dd-menu button b { color: #6d7782; font-family: var(--cp-mono) !important; font-weight: 500; }
+html[data-rfs-style="cyberpunk"] :is(#rfs-bar, #rfs-gmenu) .rf-dd-menu button:hover { color: #fff; background: rgba(95, 196, 200, .1); border-inline-start-color: #5fc4c8; }
+html[data-rfs-style="cyberpunk"] :is(#rfs-bar, #rfs-gmenu) .rf-dd-menu button.on { color: #e3c274; background: rgba(217, 180, 90, .1); border-inline-start-color: #d9b45a; }
+html[data-rfs-style="cyberpunk"] :is(#rfs-bar, #rfs-gmenu) .rf-dd-menu button:is(:hover, .on) b { color: #9aa3ad; }
 html[data-rfs-style="cyberpunk"] #rfs-bar .pl-item { color: #e6e1d6; border-radius: 0; border-inline-start: 2px solid transparent; }
 html[data-rfs-style="cyberpunk"] #rfs-bar :is(.pl-item.sel, .pl-item:hover) { background: rgba(95, 196, 200, .1); border-inline-start-color: #5fc4c8; }
 html[data-rfs-style="cyberpunk"] #rfs-bar :is(.pl-item.sel, .pl-item:hover) .pl-meta { color: #9aa3ad; }

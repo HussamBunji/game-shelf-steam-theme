@@ -337,6 +337,13 @@
     msg: '<path class="f" d="M4 5h16v11H9.5L4 20Z"/><path d="M8 9.5h8M8 12.5h5"/>',
     layers: '<path class="f" d="m12 3 9 5-9 5-9-5Z"/><path d="m3 12.5 9 5 9-5"/><path d="m3 16.5 9 5 9-5" opacity=".55"/>',
     medal: '<circle cx="12" cy="14.5" r="5.5"/><path d="M8.5 10 6 3h4l2 4.5L14 3h4l-2.5 7"/><path class="s" d="m12 11.8.9 1.8 2 .3-1.4 1.4.3 2-1.8-.9-1.8.9.3-2-1.4-1.4 2-.3Z"/>',
+    more: '<circle class="s" cx="5" cy="12" r="1.7"/><circle class="s" cx="12" cy="12" r="1.7"/><circle class="s" cx="19" cy="12" r="1.7"/>',
+    folder: '<path class="f" d="M3 7.5A2.5 2.5 0 0 1 5.5 5H9l2 2.2h7.5A2.5 2.5 0 0 1 21 9.7v7.8a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5Z"/><path d="M3 10h18"/>',
+    trash: '<path d="M4 7h16"/><path d="M9 7V5.2A1.2 1.2 0 0 1 10.2 4h3.6A1.2 1.2 0 0 1 15 5.2V7"/><path class="f" d="m6 7 1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12"/><path d="M10 11v6M14 11v6"/>',
+    eye: '<path class="f" d="M2 12c1.2-2.8 5-7 10-7s8.8 4.2 10 7c-1.2 2.8-5 7-10 7S3.2 14.8 2 12Z"/><circle cx="12" cy="12" r="3"/>',
+    eyeOff: '<path d="M3 3l18 18"/><path d="M10.6 5.1Q11.3 5 12 5c5 0 8.8 4.2 10 7a13 13 0 0 1-3.1 4.3M6.6 6.6C4.4 8 2.8 10.2 2 12c1.2 2.8 5 7 10 7a10 10 0 0 0 4.4-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/>',
+    monitor: '<rect class="f" x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>',
+    plus: '<path d="M12 5v14M5 12h14"/>',
   };
   const ic = (n, cls = '') => `<svg class="rf-ic${cls ? ' ' + cls : ''}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[n] || ''}</svg>`;
   /** icon inside a themed tile (brass medallion / neon frame / frosted glass / gilded frame) */
@@ -373,6 +380,7 @@
     amb: store.get('amb', '0') === '1', //      the theme's background ambience: off by default too
     news: store.get('news', '0') === '1',
     source: store.get('source', 'all'),
+    installed: store.get('installed', '0') === '1', // "Installed" toggle in the filter strip: on top of any source
     genre: '',
     query: '',
     games: [],
@@ -410,7 +418,7 @@
   function visibleGames() {
     const q = state.query.trim().toLowerCase();
     return state.games
-      .filter(g => (!q || g.name.toLowerCase().includes(q)) && (!state.genre || g.genres.includes(state.genre)))
+      .filter(g => (!q || g.name.toLowerCase().includes(q)) && (!state.genre || g.genres.includes(state.genre)) && (!state.installed || g.installed))
       .sort(SORTS[state.sort]);
   }
 
@@ -671,6 +679,7 @@
     </div>
     <div class="tb-home">
       <div class="rf-dd tb-src"><button class="tb-btn rf-dd-btn" title="${T('أي ألعاب تطلع في الصفحة الرئيسية', 'Which games show on the home page')}">${ic('library')}<span class="tb-src-name">${T('كل ألعابي', 'All games')}</span>${ic('chevD', 'dd')}</button><div class="rf-dd-menu"></div></div>
+      <button class="tb-btn tb-inst" aria-pressed="false" title="${T('اعرض الألعاب المثبتة على جهازك بس', 'Show only the games installed on this PC')}">${ic('drive')}<span class="tb-lbl">${T('المثبتة', 'Installed')}</span><b class="tb-n"></b></button>
       <div class="rf-dd tb-sort"><button class="tb-btn rf-dd-btn" title="${T('الترتيب', 'Sort by')}">${ic('sort')}<span class="tb-sort-name">${SORT_NAMES.recent}</span>${ic('chevD', 'dd')}</button><div class="rf-dd-menu">
         ${Object.entries(SORT_NAMES).map(([v, n]) => `<button data-v="${v}">${n}</button>`).join('')}
       </div></div>
@@ -742,7 +751,7 @@
   function mount() {
     // Big Picture: the filter strip stays hidden (bigpicture.css), but it is in the page: the designs drive the real
     // search box / sort / library menus through it (Crossbar's on-screen keys and Options)
-    for (const el of BPM ? [toastEl, sheet, bar] : [toastEl, viewer, sheet, picker, bar]) if (!el.isConnected) document.body.appendChild(el);
+    for (const el of BPM ? [toastEl, sheet, bar] : [toastEl, viewer, sheet, picker, bar, gmenu]) if (!el.isConnected) document.body.appendChild(el);
     iconDefs();
   }
 
@@ -1007,6 +1016,7 @@
             <button class="cf-btn" data-act="open">${ic('info')}<span>${T('التفاصيل', 'Details')}</span></button>
             <button class="cf-btn" data-act="details">${ic('library')}<span>${T('صفحة اللعبة', 'Game page')}</span></button>
             <button class="cf-btn store" data-act="store">${ic('cart')}<span>${T('المتجر', 'Store')}</span></button>
+            <button class="cf-btn more" data-act="more" aria-haspopup="menu" title="${T('خيارات اللعبة (أو كليك يمين)', 'Game options (or right-click)')}">${ic('more')}<span>${T('خيارات', 'Options')}</span></button>
           </div>
         </div>
         <div class="cf-keys">${[[['←', '→'], T('تصفّح', 'Browse')], [['↑', '↓'], T('الأقسام', 'Sections')], [['Enter'], T('التفاصيل', 'Details')], [['Ctrl', 'Enter'], T('تشغيل', 'Play')], [['G'], T('الشبكة', 'Grid')]]
@@ -1077,7 +1087,8 @@
         const a = b.dataset.act;
         if (a === 'play') launch(g);
         else if (a === 'open') openGame(g, this.source(g.appid));
-        else if (a === 'details') { sfx('tick'); SteamAPI.openDetails(g.appid); }
+        else if (a === 'details') { sfx('tick'); Hub.open(g); }
+        else if (a === 'more') GameMenu.open(g, 0, 0, { anchor: b });
         else { sfx('tick'); try { SteamAPI.steamUrl('steam://store/' + g.appid); } catch (err) { toast(T('ما قدرت أفتح المتجر', 'Couldn\'t open the Store')); } }
       });
       this.update(true);
@@ -1456,7 +1467,7 @@
         hero.addEventListener('click', e => {
           const b = e.target.closest('[data-act]');
           if (b && b.dataset.act === 'play') launch(recent);
-          else if (b && b.dataset.act === 'details') SteamAPI.openDetails(recent.appid);
+          else if (b && b.dataset.act === 'details') Hub.open(recent);
           else openGame(recent, { el: hero, slot: hero, isSpine: false });
         });
       }
@@ -1710,6 +1721,9 @@
     $('.tb-amb', bar).classList.toggle('on', state.amb);
     $('.tb-amb', bar).style.display = Sfx.hasAmbience() ? '' : 'none';
     $('.tb-news', bar).classList.toggle('on', state.news);
+    const inst = $('.tb-inst', bar);
+    inst.classList.toggle('on', state.installed); inst.setAttribute('aria-pressed', String(state.installed));
+    $('.tb-n', inst).textContent = NUM.format(state.games.reduce((n, g) => n + (g.installed ? 1 : 0), 0));
     // the strip only shows what the current design uses (no "spines / covers" outside the shelf, no genre menu
     // where the design already has genre chips) — layouts.css
     if (bar.dataset.layout !== state.layout) bar.dataset.layout = state.layout;
@@ -1735,6 +1749,10 @@
   $('.tb-snd', bar).addEventListener('click', () => setSound(!state.sound));
   $('.tb-amb', bar).addEventListener('click', () => { state.amb = !state.amb; store.set('amb', state.amb ? '1' : '0'); Sfx.load(); updateBar(); Sfx.sync(); });
   $('.tb-theme', bar).addEventListener('click', () => Themes.open());
+  $('.tb-inst', bar).addEventListener('click', () => {
+    state.installed = !state.installed; store.set('installed', state.installed ? '1' : '0');
+    CoverflowLayout.cur = 0; sfx('tick'); render();
+  });
   $('.tb-news', bar).addEventListener('click', () => { state.news = !state.news; store.set('news', state.news ? '1' : '0'); sfx('tick'); placement.key = ''; tick(true); });
   const dds = [...bar.querySelectorAll('.rf-dd')];
   const srcDD = $('.tb-src', bar), sortDD = $('.tb-sort', bar), genreDD = $('.tb-genre', bar);
@@ -1871,12 +1889,16 @@
     box.innerHTML = `
       <button class="rf-act play${running ? ' is-running' : ''}" data-act="play">${running ? ic('pulse') + T('شغّالة الحين', 'Running now') : g.installed ? ic('play') + T('تشغيل', 'Play') : ic('download') + T('تثبيت', 'Install')}</button>
       <button class="rf-act" data-act="details">${ic('info')}${T('صفحة اللعبة', 'Game page')}</button>
-      <button class="rf-act" data-act="store">${ic('cart')}${T('المتجر', 'Store')}</button>`;
+      <button class="rf-act" data-act="news">${ic('news')}${T('الأخبار', 'News')}</button>
+      <button class="rf-act" data-act="store">${ic('cart')}${T('المتجر', 'Store')}</button>
+      <button class="rf-act more" data-act="more" aria-haspopup="menu" title="${T('خيارات اللعبة: المفضلة، المجموعات، الإدارة، الخصائص (أو كليك يمين على اللعبة)', 'Game options: favourites, collections, manage, properties (or right-click the game)')}">${ic('more')}${T('خيارات', 'Options')}</button>`;
     box.addEventListener('click', e => {
       const b = e.target.closest('[data-act]'); if (!b) return;
       e.stopPropagation();
+      if (b.dataset.act === 'more') { GameMenu.open(g, 0, 0, { inGame: true, anchor: b }); return; }
+      if (b.dataset.act === 'news') { sfx('tick'); Hub.open(g, 'news'); return; }
       if (b.dataset.act === 'play') launch(g);
-      else if (b.dataset.act === 'details') { sfx('tick'); closeViewer(true).then(() => SteamAPI.openDetails(g.appid)); }
+      else if (b.dataset.act === 'details') { sfx('tick'); Hub.open(g); }
       else { sfx('tick'); try { SteamAPI.steamUrl('steam://store/' + g.appid); } catch (err) { toast(T('ما قدرت أفتح المتجر', 'Couldn\'t open the Store')); } }
     });
     return box;
@@ -1900,7 +1922,9 @@
       `<div class="actions">
          <button class="btn play${running ? ' is-running' : ''}" data-act="play">${running ? ic('pulse') + T('شغّالة الحين', 'Running now') : g.installed ? ic('play') + T('تشغيل', 'Play') : ic('download') + T('تثبيت', 'Install')}</button>
          <button class="btn" data-act="details">${T('صفحة اللعبة', 'Game page')}</button>
+         <button class="btn" data-act="news">${T('الأخبار', 'News')}</button>
          <button class="btn" data-act="store">${T('المتجر', 'Store')}</button>
+         <button class="btn more" data-act="more" aria-haspopup="menu" title="${T('خيارات اللعبة (أو كليك يمين)', 'Game options (or right-click)')}">${ic('more')}${T('خيارات', 'Options')}</button>
        </div>`,
     ].filter(Boolean).join('');
     if (g.images.logo.length) $('.info-logo-wrap', info).append(imgWithFallback(g.images.logo, 'info-logo', im => im.remove()));
@@ -1910,8 +1934,10 @@
     const b = e.target.closest('[data-act]');
     if (!b || !current) return;
     const g = current.g;
+    if (b.dataset.act === 'more') { e.stopPropagation(); GameMenu.open(g, 0, 0, { inGame: true, anchor: b }); return; }
+    if (b.dataset.act === 'news') { sfx('tick'); Hub.open(g, 'news'); return; }
     if (b.dataset.act === 'play') launch(g);
-    else if (b.dataset.act === 'details') { sfx('tick'); closeViewer(true).then(() => SteamAPI.openDetails(g.appid)); }
+    else if (b.dataset.act === 'details') { sfx('tick'); Hub.open(g); }
     else if (b.dataset.act === 'store') { sfx('tick'); try { SteamAPI.steamUrl('steam://store/' + g.appid); } catch (err) { toast(T('ما قدرت أفتح المتجر', 'Couldn\'t open the Store')); } }
   });
   function flyFrom(src) {
@@ -1997,6 +2023,314 @@
     try { SteamAPI.run(g.ov); toast(g.installed ? T(`جاري تشغيل ${g.name}…`, `Launching ${g.name}…`) : T(`يفتح تثبيت ${g.name}…`, `Opening install for ${g.name}…`)); }
     catch (err) { LOG('RunGame failed', err); toast(T('ما قدرت أشغّل اللعبة — الثيم يحتاج تحديث', 'Couldn\'t launch the game — the theme needs an update')); }
   }
+
+  /* =================================================================
+     Game menu — right-click any game in any design (or the "Options" button of an opened game, or the Menu key /
+     Shift+F10): Steam's own game options — favourites, collections, manage, properties — without going to Steam's
+     game page. The panels are .rf-dd-menu, so every style draws them with its own dropdown look (styles/*.css:
+     :is(#rfs-bar, #rfs-gmenu) .rf-dd-menu). Calls are the ones Steam's own game menu makes (steamui sp.js).
+     ================================================================= */
+  const gmenu = div(); gmenu.id = 'rfs-gmenu';
+  const GameMenu = {
+    g: null, inGame: false, panels: [], timer: 0,
+    isOpen() { return gmenu.classList.contains('on'); },
+    cs() { try { return SteamAPI.ctx().collectionStore; } catch (e) { return null; } },
+    isFav(g) { try { return !!this.cs().BIsFavorite(g.appid); } catch (e) { return false; } },
+    isHidden(g) { try { return !!this.cs().BIsHidden(g.appid); } catch (e) { return false; } },
+    /** the user's own collections a game can be put in (as Steam's "Add to" menu: no system / dynamic ones) */
+    collections() {
+      const cs = this.cs(), out = [];
+      try {
+        for (const c of cs.userCollections || []) {
+          if (!c || !c.bAllowsDragAndDrop || c.id === 'favorite' || c.id === 'hidden') continue;
+          if (typeof cs.BIsSystemCollectionId === 'function' && cs.BIsSystemCollectionId(c.id)) continue;
+          if (typeof cs.BIsPartnerCollectionId === 'function' && cs.BIsPartnerCollectionId(c.id)) continue;
+          const name = String(c.displayName || '').trim();
+          if (name) out.push({ c, name });
+        }
+      } catch (e) { /* collections are optional */ }
+      return out.sort((a, b) => a.name.localeCompare(b.name));
+    },
+    items(g) {
+      const run = SteamAPI.runningIds().has(g.appid), fav = this.isFav(g);
+      return [
+        { a: 'play', primary: true, icon: run ? 'pulse' : g.installed ? 'play' : 'download', label: run ? T('شغّالة الحين', 'Running now') : g.installed ? T('تشغيل', 'Play') : T('تثبيت', 'Install') },
+        !this.inGame && { a: 'open', icon: 'info', label: T('التفاصيل', 'Details') },
+        !Hub.isOpen() && { a: 'page', icon: 'library', label: T('صفحة اللعبة', 'Game page') },
+        { a: 'news', icon: 'news', label: T('أخبار اللعبة', 'News') },
+        '-',
+        { a: 'fav', on: fav, icon: fav ? 'starOn' : 'star', label: fav ? T('شيلها من المفضلة', 'Remove from Favorites') : T('أضفها للمفضلة', 'Add to Favorites') },
+        this.collections().length && { sub: 'coll', icon: 'layers', label: T('المجموعات', 'Collections') },
+        { sub: 'manage', icon: 'sliders', label: T('إدارة', 'Manage') },
+        '-',
+        { a: 'props', icon: 'cpu', label: T('الخصائص…', 'Properties…') },
+        { a: 'store', icon: 'cart', label: T('صفحة المتجر', 'Store page') },
+      ].filter(Boolean);
+    },
+    sub(kind, g) {
+      if (kind === 'coll') return this.collections().map(({ c, name }) => {
+        let has = false; try { has = !!(c.apps && c.apps.has(g.appid)); } catch (e) { /* ignore */ }
+        return { a: 'col', col: c, on: has, icon: has ? 'check' : 'plus', label: name, keep: true };
+      });
+      const hid = this.isHidden(g);
+      return [
+        { a: 'shortcut', icon: 'monitor', label: T('اختصار على سطح المكتب', 'Add desktop shortcut') },
+        g.installed && { a: 'files', icon: 'folder', label: T('افتح ملفات اللعبة', 'Browse local files') },
+        { a: 'hide', icon: hid ? 'eye' : 'eyeOff', label: hid ? T('رجّعها من المخفية', 'Remove from Hidden') : T('أخفِ اللعبة', 'Hide this game') },
+        g.installed && '-',
+        g.installed && { a: 'uninstall', danger: true, icon: 'trash', label: T('إلغاء التثبيت…', 'Uninstall…') },
+      ].filter(Boolean);
+    },
+    head(g) {
+      const icon = SteamAPI.icon(g.ov);
+      const sub = [fmtPlaytime(g.playtimeMin), g.installed ? T('مثبتة', 'Installed') : T('غير مثبتة', 'Not installed')].filter(Boolean).join(' · ');
+      return `<div class="gm-head">${icon ? `<img src="${esc(icon)}" alt="">` : ic('gamepad')}<span><b dir="auto">${esc(g.name)}</b><small>${esc(sub)}</small></span></div>`;
+    },
+    panel(list, withHead) {
+      const p = div('rf-dd-menu gm-panel');
+      p.setAttribute('role', 'menu');
+      p._items = list;
+      p.innerHTML = (withHead ? this.head(this.g) : '') + list.map((it, i) => it === '-' ? '<i class="gm-sep" role="separator"></i>'
+        : `<button type="button" role="${it.a === 'col' ? 'menuitemcheckbox' : 'menuitem'}" data-i="${i}" tabindex="-1"${it.sub ? ' aria-haspopup="menu"' : ''}${it.a === 'col' ? ` aria-checked="${it.on}"` : ''}`
+          + ` class="${[it.on && 'on', it.primary && 'gm-primary', it.danger && 'gm-danger', it.sub && 'gm-has-sub'].filter(Boolean).join(' ')}">`
+          + `<span class="gm-l">${ic(it.icon)}<span dir="auto">${esc(it.label)}</span></span>${it.sub ? `<b>${ic(LTR ? 'chevR' : 'chevL')}</b>` : ''}</button>`).join('');
+      gmenu.appendChild(p);
+      return p;
+    },
+    /** keep a panel inside the window: at (x, y), or beside an item when it is a sub-menu */
+    place(p, x, y, beside) {
+      const w = p.offsetWidth, h = p.offsetHeight, M = 8;
+      let left, top;
+      if (beside) {
+        const r = beside.getBoundingClientRect(), pr = beside.closest('.gm-panel').getBoundingClientRect();
+        const after = LTR ? pr.right - 4 : pr.left - w + 4, before = LTR ? pr.left - w + 4 : pr.right - 4;
+        left = (LTR ? after + w <= innerWidth - M : after >= M) ? after : before;
+        top = r.top - 6;
+      } else {
+        left = LTR ? x : x - w; top = y;
+        if (left + w > innerWidth - M) left = x - w;
+        if (left < M) left = Math.min(x, innerWidth - M - w);
+        if (top + h > innerHeight - M) top = Math.max(M, y - h);
+      }
+      left = Math.max(M, Math.min(left, innerWidth - M - w));
+      top = Math.max(M, Math.min(top, innerHeight - M - h));
+      p.style.left = Math.round(left) + 'px'; p.style.top = Math.round(top) + 'px';
+    },
+    /** open for a game at a point (right-click) or under an element (button / keyboard) */
+    open(g, x, y, opts = {}) {
+      if (!g || BPM) return;
+      this.close(true);
+      this.g = g; this.inGame = !!opts.inGame;
+      // the menus use the strip's font and colours (a style may set them on the strip)
+      const bs = getComputedStyle(bar);
+      gmenu.style.fontFamily = bs.fontFamily;
+      const f = bs.getPropertyValue('--font'); if (f) gmenu.style.setProperty('--font', f);
+      gmenu.classList.add('on');
+      const p = this.panel(this.items(g), true);
+      if (opts.anchor) { const r = opts.anchor.getBoundingClientRect(); x = LTR ? r.left : r.right; y = r.bottom + 6; }
+      this.place(p, x, y);
+      this.panels = [p];
+      sfx('tick');
+      if (opts.keys) this.focus(p, 0);
+      addEventListener('pointerdown', this.onDown, true);
+      addEventListener('wheel', this.onWheel, { capture: true, passive: true });
+      addEventListener('resize', this.onClose);
+      addEventListener('blur', this.onClose);
+    },
+    close(quiet) {
+      clearTimeout(this.timer);
+      if (!this.isOpen()) return;
+      gmenu.classList.remove('on'); gmenu.replaceChildren(); this.panels = [];
+      removeEventListener('pointerdown', this.onDown, true);
+      removeEventListener('wheel', this.onWheel, { capture: true });
+      removeEventListener('resize', this.onClose);
+      removeEventListener('blur', this.onClose);
+      if (!quiet) this.g = null;
+    },
+    /** rebuild the open panels after a change (a star turned on, a collection ticked) */
+    refresh() {
+      const g = this.g; if (!g || !this.panels.length) return;
+      const main = this.panels[0], subBtn = main.querySelector('.sub-open');
+      const fresh = this.items(g);
+      main.querySelectorAll('button[data-i]').forEach(b => {
+        const it = fresh[+b.dataset.i]; if (!it || it === '-') return;
+        main._items[+b.dataset.i] = it;
+        b.classList.toggle('on', !!it.on);
+        $('.gm-l', b).innerHTML = `${ic(it.icon)}<span dir="auto">${esc(it.label)}</span>`;
+      });
+      if (subBtn && this.panels[1]) { const keep = document.activeElement && this.panels[1].contains(document.activeElement) ? +document.activeElement.dataset.i : -1; this.openSub(subBtn, keep); }
+    },
+    openSub(btn, focusIdx = -1) {
+      const main = this.panels[0], it = main._items[+btn.dataset.i];
+      if (this.panels[1]) { this.panels[1].remove(); this.panels.length = 1; }
+      main.querySelectorAll('.sub-open').forEach(b => { b.classList.remove('sub-open'); b.setAttribute('aria-expanded', 'false'); });
+      if (!it || !it.sub) return;
+      btn.classList.add('sub-open'); btn.setAttribute('aria-expanded', 'true');
+      const p = this.panel(this.sub(it.sub, this.g), false);
+      p.classList.add('gm-sub');
+      this.place(p, 0, 0, btn);
+      this.panels.push(p);
+      if (focusIdx >= 0) this.focus(p, focusIdx);
+    },
+    closeSub() {
+      if (!this.panels[1]) return false;
+      this.panels[1].remove(); this.panels.length = 1;
+      const b = this.panels[0].querySelector('.sub-open');
+      if (b) { b.classList.remove('sub-open'); b.setAttribute('aria-expanded', 'false'); b.focus({ preventScroll: true }); }
+      return true;
+    },
+    focus(p, i) {
+      const bs = [...p.querySelectorAll('button[data-i]')];
+      if (!bs.length) return;
+      bs[((i % bs.length) + bs.length) % bs.length].focus({ preventScroll: true });
+    },
+    key(e) {
+      if (!this.isOpen()) return false;
+      const a = document.activeElement, p = (a && a.closest && a.closest('.gm-panel')) || this.panels[this.panels.length - 1];
+      const bs = [...p.querySelectorAll('button[data-i]')], at = bs.indexOf(a);
+      const inward = LTR ? 'ArrowRight' : 'ArrowLeft', outward = LTR ? 'ArrowLeft' : 'ArrowRight';
+      if (e.key === 'Escape') { if (!this.closeSub()) this.close(); return true; }
+      if (e.key === 'ArrowDown') { this.focus(p, at + 1); return true; }
+      if (e.key === 'ArrowUp') { this.focus(p, at < 0 ? -1 : at - 1); return true; }
+      if (e.key === 'Home') { this.focus(p, 0); return true; }
+      if (e.key === 'End') { this.focus(p, -1); return true; }
+      if (e.key === inward && a && a.classList.contains('gm-has-sub')) { this.openSub(a, 0); return true; }
+      if (e.key === outward && p.classList.contains('gm-sub')) { this.closeSub(); return true; }
+      if ((e.key === 'Enter' || e.key === ' ') && at >= 0) { a.click(); return true; }
+      if (e.key === 'Tab') { this.close(); return true; }
+      return true; // the menu has the keyboard while it is open
+    },
+    act(it, btn) {
+      const g = this.g; if (!g || !it) return;
+      if (it.sub) { this.openSub(btn, 0); return; }
+      const c = SteamAPI.ctx(), id = g.appid;
+      const done = (msg) => { if (msg) toast(msg); if (!it.keep) this.close(); };
+      try {
+        switch (it.a) {
+          case 'play': this.close(); launch(g); return;
+          case 'open': this.close(); if (!current) openGame(g, L().source(id)); return;
+          case 'page': this.close(); sfx('tick'); Hub.open(g); return;
+          case 'news': this.close(); sfx('tick'); Hub.open(g, 'news'); return;
+          case 'fav': {
+            const on = !this.isFav(g);
+            c.collectionStore.SetAppsAsFavorite([id], on); sfx('tick');
+            toast(on ? T(`انضافت ${g.name} للمفضلة`, `${g.name} added to Favorites`) : T(`انشالت ${g.name} من المفضلة`, `${g.name} removed from Favorites`));
+            this.refresh(); return;
+          }
+          case 'col': {
+            const dd = it.col.AsDragDropCollection(), had = !!(it.col.apps && it.col.apps.has(id));
+            if (had) dd.RemoveApps([g.ov]); else dd.AddApps([g.ov]);
+            sfx('tick');
+            toast(had ? T(`انشالت من «${it.label}»`, `Removed from “${it.label}”`) : T(`انضافت إلى «${it.label}»`, `Added to “${it.label}”`));
+            setTimeout(() => this.refresh(), 60); return;
+          }
+          case 'shortcut': {
+            const r = c.SteamClient.Apps.CreateDesktopShortcutForApp(id);
+            if (r && r.catch) r.catch(err => LOG('shortcut', err));
+            done(T('انسوّى اختصار للعبة على سطح المكتب', 'Desktop shortcut created')); return;
+          }
+          case 'files': {
+            const d = c.appDetailsStore.GetAppDetails(id), dir = d && ((d.strShortcutStartDir && d.strShortcutStartDir.length && d.strShortcutStartDir) || d.strInstallFolder);
+            if (dir) { c.SteamClient.System.OpenLocalDirectoryInSystemExplorer(dir); done(); } else done(T('ما لقيت مجلد اللعبة', 'Couldn\'t find the game\'s folder'));
+            return;
+          }
+          case 'hide': {
+            const on = !this.isHidden(g);
+            c.collectionStore.SetAppsAsHidden([id], on);
+            done(on ? T(`انخفت ${g.name} — تلقاها في مجموعة «المخفية» بستيم`, `${g.name} is hidden — find it in Steam's Hidden collection`) : T(`رجعت ${g.name} لمكتبتك`, `${g.name} is back in your library`));
+            return;
+          }
+          case 'uninstall': this.close(); SteamAPI.steamUrl('steam://uninstall/' + id); return; // Steam asks to confirm
+          case 'props': this.close(); c.SteamClient.Apps.OpenAppSettingsDialog(id, ''); return;
+          case 'store': this.close(); SteamAPI.steamUrl('steam://store/' + id); return;
+        }
+      } catch (err) { LOG('game menu', it.a, err); toast(T('ما قدرت أسوي هالشي — الثيم يحتاج تحديث', 'Couldn\'t do that — the theme needs an update')); this.close(); }
+    },
+  };
+  /* ---- the game page (src/js/hub.js + src/css/hub.css): our own page for one game — overview, news with a reader,
+     achievements, friends, DLC — so nobody needs Steam's. Loaded the first time it is opened. Big Picture keeps
+     Steam's own game page (made for a controller). */
+  const Hub = {
+    p: null,
+    load() {
+      if (window.__rfsHub) return Promise.resolve(window.__rfsHub);
+      if (this.p) return this.p;
+      const css = new Promise(res => {
+        const l = document.createElement('link');
+        l.rel = 'stylesheet'; l.href = themeBase + 'src/css/hub.css'; l.dataset.rfsHub = '1';
+        l.onload = res; l.onerror = res; // a missing stylesheet must not block the page
+        document.head.appendChild(l);
+      });
+      const js = new Promise((res, rej) => {
+        const s = document.createElement('script');
+        s.src = themeBase + 'src/js/hub.js';
+        s.onload = () => (window.__rfsHub ? res(window.__rfsHub) : rej(new Error('hub did not register')));
+        s.onerror = () => rej(new Error('hub.js missing'));
+        document.head.appendChild(s);
+      });
+      this.p = Promise.all([js, css]).then(([h]) => h).catch(err => { this.p = null; throw err; });
+      return this.p;
+    },
+    async open(g, tab) {
+      if (!g) return;
+      if (BPM) { SteamAPI.openDetails(g.appid); return; }
+      GameMenu.close();
+      if (current) await closeViewer(true);
+      try {
+        const h = await Promise.race([this.load(), wait(5000).then(() => { throw new Error('timeout'); })]);
+        h.open(g, tab);
+      } catch (err) { LOG('game page failed, opening Steam\'s', err); SteamAPI.openDetails(g.appid); }
+    },
+    isOpen() { return !!(window.__rfsHub && window.__rfsHub.isOpen()); },
+    close() { if (window.__rfsHub) window.__rfsHub.close(); },
+  };
+  GameMenu.onDown = e => { if (!gmenu.contains(e.target)) GameMenu.close(); };
+  GameMenu.onWheel = e => { if (!gmenu.contains(e.target)) GameMenu.close(); };
+  GameMenu.onClose = () => GameMenu.close();
+  gmenu.addEventListener('click', e => {
+    const b = e.target.closest('button[data-i]'); if (!b) return;
+    e.stopPropagation();
+    const p = b.closest('.gm-panel');
+    GameMenu.act(p._items[+b.dataset.i], b);
+  });
+  // hover opens a sub-menu right away (and closes it when the pointer moves to another item of the main panel)
+  gmenu.addEventListener('pointerover', e => {
+    const b = e.target.closest('button[data-i]'); if (!b) return;
+    const p = b.closest('.gm-panel');
+    if (p.classList.contains('gm-sub')) return;
+    if (b.classList.contains('gm-has-sub')) { if (!b.classList.contains('sub-open')) GameMenu.openSub(b); }
+    else if (GameMenu.panels[1]) GameMenu.closeSub();
+  });
+  gmenu.addEventListener('contextmenu', e => e.preventDefault());
+  /** right-click a game anywhere in the home design or in an opened game */
+  let menuHoverEl = null;
+  const onGameContext = e => {
+    if (BPM) return;
+    const t = e.target;
+    if (!t || !t.closest) return;
+    const inHome = root.contains(t) && !bar.contains(t), inGame = sheet.contains(t) || viewer.contains(t);
+    if (!inHome && !inGame) return;
+    const el = t.closest('[data-appid]');
+    const g = (el && byId(el.dataset.appid)) || (inGame && current ? current.g : null);
+    if (!g) return;
+    e.preventDefault(); e.stopPropagation();
+    GameMenu.open(g, e.clientX, e.clientY, { inGame: inGame && !!current });
+  };
+  document.addEventListener('contextmenu', onGameContext, true);
+  root.addEventListener('pointerover', e => { const el = e.target.closest && e.target.closest('[data-appid]'); if (el) menuHoverEl = el; }, { passive: true });
+  /** Menu key / Shift+F10: the game under the keyboard cursor (or the mouse), or the opened game */
+  function menuFromKeys() {
+    if (BPM) return false;
+    if (current) { const b = (current.sheet ? sheet : viewer).querySelector('[data-act="more"]'); GameMenu.open(current.g, 0, 0, { inGame: true, keys: true, anchor: b || undefined }); if (!b) GameMenu.place(GameMenu.panels[0], innerWidth / 2, innerHeight / 3); return true; }
+    const a = document.activeElement;
+    const el = (a && a.closest && root.contains(a) && a.closest('[data-appid]')) || root.querySelector('[data-appid]:is(.kf, .sel, .kb, .cur, .hi)') || (menuHoverEl && menuHoverEl.isConnected ? menuHoverEl : null);
+    const g = el && byId(el.dataset.appid);
+    if (!g) return false;
+    const r = el.getBoundingClientRect();
+    GameMenu.open(g, LTR ? r.left + 12 : r.right - 12, Math.min(r.bottom, innerHeight - 40) - 8, { keys: true });
+    return true;
+  }
+
   viewer.addEventListener('click', e => { if (e.target.closest('.close') || !e.target.closest('.jewel')) closeViewer(); });
   // the opened case tilts gently toward the cursor (the shelf itself never moves)
   const onViewerMove = e => {
@@ -2342,6 +2676,15 @@
 
   const onKey = e => {
     if (BPM) { Bpm.key(e); return; } // Big Picture: Steam turns every key into its gamepad events, handled there
+    if (GameMenu.isOpen()) { if (GameMenu.key(e)) { e.preventDefault(); e.stopPropagation(); } return; }
+    if (Hub.isOpen()) {
+      if ((e.key === 'ContextMenu' || (e.shiftKey && e.key === 'F10')) && window.__rfsHub.game) { e.preventDefault(); e.stopPropagation(); GameMenu.open(window.__rfsHub.game, innerWidth / 2, innerHeight / 3, { inGame: true, keys: true }); return; }
+      if (!Themes.isOpen() && window.__rfsHub.key(e)) { e.preventDefault(); e.stopPropagation(); }
+      return;
+    }
+    if ((e.key === 'ContextMenu' || (e.shiftKey && e.key === 'F10')) && !Themes.isOpen() && (current || root.classList.contains('on'))) {
+      if (menuFromKeys()) { e.preventDefault(); e.stopPropagation(); return; }
+    }
     if ((e.ctrlKey || e.metaKey) && !e.altKey && (e.key === 'k' || e.key === 'K' || e.code === 'KeyK')) {
       e.preventDefault(); e.stopPropagation();
       Search.focus();
@@ -2371,7 +2714,7 @@
   /* what the design on the stage was last built for: coming back to the library home with the same size, design and
      games, the built design is put back as it was instead of rebuilding 900+ games (docs/PERFORMANCE.md) */
   let renderedFor = '', routeChangedAt = 0, lastTickAt = 0, lastPendingCheck = 0;
-  const renderKey = () => [placement.key, state.layout, state.sig, state.source, state.sort, state.genre, state.query, state.view, LANG].join('|');
+  const renderKey = () => [placement.key, state.layout, state.sig, state.source, state.installed, state.sort, state.genre, state.query, state.view, LANG].join('|');
   let loaded = false, lastSigCheck = 0, lastLayoutCheck = 0;
   // window resizing (tick waits for the drag to end before rebuilding the design)
   let lastResizeAt = 0, resizeT = 0;
@@ -2661,6 +3004,7 @@
       root.classList.remove('on'); hideTip();
       if (BPM) Bpm.off();
       if (current && current.sheet) closeViewer(true); // a theme's own game panel leaves with the home page
+      Hub.close(); GameMenu.close(); //                  and so do the game page and the game menu
     }
     if (show && !BPM) Search.focusIfPending();
     if (BPM) Bpm.tick(show, panel); else Sfx.sync(show);
@@ -2687,7 +3031,12 @@
     // games
     visibleGames, byId, Data, SORTS, lazy, running: () => SteamAPI.runningIds(),
     // actions
-    openGame, launch, openDetails: appid => SteamAPI.openDetails(appid), rerender: () => render(),
+    // "Game page" opens OUR game page (src/js/hub.js); Steam's own stays one click away inside it
+    openGame, launch, openDetails: appid => { const g = byId(appid); if (g) Hub.open(g); else SteamAPI.openDetails(appid); },
+    openHub: (g, tab) => Hub.open(g, tab), openSteamPage: appid => SteamAPI.openDetails(appid), rerender: () => render(),
+    // for the game page: Steam's objects, the panel it covers, the game menu
+    steam: () => SteamAPI.ctx(), panelRect: () => { const p = (root.isConnected && root.classList.contains('on') && SteamAPI.rightPanel()) || null; return p ? p.getBoundingClientRect() : { left: 0, top: 0, width: innerWidth, height: innerHeight }; },
+    gameMenu: (g, x, y, anchor) => GameMenu.open(g, x, y, { inGame: true, anchor }), setBrowserVisible: v => SteamAPI.setBrowserVisible(v),
     // a theme's own game panel (layout.open(g, sheet, src) / layout.close(sheet, g)): facts, text and wired buttons
     gameFacts, gameDesc, gameActions, gameBytes, sizeText, steamLevel, steamLevelNow, gameAch, achHTML, closeGame: () => closeViewer(), get openId() { return current ? current.appid : null; },
     openStore: appid => SteamAPI.steamUrl('steam://store/' + appid), steamUrl: url => SteamAPI.steamUrl(url),
@@ -3206,11 +3555,13 @@
       window.removeEventListener('keydown', onKey, true);
       window.removeEventListener('pointerdown', onFirstGesture, true);
       document.removeEventListener('click', onDocClick);
+      document.removeEventListener('contextmenu', onGameContext, true);
+      GameMenu.close();
       resetLazy();
       document.documentElement.classList.remove('rfs-home-on');
       delete document.documentElement.dataset.rfsLang;
       document.querySelectorAll('[data-rfs-hide]').forEach(el => el.removeAttribute('data-rfs-hide'));
-      [root, toastEl, viewer, sheet, picker, bar, navWrap].forEach(el => el.remove());
+      [root, toastEl, viewer, sheet, picker, bar, navWrap, gmenu].forEach(el => el.remove());
     },
   };
   LOG('loaded v' + VERSION);

@@ -86,7 +86,7 @@ Things the style file dresses, always scoped with `html[data-rfs-style="<id>"]`:
     // plug-in theme must have one.
     async open(g, sheet, src) {   // sheet = an empty fixed panel exactly over the home design (#rfs-sheet[data-layout="<id>"])
       sheet.innerHTML = `<div class="xx-view">…</div>`;   // a click on the sheet's own background closes it
-      $('.xx-view', sheet).append(api.gameActions(g));   // Play / Game page / Store, already wired
+      $('.xx-view', sheet).append(api.gameActions(g));   // Play / Game page / News / Store / Options, already wired
       // animate in: Web Animations or a CSS class, ≤ 600 ms; src = Layout.source(appid) if it opened from an item
     },
     async close(sheet, g) { /* optional exit animation (≤ 400 ms); the core empties the sheet afterwards */ },
@@ -107,9 +107,10 @@ lazy(el, g => el.style.setProperty('--img', cssUrl(first(g.images.header) || fir
 
 **Actions:**
 - `api.openGame(g, Layout.source(g.appid))` opens the game: your `open(g, sheet, src)` if you have one (you should), otherwise the CD-case viewer. Open on a **single click**, with no waiting for a possible double click.
-- Inside your panel: `api.gameFacts(g)` gives `[label, value]` pairs (play time, last played, size, developer, release), `api.gameDesc(g)` the short description, `api.gameActions(g)` a `<div class="rf-acts">` with wired `button.rf-act[data-act=play|details|store]` (style them in your layout CSS under `#rfs-sheet[data-layout="<id>"]`), and `api.closeGame()` closes the panel. Esc and a click on the empty background close it too. Put `data-close` on your own close button.
+- Inside your panel: `api.gameFacts(g)` gives `[label, value]` pairs (play time, last played, size, developer, release), `api.gameDesc(g)` the short description, `api.gameActions(g)` a `<div class="rf-acts">` with wired `button.rf-act[data-act=play|details|news|store|more]` (`more` = the game menu) (style them in your layout CSS under `#rfs-sheet[data-layout="<id>"]`), and `api.closeGame()` closes the panel. Esc and a click on the empty background close it too. Put `data-close` on your own close button.
 - `api.launch(g)` plays the game, or installs it.
-- `api.openDetails(appid)` opens Steam's game page in the library; `api.openStore(appid)` opens its store page.
+- `api.openDetails(appid)` opens **our game page** (src/js/hub.js: overview, news + reader, achievements, friends, DLC, community links, trading cards — loaded on first use, dressed per style in src/css/hub.css). `api.openHub(g, tab)` opens it on a tab (`overview|news|ach|friends|dlc`); `api.openSteamPage(appid)` still opens Steam's own page; `api.openStore(appid)` opens the store page.
+- **Game menu:** a right-click on any element with `data-appid` (in your home design or your game panel), the Menu key / Shift+F10, or the `more` button opens Steam's game options (favourites, collections, manage, properties). Its panels are `.rf-dd-menu` inside `#rfs-gmenu`, so your style's dropdown rules apply when written as `:is(#rfs-bar, #rfs-gmenu) .rf-dd-menu …`. Give every game element `data-appid`.
 - `api.running()` returns a `Set` of the appids that are running.
 - `api.showTip(g, x, y)` / `api.hideTip()` show and hide the hover card.
 - `api.sfx('tick')` plays a sound.

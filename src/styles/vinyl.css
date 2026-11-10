@@ -510,15 +510,15 @@ html[data-rfs-style="vinyl"] #rfs-bar.inhome .tb-ico svg.rf-ic { stroke: #8a4a1f
 html[data-rfs-style="vinyl"] #rfs-bar.inhome .tb-ico svg.rf-ic :is(.f, circle:not(.s)) { fill: rgba(138, 74, 31, .14); }
 html[data-rfs-style="vinyl"] #rfs-bar.inhome .tb-kbd { color: #f3e6cf; background: #4a2a17; }
 /* dropdowns + search results: printed paper cards */
-html[data-rfs-style="vinyl"] #rfs-bar.inhome :is(.rf-dd-menu, .tb-results) {
+html[data-rfs-style="vinyl"] :is(#rfs-bar.inhome, #rfs-gmenu) :is(.rf-dd-menu, .tb-results) {
   color: #3a1f0e; background: linear-gradient(180deg, #f6ebd3, #e8d4aa);
   border: 1px solid rgba(90, 55, 25, .35); border-radius: 12px; box-shadow: 0 18px 44px rgba(0, 0, 0, .55);
 }
-html[data-rfs-style="vinyl"] #rfs-bar.inhome .rf-dd-menu button { color: #3a1f0e; border-radius: 8px; }
-html[data-rfs-style="vinyl"] #rfs-bar.inhome .rf-dd-menu button b { color: #8a6440; }
-html[data-rfs-style="vinyl"] #rfs-bar.inhome .rf-dd-menu button:hover { background: rgba(196, 81, 31, .12); }
-html[data-rfs-style="vinyl"] #rfs-bar.inhome .rf-dd-menu button.on { color: #fff3dc; background: #c4511f; }
-html[data-rfs-style="vinyl"] #rfs-bar.inhome .rf-dd-menu button.on b { color: rgba(255, 243, 220, .78); }
+html[data-rfs-style="vinyl"] :is(#rfs-bar.inhome, #rfs-gmenu) .rf-dd-menu button { color: #3a1f0e; border-radius: 8px; }
+html[data-rfs-style="vinyl"] :is(#rfs-bar.inhome, #rfs-gmenu) .rf-dd-menu button b { color: #8a6440; }
+html[data-rfs-style="vinyl"] :is(#rfs-bar.inhome, #rfs-gmenu) .rf-dd-menu button:hover { background: rgba(196, 81, 31, .12); }
+html[data-rfs-style="vinyl"] :is(#rfs-bar.inhome, #rfs-gmenu) .rf-dd-menu button.on { color: #fff3dc; background: #c4511f; }
+html[data-rfs-style="vinyl"] :is(#rfs-bar.inhome, #rfs-gmenu) .rf-dd-menu button.on b { color: rgba(255, 243, 220, .78); }
 html[data-rfs-style="vinyl"] #rfs-bar.inhome .pl-item { color: #3a1f0e; }
 html[data-rfs-style="vinyl"] #rfs-bar.inhome :is(.pl-item.sel, .pl-item:hover) { background: rgba(196, 81, 31, .14); }
 html[data-rfs-style="vinyl"] #rfs-bar.inhome .pl-meta { color: #7a5634; }

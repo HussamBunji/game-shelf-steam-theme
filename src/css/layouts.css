@@ -424,19 +424,58 @@ html.rfs-home-on:not(.rfs-show-news) [data-rfs-home] > :has([data-rfs-upd]) { di
 #rfs-bar .tb-seg button.on { background: rgba(var(--acc-rgb), .25); color: var(--accent); }
 /* dropdowns */
 #rfs-bar .rf-dd { position: relative; }
-#rfs-bar .rf-dd-menu {
+:is(#rfs-bar, #rfs-gmenu) .rf-dd-menu {
   display: none; position: absolute; top: calc(100% + 6px); right: 0; z-index: 5; min-width: 220px; max-height: 70vh; overflow-y: auto;
   padding: 6px; border-radius: var(--rf-radius-lg, 12px); background: var(--rf-panel, #1b130c);
   border: var(--rf-card-border, 1px solid rgba(255,255,255,.1)); box-shadow: 0 18px 50px rgba(0,0,0,.65);
 }
 #rfs-bar .rf-dd.open .rf-dd-menu { display: block; }
-#rfs-bar .rf-dd-menu button {
+:is(#rfs-bar, #rfs-gmenu) .rf-dd-menu button {
   display: flex; width: 100%; justify-content: space-between; gap: 14px; padding: 8px 10px; border: 0; cursor: pointer;
   border-radius: var(--rf-radius, 8px); background: transparent; color: var(--ink); font: 500 13px var(--font); text-align: start;
 }
-#rfs-bar .rf-dd-menu button b { font-weight: 600; color: var(--muted); }
-#rfs-bar .rf-dd-menu button:hover { background: rgba(var(--acc-rgb), .14); }
-#rfs-bar .rf-dd-menu button.on { background: rgba(var(--acc-rgb), .22); color: var(--accent); }
+:is(#rfs-bar, #rfs-gmenu) .rf-dd-menu button b { font-weight: 600; color: var(--muted); }
+:is(#rfs-bar, #rfs-gmenu) .rf-dd-menu button:hover { background: rgba(var(--acc-rgb), .14); }
+:is(#rfs-bar, #rfs-gmenu) .rf-dd-menu button.on { background: rgba(var(--acc-rgb), .22); color: var(--accent); }
+
+/* ---- game menu (right-click a game · "Options" in an opened game · Menu key): the panels ARE .rf-dd-menu, so each
+   style's own dropdown look applies (styles/*.css); only the frame and the parts a dropdown doesn't have live here */
+#rfs-gmenu {
+  --font: 'Segoe UI', 'Motiva Sans', Tahoma, Arial, sans-serif;
+  --ink: var(--rf-text, #f4ede5); --muted: var(--rf-text-dim, #b9aa9b);
+  --accent: var(--rf-accent, #ffb36b); --acc-rgb: var(--rf-accent-rgb, 255, 179, 107);
+  position: fixed; inset: 0; z-index: 1400; display: none; pointer-events: none; direction: rtl;
+  font-family: var(--font); color: var(--ink); -webkit-app-region: no-drag;
+}
+#rfs-gmenu.on { display: block; }
+html[data-rfs-lang="en"] #rfs-gmenu { direction: ltr; }
+#rfs-gmenu .rf-dd-menu.gm-panel {
+  display: block; position: fixed; top: 0; right: auto; left: 0; z-index: auto; pointer-events: auto;
+  min-width: 232px; max-width: 320px; max-height: min(80vh, 640px); overscroll-behavior: contain;
+  /* it opens over game art: never see-through (a style's own menu background, styles/*.css, still wins) */
+  background: linear-gradient(var(--rf-panel, #1b130c), var(--rf-panel, #1b130c)), #0d1117;
+  backdrop-filter: blur(16px) saturate(1.3);
+  animation: rfs-gm-in .11s ease-out;
+}
+@keyframes rfs-gm-in { from { opacity: 0; transform: translateY(-3px); } }
+#rfs-gmenu .rf-dd-menu button { align-items: center; gap: 12px; }
+#rfs-gmenu .rf-dd-menu button:focus-visible { outline: 2px solid rgba(var(--acc-rgb), .75); outline-offset: -2px; }
+#rfs-gmenu .rf-dd-menu button.sub-open { background: rgba(var(--acc-rgb), .14); }
+#rfs-gmenu .gm-l { display: inline-flex; align-items: center; gap: 9px; min-width: 0; }
+#rfs-gmenu .gm-l > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#rfs-gmenu .gm-l > svg.rf-ic { flex: none; width: 16px; height: 16px; margin: 0; }
+#rfs-gmenu button > b { display: inline-flex; }
+#rfs-gmenu button > b > svg.rf-ic { width: 13px; height: 13px; margin: 0; }
+#rfs-gmenu button.gm-primary { font-weight: 700; color: var(--accent); }
+#rfs-gmenu button.gm-danger:hover { color: #ff7a6b; }
+#rfs-gmenu .gm-sep { display: block; height: 1px; margin: 5px 8px; background: currentColor; opacity: .14; }
+#rfs-gmenu .gm-head { display: flex; align-items: center; gap: 10px; padding: 6px 10px 9px; margin: 0 0 4px; border-bottom: 1px solid rgba(var(--acc-rgb), .18); }
+#rfs-gmenu .gm-head > img, #rfs-gmenu .gm-head > svg.rf-ic { flex: none; width: 28px; height: 28px; border-radius: 6px; object-fit: cover; }
+#rfs-gmenu .gm-head > span { min-width: 0; }
+#rfs-gmenu .gm-head b { display: block; max-width: 230px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; font-weight: 700; }
+#rfs-gmenu .gm-head small { display: block; margin-top: 1px; font-size: 11px; color: var(--muted); }
+/* the shared "Options" button of an opened game: no wider than the others */
+.rf-acts .rf-act.more > svg.rf-ic, #rfs-viewer .actions .btn.more > svg.rf-ic { width: 16px; height: 16px; }
 /* the single search box */
 #rfs-bar .tb-search { position: relative; display: flex; align-items: center; width: clamp(240px, 26vw, 420px); height: 30px;
   border-radius: var(--rf-radius, 8px); background: rgba(0,0,0,.3); border: 1px solid rgba(var(--acc-rgb), .3); transition: border-color .15s, box-shadow .15s; }
@@ -489,7 +528,7 @@ html[data-rfs-lang="en"] #rfs-bar .tb-results { direction: ltr; }
 html[data-rfs-lang="en"] #rfs-bar .tb-seg button:first-child { border-radius: var(--rf-radius, 8px) 0 0 var(--rf-radius, 8px); }
 html[data-rfs-lang="en"] #rfs-bar .tb-seg button:last-child { border-radius: 0 var(--rf-radius, 8px) var(--rf-radius, 8px) 0; }
 html[data-rfs-lang="en"] #rfs-bar .tb-ico { padding: 0 4px 0 9px; }
-html[data-rfs-lang="en"] #rfs-bar .rf-dd-menu,
+html[data-rfs-lang="en"] :is(#rfs-bar, #rfs-gmenu) .rf-dd-menu,
 html[data-rfs-lang="en"] #rfs-bar .tb-results { right: auto; left: 0; }
 /* theme picker: "Current" badge in the top-right corner */
 html[data-rfs-lang="en"] #rfs-themes .tp-cur { left: auto; right: 10px; }
@@ -539,7 +578,16 @@ html[data-rfs-native] :is(#rfs-bar, #rfs-themes, #rfs-toast) * { font-family: va
 /* the chips take the rest of the row; when that is too narrow they move under the strip, still inside the same panel */
 #rfs .rf-dock.rf-merge > :not(#rfs-bar) { flex: 1 1 520px; min-width: 0; margin: 0; gap: 6px; }
 #rfs-bar.inhome .tb-search { flex: 1 1 280px; width: auto; max-width: 560px; }
-#rfs-bar.inhome .tb-home { flex-wrap: wrap; }
+#rfs-bar.inhome .tb-home { flex: 0 1 auto; flex-wrap: wrap; }
+/* the strip alone in a design's merge slot (Glass): ONE row across the whole panel — the search grows into the free
+   space and the filters sit right beside it, instead of a short search box with the filters wrapped underneath */
+#rfs .rf-dock.rf-merge > #rfs-bar.inhome:only-child { flex: 1 1 100%; }
+#rfs .rf-dock.rf-merge > #rfs-bar.inhome:only-child .tb-search { flex: 1 1 320px; max-width: none; }
+#rfs .rf-dock.rf-merge > #rfs-bar.inhome:only-child .tb-home { flex: 0 0 auto; }
+/* "Installed" toggle: how many of the games are on this PC */
+#rfs-bar .tb-inst .tb-n { margin-inline-start: 6px; font: 600 11px var(--font); opacity: .7; font-variant-numeric: tabular-nums; }
+#rfs-bar .tb-inst.on .tb-n { opacity: 1; }
+#rfs-bar.shelf-off .tb-inst { display: none; }
 #rfs-bar.inhome .tb-theme { display: none !important; }
 
 /* our windows must never sit inside a window-drag region (Windows swallows clicks there) */

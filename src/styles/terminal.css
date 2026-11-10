@@ -553,9 +553,9 @@ html[data-rfs-style="terminal"] .waiting_dialog_throbber, html[data-rfs-style="t
 
 /* ═════════════ our pieces ═════════════ */
 /* any icon on an inverse-video (green) hover takes the dark ink colour */
-html[data-rfs-style="terminal"] :is(#rfs-bar .tb-btn:hover, #rfs-bar .rf-dd-menu button:hover, #rfs-rail .rr-btn:hover, #rfs-rail .rr-btn.go, #rfs-qbtn:hover) > svg.rf-ic { stroke: currentColor; filter: none; }
-html[data-rfs-style="terminal"] :is(#rfs-bar .tb-btn:hover, #rfs-bar .rf-dd-menu button:hover, #rfs-rail .rr-btn:hover, #rfs-rail .rr-btn.go, #rfs-qbtn:hover) > svg.rf-ic :is(.f, rect, ellipse, circle:not(.s)) { fill: currentColor; fill-opacity: .18; }
-html[data-rfs-style="terminal"] :is(#rfs-bar .tb-btn:hover, #rfs-bar .rf-dd-menu button:hover, #rfs-rail .rr-btn:hover, #rfs-rail .rr-btn.go, #rfs-qbtn:hover) > svg.rf-ic .s { fill: currentColor; }
+html[data-rfs-style="terminal"] :is(#rfs-bar .tb-btn:hover, :is(#rfs-bar, #rfs-gmenu) .rf-dd-menu button:hover, #rfs-rail .rr-btn:hover, #rfs-rail .rr-btn.go, #rfs-qbtn:hover) > svg.rf-ic { stroke: currentColor; filter: none; }
+html[data-rfs-style="terminal"] :is(#rfs-bar .tb-btn:hover, :is(#rfs-bar, #rfs-gmenu) .rf-dd-menu button:hover, #rfs-rail .rr-btn:hover, #rfs-rail .rr-btn.go, #rfs-qbtn:hover) > svg.rf-ic :is(.f, rect, ellipse, circle:not(.s)) { fill: currentColor; fill-opacity: .18; }
+html[data-rfs-style="terminal"] :is(#rfs-bar .tb-btn:hover, :is(#rfs-bar, #rfs-gmenu) .rf-dd-menu button:hover, #rfs-rail .rr-btn:hover, #rfs-rail .rr-btn.go, #rfs-qbtn:hover) > svg.rf-ic .s { fill: currentColor; }
 
 /* ---- the library filter strip (search · source · sort · genre) ---- */
 html[data-rfs-style="terminal"] #rfs-bar.inhome {
@@ -580,17 +580,17 @@ html[data-rfs-style="terminal"] #rfs-bar .tb-q::placeholder { color: #5f9474; }
 html[data-rfs-style="terminal"] #rfs-bar :is(.tb-kbd, .pl-foot kbd) {
   border-radius: 0; background: transparent; border: 1px solid rgba(57, 255, 136, .25); color: #5f9474; font: 500 10px var(--rf-font-ui);
 }
-html[data-rfs-style="terminal"] #rfs-bar :is(.rf-dd-menu, .tb-results) {
+html[data-rfs-style="terminal"] :is(#rfs-bar, #rfs-gmenu) :is(.rf-dd-menu, .tb-results) {
   border-radius: 0; background: #070b0b; border: 1px solid rgba(57, 255, 136, .4); box-shadow: 0 16px 40px rgba(0, 0, 0, .7);
 }
-html[data-rfs-style="terminal"] #rfs-bar .rf-dd-menu { padding: 4px; }
-html[data-rfs-style="terminal"] #rfs-bar .rf-dd-menu button {
+html[data-rfs-style="terminal"] :is(#rfs-bar, #rfs-gmenu) .rf-dd-menu { padding: 4px; }
+html[data-rfs-style="terminal"] :is(#rfs-bar, #rfs-gmenu) .rf-dd-menu button {
   padding: 6px 10px; border-radius: 0; border-inline-start: 2px solid transparent; font: 500 12px var(--rf-font-ui); color: #b6f0c9;
 }
-html[data-rfs-style="terminal"] #rfs-bar .rf-dd-menu button b { font-weight: 500; color: #5f9474; font-feature-settings: "zero" 1; }
-html[data-rfs-style="terminal"] #rfs-bar .rf-dd-menu button:hover { background: #39ff88; color: #03140a; }
-html[data-rfs-style="terminal"] #rfs-bar .rf-dd-menu button:hover b { color: inherit; }
-html[data-rfs-style="terminal"] #rfs-bar .rf-dd-menu button.on { background: rgba(255, 176, 0, .08); color: #ffb000; border-inline-start-color: #ffb000; }
+html[data-rfs-style="terminal"] :is(#rfs-bar, #rfs-gmenu) .rf-dd-menu button b { font-weight: 500; color: #5f9474; font-feature-settings: "zero" 1; }
+html[data-rfs-style="terminal"] :is(#rfs-bar, #rfs-gmenu) .rf-dd-menu button:hover { background: #39ff88; color: #03140a; }
+html[data-rfs-style="terminal"] :is(#rfs-bar, #rfs-gmenu) .rf-dd-menu button:hover b { color: inherit; }
+html[data-rfs-style="terminal"] :is(#rfs-bar, #rfs-gmenu) .rf-dd-menu button.on { background: rgba(255, 176, 0, .08); color: #ffb000; border-inline-start-color: #ffb000; }
 html[data-rfs-style="terminal"] #rfs-bar .pl-item { border-radius: 0; border-inline-start: 2px solid transparent; }
 html[data-rfs-style="terminal"] #rfs-bar :is(.pl-item.sel, .pl-item:hover) { background: rgba(57, 255, 136, .1); border-inline-start-color: #39ff88; }
 html[data-rfs-style="terminal"] #rfs-bar .pl-item img { border-radius: 0; box-shadow: 0 0 0 1px rgba(57, 255, 136, .25); }
