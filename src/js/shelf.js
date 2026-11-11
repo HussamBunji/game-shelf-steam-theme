@@ -397,6 +397,7 @@
   const FEATURE = { recent: T('آخر ما لعبت', 'Recently played'), playtime: T('الأكثر لعبًا', 'Most played'), size: T('الأكبر حجمًا', 'Largest') };
   const STYLES = [
     // the core set: page 1 of the picker (12 = one 3 x 4 page)
+    { value: 'Slate', sid: 'slate', layout: 'gallery', name: T('سليت', 'Slate'), desc: T('رمادي مزرق هادئ ولون فيروزي واحد — آخر لعبة فوق والباقي شبكة', 'Calm blue-slate with one teal accent — your last game on top, the rest in a grid') },
     { value: 'Classic Shelf', sid: 'classic', layout: 'shelf', name: T('الرف الكلاسيكي', 'Classic Shelf'), desc: T('رف خشب ثلاثي الأبعاد — تتمشى بين الرفوف والعلب تنفتح مثل CD', 'A 3D wooden bookcase — walk along the shelves and open each case like a CD') },
     { value: 'Glass Gallery', sid: 'glass', layout: 'gallery', name: T('المعرض الزجاجي', 'Glass Gallery'), desc: T('لوحة عملية: كمّل اللعب + كروت زجاجية + فلاتر', 'A practical dashboard: continue playing, glass cards and filters') },
     { value: 'Neon Coverflow', sid: 'neon', layout: 'coverflow', name: T('نيون كوفر فلو', 'Neon Coverflow'), desc: T('دوّار ثلاثي الأبعاد بانعكاسات وإضاءة نيون', 'A 3D carousel with reflections and neon lighting') },

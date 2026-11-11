@@ -45,7 +45,7 @@ Defaults: style **Classic Shelf**, language **English**.
 
 ## 5. Verify with the user
 - A **THEMES** item appears in Steam's top navigation, after STORE · LIBRARY · COMMUNITY · <name> · CONSOLE.
-- Clicking it opens the style picker with 24 styles: Classic Shelf, Glass Gallery, Neon Coverflow, Terminal, RPG Vault, Vinyl Records, Corkboard, Retro Arcade, Magazine, Cupertino Dark, Cyberpunk, Shelter OS, Crossbar, Steam Original and its eight colour variants (OLED Black, Graphite, Midnight, Forest, Wine, Royal Purple, Coffee, Ocean), SpaceTheme and Material You. It also has the English / العربية switch.
+- Clicking it opens the style picker with 25 styles: Slate, Classic Shelf, Glass Gallery, Neon Coverflow, Terminal, RPG Vault, Vinyl Records, Corkboard, Retro Arcade, Magazine, Cupertino Dark, Cyberpunk, Shelter OS, Crossbar, Steam Original and its eight colour variants (OLED Black, Graphite, Midnight, Forest, Wine, Royal Purple, Coffee, Ocean), SpaceTheme and Material You. It also has the English / العربية switch.
 - On a store game page, side panels show live players and regional prices, if the window is wide enough.
 
 ## Uninstall

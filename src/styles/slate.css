@@ -1,0 +1,157 @@
+/* ═══ Slate (سليت) ═══  calm blue-slate surfaces, one muted teal accent, nothing else saturated.
+   Layout base: SpaceTheme (src/vendor/space), dressed through its colour slots. Our own pieces read the --rf-* set.
+
+   ┌─ PALETTE: the only place colours are written ─────────────────────────────────────────────────────────────┐
+   │ Every colour below and in Slate's layout CSS is derived from these "r, g, b" tokens.                       │
+   │ To re-tint for a new wallpaper, change --sl-accent (and, if you like, the three surfaces). Nothing else.  │
+   │ Triplets, not hex: SpaceTheme's slots need "r, g, b", and rgba(var(--sl-x), a) gives any opacity.         │
+   └────────────────────────────────────────────────────────────────────────────────────────────────────────────┘ */
+:root {
+  --sl-accent: 63, 181, 168;     /* #3FB5A8  muted teal: Play, selection, progress, focus */
+  --sl-ink: 6, 28, 26;           /* text ON the accent (dark, so Play reads as the strongest element) */
+  --sl-base: 11, 17, 24;         /* #0B1118  window background */
+  --sl-surface: 18, 26, 35;      /* #121A23  panels, sidebar, cards */
+  --sl-raised: 21, 29, 39;       /* #151D27  raised panels, inputs */
+  --sl-high: 30, 41, 54;         /* hover / pressed surface */
+  --sl-edge: 38, 50, 64;         /* hairlines and borders */
+  --sl-text: 230, 237, 243;      /* main text */
+  --sl-dim: 140, 156, 172;       /* secondary text */
+  --sl-shade: 2, 5, 9;           /* shadows */
+}
+
+:root {
+  /* fonts: Latin first, Arabic second (each script picks its own); loaded by skin.js / webkit.js */
+  --rf-font-ui: 'Manrope', 'IBM Plex Sans Arabic', 'Segoe UI', sans-serif;
+  --rf-font-gf: "family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700";
+  --rf-heading-font: var(--rf-font-ui);
+  --rf-heading-case: none;
+  --rf-heading-spacing: 0;
+
+  --rf-vendor: space;
+  --rf-vendor-skip: options/fonts/, options/general/alwaysShowSidebar;
+  --rf-style-id: slate;
+  --rf-layout: gallery;          /* Phase 1: Glass Gallery's home in Slate colours. Phase 2 switches this to slate. */
+
+  /* icons: flat, quiet; teal only on the line */
+  --rf-ic-1: rgb(var(--sl-accent));
+  --rf-ic-2: rgba(var(--sl-accent), .7);
+  --rf-ic-fill: rgba(var(--sl-accent), .12);
+  --rf-ic-sw: 1.7;
+  --rf-ic-glow: none;
+  --rf-ict-bg: rgb(var(--sl-raised));
+  --rf-ict-border: 1px solid rgb(var(--sl-edge));
+  --rf-ict-radius: 9px;
+  --rf-ict-shadow: none;
+  --rf-ict-shadow-hi: inset 0 0 0 1px rgba(var(--sl-accent), .6);
+  --rf-ict-1: rgb(var(--sl-accent));
+  --rf-ict-2: rgba(var(--sl-accent), .75);
+  --rf-ict-fill: rgba(var(--sl-accent), .14);
+  --rf-ict-glow: none;
+
+  /* surfaces and text */
+  --rf-bg: rgb(var(--sl-base));
+  --rf-bg-img: none;
+  --rf-panel: rgb(var(--sl-surface));
+  --rf-panel-2: rgb(var(--sl-raised));
+  --rf-panel-3: rgb(var(--sl-high));
+  --rf-border: rgb(var(--sl-edge));
+  --rf-text: rgb(var(--sl-text));
+  --rf-text-dim: rgb(var(--sl-dim));
+
+  /* accent: one colour. accent-2 is the same hue, softer, so gradients stay flat-looking */
+  --rf-accent: rgb(var(--sl-accent));
+  --rf-accent-2: rgba(var(--sl-accent), .82);
+  --rf-accent-rgb: var(--sl-accent);
+  --rf-accent-ink: rgb(var(--sl-ink));
+  --rf-glow: var(--sl-accent);
+  --rf-led-rgb: var(--sl-accent);
+
+  /* Play is the accent with dark text, everywhere */
+  --rf-play-1: rgb(var(--sl-accent));
+  --rf-play-2: rgb(var(--sl-accent));
+  --rf-play-ink: rgb(var(--sl-ink));
+
+  /* shape */
+  --rf-radius: 10px;
+  --rf-radius-lg: 16px;
+  --rf-topbar: rgb(var(--sl-base));
+  --rf-topbar-line: rgb(var(--sl-edge));
+  --rf-sidebar: rgb(var(--sl-base));
+  --rf-card: rgb(var(--sl-surface));
+  --rf-card-border: 1px solid rgb(var(--sl-edge));
+  --rf-card-hover-shadow: 0 10px 28px rgba(var(--sl-shade), .45), 0 0 0 1px rgba(var(--sl-accent), .45);
+  --rf-blur: 0px;
+
+  /* name plates (picker, labels) */
+  --rf-plate-1: rgb(var(--sl-high));
+  --rf-plate-2: rgb(var(--sl-raised));
+  --rf-plate-ink: rgb(var(--sl-text));
+
+  /* wishlist · profile · friends pages (shared layer in src/css/webkit.css) */
+  --rfp-card: rgb(var(--sl-surface));
+  --rfp-card-hover: rgb(var(--sl-high));
+  --rfp-card-edge: inset 0 0 0 1px rgb(var(--sl-edge));
+  --rfp-radius: 12px;
+  --rfp-glass: rgba(var(--sl-surface), .92);
+  --rfp-field: rgb(var(--sl-raised));
+}
+
+/* SpaceTheme's colour slots, all from the palette. :root:root outranks SpaceTheme's own root.css. */
+:root:root {
+  --st-accent-1: var(--sl-accent);
+  --st-accent-2: var(--sl-accent);
+  --st-background: var(--sl-base);
+  --st-color-1: var(--sl-surface);   /* sidebar */
+  --st-color-2: var(--sl-raised);    /* inputs, buttons */
+  --st-color-3: var(--sl-surface);   /* cards */
+  --st-color-4: var(--sl-high);      /* raised */
+  --st-color-5: var(--sl-edge);      /* borders */
+  --st-color-6: var(--sl-edge);
+  --st-green: var(--sl-accent);      /* SpaceTheme's "buy / play" green becomes the teal */
+  --st-green-hover: var(--sl-accent);
+  --st-blue: var(--sl-accent);       /* link text */
+  --st-blue-hover: var(--sl-text);
+  --st-border-radius: 10px;
+}
+
+/* ───────── rules (scoped: the store pages carry every style's file) ───────── */
+html[data-rfs-style="slate"] ::selection { background: rgba(var(--sl-accent), .32); color: rgb(var(--sl-text)); }
+
+/* scrollbars: thin, slate */
+html[data-rfs-style="slate"] ::-webkit-scrollbar { width: 10px; height: 10px; background: transparent; }
+html[data-rfs-style="slate"] ::-webkit-scrollbar-thumb { background: rgb(var(--sl-high)); border: 2px solid rgb(var(--sl-base)); border-radius: 999px; }
+html[data-rfs-style="slate"] ::-webkit-scrollbar-thumb:hover { background: rgb(var(--sl-edge)); }
+html[data-rfs-style="slate"] ::-webkit-scrollbar-track, html[data-rfs-style="slate"] ::-webkit-scrollbar-corner { background: transparent; }
+
+/* Steam's dialogs (stable class names only) */
+html[data-rfs-style="slate"] .DialogButton:not(.Primary) { background: rgb(var(--sl-raised)); color: rgb(var(--sl-text)); border: 1px solid rgb(var(--sl-edge)); }
+html[data-rfs-style="slate"] .DialogButton:not(.Primary):hover { background: rgb(var(--sl-high)); }
+html[data-rfs-style="slate"] .DialogButton.Primary { background: rgb(var(--sl-accent)); color: rgb(var(--sl-ink)); font-weight: 700; border: 0; }
+html[data-rfs-style="slate"] :is(.DialogInput, .DialogDropDown) { background: rgb(var(--sl-raised)); color: rgb(var(--sl-text)); border: 1px solid rgb(var(--sl-edge)); }
+html[data-rfs-style="slate"] :is(.DialogInput, .DialogDropDown):focus-within { border-color: rgba(var(--sl-accent), .7); }
+
+/* store: the buy / play buttons are the accent with dark text; everything else stays quiet */
+html[data-rfs-style="slate"] :is(.btn_green_steamui, .btn_green_steamui > span) { background: rgb(var(--sl-accent)) !important; color: rgb(var(--sl-ink)) !important; text-shadow: none !important; }
+html[data-rfs-style="slate"] .btn_green_steamui:hover > span { background: rgba(var(--sl-accent), .88) !important; }
+html[data-rfs-style="slate"] :is(.btn_blue_steamui, .btnv6_blue_hoverfade) { background: rgb(var(--sl-raised)) !important; color: rgb(var(--sl-text)) !important; text-shadow: none !important; }
+html[data-rfs-style="slate"] :is(.btn_blue_steamui, .btnv6_blue_hoverfade) > span { background: transparent !important; color: inherit !important; }
+html[data-rfs-style="slate"] :is(.btn_blue_steamui, .btnv6_blue_hoverfade):hover { background: rgb(var(--sl-high)) !important; }
+html[data-rfs-style="slate"] .discount_pct { background: rgba(var(--sl-accent), .2) !important; color: rgb(var(--sl-accent)) !important; }
+html[data-rfs-style="slate"] .discount_final_price { color: rgb(var(--sl-text)) !important; }
+html[data-rfs-style="slate"] .app_tag { background: rgb(var(--sl-raised)) !important; color: rgb(var(--sl-dim)) !important; box-shadow: none !important; }
+html[data-rfs-style="slate"] .app_tag:hover { color: rgb(var(--sl-text)) !important; }
+
+/* our store side panels (#rfs-rail, #rfs-data): flat slate cards. Phase 5 redesigns them. */
+html[data-rfs-style="slate"] :is(#rfs-rail, #rfs-data) section { background: rgb(var(--sl-surface)) !important; border: 1px solid rgb(var(--sl-edge)); border-radius: 14px; box-shadow: none; }
+html[data-rfs-style="slate"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) h4 { color: rgb(var(--sl-dim)); letter-spacing: .08em; }
+html[data-rfs-style="slate"] #rfs-data .rd-row.home { background: rgba(var(--sl-accent), .12); border-radius: 8px; }
+html[data-rfs-style="slate"] #rfs-data .rd-tag { background: rgba(var(--sl-accent), .18); color: rgb(var(--sl-accent)); }
+html[data-rfs-style="slate"] #rfs-data :is(.rd-fact, .rd-link), html[data-rfs-style="slate"] #rfs-rail .rr-btn:not(.go) { background: rgb(var(--sl-raised)); border-radius: 10px; }
+html[data-rfs-style="slate"] #rfs-qbtn { background: rgb(var(--sl-raised)); border-color: rgb(var(--sl-edge)); border-radius: 10px; }
+
+/* our game page (src/js/hub.js): Play is teal with dark text, tabs are quiet pills */
+html[data-rfs-style="slate"] #rfs-hub { background: rgb(var(--sl-base)); }
+html[data-rfs-style="slate"] #rfs-hub :is(.hb-card, .hb-a, .hb-f, .hb-d, .hb-news .hb-n) { background: rgb(var(--sl-surface)); border: 1px solid rgb(var(--sl-edge)); border-radius: 12px; }
+html[data-rfs-style="slate"] #rfs-hub .hb-tab { border-radius: 999px; }
+html[data-rfs-style="slate"] #rfs-hub .hb-tab.on { color: rgb(var(--sl-text)); background: rgba(var(--sl-accent), .14); border-color: rgba(var(--sl-accent), .4); }
+html[data-rfs-style="slate"] :is(#rfs-hub, #rfs-sheet) .rf-act.play { background: rgb(var(--sl-accent)); color: rgb(var(--sl-ink)); border-color: transparent; font-weight: 800; }

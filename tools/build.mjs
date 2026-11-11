@@ -7,7 +7,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const styles = ['classic', 'neon', 'glass', 'original', 'space', 'material', 'terminal', 'vault', 'vinyl', 'cork', 'arcade', 'magazine', 'cupertino', 'cyberpunk', 'shelter', 'xmb',
+const styles = ['classic', 'neon', 'glass', 'original', 'space', 'material', 'terminal', 'vault', 'vinyl', 'cork', 'arcade', 'magazine', 'cupertino', 'cyberpunk', 'shelter', 'xmb', 'slate',
   'steam-oled', 'steam-graphite', 'steam-midnight', 'steam-forest', 'steam-wine', 'steam-royal', 'steam-coffee', 'steam-ocean']; // steam-*: tints of Steam Original
 // One file per style: src/css/web-styles/<id>.css = that style's rules (scoped html[data-rfs-style="<id>"]) + the
 // shared theme icons. webkit.js links only the active one. (All styles in one file made every store page slow: the

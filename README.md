@@ -7,6 +7,7 @@ English by default, with a full Arabic interface one click away.
 |---|---|---|
 | **Classic Shelf** | A 3D wooden bookcase; open any game like a CD case | SpaceTheme's layout in walnut and brass |
 | **Glass Gallery** | A "continue playing" hero, genre chips, and a card grid | SpaceTheme's layout in Steam navy with frosted glass |
+| **Slate** | Your last-played game on top, every game below it, most recent first | SpaceTheme's layout in calm blue-slate with one teal accent; all colours in one palette block in `src/styles/slate.css` |
 | **Neon Coverflow** | A 3D carousel, with your whole library as a grid below it | SpaceTheme's layout in ink violet with cyan glow |
 | **Steam Original** | Steam's own home | Stock Steam; only THEMES and the store panels remain |
 | **SpaceTheme** | Steam's own home | The community theme [SpaceTheme](https://github.com/SpaceTheme/Steam), unmodified |
@@ -17,7 +18,7 @@ English by default, with a full Arabic interface one click away.
 - **Ctrl + K** anywhere opens the search. Type a game to open it (Enter) or play it (Ctrl + Enter), or type a command such as store, downloads or settings.
 - **Store game pages use the empty space beside the page.** Each style draws these panels in its own look:
   - live player count
-  - the game's price in 10 Steam regions, converted to KWD, with the cheapest highlighted
+  - the game's price in 6 Steam regions (Saudi Arabia, UAE, Kuwait, US, Euro area, UK), converted to SAR, with the cheapest highlighted
   - quick facts
   - one-click links to SteamDB, SteamCharts, IsThereAnyDeal, GG.deals, HowLongToBeat and PCGamingWiki
 - A **Quick links** menu in the store header: Specials, Top Sellers, Wishlist, Cart, and more.
@@ -82,7 +83,7 @@ To uninstall, run `python install_theme.py --remove`, or pick another theme in M
 - **Ctrl + K** للبحث السريع من أي مكان.
 - في صفحة اللعبة بالمتجر، على الجنب:
   - عدد اللاعبين الحين
-  - السعر في 10 دول بالدينار الكويتي
+  - السعر في 6 مناطق بالريال السعودي
   - معلومات سريعة
   - روابط SteamDB وغيره
 - قائمة **Quick links** في هيدر المتجر.

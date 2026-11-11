@@ -657,8 +657,8 @@ html[data-rfs-native] :is(#rfs-bar, #rfs-themes, #rfs-toast) * { font-family: va
 #rfs-family .dot { width: 8px; height: 8px; border-radius: 50%; background: #6b7280; box-shadow: 0 0 0 2px rgba(0, 0, 0, .35); }
 #rfs-family.on .dot { background: #4ade80; box-shadow: 0 0 6px rgba(74, 222, 128, .8); }
 /* in the title bar there is room for the shield and its light only (the name is in the tooltip) */
-html:is([data-rfs-style="glass"], [data-rfs-style="magazine"], [data-rfs-style="vault"], [data-rfs-style="cork"], [data-rfs-style="neon"], [data-rfs-style="space"], [data-rfs-style="cupertino"], [data-rfs-style="xmb"], [data-rfs-style="material"], [data-rfs-style="original"]) #rfs-family { padding: 0 8px; }
-html:is([data-rfs-style="glass"], [data-rfs-style="magazine"], [data-rfs-style="vault"], [data-rfs-style="cork"], [data-rfs-style="neon"], [data-rfs-style="space"], [data-rfs-style="cupertino"], [data-rfs-style="xmb"], [data-rfs-style="material"], [data-rfs-style="original"]) #rfs-family .lbl { display: none; }
+html:is([data-rfs-style="glass"], [data-rfs-style="slate"], [data-rfs-style="magazine"], [data-rfs-style="vault"], [data-rfs-style="cork"], [data-rfs-style="neon"], [data-rfs-style="space"], [data-rfs-style="cupertino"], [data-rfs-style="xmb"], [data-rfs-style="material"], [data-rfs-style="original"]) #rfs-family { padding: 0 8px; }
+html:is([data-rfs-style="glass"], [data-rfs-style="slate"], [data-rfs-style="magazine"], [data-rfs-style="vault"], [data-rfs-style="cork"], [data-rfs-style="neon"], [data-rfs-style="space"], [data-rfs-style="cupertino"], [data-rfs-style="xmb"], [data-rfs-style="material"], [data-rfs-style="original"]) #rfs-family .lbl { display: none; }
 
 /* picker pages (shelf.js Pager): a fixed 3 x 4 grid per page, arrows + "1 / 2" when there are more themes */
 #rfs-themes .tp-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
@@ -785,7 +785,7 @@ html:is([data-rfs-style="glass"], [data-rfs-style="magazine"], [data-rfs-style="
 @keyframes rfs-dl-bob { 50% { transform: translateY(2px); } }
 @media (prefers-reduced-motion: reduce) { #rfs-dl.busy > svg.rf-ic { animation: none; } }
 /* in the title bar there is room for the icon and the % only */
-html:is([data-rfs-style="glass"], [data-rfs-style="magazine"], [data-rfs-style="vault"], [data-rfs-style="cork"], [data-rfs-style="neon"], [data-rfs-style="space"], [data-rfs-style="cupertino"], [data-rfs-style="xmb"], [data-rfs-style="material"], [data-rfs-style="original"]) #rfs-dl { padding: 0 8px; }
-html:is([data-rfs-style="glass"], [data-rfs-style="magazine"], [data-rfs-style="vault"], [data-rfs-style="cork"], [data-rfs-style="neon"], [data-rfs-style="space"], [data-rfs-style="cupertino"], [data-rfs-style="xmb"], [data-rfs-style="material"], [data-rfs-style="original"]) #rfs-dl .lbl { display: none; }
+html:is([data-rfs-style="glass"], [data-rfs-style="slate"], [data-rfs-style="magazine"], [data-rfs-style="vault"], [data-rfs-style="cork"], [data-rfs-style="neon"], [data-rfs-style="space"], [data-rfs-style="cupertino"], [data-rfs-style="xmb"], [data-rfs-style="material"], [data-rfs-style="original"]) #rfs-dl { padding: 0 8px; }
+html:is([data-rfs-style="glass"], [data-rfs-style="slate"], [data-rfs-style="magazine"], [data-rfs-style="vault"], [data-rfs-style="cork"], [data-rfs-style="neon"], [data-rfs-style="space"], [data-rfs-style="cupertino"], [data-rfs-style="xmb"], [data-rfs-style="material"], [data-rfs-style="original"]) #rfs-dl .lbl { display: none; }
 /* master sound switch in the picker header, next to the language switch */
 #rfs-themes .tp-snd { margin-inline-end: 8px; }
