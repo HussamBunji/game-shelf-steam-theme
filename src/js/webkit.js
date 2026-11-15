@@ -679,7 +679,8 @@
   function placeData(top) {
     const m = /\/app\/(\d+)/.exec(location.pathname);
     const onApp = m && /store\.steampowered\.com/.test(location.host);
-    const freeR = column ? innerWidth - column.getBoundingClientRect().right : 0;
+    const viewW = document.documentElement.clientWidth || innerWidth; // without the page's scrollbar
+    const freeR = column ? viewW - column.getBoundingClientRect().right : 0;
     if (!onApp) { if (dataEl) dataEl.classList.remove('on'); return; }
     if (!dataEl) {
       dataEl = document.createElement('aside');
@@ -694,7 +695,8 @@
       document.body.appendChild(dataEl);
     }
     setStyles(dataEl, { top: top + 'px' });
-    if (column) setStyles(dataEl, { left: Math.round(column.getBoundingClientRect().right + 18) + 'px', right: 'auto' });
+    // beside the page column, but never past the visible right edge
+    if (column) { const w = parseFloat(getComputedStyle(dataEl).width) || 340; setStyles(dataEl, { left: Math.round(Math.min(column.getBoundingClientRect().right + 18, viewW - w - 12)) + 'px', right: 'auto' }); }
     // shown when the panel's own width (a style may make it narrower) plus its gap fits beside the page column
     const need = (parseFloat(getComputedStyle(dataEl).width) || 340) + 40;
     dataEl.classList.toggle('on', freeR >= need);

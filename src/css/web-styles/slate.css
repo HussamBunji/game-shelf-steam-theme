@@ -166,6 +166,12 @@ html[data-rfs-style="slate"] :is(#rfs-hub, #rfs-sheet) .rf-act.play { background
 /* ───────── store side panel: a little narrower, so it fits beside the page at common window widths ───────── */
 html[data-rfs-style="slate"] #rfs-data { width: 280px; right: 16px; }
 html[data-rfs-style="slate"] #rfs-data .rd-row.best .rd-kwd { color: rgb(var(--sl-accent)); }
+/* in the narrower panel the region name may shrink (with "…") and its Cheapest / Your region tag gets its own line,
+   so the SAR price column always stays inside the panel */
+html[data-rfs-style="slate"] #rfs-data .rd-row { grid-template-columns: 26px minmax(0, 1fr) auto; column-gap: 8px; }
+html[data-rfs-style="slate"] #rfs-data .rd-name { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+html[data-rfs-style="slate"] #rfs-data .rd-name .rd-tag { display: block; width: fit-content; margin: 2px 0 0; }
+html[data-rfs-style="slate"] #rfs-data .rd-kwd { font-size: 12.5px; }
 
 /* ───────── Augmented Steam's own blocks, restyled to match (not rebuilt) ───────── */
 /* player counts (playing now · today's peak · all-time peak) */
@@ -173,9 +179,10 @@ html[data-rfs-style="slate"] .as_players {
   display: flex !important; gap: 10px; padding: 14px !important; border-radius: 14px;
   background: rgb(var(--sl-surface)) !important; border: 1px solid rgb(var(--sl-edge));
 }
-html[data-rfs-style="slate"] .as_players > * { flex: 1; text-align: center; color: rgb(var(--sl-dim)) !important; font-size: 11px !important; letter-spacing: .06em; text-transform: uppercase; }
-html[data-rfs-style="slate"] .as_players span { display: block; margin-top: 4px; font-size: 20px !important; font-weight: 800; letter-spacing: 0; color: rgb(var(--sl-text)) !important; }
-html[data-rfs-style="slate"] .as_players > :first-child span { color: rgb(var(--sl-accent)) !important; }
+/* each stat is "<span>label</span> number": the number is the stat itself (big), the span its small label */
+html[data-rfs-style="slate"] .as_players > .as_stat { flex: 1; text-align: center; font-size: 20px !important; font-weight: 800; line-height: 1.2; color: rgb(var(--sl-text)) !important; }
+html[data-rfs-style="slate"] .as_players > .as_stat:first-child { color: rgb(var(--sl-accent)) !important; }
+html[data-rfs-style="slate"] .as_players > .as_stat > span { display: block; margin-bottom: 4px; font-size: 11px !important; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: rgb(var(--sl-dim)) !important; }
 /* current best / historical low lines above each edition */
 html[data-rfs-style="slate"] .itad-pricing {
   padding: 10px 14px !important; margin-bottom: 8px !important; border-radius: 12px;

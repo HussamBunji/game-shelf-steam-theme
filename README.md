@@ -21,6 +21,7 @@ English by default, with a full Arabic interface one click away.
   - the game's price in 6 Steam regions (Saudi Arabia, UAE, Kuwait, US, Euro area, UK), converted to SAR, with the cheapest highlighted
   - quick facts
   - one-click links to SteamDB, SteamCharts, IsThereAnyDeal, GG.deals, HowLongToBeat and PCGamingWiki
+  - with **Augmented Steam** on the page (e.g. through Extendium), the panel leaves out what it already shows (player counts and its links), so nothing appears twice; Slate also restyles Augmented Steam's blocks to match
 - A **Quick links** menu in the store header: Specials, Top Sellers, Wishlist, Cart, and more.
 - Icons are hand-made SVGs that each style dresses differently. There are no emoji.
 - **Arabic for the whole of Steam.** Steam itself ships no Arabic interface, so when you pick العربية:
