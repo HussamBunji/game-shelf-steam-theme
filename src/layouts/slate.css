@@ -58,6 +58,9 @@ html[data-rfs-lang="ar"] #rfs[data-layout="slate"] .sl-head h3 { letter-spacing:
   border-radius: 14px; overflow: hidden; cursor: pointer; outline: none;
   background: rgb(var(--sl-surface)); border: 1px solid rgb(var(--sl-edge));
   transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+  /* cards far off screen are not laid out or painted (and their cover art can leave the decode cache): a library of
+     400+ games costs about what one screenful does */
+  content-visibility: auto; contain-intrinsic-size: auto 330px;
 }
 #rfs[data-layout="slate"] .sl-card:hover { transform: translateY(-4px); border-color: rgba(var(--sl-accent), .45); box-shadow: 0 12px 26px rgba(var(--sl-shade), .5); }
 #rfs[data-layout="slate"] .sl-card.kb { border-color: rgb(var(--sl-accent)); box-shadow: 0 0 0 2px rgba(var(--sl-accent), .45); }
@@ -209,10 +212,20 @@ html[data-rfs-style="slate"] #slate-rail button {
 html[data-rfs-style="slate"] #slate-rail button > svg.rf-ic { width: 24px; height: 24px; }
 html[data-rfs-style="slate"] #slate-rail button > svg.rf-ic * { stroke: currentColor; }
 html[data-rfs-style="slate"] #slate-rail button:hover { color: rgb(var(--sl-text)); background: rgb(var(--sl-surface)); }
-html[data-rfs-style="slate"] #slate-rail button.on { color: rgb(var(--sl-text)); background: rgb(var(--sl-raised)); }
-html[data-rfs-style="slate"] #slate-rail button.on::before {
+html[data-rfs-style="slate"] #slate-rail button.on { color: rgb(var(--sl-text)); }
+html[data-rfs-style="slate"] #slate-rail button.on:hover { background: transparent; }
+html[data-rfs-style="slate"] #slate-rail button.on > svg.rf-ic { color: rgb(var(--sl-accent)); }
+/* the active highlight: one pill that slides to the chosen item (slate.js sets its transform / height) */
+html[data-rfs-style="slate"] #slate-rail .sl-ind {
+  position: absolute; top: 0; inset-inline: 8px; height: 0; border-radius: 12px; background: rgb(var(--sl-raised)); pointer-events: none;
+  opacity: 0; transition: transform .28s cubic-bezier(.2, .8, .2, 1), height .28s cubic-bezier(.2, .8, .2, 1), opacity .15s; will-change: transform;
+}
+html[data-rfs-style="slate"] #slate-rail .sl-ind.show { opacity: 1; }
+html[data-rfs-style="slate"] #slate-rail .sl-ind::before {
   content: ''; position: absolute; inset-inline-start: -8px; top: 12px; bottom: 12px; width: 3px; border-radius: 3px; background: rgb(var(--sl-accent));
 }
+html[data-rfs-style="slate"] #slate-rail button { z-index: 1; }
+@media (prefers-reduced-motion: reduce) { html[data-rfs-style="slate"] #slate-rail .sl-ind { transition: opacity .15s; } }
 html[data-rfs-style="slate"] #slate-rail button.bottom { margin-top: auto; }
 
 /* ════════════════ chrome: title-bar search (opens the Ctrl+K search) ════════════════ */
@@ -277,3 +290,15 @@ html[data-rfs-style="slate"] button.extension-button {
 html[data-rfs-style="slate"] button.extension-button:hover { border-color: rgba(var(--sl-accent), .55) !important; }
 html[data-rfs-style="slate"] button.extension-button svg { fill: currentColor !important; color: currentColor !important; opacity: 1 !important; }
 
+
+/* ════════════════ resting while a game runs (slate.js Rest): one quiet card instead of the library ════════════════ */
+#rfs[data-layout="slate"] .sl-rest { min-height: 60vh; display: grid; place-items: center; }
+#rfs[data-layout="slate"] .sl-restcard {
+  max-width: 560px; padding: 34px 38px; border-radius: 20px; text-align: start;
+  background: rgb(var(--sl-surface)); border: 1px solid rgb(var(--sl-edge)); box-shadow: 0 18px 40px rgba(var(--sl-shade), .45);
+}
+#rfs[data-layout="slate"] .sl-restcard h2 { margin: 8px 0 10px; font-size: 30px; font-weight: 800; color: rgb(var(--sl-text)); }
+#rfs[data-layout="slate"] .sl-restcard p { margin: 0 0 22px; font-size: 14.5px; line-height: 1.55; color: rgb(var(--sl-dim)); }
+#rfs[data-layout="slate"] .sl-restcard .sl-acts { display: flex; flex-wrap: wrap; gap: 10px; }
+html[data-rfs-style="slate"] #slate-volpop .sl-restopt { display: flex; align-items: center; gap: 9px; margin: 14px 0 0; padding-top: 12px; border-top: 1px solid rgb(var(--sl-edge)); font-size: 12.5px; font-weight: 600; cursor: pointer; justify-content: flex-start; }
+html[data-rfs-style="slate"] #slate-volpop .sl-restopt input { accent-color: rgb(var(--sl-accent)); width: 15px; height: 15px; margin: 0; flex: none; }

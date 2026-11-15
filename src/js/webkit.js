@@ -918,9 +918,38 @@
     for (let n = first; n; n = n.nextSibling) move.push(n);
     xp.after(...move);
   }
+  /* ---- the store's menu bar (React, hashed classes): stable hooks so a style can dress it.
+     data-rfs-sb = frame (the box that holds the row and the drop-down) | row | menu (Browse, Recommendations…) |
+     search | wish | fly (the drop-down area). Found from the search box up, never by text, so it works in Arabic too. */
+  function storeBarTag() {
+    const search = qs('input[name="term"][role="combobox"], input[placeholder*="Search the store" i], #store_nav_search_term');
+    if (!search) return;
+    let frame = search.parentElement;
+    while (frame && frame !== document.body && !(frame.querySelector('button[aria-expanded]') && getComputedStyle(frame).backgroundColor !== 'rgba(0, 0, 0, 0)')) frame = frame.parentElement;
+    if (!frame || frame === document.body || frame.getBoundingClientRect().height > 600) return;
+    setA(frame, 'data-rfs-sb', 'frame');
+    for (const c of frame.children) setA(c, 'data-rfs-sb', c.contains(search) ? 'row' : 'fly');
+    for (const b of frame.querySelectorAll(':scope > [data-rfs-sb="row"] button[aria-expanded]')) setA(b, 'data-rfs-sb', 'menu');
+    const form = search.closest('form'); if (form) setA(form, 'data-rfs-sb', 'search');
+    const wish = frame.querySelector(':scope > [data-rfs-sb="row"] a[href*="/wishlist"]'); if (wish) setA(wish, 'data-rfs-sb', 'wish');
+  }
   function start() {
     iconDefs();
     fixBadgesNesting();
+    // Slate saves memory: a store / community page you leave is let go at once instead of sitting in Chromium's
+    // back/forward cache (a whole 200–350 MB renderer each, kept for up to 10 minutes). An unload listener is what
+    // makes a page ineligible for that cache in Steam's Chromium; going Back just loads the page again. Measured in
+    // Steam: the store's renderer exits within a second of leaving.
+    if (html.getAttribute('data-rfs-style') === 'slate') addEventListener('unload', () => {});
+    // Slate's own store front (src/js/storefront.js + src/css/storefront.css): the store's home page only
+    if (html.getAttribute('data-rfs-style') === 'slate' && location.host === 'store.steampowered.com' && location.pathname === '/' && !document.querySelector('script[data-rfs-front]')) {
+      const me = document.querySelector('script[src*="/src/js/webkit.js"]');
+      const base = me ? me.src.replace(/src\/js\/webkit\.js.*$/, '') : 'https://millennium.host/v1/themes/rf-shelf/';
+      const css = document.createElement('link'); css.rel = 'stylesheet'; css.href = base + 'src/css/storefront.css'; document.head.append(css);
+      const js = document.createElement('script'); js.src = base + 'src/js/storefront.js'; js.setAttribute('data-rfs-front', ''); document.head.append(js);
+    }
+    storeBarTag();
+    setTimeout(storeBarTag, 1500);
     if (IS_WL) { setA(html, 'data-rfs-page', 'wishlist'); wlView(); wlTag(); setInterval(wlTag, 1200); }
     onLangChange = () => { if (rail) renderRail(); if (dataEl && dataFor) renderData(dataFor); if (qbtn) placeQuick(); };
     placeRail();
@@ -929,7 +958,7 @@
     // carousels and infinite lists keep adding items: look again 1.2 s at most after the page changed — and not at
     // all while it is still (the observer only raises a flag; our own class / attribute writes don't raise it)
     try { new MutationObserver(() => { pageDirty = true; }).observe(document.body, { childList: true, subtree: true }); } catch (e) { pageDirty = true; }
-    setInterval(() => { if (!pageDirty || document.hidden) return; pageDirty = false; filterAdult(); markDiscounts(); }, 1200);
+    setInterval(() => { if (!pageDirty || document.hidden) return; pageDirty = false; filterAdult(); markDiscounts(); storeBarTag(); }, 1200);
     // resizing fires dozens of events a second: place the side panels at most once per frame
     let railFrame = 0;
     addEventListener('resize', () => { if (railFrame) return; railFrame = requestAnimationFrame(() => { railFrame = 0; column = null; placeRail(); }); }, { passive: true });

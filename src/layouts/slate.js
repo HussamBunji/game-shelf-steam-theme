@@ -39,6 +39,7 @@
     kb: -1,
 
     render(games) {
+      if (Rest.on) { Rest.paint(); return; }   // resting while a game runs: a tiny panel instead of 400+ cards
       this.games = games; this.kb = -1;
       const recent = [...api.state.games].sort(api.SORTS.recent)[0];   // the hero is always the most recent game
       const running = api.running();
@@ -395,6 +396,60 @@
     },
   };
 
+  /* ═════════ resting while you play ═════════
+     When a game has been running for 20 s, Slate lets the main window rest: a web page in it (store, community) is
+     closed by going to the library, the library grid (400+ cards and their cover art) is replaced by one small
+     "Now playing" panel, and the main window is minimized, so Chromium drops its painted tiles and lowers its
+     priority. Steam's Friends list is a separate window and is never touched: invites keep working there and in the
+     overlay. When the last game closes, the library comes back (the window stays where you left it). "Wake up" brings
+     it back early; the switch lives in the Sound ▾ popover (saved as rfs.rest, on by default). */
+  const Rest = {
+    on: false, armed: 0, woke: false, appid: 0,
+    get enabled() { try { return localStorage.getItem('rfs.rest') !== '0'; } catch (e) { return true; } },
+    set enabled(v) { try { localStorage.setItem('rfs.rest', v ? '1' : '0'); } catch (e) { /* ignore */ } if (!v && this.on) this.wake(); },
+    watch() {
+      if (!isSlate()) return;
+      const run = api.running();
+      if (!run.size) { this.armed = 0; this.woke = false; if (this.on) this.wake(); return; }
+      if (this.on || this.woke || !this.enabled) return;
+      if (!this.armed) { this.armed = Date.now(); return; }
+      if (Date.now() - this.armed >= 20000) this.sleep([...run][0]);
+    },
+    sleep(appid) {
+      this.on = true; this.appid = appid;
+      const w = api.where();
+      if (/^\/browser/.test(w.route || '')) api.navigate('/library/home');   // closes the store / community page
+      else if (/^\/library\/home/.test(w.route || '')) this.paint();
+      try { SteamClient.Window.Minimize(); } catch (e) { /* older Steam */ }
+    },
+    wake(byUser) {
+      if (!this.on) return;
+      this.on = false;
+      if (byUser) this.woke = true;            // stay awake for the rest of this game
+      api.rerender();
+    },
+    paint() {
+      const g = api.byId(this.appid);
+      const el = div('sl sl-rest');
+      el.innerHTML = `<section class="sl-restcard">
+          <div class="sl-kicker">${esc(T('تلعب الحين', 'Now playing'))}</div>
+          <h2 dir="auto">${esc(g ? g.name : T('لعبة', 'A game'))}</h2>
+          <p>${esc(T('Steam مرتاح عشان يوفّر الذاكرة لين تخلص. قائمة الأصدقاء تشتغل عادي للدعوات.', 'Steam is resting to save memory until you finish. The Friends list still works for invites.'))}</p>
+          <div class="sl-acts">
+            <button class="sl-btn play" data-act="wake">${ic('refresh')}${esc(T('صحّه الحين', 'Wake up now'))}</button>
+            <button class="sl-btn" data-act="off">${esc(T('لا ترتاح أثناء اللعب', 'Don\'t rest while gaming'))}</button>
+          </div>
+        </section>`;
+      el.addEventListener('click', e => {
+        const b = e.target.closest('[data-act]'); if (!b) return;
+        api.sfx('tick');
+        if (b.dataset.act === 'off') { this.enabled = false; api.toast(T('ما راح يرتاح أثناء اللعب. تقدر ترجعها من قائمة الصوت ▾', 'Resting is off. Turn it back on from the Sound ▾ menu.')); }
+        else this.wake(true);
+      });
+      api.stage.replaceChildren(el);
+    },
+  };
+
   api.register('slate', Layout);
 
   /* ═════════ window chrome: icon rail + title-bar search (only visible while Slate is the style, via CSS) ═════════ */
@@ -437,9 +492,17 @@
       const b = e.target.closest('[data-go]'); if (!b) return;
       const it = RAIL.find(x => x.id === b.dataset.go); if (!it) return;
       api.sfx('tick');
-      try { it.go(); } catch (err) { api.toast(T('ما قدرت أفتحها', 'Couldn\'t open that')); }
+      // hold the clicked item until the page arrives: a web page keeps reporting the OLD address for a second or two
+      // while it loads, which made the highlight jump back and then forward again
+      pending = { id: it.id, until: Date.now() + 6000 };
       paintActive(it.id);
+      // navigate after the highlight has started moving: drawing the library can hold the page for ~0.4 s, and the
+      // slide (a compositor transform) then carries on smoothly instead of waiting for it
+      requestAnimationFrame(() => setTimeout(() => {
+        try { it.go(); } catch (err) { pending = null; api.toast(T('ما قدرت أفتحها', 'Couldn\'t open that')); }
+      }, 0));
     });
+    rail.insertAdjacentHTML('afterbegin', '<i class="sl-ind" aria-hidden="true"></i>');
     document.body.appendChild(rail);
 
     const search = document.createElement('button');
@@ -450,12 +513,28 @@
     document.body.appendChild(search);
   }
 
-  let lastActive = null;
+  let lastActive = null, pending = null;
+  /** where the rail should point: the item just clicked until navigation reaches it (or 6 s pass), then the truth */
+  function railTarget() {
+    const cur = activeId();
+    if (pending && (cur === pending.id || Date.now() > pending.until)) pending = null;
+    return pending ? pending.id : cur;
+  }
   function paintActive(id) {
     if (id === lastActive) return;          // write only when it really changes
     lastActive = id;
     const rail = document.getElementById('slate-rail'); if (!rail) return;
-    rail.querySelectorAll('[data-go]').forEach(b => b.classList.toggle('on', b.dataset.go === id));
+    let on = null;
+    rail.querySelectorAll('[data-go]').forEach(b => { const hit = b.dataset.go === id; b.classList.toggle('on', hit); if (hit) on = b; });
+    // one highlight that slides between items (transform only, so it stays on the compositor)
+    const ind = rail.querySelector('.sl-ind'); if (!ind) return;
+    if (!on) { ind.classList.remove('show'); return; }
+    const jump = !ind.classList.contains('show');   // appearing: no slide in from the top
+    if (jump) ind.style.transition = 'none';
+    ind.style.transform = `translateY(${on.offsetTop}px)`;
+    ind.style.height = on.offsetHeight + 'px';
+    ind.classList.add('show');
+    if (jump) { void ind.offsetHeight; ind.style.transition = ''; }
   }
 
   /* ---------- volume: a small ▾ beside the Sound pill opens a slider (the pill itself still toggles on / off) ---------- */
@@ -468,9 +547,12 @@
     btn.innerHTML = ic('chevD');
     const pop = document.createElement('div');
     pop.id = 'slate-volpop'; pop.hidden = true;
-    pop.innerHTML = `<label><span>${esc(T('مستوى الصوت', 'Volume'))}</span><b></b></label><input type="range" min="0" max="100" step="5">`;
+    pop.innerHTML = `<label><span>${esc(T('مستوى الصوت', 'Volume'))}</span><b></b></label><input type="range" min="0" max="100" step="5">`
+      + `<label class="sl-restopt"><input type="checkbox"><span>${esc(T('ريّح Steam أثناء اللعب (يوفّر الذاكرة)', 'Rest Steam while gaming (saves memory)'))}</span></label>`;
+    const restBox = pop.querySelector('.sl-restopt input');
+    restBox.addEventListener('change', () => { Rest.enabled = restBox.checked; api.sfx('tick'); });
     const range = pop.querySelector('input'), out = pop.querySelector('b');
-    const paint = () => { const v = Math.round(api.sound.volume * 100); range.value = v; out.textContent = v + '%'; };
+    const paint = () => { const v = Math.round(api.sound.volume * 100); range.value = v; out.textContent = v + '%'; restBox.checked = Rest.enabled; };
     const place = () => { const r = btn.getBoundingClientRect(); pop.style.top = Math.round(r.bottom + 8) + 'px'; pop.style.left = Math.round(Math.max(8, r.right - 240)) + 'px'; };
     btn.addEventListener('click', e => {
       e.stopPropagation();
@@ -534,5 +616,7 @@
   // the active item follows navigation done anywhere (links, Steam's own buttons): checked twice a second, and the
   // DOM is touched only when the answer changes. The volume button and sale countdown join the title-bar pills once
   // they exist.
-  setInterval(() => { if (isSlate() && !document.hidden) { paintActive(activeId()); if (!document.getElementById('slate-vol')) buildVolume(); paintSale(); } }, 500);
+  // the game watch runs even while the window is hidden or minimized (that is when it matters); it reads one list
+  setInterval(() => Rest.watch(), 2000);
+  setInterval(() => { if (isSlate() && !document.hidden) { paintActive(railTarget()); if (!document.getElementById('slate-vol')) buildVolume(); paintSale(); } }, 500);
 })();

@@ -7,7 +7,7 @@ English by default, with a full Arabic interface one click away.
 |---|---|---|
 | **Classic Shelf** | A 3D wooden bookcase; open any game like a CD case | SpaceTheme's layout in walnut and brass |
 | **Glass Gallery** | A "continue playing" hero, genre chips, and a card grid | SpaceTheme's layout in Steam navy with frosted glass |
-| **Slate** | Your last-played game on top, then the filter strip and every game, most recent first; Steam's game list waits at the left edge and opens on hover | Calm blue-slate with one teal accent (one palette block in `src/styles/slate.css`), a left icon rail and a search box in the title bar |
+| **Slate** | Your last-played game on top, then the filter strip and every game, most recent first; Steam's game list waits at the left edge and opens on hover | Calm blue-slate with one teal accent (one palette block in `src/styles/slate.css`), a left icon rail and a search box in the title bar; its own store home page (featured picks, deals, coming soon, more featured, a Show / Dim / Hide switch for games you own) built from Steam's own store data |
 | **Neon Coverflow** | A 3D carousel, with your whole library as a grid below it | SpaceTheme's layout in ink violet with cyan glow |
 | **Steam Original** | Steam's own home | Stock Steam; only THEMES and the store panels remain |
 | **SpaceTheme** | Steam's own home | The community theme [SpaceTheme](https://github.com/SpaceTheme/Steam), unmodified |
