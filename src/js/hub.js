@@ -563,5 +563,7 @@
 
   window.__rfsHub = { open: (g, tab) => H.open(g, tab), close: () => H.close(), isOpen: () => H.isOpen(), key, get game() { return H.g; },
     // for tools/: check the data sources against a live Steam without opening the page
-    probe: { ...Src, bb, moreFacts, communityLinks, badge, ctx: S } };
+    probe: { ...Src, bb, moreFacts, communityLinks, badge, ctx: S },
+    // for a style's own game panel (Slate's popup): the same cached sources this page uses, fetched on demand
+    data: { achievements: g => getAch(g), friends: g => getFriends(g), moreFacts: g => moreFacts(g, S()) } };
 })();
