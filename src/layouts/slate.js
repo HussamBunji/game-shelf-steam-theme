@@ -437,9 +437,17 @@
       const b = e.target.closest('[data-go]'); if (!b) return;
       const it = RAIL.find(x => x.id === b.dataset.go); if (!it) return;
       api.sfx('tick');
-      try { it.go(); } catch (err) { api.toast(T('ما قدرت أفتحها', 'Couldn\'t open that')); }
+      // hold the clicked item until the page arrives: a web page keeps reporting the OLD address for a second or two
+      // while it loads, which made the highlight jump back and then forward again
+      pending = { id: it.id, until: Date.now() + 6000 };
       paintActive(it.id);
+      // navigate after the highlight has started moving: drawing the library can hold the page for ~0.4 s, and the
+      // slide (a compositor transform) then carries on smoothly instead of waiting for it
+      requestAnimationFrame(() => setTimeout(() => {
+        try { it.go(); } catch (err) { pending = null; api.toast(T('ما قدرت أفتحها', 'Couldn\'t open that')); }
+      }, 0));
     });
+    rail.insertAdjacentHTML('afterbegin', '<i class="sl-ind" aria-hidden="true"></i>');
     document.body.appendChild(rail);
 
     const search = document.createElement('button');
@@ -450,12 +458,28 @@
     document.body.appendChild(search);
   }
 
-  let lastActive = null;
+  let lastActive = null, pending = null;
+  /** where the rail should point: the item just clicked until navigation reaches it (or 6 s pass), then the truth */
+  function railTarget() {
+    const cur = activeId();
+    if (pending && (cur === pending.id || Date.now() > pending.until)) pending = null;
+    return pending ? pending.id : cur;
+  }
   function paintActive(id) {
     if (id === lastActive) return;          // write only when it really changes
     lastActive = id;
     const rail = document.getElementById('slate-rail'); if (!rail) return;
-    rail.querySelectorAll('[data-go]').forEach(b => b.classList.toggle('on', b.dataset.go === id));
+    let on = null;
+    rail.querySelectorAll('[data-go]').forEach(b => { const hit = b.dataset.go === id; b.classList.toggle('on', hit); if (hit) on = b; });
+    // one highlight that slides between items (transform only, so it stays on the compositor)
+    const ind = rail.querySelector('.sl-ind'); if (!ind) return;
+    if (!on) { ind.classList.remove('show'); return; }
+    const jump = !ind.classList.contains('show');   // appearing: no slide in from the top
+    if (jump) ind.style.transition = 'none';
+    ind.style.transform = `translateY(${on.offsetTop}px)`;
+    ind.style.height = on.offsetHeight + 'px';
+    ind.classList.add('show');
+    if (jump) { void ind.offsetHeight; ind.style.transition = ''; }
   }
 
   /* ---------- volume: a small ▾ beside the Sound pill opens a slider (the pill itself still toggles on / off) ---------- */
@@ -534,5 +558,5 @@
   // the active item follows navigation done anywhere (links, Steam's own buttons): checked twice a second, and the
   // DOM is touched only when the answer changes. The volume button and sale countdown join the title-bar pills once
   // they exist.
-  setInterval(() => { if (isSlate() && !document.hidden) { paintActive(activeId()); if (!document.getElementById('slate-vol')) buildVolume(); paintSale(); } }, 500);
+  setInterval(() => { if (isSlate() && !document.hidden) { paintActive(railTarget()); if (!document.getElementById('slate-vol')) buildVolume(); paintSale(); } }, 500);
 })();

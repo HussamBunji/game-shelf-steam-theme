@@ -152,7 +152,47 @@ html[data-rfs-style="slate"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) h4 { color: r
 html[data-rfs-style="slate"] #rfs-data .rd-row.home { background: rgba(var(--sl-accent), .12); border-radius: 8px; }
 html[data-rfs-style="slate"] #rfs-data .rd-tag { background: rgba(var(--sl-accent), .18); color: rgb(var(--sl-accent)); }
 html[data-rfs-style="slate"] #rfs-data :is(.rd-fact, .rd-link), html[data-rfs-style="slate"] #rfs-rail .rr-btn:not(.go) { background: rgb(var(--sl-raised)); border-radius: 10px; }
-html[data-rfs-style="slate"] #rfs-qbtn { background: rgb(var(--sl-raised)); border-color: rgb(var(--sl-edge)); border-radius: 10px; }
+html[data-rfs-style="slate"] #rfs-qbtn { background: rgb(var(--sl-raised)); border-color: rgb(var(--sl-edge)); border-radius: 999px; height: 34px; }
+
+/* ───────── the store's menu bar (Browse · Recommendations … search · wishlist) and its drop-down ─────────
+   hooks from webkit.js storeBarTag(): data-rfs-sb = frame | row | menu | search | wish | fly */
+html[data-rfs-style="slate"] [data-rfs-sb="frame"] {
+  background: rgba(var(--sl-surface), .86) !important; border: 1px solid rgb(var(--sl-edge)); border-radius: 16px !important;
+  box-shadow: 0 14px 36px rgba(var(--sl-shade), .5), inset 0 1px 0 rgba(var(--sl-text), .04) !important;
+  backdrop-filter: blur(14px) saturate(1.1); padding-block: 8px !important;
+}
+html[data-rfs-style="slate"] [data-rfs-sb="row"] { align-items: center; }
+html[data-rfs-style="slate"] [data-rfs-sb="menu"] {
+  height: 34px !important; padding: 0 12px !important; margin-inline-end: 2px; border-radius: 10px !important; display: inline-flex !important; align-items: center; gap: 4px;
+  font: 600 13.5px var(--rf-font-ui) !important; color: rgb(var(--sl-dim)) !important; background: transparent !important;
+  transition: background-color .15s, color .15s;
+}
+html[data-rfs-style="slate"] [data-rfs-sb="menu"] * { color: inherit !important; font: inherit !important; }
+html[data-rfs-style="slate"] [data-rfs-sb="menu"]:hover { color: rgb(var(--sl-text)) !important; background: rgb(var(--sl-raised)) !important; }
+html[data-rfs-style="slate"] [data-rfs-sb="menu"][aria-expanded="true"] { color: rgb(var(--sl-accent)) !important; background: rgba(var(--sl-accent), .13) !important; }
+/* Steam's 3 px underline under the open menu: the tinted pill says it already */
+html[data-rfs-style="slate"] [data-rfs-sb="menu"] > div > div { display: none !important; }
+html[data-rfs-style="slate"] [data-rfs-sb="menu"] > svg { transition: transform .2s ease; opacity: .8; }
+html[data-rfs-style="slate"] [data-rfs-sb="menu"][aria-expanded="true"] > svg { transform: rotate(180deg); }
+html[data-rfs-style="slate"] [data-rfs-sb="search"] {
+  height: 34px !important; border-radius: 999px !important; background: rgb(var(--sl-base)) !important; border: 1px solid rgb(var(--sl-edge)) !important;
+  transition: border-color .15s, box-shadow .15s; /* no overflow: hidden — the form is a 0-basis flex item and would collapse */
+}
+html[data-rfs-style="slate"] [data-rfs-sb="search"] input { height: 100% !important; padding-inline: 14px 6px !important; color: rgb(var(--sl-text)) !important; font: 500 13px var(--rf-font-ui) !important; font-style: normal !important; }
+html[data-rfs-style="slate"] [data-rfs-sb="search"] input::placeholder { color: rgb(var(--sl-dim)) !important; font-style: normal !important; }
+html[data-rfs-style="slate"] [data-rfs-sb="search"]:focus-within { border-color: rgba(var(--sl-accent), .7) !important; box-shadow: 0 0 0 3px rgba(var(--sl-accent), .18); }
+html[data-rfs-style="slate"] [data-rfs-sb="search"] button { height: 100% !important; color: rgb(var(--sl-dim)) !important; }
+html[data-rfs-style="slate"] [data-rfs-sb="wish"] { height: 34px !important; border-radius: 999px !important; padding-inline: 12px !important; background: rgba(var(--sl-accent), .16) !important; box-sizing: border-box; }
+html[data-rfs-style="slate"] [data-rfs-sb="wish"]:hover { background: rgba(var(--sl-accent), .26) !important; }
+/* the drop-down: a hairline under the row, links as quiet pills, headings as small caps, a soft entrance */
+html[data-rfs-style="slate"] [data-rfs-sb="fly"]:has(a) { border-top: 1px solid rgb(var(--sl-edge)); margin-top: 8px; padding-top: 6px; animation: slate-fly .2s cubic-bezier(.2, .8, .2, 1); }
+@keyframes slate-fly { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+html[data-rfs-style="slate"] [data-rfs-sb="fly"] :is(a, [role="button"]) { border-radius: 10px !important; transition: background-color .15s, color .15s; }
+html[data-rfs-style="slate"] [data-rfs-sb="fly"] :is(a, [role="button"]):not(:has(img)):hover { background: rgb(var(--sl-raised)) !important; }
+html[data-rfs-style="slate"] [data-rfs-sb="fly"] :is(a, [role="button"]):not(:has(img)):hover * { color: rgb(var(--sl-text)) !important; }
+html[data-rfs-style="slate"] [data-rfs-sb="fly"] * { font-family: var(--rf-font-ui) !important; }
+html[data-rfs-style="slate"] [data-rfs-sb="fly"] a:has(img), html[data-rfs-style="slate"] [data-rfs-sb="fly"] img { border-radius: 12px !important; }
+@media (prefers-reduced-motion: reduce) { html[data-rfs-style="slate"] [data-rfs-sb="fly"]:has(a) { animation: none; } }
 
 /* our game page (src/js/hub.js): Play is teal with dark text, tabs are quiet pills */
 html[data-rfs-style="slate"] #rfs-hub { background: rgb(var(--sl-base)); }

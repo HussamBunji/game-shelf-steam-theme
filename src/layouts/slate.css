@@ -58,6 +58,9 @@ html[data-rfs-lang="ar"] #rfs[data-layout="slate"] .sl-head h3 { letter-spacing:
   border-radius: 14px; overflow: hidden; cursor: pointer; outline: none;
   background: rgb(var(--sl-surface)); border: 1px solid rgb(var(--sl-edge));
   transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+  /* cards far off screen are not laid out or painted (and their cover art can leave the decode cache): a library of
+     400+ games costs about what one screenful does */
+  content-visibility: auto; contain-intrinsic-size: auto 330px;
 }
 #rfs[data-layout="slate"] .sl-card:hover { transform: translateY(-4px); border-color: rgba(var(--sl-accent), .45); box-shadow: 0 12px 26px rgba(var(--sl-shade), .5); }
 #rfs[data-layout="slate"] .sl-card.kb { border-color: rgb(var(--sl-accent)); box-shadow: 0 0 0 2px rgba(var(--sl-accent), .45); }
@@ -209,10 +212,20 @@ html[data-rfs-style="slate"] #slate-rail button {
 html[data-rfs-style="slate"] #slate-rail button > svg.rf-ic { width: 24px; height: 24px; }
 html[data-rfs-style="slate"] #slate-rail button > svg.rf-ic * { stroke: currentColor; }
 html[data-rfs-style="slate"] #slate-rail button:hover { color: rgb(var(--sl-text)); background: rgb(var(--sl-surface)); }
-html[data-rfs-style="slate"] #slate-rail button.on { color: rgb(var(--sl-text)); background: rgb(var(--sl-raised)); }
-html[data-rfs-style="slate"] #slate-rail button.on::before {
+html[data-rfs-style="slate"] #slate-rail button.on { color: rgb(var(--sl-text)); }
+html[data-rfs-style="slate"] #slate-rail button.on:hover { background: transparent; }
+html[data-rfs-style="slate"] #slate-rail button.on > svg.rf-ic { color: rgb(var(--sl-accent)); }
+/* the active highlight: one pill that slides to the chosen item (slate.js sets its transform / height) */
+html[data-rfs-style="slate"] #slate-rail .sl-ind {
+  position: absolute; top: 0; inset-inline: 8px; height: 0; border-radius: 12px; background: rgb(var(--sl-raised)); pointer-events: none;
+  opacity: 0; transition: transform .28s cubic-bezier(.2, .8, .2, 1), height .28s cubic-bezier(.2, .8, .2, 1), opacity .15s; will-change: transform;
+}
+html[data-rfs-style="slate"] #slate-rail .sl-ind.show { opacity: 1; }
+html[data-rfs-style="slate"] #slate-rail .sl-ind::before {
   content: ''; position: absolute; inset-inline-start: -8px; top: 12px; bottom: 12px; width: 3px; border-radius: 3px; background: rgb(var(--sl-accent));
 }
+html[data-rfs-style="slate"] #slate-rail button { z-index: 1; }
+@media (prefers-reduced-motion: reduce) { html[data-rfs-style="slate"] #slate-rail .sl-ind { transition: opacity .15s; } }
 html[data-rfs-style="slate"] #slate-rail button.bottom { margin-top: auto; }
 
 /* ════════════════ chrome: title-bar search (opens the Ctrl+K search) ════════════════ */

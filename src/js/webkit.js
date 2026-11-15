@@ -918,9 +918,26 @@
     for (let n = first; n; n = n.nextSibling) move.push(n);
     xp.after(...move);
   }
+  /* ---- the store's menu bar (React, hashed classes): stable hooks so a style can dress it.
+     data-rfs-sb = frame (the box that holds the row and the drop-down) | row | menu (Browse, Recommendations…) |
+     search | wish | fly (the drop-down area). Found from the search box up, never by text, so it works in Arabic too. */
+  function storeBarTag() {
+    const search = qs('input[name="term"][role="combobox"], input[placeholder*="Search the store" i], #store_nav_search_term');
+    if (!search) return;
+    let frame = search.parentElement;
+    while (frame && frame !== document.body && !(frame.querySelector('button[aria-expanded]') && getComputedStyle(frame).backgroundColor !== 'rgba(0, 0, 0, 0)')) frame = frame.parentElement;
+    if (!frame || frame === document.body || frame.getBoundingClientRect().height > 600) return;
+    setA(frame, 'data-rfs-sb', 'frame');
+    for (const c of frame.children) setA(c, 'data-rfs-sb', c.contains(search) ? 'row' : 'fly');
+    for (const b of frame.querySelectorAll(':scope > [data-rfs-sb="row"] button[aria-expanded]')) setA(b, 'data-rfs-sb', 'menu');
+    const form = search.closest('form'); if (form) setA(form, 'data-rfs-sb', 'search');
+    const wish = frame.querySelector(':scope > [data-rfs-sb="row"] a[href*="/wishlist"]'); if (wish) setA(wish, 'data-rfs-sb', 'wish');
+  }
   function start() {
     iconDefs();
     fixBadgesNesting();
+    storeBarTag();
+    setTimeout(storeBarTag, 1500);
     if (IS_WL) { setA(html, 'data-rfs-page', 'wishlist'); wlView(); wlTag(); setInterval(wlTag, 1200); }
     onLangChange = () => { if (rail) renderRail(); if (dataEl && dataFor) renderData(dataFor); if (qbtn) placeQuick(); };
     placeRail();
@@ -929,7 +946,7 @@
     // carousels and infinite lists keep adding items: look again 1.2 s at most after the page changed — and not at
     // all while it is still (the observer only raises a flag; our own class / attribute writes don't raise it)
     try { new MutationObserver(() => { pageDirty = true; }).observe(document.body, { childList: true, subtree: true }); } catch (e) { pageDirty = true; }
-    setInterval(() => { if (!pageDirty || document.hidden) return; pageDirty = false; filterAdult(); markDiscounts(); }, 1200);
+    setInterval(() => { if (!pageDirty || document.hidden) return; pageDirty = false; filterAdult(); markDiscounts(); storeBarTag(); }, 1200);
     // resizing fires dozens of events a second: place the side panels at most once per frame
     let railFrame = 0;
     addEventListener('resize', () => { if (railFrame) return; railFrame = requestAnimationFrame(() => { railFrame = 0; column = null; placeRail(); }); }, { passive: true });
