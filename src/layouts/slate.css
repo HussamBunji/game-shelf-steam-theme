@@ -1,0 +1,169 @@
+/* Slate: library home, game panel, icon rail, title-bar search, title-bar THEMES / Sound.
+   Every colour comes from the palette in src/styles/slate.css (--sl-* / --rf-*). No blur, no per-card 3D,
+   transforms only on the hovered card. */
+
+/* ════════════════ home ════════════════ */
+#rfs[data-layout="slate"] { --ink: rgb(var(--sl-text)); --muted: rgb(var(--sl-dim)); font-family: var(--rf-font-ui); }
+#rfs[data-layout="slate"] .sl { display: flex; flex-direction: column; gap: 18px; padding: 22px 26px 40px; }
+
+/* hero: the most recently played game */
+#rfs[data-layout="slate"] .sl-hero {
+  position: relative; min-height: 300px; border-radius: var(--rf-radius-lg); overflow: hidden;
+  background: rgb(var(--sl-surface)); border: 1px solid rgb(var(--sl-edge)); cursor: pointer;
+}
+#rfs[data-layout="slate"] .sl-hero-art { position: absolute; inset: 0; background: center 25% / cover no-repeat; opacity: .55; }
+#rfs[data-layout="slate"] .sl-hero::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(to right, rgba(var(--sl-surface), .97) 0%, rgba(var(--sl-surface), .82) 38%, rgba(var(--sl-surface), .15) 75%),
+              linear-gradient(to top, rgba(var(--sl-surface), .85), transparent 55%);
+}
+html[data-rfs-lang="ar"] #rfs[data-layout="slate"] .sl-hero::after {
+  background: linear-gradient(to left, rgba(var(--sl-surface), .97) 0%, rgba(var(--sl-surface), .82) 38%, rgba(var(--sl-surface), .15) 75%),
+              linear-gradient(to top, rgba(var(--sl-surface), .85), transparent 55%);
+}
+#rfs[data-layout="slate"] .sl-hero-body { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: flex-start; gap: 14px; padding: 40px 44px; max-width: 62%; }
+#rfs[data-layout="slate"] .sl-kicker { font-size: 12.5px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: rgb(var(--sl-accent)); }
+html[data-rfs-lang="ar"] #rfs[data-layout="slate"] .sl-kicker { letter-spacing: 0; }
+#rfs[data-layout="slate"] .sl-hero-title h2 { margin: 0; font: 800 46px/1.05 var(--rf-heading-font) !important; color: rgb(var(--sl-text)); letter-spacing: -.01em; }
+#rfs[data-layout="slate"] .sl-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+#rfs[data-layout="slate"] .sl-chips span {
+  font-size: 13px; padding: 5px 13px; border-radius: 999px; color: rgb(var(--sl-text));
+  background: rgba(var(--sl-base), .55); border: 1px solid rgb(var(--sl-edge));
+}
+#rfs[data-layout="slate"] .sl-acts { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
+#rfs[data-layout="slate"] .sl-btn {
+  display: inline-flex; align-items: center; gap: 8px; height: 46px; padding: 0 22px; border-radius: 12px; cursor: pointer;
+  font: 700 15px var(--rf-font-ui); color: rgb(var(--sl-text)); background: rgba(var(--sl-base), .6); border: 1px solid rgb(var(--sl-edge));
+  transition: background-color .15s, border-color .15s;
+}
+#rfs[data-layout="slate"] .sl-btn:hover { background: rgb(var(--sl-high)); border-color: rgba(var(--sl-accent), .35); }
+#rfs[data-layout="slate"] .sl-btn.play { height: 52px; padding: 0 30px; font-size: 17px; font-weight: 800; color: var(--rf-play-ink); background: var(--rf-play-1); border-color: transparent; }
+#rfs[data-layout="slate"] .sl-btn.play:hover { background: rgba(var(--sl-accent), .88); }
+#rfs[data-layout="slate"] .sl-btn > svg.rf-ic { width: 16px; height: 16px; }
+
+/* the filter strip sits right above the games; Slate keeps search · source · installed · sort · genres only */
+#rfs[data-layout="slate"] .rf-dock > #rfs-bar.inhome { margin: 0; padding: 10px; background: rgb(var(--sl-surface)); border: 1px solid rgb(var(--sl-edge)); border-radius: 14px; }
+#rfs[data-layout="slate"] #rfs-bar :is(.tb-snd, .tb-amb, .tb-news, .tb-theme, .tb-view) { display: none !important; }
+
+/* section header */
+#rfs[data-layout="slate"] .sl-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-top: 4px; }
+#rfs[data-layout="slate"] .sl-head h3 { margin: 0; font: 800 13px var(--rf-font-ui) !important; letter-spacing: .1em; text-transform: uppercase; color: rgb(var(--sl-dim)); }
+#rfs[data-layout="slate"] .sl-head h3 span { color: rgb(var(--sl-dim)); }
+#rfs[data-layout="slate"] .sl-head small { font-size: 13px; color: rgb(var(--sl-dim)); }
+html[data-rfs-lang="ar"] #rfs[data-layout="slate"] .sl-head h3 { letter-spacing: 0; }
+
+/* the grid: portrait cards, newest first */
+#rfs[data-layout="slate"] .sl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(176px, 1fr)); gap: 18px; }
+#rfs[data-layout="slate"] .sl-card {
+  border-radius: 14px; overflow: hidden; cursor: pointer; outline: none;
+  background: rgb(var(--sl-surface)); border: 1px solid rgb(var(--sl-edge));
+  transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+}
+#rfs[data-layout="slate"] .sl-card:hover { transform: translateY(-4px); border-color: rgba(var(--sl-accent), .45); box-shadow: 0 12px 26px rgba(var(--sl-shade), .5); }
+#rfs[data-layout="slate"] .sl-card.kb { border-color: rgb(var(--sl-accent)); box-shadow: 0 0 0 2px rgba(var(--sl-accent), .45); }
+#rfs[data-layout="slate"] .sl-card.running { border-color: rgb(var(--sl-accent)); }
+#rfs[data-layout="slate"] .sl-art { position: relative; aspect-ratio: 2 / 3; background: var(--cap, none) center / cover no-repeat, rgb(var(--sl-raised)); }
+#rfs[data-layout="slate"] .sl-art[data-tag]::after {
+  content: attr(data-tag); position: absolute; top: 10px; inset-inline-start: 10px;
+  font-size: 11.5px; font-weight: 700; padding: 3px 9px; border-radius: 7px;
+  color: rgb(var(--sl-text)); background: rgba(var(--sl-base), .85);
+}
+#rfs[data-layout="slate"] .sl-card.running .sl-art[data-tag]::after { color: var(--rf-play-ink); background: rgb(var(--sl-accent)); }
+#rfs[data-layout="slate"] .sl-cap { position: relative; padding: 11px 14px 16px; }
+#rfs[data-layout="slate"] .sl-name { font-size: 14.5px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: rgb(var(--sl-text)); }
+#rfs[data-layout="slate"] .sl-sub { margin-top: 3px; font-size: 13px; color: rgb(var(--sl-dim)); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* achievement progress: a thin track with a teal fill, drawn with one background (no extra elements) */
+#rfs[data-layout="slate"] .sl-cap.has-ach::after {
+  content: ''; position: absolute; left: 14px; right: 14px; bottom: 7px; height: 4px; border-radius: 4px;
+  background: linear-gradient(to right, rgb(var(--sl-accent)) var(--p, 0%), rgb(var(--sl-high)) var(--p, 0%));
+}
+html[data-rfs-lang="ar"] #rfs[data-layout="slate"] .sl-cap.has-ach::after { background: linear-gradient(to left, rgb(var(--sl-accent)) var(--p, 0%), rgb(var(--sl-high)) var(--p, 0%)); }
+
+/* ════════════════ game panel (Phase 2; Phase 3 adds the achievements) ════════════════ */
+#rfs-sheet[data-layout="slate"] { font-family: var(--rf-font-ui); color: rgb(var(--sl-text)); }
+#rfs-sheet[data-layout="slate"] .sp-dim { position: absolute; inset: 0; background: rgba(var(--sl-shade), .72); }
+#rfs-sheet[data-layout="slate"] .sp-wrap { position: absolute; inset: 0; display: grid; place-items: center; padding: 28px; pointer-events: none; }
+#rfs-sheet[data-layout="slate"] .sp-panel {
+  position: relative; width: min(1000px, 100%); max-height: 100%; overflow: auto; pointer-events: auto;
+  background: rgb(var(--sl-surface)); border: 1px solid rgb(var(--sl-edge)); border-radius: 22px; box-shadow: 0 30px 70px rgba(var(--sl-shade), .6);
+}
+#rfs-sheet[data-layout="slate"] .sp-x {
+  position: absolute; top: 16px; inset-inline-end: 16px; z-index: 2; width: 40px; height: 40px; border-radius: 50%; cursor: pointer;
+  display: grid; place-items: center; color: rgb(var(--sl-text)); background: rgba(var(--sl-base), .8); border: 1px solid rgb(var(--sl-edge));
+}
+#rfs-sheet[data-layout="slate"] .sp-x:hover { background: rgb(var(--sl-high)); }
+#rfs-sheet[data-layout="slate"] .sp-ban { position: relative; height: 230px; }
+#rfs-sheet[data-layout="slate"] .sp-ban-art { position: absolute; inset: 0; background: center 25% / cover no-repeat, rgb(var(--sl-raised)); opacity: .6; }
+#rfs-sheet[data-layout="slate"] .sp-ban::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgb(var(--sl-surface)) 2%, rgba(var(--sl-surface), .2) 70%); }
+#rfs-sheet[data-layout="slate"] .sp-ban-in { position: absolute; z-index: 1; inset-inline-start: 40px; bottom: 16px; }
+#rfs-sheet[data-layout="slate"] .sp-ban-in h2 { margin: 0; font: 800 40px/1.05 var(--rf-heading-font) !important; }
+#rfs-sheet[data-layout="slate"] .sp-ban-in p { margin: 6px 0 0; font-size: 15px; color: rgb(var(--sl-dim)); }
+#rfs-sheet[data-layout="slate"] .sp-row { display: flex; flex-wrap: wrap; align-items: center; gap: 18px 26px; padding: 22px 40px 24px; border-bottom: 1px solid rgb(var(--sl-edge)); }
+#rfs-sheet[data-layout="slate"] .sp-hours b { display: block; font: 800 34px/1.1 var(--rf-heading-font) !important; }
+#rfs-sheet[data-layout="slate"] .sp-hours small { font-size: 14px; color: rgb(var(--sl-dim)); }
+#rfs-sheet[data-layout="slate"] .sp-acts { order: 0; }
+#rfs-sheet[data-layout="slate"] .rf-acts { display: flex; flex-wrap: wrap; gap: 8px; }
+#rfs-sheet[data-layout="slate"] .rf-act {
+  display: inline-flex; align-items: center; gap: 7px; height: 42px; padding: 0 16px; border-radius: 11px; cursor: pointer;
+  font: 700 14px var(--rf-font-ui); color: rgb(var(--sl-text)); background: rgb(var(--sl-raised)); border: 1px solid rgb(var(--sl-edge));
+}
+#rfs-sheet[data-layout="slate"] .rf-act:hover { background: rgb(var(--sl-high)); }
+#rfs-sheet[data-layout="slate"] .rf-act.play { height: 54px; padding: 0 32px; font-size: 18px; font-weight: 800; color: var(--rf-play-ink); background: var(--rf-play-1); border-color: transparent; }
+#rfs-sheet[data-layout="slate"] .sp-facts { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 18px 24px; margin: 0; padding: 24px 40px 30px; }
+#rfs-sheet[data-layout="slate"] .sp-facts dt { font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: rgb(var(--sl-dim)); }
+#rfs-sheet[data-layout="slate"] .sp-facts dd { margin: 4px 0 0; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+html[data-rfs-lang="ar"] #rfs-sheet[data-layout="slate"] .sp-facts dt { letter-spacing: 0; }
+
+/* ════════════════ chrome: icon rail ════════════════ */
+#slate-rail, #slate-search { display: none; }
+html[data-rfs-style="slate"] #slate-rail {
+  box-sizing: border-box; position: fixed; z-index: 60; top: var(--sl-top-h); bottom: 0; inset-inline-start: 0; width: var(--sl-rail-w);
+  display: flex; flex-direction: column; align-items: stretch; gap: 4px; padding: 14px 8px;
+  background: rgb(var(--sl-base)); border-inline-end: 1px solid rgb(var(--sl-edge)); font-family: var(--rf-font-ui);
+}
+html[data-rfs-style="slate"] #slate-rail button {
+  display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 10px 2px 9px; border-radius: 12px; cursor: pointer;
+  font: 600 11.5px var(--rf-font-ui); color: rgb(var(--sl-dim)); background: transparent; border: 0; position: relative;
+  transition: background-color .15s, color .15s;
+}
+html[data-rfs-style="slate"] #slate-rail button > svg.rf-ic { width: 24px; height: 24px; }
+html[data-rfs-style="slate"] #slate-rail button > svg.rf-ic * { stroke: currentColor; }
+html[data-rfs-style="slate"] #slate-rail button:hover { color: rgb(var(--sl-text)); background: rgb(var(--sl-surface)); }
+html[data-rfs-style="slate"] #slate-rail button.on { color: rgb(var(--sl-text)); background: rgb(var(--sl-raised)); }
+html[data-rfs-style="slate"] #slate-rail button.on::before {
+  content: ''; position: absolute; inset-inline-start: -8px; top: 12px; bottom: 12px; width: 3px; border-radius: 3px; background: rgb(var(--sl-accent));
+}
+html[data-rfs-style="slate"] #slate-rail button.bottom { margin-top: auto; }
+
+/* ════════════════ chrome: title-bar search (opens the Ctrl+K search) ════════════════ */
+html[data-rfs-style="slate"] #slate-search {
+  /* starts after the Steam menu and the back / forward arrows (skin.js puts those at --sl-arrows-x), and leaves the
+     right side free for THEMES, Sound and the account box */
+  box-sizing: border-box; position: fixed; z-index: 70; top: 7px; inset-inline-start: calc(var(--sl-arrows-x) + 96px); width: min(560px, calc(100vw - var(--sl-arrows-x) - 96px - 760px)); height: 32px;
+  display: flex; align-items: center; gap: 10px; padding: 0 8px 0 12px; border-radius: 10px; cursor: text; -webkit-app-region: no-drag;
+  font: 500 13.5px var(--rf-font-ui); color: rgb(var(--sl-dim)); background: rgb(var(--sl-surface)); border: 1px solid rgb(var(--sl-edge));
+}
+html[data-rfs-style="slate"] #slate-search:hover { border-color: rgba(var(--sl-accent), .45); }
+html[data-rfs-style="slate"] #slate-search > svg.rf-ic { width: 16px; height: 16px; flex: none; }
+html[data-rfs-style="slate"] #slate-search > svg.rf-ic * { stroke: currentColor; }
+html[data-rfs-style="slate"] #slate-search span { flex: 1; text-align: start; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+html[data-rfs-style="slate"] #slate-search kbd {
+  font: 600 11.5px var(--rf-font-ui); padding: 2px 7px; border-radius: 6px; color: rgb(var(--sl-dim)); border: 1px solid rgb(var(--sl-edge));
+}
+
+/* ════════════════ chrome: THEMES + Sound in the title bar (shelf.js puts them there) ════════════════ */
+html[data-rfs-style="slate"] .rfs-nav-tb { display: flex; align-items: center; gap: 6px; margin-inline-end: 10px; -webkit-app-region: no-drag; }
+html[data-rfs-style="slate"] .rfs-nav-tb > .rfs-tb {
+  display: inline-flex; align-items: center; gap: 7px; height: 30px; padding: 0 12px; border-radius: 999px; cursor: pointer;
+  font: 600 13px var(--rf-font-ui); color: rgb(var(--sl-text)); background: rgb(var(--sl-surface)); border: 1px solid rgb(var(--sl-edge));
+  text-transform: none; letter-spacing: 0;
+}
+html[data-rfs-style="slate"] .rfs-nav-tb > .rfs-tb:hover, html[data-rfs-style="slate"] .rfs-nav-tb > .rfs-tb.rfs-open { border-color: rgba(var(--sl-accent), .5); }
+html[data-rfs-style="slate"] .rfs-nav-tb > #rfs-navsnd.rfs-tb { opacity: 1; padding: 0 12px !important; gap: 7px; }
+html[data-rfs-style="slate"] #rfs-navsnd.rfs-tb > svg.rf-ic { width: 16px; height: 16px; }
+html[data-rfs-style="slate"] #rfs-navsnd.rfs-tb > svg.rf-ic * { stroke: currentColor; }
+/* the Sound pill: speaker icon, a status dot (teal = on) and the word */
+html[data-rfs-style="slate"] #rfs-navsnd.rfs-tb::before { content: ''; order: 1; width: 8px; height: 8px; border-radius: 50%; background: rgb(var(--sl-dim)); }
+html[data-rfs-style="slate"] #rfs-navsnd.rfs-tb[data-on="true"]::before { background: rgb(var(--sl-accent)); }
+html[data-rfs-style="slate"] .rfs-nav-tb > #rfs-navsnd.rfs-tb::after { display: inline !important; order: 2; content: 'Sound'; }
+html[data-rfs-style="slate"][data-rfs-lang="ar"] .rfs-nav-tb > #rfs-navsnd.rfs-tb::after { content: 'الأصوات'; }

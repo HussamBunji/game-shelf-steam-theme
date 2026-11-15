@@ -203,6 +203,36 @@
   /* the sidebar no longer needs the empty space it kept at the bottom for the box */
   urule`${U} ._3x1HklzyDs4TEjACrRO2tB ._1ijTaXJJA5YWl_fW2IxcaT { margin-bottom: 12px !important; }`;
 
+  /* ---------------- Slate: icon rail, no nav row, game list collapsed at the left edge ----------------
+     The rail and the title-bar search are our own elements (src/layouts/slate.js + .css). Here Steam's own parts make
+     room for them: the content area starts after the rail, the STORE · LIBRARY · COMMUNITY row hides (the rail
+     replaces it; the back / forward arrows stay), and the game list becomes a thin strip at the left edge that slides
+     open on hover, on every library page (it was parked off-screen on the home page; Slate shows it as the strip). */
+  const SL = 'html[data-rfs-style="slate"]';
+  urule`${SL} ${C('ContentFrame')} { margin-inline-start: var(--sl-rail-w, 76px) !important; }`;
+  urule`${SL} ${C('BottomBarContainer')} { margin-inline-start: var(--sl-rail-w, 76px) !important; }`;
+  urule`${SL} ${C('SuperNav')} ${C('MenuWrapper')} { display: none !important; }`;
+  urule`${SL} ${C('SuperNav')} { position: fixed !important; top: 0 !important; left: var(--sl-arrows-x, 280px) !important; right: auto !important; width: auto !important; height: var(--sl-top-h, 46px) !important; margin: 0 !important; z-index: 65; }`;
+  urule`${SL} ${C('LibraryWindowDivider')} { display: none !important; }`;
+  urule`${SL} ${C('LeftListSizableContainer')}, ${SL} ${C('LeftListSizableContainer')}[data-rfs-hide="park"] {
+    position: fixed !important; z-index: 50 !important; top: var(--sl-top-h, 46px) !important; bottom: 0 !important;
+    left: var(--sl-rail-w, 76px) !important; right: auto !important; height: auto !important;
+    width: 320px !important; min-width: 320px !important; max-width: 320px !important;
+    visibility: visible !important; pointer-events: auto !important;
+    background: rgb(var(--sl-surface)) !important; border-right: 1px solid rgb(var(--sl-edge)) !important;
+    box-shadow: 12px 0 28px rgba(var(--sl-shade), .45) !important;
+    transform: translateX(calc(-100% + 14px)); transition: transform .2s ease .25s; }`;
+  urule`${SL} ${C('LeftListSizableContainer')}:hover { transform: none; transition-delay: .12s; }`;
+  /* the closed strip shows a small "GAMES ›" tab */
+  urule`${SL} ${C('LeftListSizableContainer')}::before {
+    content: 'GAMES  ›'; position: absolute; z-index: 2; right: 0; top: 50%; width: 14px; transform: translateY(-50%);
+    writing-mode: vertical-rl; transform-origin: center; rotate: 180deg; text-align: center; white-space: nowrap;
+    font: 700 10px var(--rf-font-ui); letter-spacing: .18em; color: rgb(var(--sl-dim)); pointer-events: none; transition: opacity .15s; }`;
+  urule`html[data-rfs-style="slate"][data-rfs-lang="ar"] ${C('LeftListSizableContainer')}::before { content: 'الألعاب  ›'; letter-spacing: 0; }`;
+  urule`${SL} ${C('LeftListSizableContainer')}:hover::before { opacity: 0; }`;
+  /* while closed, only the tab shows (the list's own scrollbar and rows stay out of the 14 px strip) */
+  urule`${SL} ${C('LeftListSizableContainer')}:not(:hover) > * { opacity: 0 !important; transition: opacity .1s; }`;
+
   /* ---------------- Downloads page, install / settings dialogs, toggles, sliders, checkboxes ----------------
      Steam paints these in its own blue (#1a9fff, #47bfff → #1a44c2) and green (#59bf40); SpaceTheme leaves most of
      them alone. urule = active under the SpaceTheme base too. Everything comes from the style's variables; a style

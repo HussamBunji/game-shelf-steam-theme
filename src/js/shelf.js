@@ -397,7 +397,7 @@
   const FEATURE = { recent: T('آخر ما لعبت', 'Recently played'), playtime: T('الأكثر لعبًا', 'Most played'), size: T('الأكبر حجمًا', 'Largest') };
   const STYLES = [
     // the core set: page 1 of the picker (12 = one 3 x 4 page)
-    { value: 'Slate', sid: 'slate', layout: 'gallery', name: T('سليت', 'Slate'), desc: T('رمادي مزرق هادئ ولون فيروزي واحد — آخر لعبة فوق والباقي شبكة', 'Calm blue-slate with one teal accent — your last game on top, the rest in a grid') },
+    { value: 'Slate', sid: 'slate', layout: 'slate', name: T('سليت', 'Slate'), desc: T('رمادي مزرق هادئ ولون فيروزي واحد — آخر لعبة فوق والباقي شبكة', 'Calm blue-slate with one teal accent — your last game on top, the rest in a grid') },
     { value: 'Classic Shelf', sid: 'classic', layout: 'shelf', name: T('الرف الكلاسيكي', 'Classic Shelf'), desc: T('رف خشب ثلاثي الأبعاد — تتمشى بين الرفوف والعلب تنفتح مثل CD', 'A 3D wooden bookcase — walk along the shelves and open each case like a CD') },
     { value: 'Glass Gallery', sid: 'glass', layout: 'gallery', name: T('المعرض الزجاجي', 'Glass Gallery'), desc: T('لوحة عملية: كمّل اللعب + كروت زجاجية + فلاتر', 'A practical dashboard: continue playing, glass cards and filters') },
     { value: 'Neon Coverflow', sid: 'neon', layout: 'coverflow', name: T('نيون كوفر فلو', 'Neon Coverflow'), desc: T('دوّار ثلاثي الأبعاد بانعكاسات وإضاءة نيون', 'A 3D carousel with reflections and neon lighting') },
@@ -2957,6 +2957,19 @@
   navWrap.appendChild(navTheme);
   navWrap.appendChild(navSnd);
   function placeNavTheme() {
+    // a style that hides Steam's nav row (Slate) puts THEMES + sound first in the title bar, before the account box
+    if (themeVar('--rf-nav-place', '') === 'titlebar') {
+      const tb = SteamAPI.titleControls();
+      if (!tb) { navWrap.remove(); return false; }
+      if (tb.firstElementChild !== navWrap) tb.prepend(navWrap);
+      if (navWrap.className !== 'rfs-nav-tb') navWrap.className = 'rfs-nav-tb';
+      if (navTheme.dataset.cls !== 'rfs-tb') { navTheme.className = 'rfs-tb'; navTheme.dataset.cls = 'rfs-tb'; navSnd.className = 'rfs-tb'; }
+      const label = T('الثيمات', 'Themes');
+      if (navTheme.textContent !== label) navTheme.textContent = label;
+      navTheme.classList.toggle('rfs-open', Themes.isOpen());
+      paintNavSnd();
+      return true;
+    }
     const sel = SteamAPI.sel('MenuButton', 'SuperNav');
     const btns = sel ? [...document.querySelectorAll(sel)].filter(b => b !== navTheme && b.getBoundingClientRect().width) : [];
     if (!btns.length) { navWrap.remove(); return false; }
@@ -3211,6 +3224,10 @@
     gameFacts, gameDesc, gameActions, gameBytes, sizeText, steamLevel, steamLevelNow, gameAch, achHTML, closeGame: () => closeViewer(), get openId() { return current ? current.appid : null; },
     openStore: appid => SteamAPI.steamUrl('steam://store/' + appid), steamUrl: url => SteamAPI.steamUrl(url),
     showTip, hideTip, sfx, toast,
+    // for designs that bring their own window chrome (Slate's rail and top-bar search)
+    focusSearch: () => Search.focus(), navigate: path => SteamAPI.navigate(path), route: () => SteamAPI.route(),
+    where() { try { const m = SteamAPI.ctx().MainWindowBrowserManager; return { route: SteamAPI.route(), tab: m.m_lastActiveTab || '', url: m.m_URL || '' }; } catch (e) { return { route: SteamAPI.route(), tab: '', url: '' }; } },
+    steamCls: (key, ...hints) => SteamAPI.cls(key, ...hints),
   };
 
   /* ---- Arabic for the whole Steam client. Steam ships no Arabic interface, so when the theme language is Arabic we
