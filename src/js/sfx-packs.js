@@ -474,6 +474,38 @@
       },
     },
 
+    /* ── Slate: calm and rounded. Sine tones through a low-pass, a little room, nothing bright or sharp.
+         Only clicks (tick), Play and opening / closing the game popup make a sound; Slate plays none on hover. ── */
+    slate: {
+      tick(ctx, out, h) {          // a soft, low "tock" for clicks
+        const t = h.now();
+        h.tone({ dest: out, at: t, f: h.j(540, 0.03), f1: 420, dur: 0.045, gain: 0.014, attack: 0.003, filter: { type: 'lowpass', f: 1600, q: 0.4 } });
+        h.noise({ dest: out, at: t, dur: 0.012, gain: 0.004, type: 'lowpass', f: 1400, q: 0.5, attack: 0.001 });
+      },
+      swish(ctx, out, h) {         // barely there: only used if something else asks for it
+        h.noise({ dest: out, dur: 0.1, gain: 0.006, type: 'lowpass', f: 900, f1: 1500, q: 0.4, attack: 0.03 });
+      },
+      open(ctx, out, h) {          // the popup opens: two gentle rising notes (C5 to G5)
+        const t = h.now(), o = h.send(out, 0.14);
+        h.tone({ dest: o, at: t, f: 523, dur: 0.14, gain: 0.011, attack: 0.008, filter: { type: 'lowpass', f: 2200, q: 0.4 } });
+        h.tone({ dest: o, at: t + 0.06, f: 784, dur: 0.18, gain: 0.009, attack: 0.008, filter: { type: 'lowpass', f: 2200, q: 0.4 } });
+      },
+      close(ctx, out, h) {         // the popup closes: the same two notes falling, a little shorter
+        const t = h.now(), o = h.send(out, 0.12);
+        h.tone({ dest: o, at: t, f: 784, dur: 0.1, gain: 0.008, attack: 0.006, filter: { type: 'lowpass', f: 2000, q: 0.4 } });
+        h.tone({ dest: o, at: t + 0.05, f: 523, dur: 0.13, gain: 0.008, attack: 0.006, filter: { type: 'lowpass', f: 2000, q: 0.4 } });
+      },
+      play(ctx, out, h) {          // Play: a warm soft thump and a short three-note rise (E5 A5 C6)
+        const t = h.now(), o = h.send(out, 0.18);
+        h.tone({ dest: out, at: t, f: 140, f1: 90, dur: 0.09, gain: 0.02, attack: 0.004 });
+        [659, 880, 1047].forEach((f, i) => h.tone({ dest: o, at: t + 0.03 + i * 0.05, f, dur: 0.22, gain: 0.009, attack: 0.01, filter: { type: 'lowpass', f: 2600, q: 0.4 } }));
+      },
+      error(ctx, out, h) {         // something failed: two low, soft tones
+        const t = h.now();
+        [0, 0.1].forEach(d => h.tone({ dest: out, at: t + d, f: 330, f1: 300, dur: 0.08, gain: 0.012, attack: 0.006, filter: { type: 'lowpass', f: 1200, q: 0.4 } }));
+      },
+    },
+
     /* ── Glass Gallery: soft glassy ticks and chimes ── */
     glass: {
       tick(ctx, out, h) {

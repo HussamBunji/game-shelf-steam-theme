@@ -376,7 +376,8 @@
     enabled: true,
     sort: store.get('sort', 'recent'),
     view: store.get('view', 'spines'),
-    sound: store.get('sound', '0') === '1', // off until the user turns it on (a saved choice is kept)
+    sound: store.get('sound', '1') === '1', // on by default; a saved choice (on or off) is kept
+    vol: Math.min(1, Math.max(0, parseFloat(store.get('sfxvol', '0.6')) || 0)), // theme sound volume 0..1 (remembered)
     amb: store.get('amb', '0') === '1', //      the theme's background ambience: off by default too
     news: store.get('news', '0') === '1',
     source: store.get('source', 'all'),
@@ -593,7 +594,7 @@
       try { updateBar(); } catch (e) { /* strip not built yet */ }
     },
     output(a) { // a gentle top cut: nothing harsh gets through
-      if (!this.out) { const lp = a.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 9000; lp.Q.value = 0.5; const g = a.createGain(); g.gain.value = 0.9; lp.connect(g).connect(a.destination); this.out = lp; }
+      if (!this.out) { const lp = a.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 9000; lp.Q.value = 0.5; const g = a.createGain(); g.gain.value = 0.9 * state.vol; lp.connect(g).connect(a.destination); this.out = lp; this.outGain = g; }
       return this.out;
     },
     play(kind, a) {
@@ -647,14 +648,14 @@
         f.frequency.setValueAtTime(f0, t); f.frequency.exponentialRampToValueAtTime(f1, t + dur);
         const g = a.createGain(); g.gain.setValueAtTime(0.0001, t);
         g.gain.exponentialRampToValueAtTime(gain, t + 0.006); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-        s.connect(f).connect(g).connect(a.destination); s.start(t); s.stop(t + dur + 0.03);
+        s.connect(f).connect(g).connect(Sfx.output(a)); s.start(t); s.stop(t + dur + 0.03);
       };
       const tone = (dur, f0, f1, gain, type = 'sine') => {
         const o = a.createOscillator(); o.type = type;
         o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + dur);
         const g = a.createGain(); g.gain.setValueAtTime(0.0001, t);
         g.gain.exponentialRampToValueAtTime(gain, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-        o.connect(g).connect(a.destination); o.start(t); o.stop(t + dur + 0.03);
+        o.connect(g).connect(Sfx.output(a)); o.start(t); o.stop(t + dur + 0.03);
       };
       if (kind === 'tick') noise(0.022, 'bandpass', 3400, 2800, 0.035, 2.2);
       else if (kind === 'swish') noise(0.12, 'bandpass', 900, 2600, 0.05, 0.8);
@@ -1776,6 +1777,11 @@
     Sfx.load(); updateBar(); try { Sfx.sync(); } catch (e) { /* ambience engine not ready */ }
     paintSoundSwitch(); if (on) sfx('tick');
     try { paintNavSnd(); } catch (e) { /* nav button not built yet */ }
+  }
+  /** theme sound volume 0..1, remembered; applied at the one output node every sound goes through */
+  function setVolume(v) {
+    state.vol = Math.min(1, Math.max(0, Number(v) || 0)); store.set('sfxvol', String(Math.round(state.vol * 100) / 100));
+    try { if (Sfx.outGain) Sfx.outGain.gain.setTargetAtTime(0.9 * state.vol, Sfx.outGain.context.currentTime, 0.02); } catch (e) { /* no audio yet */ }
   }
   function paintSoundSwitch() {
     picker.querySelectorAll('.tp-snd button').forEach(b => { const on = (b.dataset.snd === 'on') === !!state.sound; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); });
@@ -3230,6 +3236,8 @@
     steamCls: (key, ...hints) => SteamAPI.cls(key, ...hints),
     // hub.js (our game page) loads on first use; its .data has the achievements / friends sources a game panel can reuse
     hub: () => Hub.load(),
+    // the theme sound switch + volume (Slate's Sound pill and its volume popover)
+    sound: { get on() { return state.sound; }, setOn: on => setSound(on), get volume() { return state.vol; }, setVolume: v => setVolume(v) },
   };
 
   /* ---- Arabic for the whole Steam client. Steam ships no Arabic interface, so when the theme language is Arabic we

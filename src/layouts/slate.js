@@ -456,8 +456,36 @@
     rail.querySelectorAll('[data-go]').forEach(b => b.classList.toggle('on', b.dataset.go === id));
   }
 
+  /* ---------- volume: a small ▾ beside the Sound pill opens a slider (the pill itself still toggles on / off) ---------- */
+  function buildVolume() {
+    const wrap = document.getElementById('rfs-navwrap');
+    if (!wrap || !api.sound || document.getElementById('slate-vol')) return;
+    const btn = document.createElement('button');
+    btn.id = 'slate-vol'; btn.type = 'button'; btn.className = 'rfs-tb';
+    btn.title = T('مستوى الصوت', 'Volume'); btn.setAttribute('aria-haspopup', 'true'); btn.setAttribute('aria-expanded', 'false');
+    btn.innerHTML = ic('chevD');
+    const pop = document.createElement('div');
+    pop.id = 'slate-volpop'; pop.hidden = true;
+    pop.innerHTML = `<label><span>${esc(T('مستوى الصوت', 'Volume'))}</span><b></b></label><input type="range" min="0" max="100" step="5">`;
+    const range = pop.querySelector('input'), out = pop.querySelector('b');
+    const paint = () => { const v = Math.round(api.sound.volume * 100); range.value = v; out.textContent = v + '%'; };
+    const place = () => { const r = btn.getBoundingClientRect(); pop.style.top = Math.round(r.bottom + 8) + 'px'; pop.style.left = Math.round(Math.max(8, r.right - 240)) + 'px'; };
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const open = pop.hidden;
+      pop.hidden = !open; btn.setAttribute('aria-expanded', String(open));
+      if (open) { paint(); place(); }
+    });
+    range.addEventListener('input', () => { api.sound.setVolume(range.value / 100); out.textContent = range.value + '%'; });
+    // a soft preview at the new level when the slider is let go (a click sound, never on hover)
+    range.addEventListener('change', () => { if (!api.sound.on && +range.value > 0) api.sound.setOn(true); api.sfx('tick'); });
+    document.addEventListener('pointerdown', e => { if (!pop.hidden && !pop.contains(e.target) && e.target !== btn && !btn.contains(e.target)) { pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); } }, true);
+    wrap.appendChild(btn);
+    document.body.appendChild(pop);
+  }
+
   buildChrome();
   // the active item follows navigation done anywhere (links, Steam's own buttons): checked twice a second, and the
-  // DOM is touched only when the answer changes
-  setInterval(() => { if (isSlate() && !document.hidden) paintActive(activeId()); }, 500);
+  // DOM is touched only when the answer changes. The volume button joins the title-bar pills once they exist.
+  setInterval(() => { if (isSlate() && !document.hidden) { paintActive(activeId()); if (!document.getElementById('slate-vol')) buildVolume(); } }, 500);
 })();
