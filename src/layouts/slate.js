@@ -161,10 +161,15 @@
       if (c) { c.classList.add('kb'); c.scrollIntoView({ block: 'nearest' }); }
     },
 
-    /* ---------- the game panel (Phase 3 turns this into the achievements popup) ---------- */
+    /* ---------- the game popup: Play + hours, the details grid, then achievements ----------
+       Achievements load only when the popup opens (hub.js data, cached per game). A hidden achievement that isn't
+       unlocked shows a placeholder: its real name and description enter the page only after "click to reveal". */
     async open(g, sheet) {
-      const facts = api.gameFacts(g);
-      const meta = [(g.developers || []).join(T('، ', ', ')), (g.genres || [])[0]].filter(Boolean).join(' · ');
+      const run = api.running().has(g.appid);
+      const meta = [(g.developers || [])[0], (g.genres || [])[0]].filter(Boolean).join(' · ');
+      const fav = isFav(g);
+      const playLabel = run ? ic('pulse') + esc(T('شغّالة', 'Running')) : g.installed ? ic('play') + esc(T('تشغيل', 'Play')) : ic('download') + esc(T('تثبيت', 'Install'));
+      const sub = [g.playtime2wksMin ? `${hoursShort(g.playtime2wksMin)} ${T('آخر أسبوعين', 'in the last 2 weeks')}` : '', g.lastPlayed ? `${T('آخر لعب', 'last played')} ${fmtAgo(g.lastPlayed)}` : ''].filter(Boolean).join(' · ');
       sheet.innerHTML = `
         <div class="sp-dim"></div>
         <div class="sp-wrap">
@@ -174,22 +179,79 @@
               <div class="sp-ban-in"><h2 dir="auto">${esc(g.name)}</h2>${meta ? `<p dir="auto">${esc(meta)}</p>` : ''}</div>
             </div>
             <div class="sp-row">
-              <div class="sp-acts"></div>
-              <div class="sp-hours"><b>${esc(g.playtimeMin ? fmtPlaytime(g.playtimeMin) : T('ما لعبتها بعد', 'Not played yet'))}</b>
-                <small>${esc([g.playtime2wksMin ? `${hoursShort(g.playtime2wksMin)} ${T('آخر أسبوعين', 'in the last 2 weeks')}` : '', g.lastPlayed ? `${T('آخر لعب', 'last played')} ${fmtAgo(g.lastPlayed)}` : ''].filter(Boolean).join(' · '))}</small></div>
+              <button class="sp-play play" type="button" data-do="play">${playLabel}</button>
+              <div class="sp-hours"><b>${esc(g.playtimeMin ? fmtPlaytime(g.playtimeMin) : T('ما لعبتها بعد', 'Not played yet'))}</b>${sub ? `<small>${esc(sub)}</small>` : ''}</div>
+              <div class="sp-tools">
+                <button class="sp-tool txt" type="button" data-do="store">${esc(T('صفحة المتجر', 'Store page'))}</button>
+                <button class="sp-tool${fav ? ' on' : ''}" type="button" data-do="fav" title="${esc(T('المفضلة', 'Favorite'))}" aria-pressed="${fav}">${ic(fav ? 'starOn' : 'star')}</button>
+                <button class="sp-tool" type="button" data-do="more" title="${esc(T('خيارات اللعبة', 'Game options'))}">${ic('sliders')}</button>
+              </div>
             </div>
-            <dl class="sp-facts">${facts.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd dir="auto" title="${esc(v)}">${esc(v)}</dd></div>`).join('')}</dl>
+            <dl class="sp-facts">${detailFacts(g).map(factHTML).join('')}</dl>
+            <section class="sa" hidden></section>
           </article>
         </div>`;
       $('.sp-ban-art', sheet).style.backgroundImage = [first(g.images.hero), first(g.images.header)].filter(Boolean).map(cssUrl).join(', ') || 'none';
-      $('.sp-acts', sheet).append(api.gameActions(g));
-      api.sfx('open');
       const panel = $('.sp-panel', sheet);
+      panel.addEventListener('click', e => this.onPanelClick(e, g, panel));
+      api.sfx('open');
+      // slower sources fill in on their own: friends, cloud status, then the achievements
+      this.fillLater(g, panel);
       await Promise.all([
         $('.sp-dim', sheet).animate([{ opacity: 0 }, { opacity: 1 }], { duration: 200, easing: 'ease-out' }).finished,
         panel.animate([{ opacity: 0, transform: 'translateY(14px) scale(.985)' }, { opacity: 1, transform: 'none' }], { duration: 240, easing: 'cubic-bezier(.2,.8,.2,1)' }).finished,
       ]).catch(() => {});
     },
+
+    onPanelClick(e, g, panel) {
+      const b = e.target.closest('[data-do]');
+      if (b) {
+        const act = b.dataset.do;
+        if (act === 'play') { api.launch(g); return; }               // launch() plays its own sound
+        api.sfx('tick');
+        if (act === 'store') api.openStore(g.appid);
+        else if (act === 'more') { const r = b.getBoundingClientRect(); api.gameMenu(g, r.left, r.bottom + 6, b); }
+        else if (act === 'fav') {
+          const on = !isFav(g);
+          try { api.steam().collectionStore.SetAppsAsFavorite([g.appid], on); } catch (err) { api.toast(T('ما قدرت أغيّر المفضلة', "Couldn't change Favorites")); return; }
+          b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); b.innerHTML = ic(on ? 'starOn' : 'star');
+          api.toast(on ? T('انضافت للمفضلة', 'Added to Favorites') : T('انشالت من المفضلة', 'Removed from Favorites'));
+        }
+        return;
+      }
+      const sa = panel.querySelector('.sa');
+      if (sa && sa.contains(e.target)) Ach.onClick(e, sa);
+    },
+
+    async fillLater(g, panel) {
+      let H = null;
+      try { H = await api.hub(); } catch (err) { /* no hub: the grid keeps what it has, no achievements section */ }
+      if (!panel.isConnected) return;
+      const data = H && H.data;
+      if (data) {
+        // friends: "3 friends own it" / "2 playing now"
+        data.friends(g).then(list => {
+          if (!panel.isConnected || !list) return;
+          const playing = list.filter(f => f.state === 'ingame').length;
+          const text = playing ? T(`${NUM.format(playing)} يلعبونها الحين`, `${NUM.format(playing)} playing now`)
+            : list.length ? T(`${NUM.format(list.length)} من أصدقائك عندهم اللعبة`, `${NUM.format(list.length)} ${list.length === 1 ? 'friend owns' : 'friends own'} it`) : T('ولا أحد من أصدقائك', 'None of your friends');
+          setFact(panel, 'friends', text);
+        }).catch(() => setFact(panel, 'friends', '—'));
+        try { const cloud = (data.moreFacts(g) || []).find(([k]) => k === T('حفظ السحابة', 'Steam Cloud')); if (cloud) setFact(panel, 'cloud', cloud[1]); } catch (err) { /* keep the first guess */ }
+      }
+      // achievements: skip the request when Steam already says the game has none
+      if (g.achKnown && !api.gameAch(g)) return;
+      const sa = panel.querySelector('.sa');
+      if (!sa) return;
+      sa.hidden = false;
+      sa.innerHTML = `<div class="sa-head"><h3>${esc(T('الإنجازات', 'Achievements'))}</h3><span class="sa-count">${esc(T('يحمّل…', 'Loading…'))}</span></div>`;
+      let list = null;
+      try { list = data ? await data.achievements(g) : null; } catch (err) { list = null; }
+      if (!panel.isConnected) return;
+      if (!list || !list.length) { sa.remove(); return; }       // no achievements: no section at all
+      Ach.mount(sa, list);
+    },
+
     async close(sheet) {
       const panel = $('.sp-panel', sheet); if (!panel) return;
       api.sfx('close');
@@ -200,6 +262,139 @@
       ]).catch(() => {});
     },
   };
+
+  /* ---------- popup helpers ---------- */
+  function isFav(g) { try { return !!api.steam().collectionStore.BIsFavorite(g.appid); } catch (e) { return false; } }
+  const LOCALE = () => (api.LANG === 'ar' ? 'ar-u-nu-latn' : 'en-GB');
+  const fmtDate = (sec, opts) => { try { return new Intl.DateTimeFormat(LOCALE(), opts).format(new Date(sec * 1000)); } catch (e) { return ''; } };
+  /** "Today, 21:40" · "Yesterday, 18:02" · "3 Nov 2026" */
+  function lastPlayedText(sec) {
+    if (!sec) return T('ما انلعبت', 'Never');
+    const d = new Date(sec * 1000), now = new Date(), day = 86400000;
+    const startToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const time = fmtDate(sec, { hour: '2-digit', minute: '2-digit', hour12: false });
+    if (d.getTime() >= startToday) return T(`اليوم، ${time}`, `Today, ${time}`);
+    if (d.getTime() >= startToday - day) return T(`أمس، ${time}`, `Yesterday, ${time}`);
+    return fmtDate(sec, { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+  const REVIEW = { 9: ['إيجابية للغاية', 'Overwhelmingly Positive'], 8: ['إيجابية جدًا', 'Very Positive'], 7: ['إيجابية', 'Positive'], 6: ['إيجابية غالبًا', 'Mostly Positive'], 5: ['متباينة', 'Mixed'], 4: ['سلبية غالبًا', 'Mostly Negative'], 3: ['سلبية', 'Negative'], 2: ['سلبية جدًا', 'Very Negative'], 1: ['سلبية للغاية', 'Overwhelmingly Negative'] };
+  /** the details grid: [key, label, value]; "friends" and "cloud" are refined when slower sources answer */
+  function detailFacts(g) {
+    const ov = g.ov || {};
+    let d = null; try { d = api.steam().appDetailsStore.GetAppDetails(g.appid); } catch (e) { /* not loaded */ }
+    const out = [];
+    out.push(['last', T('آخر لعب', 'Last played'), lastPlayedText(g.lastPlayed)]);
+    // Steam keeps no "first played" date; the date the game joined your library is the closest it has
+    const added = ov.rt_purchased_time || (d && d.rtPurchased);
+    out.push(['since', T('في مكتبتك من', 'In library since'), added ? fmtDate(added, { month: 'long', year: 'numeric' }) : '—']);
+    out.push(['2wk', T('آخر أسبوعين', 'Past 2 weeks'), g.playtime2wksMin ? fmtPlaytime(g.playtime2wksMin) : T('ما لعبت', 'Not played')]);
+    out.push(['size', g.installed ? T('حجم التثبيت', 'Install size') : T('حجم التحميل', 'Download size'), api.sizeText(g) || '—']);
+    let cloud = '—';
+    try { if (d) cloud = !d.bCloudEnabledForApp ? T('غير مدعوم', 'Not supported') : !d.bCloudEnabledForAccount ? T('مطفأ', 'Off') : T('مفعّل', 'On'); } catch (e) { /* keep the dash */ }
+    out.push(['cloud', T('حفظ السحابة', 'Cloud saves'), cloud]);
+    const rel = ov.rt_steam_release_date || ov.rt_original_release_date;
+    out.push(['release', T('تاريخ الإصدار', 'Release date'), rel ? fmtDate(rel, { day: 'numeric', month: 'short', year: 'numeric' }) : (g.releaseDate || '—')]);
+    out.push(['dev', T('المطوّر', 'Developer'), (g.developers || []).join(T('، ', ', ')) || '—']);
+    const rs = ov.review_score_without_bombs || ov.review_score_with_bombs, rp = ov.review_percentage_without_bombs || ov.review_percentage;
+    out.push(['reviews', T('التقييمات', 'Reviews'), REVIEW[rs] ? `${T(REVIEW[rs][0], REVIEW[rs][1])}${rp ? ` · ${rp}%` : ''}` : (rp ? `${rp}%` : '—')]);
+    out.push(['genre', T('النوع', 'Genre'), (g.genres || []).slice(0, 2).join(T('، ', ', ')) || '—']);
+    const CT = { 1: T('دعم جزئي', 'Partial support'), 2: T('دعم كامل', 'Full support') };
+    out.push(['ctrl', T('اليد', 'Controller'), CT[ov.xbox_controller_support] || T('بدون', 'None')]);
+    out.push(['friends', T('الأصدقاء', 'Friends'), '…']);
+    let drive = g.drive || '';
+    try { const f = (d && d.strInstallFolder) || ''; const m = /^([A-Za-z]:)\\([^\\]+)/.exec(f); if (m) drive = `${m[1].toUpperCase()} ${m[2]}`; } catch (e) { /* keep */ }
+    out.push(['drive', T('القرص', 'Drive'), g.installed ? (drive || '—') : T('غير مثبتة', 'Not installed')]);
+    const DK = { 1: T('غير مدعومة', 'Unsupported'), 2: T('قابلة للعب', 'Playable'), 3: T('متحقق منها', 'Verified') };
+    if (DK[ov.steam_deck_compat_category]) out.push(['deck', T('ستيم ديك', 'Steam Deck'), DK[ov.steam_deck_compat_category]]);
+    return out;
+  }
+  const factHTML = ([k, label, v]) => `<div data-f="${k}"><dt>${esc(label)}</dt><dd dir="auto" title="${esc(v)}">${esc(v)}</dd></div>`;
+  function setFact(panel, key, value) {
+    const dd = panel.querySelector(`.sp-facts [data-f="${key}"] dd`);
+    if (dd && dd.textContent !== value) { dd.textContent = value; dd.title = value; }
+  }
+
+  /* ---------- achievements: progress, Remaining / Unlocked tabs, sort, hover details, reveal, recent strip ---------- */
+  const LOCK = '<svg class="rf-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+  const rarity = p => (p == null ? '' : p <= 5 ? T('نادر جدًا', 'Ultra rare') : p <= 10 ? T('نادر', 'Rare') : p <= 35 ? T('غير شائع', 'Uncommon') : T('شائع', 'Common'));
+  const pctText = p => (p == null ? '' : T(`${NUM.format(Math.round(p * 10) / 10)}% من اللاعبين`, `${NUM.format(Math.round(p * 10) / 10)}% of players`));
+  const statLine = a => [pctText(a.global), rarity(a.global)].filter(Boolean).join(' · ');
+  const SORTS_A = {
+    rare: [T('الأندر أولًا', 'Rarest first'), (a, b) => (a.global ?? 101) - (b.global ?? 101)],
+    common: [T('الأشيع أولًا', 'Most common first'), (a, b) => (b.global ?? -1) - (a.global ?? -1)],
+    recent: [T('آخر ما فتحت', 'Recently unlocked'), (a, b) => (b.time || 0) - (a.time || 0)],
+    name: [T('أبجديًا', 'A to Z'), (a, b) => String(a.name).localeCompare(String(b.name))],
+  };
+  const Ach = {
+    mount(sa, list) {
+      const got = list.filter(a => a.unlocked), left = list.filter(a => !a.unlocked);
+      const pct = Math.round((got.length / list.length) * 100);
+      sa._list = list; sa._revealed = new Set();
+      sa._tab = left.length ? 'remaining' : 'unlocked';
+      sa._sort = { remaining: 'rare', unlocked: 'recent' };
+      const recent = got.filter(a => a.time).sort(SORTS_A.recent[1]).slice(0, 5);
+      sa.innerHTML = `
+        <div class="sa-head">
+          <h3>${esc(T('الإنجازات', 'Achievements'))}</h3>
+          <span class="sa-count"><b>${NUM.format(got.length)}</b> ${esc(T('من', 'of'))} ${NUM.format(list.length)} · ${pct}%</span>
+          <i class="sa-bar" style="--p:${pct}%"></i>
+        </div>
+        <div class="sa-tools">
+          <div class="sa-tabs" role="tablist">
+            <button type="button" role="tab" data-tab="remaining">${esc(T('المتبقية', 'Remaining'))} (${NUM.format(left.length)})</button>
+            <button type="button" role="tab" data-tab="unlocked">${esc(T('المفتوحة', 'Unlocked'))} (${NUM.format(got.length)})</button>
+          </div>
+          <div class="sa-sort"><button type="button" class="sa-sort-btn" data-sortmenu></button><div class="sa-sort-menu" hidden></div></div>
+        </div>
+        <div class="sa-grid"></div>
+        ${recent.length ? `<div class="sa-recent"><h4>${esc(T('آخر ما فتحت', 'Recently unlocked'))}</h4><div class="sa-chips">${recent.map(a => `<span class="sa-chip" title="${esc(a.time ? fmtDate(a.time, { day: 'numeric', month: 'short', year: 'numeric' }) : '')}">${a.icon ? `<img src="${esc(a.icon)}" alt="" loading="lazy">` : '<i></i>'}<b dir="auto">${esc(a.name)}</b></span>`).join('')}</div></div>` : ''}`;
+      this.paint(sa);
+    },
+    paint(sa) {
+      const tab = sa._tab, key = sa._sort[tab];
+      sa.querySelectorAll('[data-tab]').forEach(b => { const on = b.dataset.tab === tab; b.classList.toggle('on', on); b.setAttribute('aria-selected', String(on)); });
+      sa.querySelector('.sa-sort-btn').innerHTML = `${esc(T('الترتيب:', 'Sort:'))} ${esc(SORTS_A[key][0])} ${ic('chevD')}`;
+      const keys = tab === 'remaining' ? ['rare', 'common', 'name'] : ['recent', 'rare', 'common', 'name'];
+      sa.querySelector('.sa-sort-menu').innerHTML = keys.map(k => `<button type="button" data-sort="${k}"${k === key ? ' class="on"' : ''}>${esc(SORTS_A[k][0])}</button>`).join('');
+      const items = sa._list.filter(a => (tab === 'unlocked') === a.unlocked).sort(SORTS_A[key][1]);
+      sa.querySelector('.sa-grid').innerHTML = items.length ? items.map(a => this.itemHTML(a, sa)).join('')
+        : `<p class="sa-none">${esc(tab === 'remaining' ? T('فتحت كل الإنجازات!', "You've unlocked them all!") : T('ما فتحت شي بعد', 'Nothing unlocked yet'))}</p>`;
+    },
+    itemHTML(a, sa) {
+      const idx = sa._list.indexOf(a);
+      const secret = a.hidden && !a.unlocked && !sa._revealed.has(idx);
+      const stat = statLine(a);
+      const icon = a.unlocked && a.icon ? `<img class="sa-ico" src="${esc(a.icon)}" alt="" loading="lazy">` : `<i class="sa-ico lock">${LOCK}</i>`;
+      if (secret) {
+        // placeholder blocks, not the real name blurred: the real text isn't in the page until it's revealed
+        return `<div class="sa-item secret" data-i="${idx}">${icon}
+          <div class="sa-txt"><i class="sa-redact" aria-hidden="true"></i><button type="button" class="sa-reveal" data-reveal="${idx}">${esc(T('مخفي · اضغط للكشف', 'Hidden · click to reveal'))}</button></div>
+          <div class="sa-tip" role="tooltip"><p>${esc(T('إنجاز مخفي', 'Hidden achievement'))}</p>${stat ? `<small>${esc(stat)}</small>` : ''}</div></div>`;
+      }
+      const when = a.unlocked && a.time ? T(`فتحته ${fmtDate(a.time, { day: 'numeric', month: 'short', year: 'numeric' })}`, `Unlocked ${fmtDate(a.time, { day: 'numeric', month: 'short', year: 'numeric' })}`) : '';
+      return `<div class="sa-item${a.unlocked ? ' done' : ''}" data-i="${idx}">${icon}
+        <div class="sa-txt"><b dir="auto">${esc(a.name)}</b>${stat ? `<small>${esc(stat)}</small>` : ''}</div>
+        <div class="sa-tip" role="tooltip"><p dir="auto">${esc(a.desc || T('بدون وصف', 'No description'))}</p><small>${esc([stat, when].filter(Boolean).join(' · '))}</small></div></div>`;
+    },
+    onClick(e, sa) {
+      const tab = e.target.closest('[data-tab]');
+      if (tab) { api.sfx('tick'); sa._tab = tab.dataset.tab; this.paint(sa); return; }
+      const menu = sa.querySelector('.sa-sort-menu');
+      if (e.target.closest('[data-sortmenu]')) { api.sfx('tick'); menu.hidden = !menu.hidden; return; }
+      const s = e.target.closest('[data-sort]');
+      if (s) { api.sfx('tick'); sa._sort[sa._tab] = s.dataset.sort; menu.hidden = true; this.paint(sa); return; }
+      const r = e.target.closest('[data-reveal]');
+      if (r) {
+        api.sfx('tick');
+        const idx = +r.dataset.reveal; sa._revealed.add(idx);
+        const tmp = document.createElement('div'); tmp.innerHTML = this.itemHTML(sa._list[idx], sa);
+        r.closest('.sa-item').replaceWith(tmp.firstElementChild);
+        return;
+      }
+      if (menu && !menu.hidden && !e.target.closest('.sa-sort')) menu.hidden = true;
+    },
+  };
+
   api.register('slate', Layout);
 
   /* ═════════ window chrome: icon rail + title-bar search (only visible while Slate is the style, via CSS) ═════════ */

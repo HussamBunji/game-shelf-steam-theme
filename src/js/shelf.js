@@ -3228,6 +3228,8 @@
     focusSearch: () => Search.focus(), navigate: path => SteamAPI.navigate(path), route: () => SteamAPI.route(),
     where() { try { const m = SteamAPI.ctx().MainWindowBrowserManager; return { route: SteamAPI.route(), tab: m.m_lastActiveTab || '', url: m.m_URL || '' }; } catch (e) { return { route: SteamAPI.route(), tab: '', url: '' }; } },
     steamCls: (key, ...hints) => SteamAPI.cls(key, ...hints),
+    // hub.js (our game page) loads on first use; its .data has the achievements / friends sources a game panel can reuse
+    hub: () => Hub.load(),
   };
 
   /* ---- Arabic for the whole Steam client. Steam ships no Arabic interface, so when the theme language is Arabic we
