@@ -248,6 +248,14 @@ html[data-rfs-style="slate"] #rfs-navsnd.rfs-tb[data-on="true"]::before { backgr
 html[data-rfs-style="slate"] .rfs-nav-tb > #rfs-navsnd.rfs-tb::after { display: inline !important; order: 2; content: 'Sound'; }
 html[data-rfs-style="slate"][data-rfs-lang="ar"] .rfs-nav-tb > #rfs-navsnd.rfs-tb::after { content: 'الأصوات'; }
 
+/* next Steam sale: a quiet countdown pill (teal dot + text while the sale is live) */
+#slate-sale { display: none; }
+html[data-rfs-style="slate"] .rfs-nav-tb > #slate-sale { display: inline-flex; color: rgb(var(--sl-dim)); font-weight: 600; }
+html[data-rfs-style="slate"] .rfs-nav-tb > #slate-sale > svg.rf-ic { width: 15px; height: 15px; }
+html[data-rfs-style="slate"] .rfs-nav-tb > #slate-sale > svg.rf-ic * { stroke: currentColor; }
+html[data-rfs-style="slate"] .rfs-nav-tb > #slate-sale > span { color: rgb(var(--sl-text)); white-space: nowrap; }
+html[data-rfs-style="slate"] .rfs-nav-tb > #slate-sale.live { color: rgb(var(--sl-accent)); border-color: rgba(var(--sl-accent), .55); }
+
 /* volume: the ▾ beside the Sound pill and its slider popover */
 #slate-volpop { display: none; }
 html[data-rfs-style="slate"] .rfs-nav-tb > #slate-vol { min-width: 0; width: 30px; padding: 0 !important; justify-content: center; margin-inline-start: -4px; }
