@@ -1,0 +1,10 @@
+/* THEMES picker card for Slate: title bar with a search pill, icon rail, a hero with a teal Play, then a grid */
+#rfs-themes .tp-slate { background: #0b1118; }
+#rfs-themes .tp-slate .pv-a { left: 0; right: 0; top: 0; height: 14px; background: #0b1118; box-shadow: 0 1px 0 #263240; }
+#rfs-themes .tp-slate .pv-a::after { content: ''; position: absolute; left: 38%; width: 24%; top: 3px; height: 8px; border-radius: 4px; background: #121a23; box-shadow: 0 0 0 1px #263240; }
+#rfs-themes .tp-slate .pv-b { left: 0; top: 14px; bottom: 0; width: 16px; background: #0b1118; box-shadow: 1px 0 0 #263240; }
+#rfs-themes .tp-slate .pv-c { left: 24px; right: 8px; top: 22px; height: 44px; border-radius: 6px; background: linear-gradient(90deg, #121a23 45%, #1e2936); box-shadow: 0 0 0 1px #263240; }
+#rfs-themes .tp-slate .pv-c::after { content: ''; position: absolute; left: 8px; bottom: 7px; width: 26px; height: 9px; border-radius: 3px; background: #3fb5a8; }
+#rfs-themes .tp-slate .pv-i { top: 74px; left: calc(24px + var(--i) * 19px); width: 16px; height: 24px; border-radius: 3px; background: hsl(calc(195deg + var(--i) * 9deg) 18% 22%); }
+/* items 6-11 form the second row (the picker card holds pv-a, pv-b, pv-c, then the twelve pv-i) */
+#rfs-themes .tp-slate .pv-i:nth-child(n+10) { top: 104px; left: calc(24px + (var(--i) - 6) * 19px); }
