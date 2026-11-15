@@ -147,7 +147,7 @@
      Original keeps Valve's. */
   const U = 'html:not([data-rfs-style="material"]):not([data-rfs-style="original"])';
   const FOOT = 'html:is([data-rfs-style="arcade"], [data-rfs-style="terminal"], [data-rfs-style="vinyl"], [data-rfs-style="classic"], [data-rfs-style="cyberpunk"], [data-rfs-style="shelter"])';
-  const HEAD = 'html:is([data-rfs-style="glass"], [data-rfs-style="magazine"], [data-rfs-style="vault"], [data-rfs-style="cork"], [data-rfs-style="neon"], [data-rfs-style="space"], [data-rfs-style="cupertino"], [data-rfs-style="xmb"])';
+  const HEAD = 'html:is([data-rfs-style="glass"], [data-rfs-style="slate"], [data-rfs-style="magazine"], [data-rfs-style="vault"], [data-rfs-style="cork"], [data-rfs-style="neon"], [data-rfs-style="space"], [data-rfs-style="cupertino"], [data-rfs-style="xmb"])';
   urule`${FOOT} ${C('TitleBarControls')} {
     position: fixed !important; inset: auto 0 0 0 !important; z-index: 900; display: flex !important;
     flex-direction: row !important; align-items: center !important; justify-content: flex-start !important;
@@ -431,7 +431,7 @@
      becomes visible (and every few seconds while visible), and swaps the sheet if they differ. */
   (function followStyle() {
     if (!/steamloopback\.host$/.test(location.host)) return;
-    const STYLE_IDS = { 'Classic Shelf': 'classic', 'Neon Coverflow': 'neon', 'Glass Gallery': 'glass', 'Steam Original': 'original', 'SpaceTheme': 'space', 'Material You': 'material', 'Terminal': 'terminal', 'RPG Vault': 'vault', 'Vinyl Records': 'vinyl', 'Corkboard': 'cork', 'Retro Arcade': 'arcade', 'Magazine': 'magazine', 'Cupertino Dark': 'cupertino', 'Cyberpunk': 'cyberpunk', 'Shelter OS': 'shelter', 'Crossbar': 'xmb',
+    const STYLE_IDS = { 'Classic Shelf': 'classic', 'Neon Coverflow': 'neon', 'Glass Gallery': 'glass', 'Steam Original': 'original', 'SpaceTheme': 'space', 'Material You': 'material', 'Terminal': 'terminal', 'RPG Vault': 'vault', 'Vinyl Records': 'vinyl', 'Corkboard': 'cork', 'Retro Arcade': 'arcade', 'Magazine': 'magazine', 'Cupertino Dark': 'cupertino', 'Cyberpunk': 'cyberpunk', 'Shelter OS': 'shelter', 'Crossbar': 'xmb', 'Slate': 'slate',
       'Steam OLED Black': 'steam-oled', 'Steam Graphite': 'steam-graphite', 'Steam Midnight': 'steam-midnight', 'Steam Forest': 'steam-forest', 'Steam Wine': 'steam-wine', 'Steam Royal Purple': 'steam-royal', 'Steam Coffee': 'steam-coffee', 'Steam Ocean': 'steam-ocean' };
     const api = ctx.MILLENNIUM_API;
     if (!api || !api.ffi) return;

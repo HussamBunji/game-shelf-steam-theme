@@ -14,12 +14,12 @@
 
   /* ---- which theme style + language are active?  Millennium only injects the default style into web
      pages, so ask Millennium for the user's choices and switch the variable set / texts ourselves. */
-  const STYLE_IDS = { 'Classic Shelf': 'classic', 'Neon Coverflow': 'neon', 'Glass Gallery': 'glass', 'Steam Original': 'original', 'SpaceTheme': 'space', 'Material You': 'material', 'Terminal': 'terminal', 'RPG Vault': 'vault', 'Vinyl Records': 'vinyl', 'Corkboard': 'cork', 'Retro Arcade': 'arcade', 'Magazine': 'magazine', 'Cupertino Dark': 'cupertino', 'Cyberpunk': 'cyberpunk', 'Shelter OS': 'shelter', 'Crossbar': 'xmb',
+  const STYLE_IDS = { 'Classic Shelf': 'classic', 'Neon Coverflow': 'neon', 'Glass Gallery': 'glass', 'Steam Original': 'original', 'SpaceTheme': 'space', 'Material You': 'material', 'Terminal': 'terminal', 'RPG Vault': 'vault', 'Vinyl Records': 'vinyl', 'Corkboard': 'cork', 'Retro Arcade': 'arcade', 'Magazine': 'magazine', 'Cupertino Dark': 'cupertino', 'Cyberpunk': 'cyberpunk', 'Shelter OS': 'shelter', 'Crossbar': 'xmb', 'Slate': 'slate',
     'Steam OLED Black': 'steam-oled', 'Steam Graphite': 'steam-graphite', 'Steam Midnight': 'steam-midnight', 'Steam Forest': 'steam-forest', 'Steam Wine': 'steam-wine', 'Steam Royal Purple': 'steam-royal', 'Steam Coffee': 'steam-coffee', 'Steam Ocean': 'steam-ocean' };
   // styles that do not use our own store recolour (stock Steam, or a bundled community theme)
   // every style now leaves the store to stock Steam or a community theme base (SpaceTheme / Material);
   // the old colour-classifying recolour below stays in the code but is switched off
-  const NATIVE = new Set(['classic', 'neon', 'glass', 'original', 'space', 'material', 'terminal', 'vault', 'vinyl', 'cork', 'arcade', 'magazine']);
+  const NATIVE = new Set(['classic', 'neon', 'glass', 'original', 'space', 'material', 'terminal', 'vault', 'vinyl', 'cork', 'arcade', 'magazine', 'slate']);
   const html = document.documentElement;
   /* "Remove Game Shelf" (the Themes window, shelf.js Themes.removeAll): right before the theme is deleted Steam opens
      one store page and one community page with ?rfsclean=1. Each forgets what the theme kept for its site — its
@@ -629,12 +629,12 @@
 
 
   /* ---- right data panel (store game pages): the SteamDB-style numbers people scroll for, beside the page.
-     Live players (Steam Web API), the same game's price in other Steam regions converted to KWD
+     Live players (Steam Web API), the same game's price in other Steam regions converted to SAR
      (store appdetails + open.er-api.com rates), quick facts and trusted price-history trackers.
      Everything is cached (players 5 min, prices 6 h, rates 12 h) so the store API is not hammered. */
-  const HOME_CC = 'kw';
-  const REGIONS = [['kw', 'الكويت', 'Kuwait'], ['sa', 'السعودية', 'Saudi Arabia'], ['ae', 'الإمارات', 'UAE'], ['us', 'أمريكا', 'United States'], ['gb', 'بريطانيا', 'United Kingdom'],
-    ['de', 'أوروبا', 'Europe'], ['tr', 'تركيا', 'Turkey'], ['ar', 'الأرجنتين', 'Argentina'], ['br', 'البرازيل', 'Brazil'], ['in', 'الهند', 'India']];
+  const HOME_CC = 'sa', HOME_CUR = 'SAR'; // your store region and the currency every price is converted to
+  const REGIONS = [['sa', 'السعودية', 'Saudi Arabia'], ['ae', 'الإمارات', 'United Arab Emirates'], ['kw', 'الكويت', 'Kuwait'], ['us', 'أمريكا', 'United States'],
+    ['de', 'منطقة اليورو', 'Euro area'], ['gb', 'بريطانيا', 'United Kingdom']];
   const regionName = cc => { const r = REGIONS.find(x => x[0] === cc); return r ? T(r[1], r[2]) : cc.toUpperCase(); };
   const memo = {
     get(k, maxAge) { try { const v = JSON.parse(localStorage.getItem('rfs.' + k)); if (v && Date.now() - v.t < maxAge) return v.d; } catch (e) { /* ignore */ } return undefined; },
@@ -653,7 +653,7 @@
     return j && j.response && j.response.result === 1 ? j.response.player_count : null;
   });
   const fxRates = () => cached('fx', 12 * 3600e3, async () => (await getJSON('https://open.er-api.com/v6/latest/USD')).rates);
-  const regionPrices = id => cached('px2.' + id, 6 * 3600e3, () => Promise.all(REGIONS.map(async ([cc, name]) => {
+  const regionPrices = id => cached('px3.' + id, 6 * 3600e3, () => Promise.all(REGIONS.map(async ([cc, name]) => {
     try {
       const e = (await getJSON(`/api/appdetails?appids=${id}&cc=${cc}&filters=price_overview`))[id];
       if (!e || !e.success) return { cc, name, na: true };
@@ -673,7 +673,7 @@
     };
   });
   const num = n => Number(n).toLocaleString('en-US');
-  const kwd = v => v.toFixed(2) + ' KD';
+  const money = v => v.toFixed(2) + ' ' + HOME_CUR;
 
   let dataEl = null, dataFor = '';
   function placeData(top) {
@@ -713,7 +713,7 @@
     const skel = '<div class="rd-skel"></div><div class="rd-skel" style="width:70%"></div>';
     dataEl.innerHTML = `
       <section class="rd-live">${icT('online', 'lg')}<span><b class="rd-n">…</b><small>${T('يلعبونها الحين', 'playing right now')}</small></span><i class="rd-dot"></i></section>
-      <section class="rd-px"><h4>${ic('globe')}${T('السعر حول العالم', 'Price around the world')}<small>${T('بالدينار الكويتي', 'in Kuwaiti dinar')}</small></h4><div class="rd-rows">${skel}${skel}</div></section>
+      <section class="rd-px"><h4>${ic('globe')}${T('السعر حول العالم', 'Price around the world')}<small>${T('بالريال السعودي', 'in Saudi riyal')}</small></h4><div class="rd-rows">${skel}${skel}</div></section>
       <section class="rd-fx"><h4>${ic('info')}${T('معلومات سريعة', 'Quick facts')}</h4><div class="rd-grid rd-facts">${skel}</div></section>
       <section><h4>${ic('trend')}${T('تتبّع وتاريخ الأسعار', 'Price trackers')}</h4><div class="rd-grid">${links.map(([n, t, s, u]) =>
         `<a class="rd-link" href="${esc(u)}" data-ext="${esc(u)}" title="${esc(u)}">${icT(n)}<span><b dir="ltr">${esc(t)}</b><small>${esc(s)}</small></span></a>`).join('')}</div></section>`;
@@ -733,19 +733,19 @@
         box.innerHTML = `<div class="rd-note">${rows.some(r => r.free) ? T('اللعبة مجانية في كل المناطق.', 'Free to play in every region.') : T('ما في سعر متوفر لهذي اللعبة حاليًا.', 'No price is available for this game right now.')}</div>`;
         return;
       }
-      for (const r of rows) if (r.final != null && fx[r.cur] && fx.KWD) r.kwd = r.final / fx[r.cur] * fx.KWD;
-      const priced = rows.filter(r => r.kwd != null).sort((a, b) => a.kwd - b.kwd);
-      const home = rows.find(r => r.cc === HOME_CC && r.kwd != null);
+      for (const r of rows) if (r.final != null && fx[r.cur] && fx[HOME_CUR]) r.conv = r.final / fx[r.cur] * fx[HOME_CUR];
+      const priced = rows.filter(r => r.conv != null).sort((a, b) => a.conv - b.conv);
+      const home = rows.find(r => r.cc === HOME_CC && r.conv != null);
       const best = priced[0];
       const line = r => {
-        if (r.kwd == null) return `<div class="rd-row na"><span class="rd-cc">${r.cc.toUpperCase()}</span><span class="rd-name">${esc(regionName(r.cc))}</span><b class="rd-kwd">—</b><span class="rd-loc">${r.free ? T('مجانية', 'Free') : T('غير متوفرة', 'Not sold')}</span><span class="rd-diff"></span></div>`;
-        const diff = home && r !== home ? Math.round((r.kwd / home.kwd - 1) * 100) : null;
+        if (r.conv == null) return `<div class="rd-row na"><span class="rd-cc">${r.cc.toUpperCase()}</span><span class="rd-name">${esc(regionName(r.cc))}</span><b class="rd-kwd">—</b><span class="rd-loc">${r.free ? T('مجانية', 'Free') : T('غير متوفرة', 'Not sold')}</span><span class="rd-diff"></span></div>`;
+        const diff = home && r !== home ? Math.round((r.conv / home.conv - 1) * 100) : null;
         const cls = [r === home ? 'home' : '', r === best && priced.length > 1 ? 'best' : ''].filter(Boolean).join(' ');
         const tag = r === best && priced.length > 1 ? `<i class="rd-tag">${T('الأرخص', 'Cheapest')}</i>` : r === home ? `<i class="rd-tag">${T('منطقتك', 'Your region')}</i>` : '';
-        return `<div class="rd-row ${cls}"><span class="rd-cc">${r.cc.toUpperCase()}</span><span class="rd-name">${esc(regionName(r.cc))}${tag}</span><b class="rd-kwd">${kwd(r.kwd)}</b>`
+        return `<div class="rd-row ${cls}"><span class="rd-cc">${r.cc.toUpperCase()}</span><span class="rd-name">${esc(regionName(r.cc))}${tag}</span><b class="rd-kwd">${money(r.conv)}</b>`
           + `<span class="rd-loc">${esc(r.fmt)}${r.pct ? ` · -${r.pct}%` : ''}</span><span class="rd-diff${diff == null ? '' : diff < 0 ? ' lo' : diff > 0 ? ' hi' : ''}">${diff == null ? '' : (diff > 0 ? '+' : '') + diff + '%'}</span></div>`;
       };
-      box.innerHTML = priced.concat(rows.filter(r => r.kwd == null)).map(line).join('')
+      box.innerHTML = priced.concat(rows.filter(r => r.conv == null)).map(line).join('')
         + `<div class="rd-note">${T('تقريبية حسب سعر الصرف اليوم. النسبة مقارنةً بسعر منطقتك.', 'Approximate, at today\'s exchange rate. % is compared with your region.')}</div>`;
     }).catch(() => { if (mine()) dataEl.querySelector('.rd-rows').innerHTML = `<div class="rd-note">${T('تعذّر جلب الأسعار الحين.', 'Could not load prices right now.')}</div>`; });
 

@@ -238,20 +238,20 @@ html:is([data-rfs-style="space"], [data-rfs-style="material"]) :is(#rfs-rail, #r
 /* ═════════════ the side panels wear each style's own clothes ═════════════
    (the panels sit right beside the store column — webkit.js docks them) */
 /* SpaceTheme family (SpaceTheme + Classic / Glass / Neon built on it): flat cards, small caps labels */
-html:is([data-rfs-style="space"], [data-rfs-style="classic"], [data-rfs-style="glass"], [data-rfs-style="neon"]) :is(#rfs-rail, #rfs-data, #rfs-qmenu) section {
+html:is([data-rfs-style="space"], [data-rfs-style="classic"], [data-rfs-style="glass"], [data-rfs-style="slate"], [data-rfs-style="neon"]) :is(#rfs-rail, #rfs-data, #rfs-qmenu) section {
   background: rgb(var(--st-color-3, 20, 20, 20)); border: 1px solid rgb(var(--st-color-6, 38, 38, 41));
   border-radius: calc(var(--st-border-radius, 8px) + 4px); box-shadow: none; backdrop-filter: none;
 }
-html:is([data-rfs-style="space"], [data-rfs-style="classic"], [data-rfs-style="glass"], [data-rfs-style="neon"]) :is(#rfs-rail, #rfs-data, #rfs-qmenu) h4 {
+html:is([data-rfs-style="space"], [data-rfs-style="classic"], [data-rfs-style="glass"], [data-rfs-style="slate"], [data-rfs-style="neon"]) :is(#rfs-rail, #rfs-data, #rfs-qmenu) h4 {
   font-size: 11px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: rgb(var(--st-accent-2, 135, 140, 255));
 }
-html:is([data-rfs-style="space"], [data-rfs-style="classic"], [data-rfs-style="glass"], [data-rfs-style="neon"]) #rfs-data :is(.rd-fact, .rd-link),
-html:is([data-rfs-style="space"], [data-rfs-style="classic"], [data-rfs-style="glass"], [data-rfs-style="neon"]) #rfs-rail .rr-btn:not(.go) {
+html:is([data-rfs-style="space"], [data-rfs-style="classic"], [data-rfs-style="glass"], [data-rfs-style="slate"], [data-rfs-style="neon"]) #rfs-data :is(.rd-fact, .rd-link),
+html:is([data-rfs-style="space"], [data-rfs-style="classic"], [data-rfs-style="glass"], [data-rfs-style="slate"], [data-rfs-style="neon"]) #rfs-rail .rr-btn:not(.go) {
   background: rgb(var(--st-color-2, 30, 30, 30)); border: 1px solid transparent; border-radius: var(--st-border-radius, 8px);
 }
-html:is([data-rfs-style="space"], [data-rfs-style="classic"], [data-rfs-style="glass"], [data-rfs-style="neon"]) #rfs-data .rd-live { flex-direction: row-reverse; justify-content: center; text-align: center; }
-html:is([data-rfs-style="space"], [data-rfs-style="classic"], [data-rfs-style="glass"], [data-rfs-style="neon"]) #rfs-data .rd-live b { font-size: 26px; text-align: center; }
-html:is([data-rfs-style="space"], [data-rfs-style="classic"], [data-rfs-style="glass"], [data-rfs-style="neon"]) #rfs-data .rd-live small { display: block; text-align: center; text-transform: uppercase; letter-spacing: .06em; font-size: 10.5px; }
+html:is([data-rfs-style="space"], [data-rfs-style="classic"], [data-rfs-style="glass"], [data-rfs-style="slate"], [data-rfs-style="neon"]) #rfs-data .rd-live { flex-direction: row-reverse; justify-content: center; text-align: center; }
+html:is([data-rfs-style="space"], [data-rfs-style="classic"], [data-rfs-style="glass"], [data-rfs-style="slate"], [data-rfs-style="neon"]) #rfs-data .rd-live b { font-size: 26px; text-align: center; }
+html:is([data-rfs-style="space"], [data-rfs-style="classic"], [data-rfs-style="glass"], [data-rfs-style="slate"], [data-rfs-style="neon"]) #rfs-data .rd-live small { display: block; text-align: center; text-transform: uppercase; letter-spacing: .06em; font-size: 10.5px; }
 
 /* Classic: walnut cards with a brass rule and an engraved brass label */
 html[data-rfs-style="classic"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) section {
@@ -324,7 +324,7 @@ html[data-rfs-style="classic"] :is(#rfs-rail, #rfs-data, #rfs-qmenu) h4 small { 
 #rfs-qmenu .ql:hover { background: rgba(var(--rf-accent-rgb), .12); }
 #rfs-qmenu .ql.cur { background: rgba(var(--rf-accent-rgb), .2); color: var(--rf-accent) !important; }
 /* the button follows each style */
-html:is([data-rfs-style="space"], [data-rfs-style="glass"], [data-rfs-style="neon"]) #rfs-qbtn { background: rgb(var(--st-color-2)); border-color: rgb(var(--st-color-6)); border-radius: var(--st-border-radius, 8px); }
+html:is([data-rfs-style="space"], [data-rfs-style="glass"], [data-rfs-style="slate"], [data-rfs-style="neon"]) #rfs-qbtn { background: rgb(var(--st-color-2)); border-color: rgb(var(--st-color-6)); border-radius: var(--st-border-radius, 8px); }
 html[data-rfs-style="classic"] #rfs-qbtn { color: #3a2410; border: 0; border-radius: 4px; background: linear-gradient(180deg, #f2d59e, #c69c58); box-shadow: inset 0 1px 0 rgba(255, 255, 255, .5), 0 1px 3px rgba(0, 0, 0, .5); }
 html[data-rfs-style="classic"] #rfs-qbtn svg.rf-ic { stroke: #3a2410; }
 html[data-rfs-style="neon"] #rfs-qbtn { background: transparent; border-color: rgba(62, 240, 255, .5); box-shadow: 0 0 10px rgba(62, 240, 255, .25); }
@@ -336,7 +336,7 @@ html[data-rfs-style="original"] #rfs-qbtn { border-radius: 2px; background: rgba
 #rfs-qbtn { z-index: 2147483000 !important; }
 #rfs-qmenu { z-index: 2147483001 !important; }
 #rfs-qmenu section { background: var(--rf-panel, #16202d) !important; backdrop-filter: none !important; }
-html:is([data-rfs-style="space"], [data-rfs-style="classic"], [data-rfs-style="glass"], [data-rfs-style="neon"]) #rfs-qmenu section { background: rgb(var(--st-color-3)) !important; }
+html:is([data-rfs-style="space"], [data-rfs-style="classic"], [data-rfs-style="glass"], [data-rfs-style="slate"], [data-rfs-style="neon"]) #rfs-qmenu section { background: rgb(var(--st-color-3)) !important; }
 html[data-rfs-style="material"] #rfs-qmenu section { background: rgb(29, 32, 38) !important; }
 
 /* ═════════════ performance (2026-11) ═════════════

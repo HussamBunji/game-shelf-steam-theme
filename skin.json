@@ -189,7 +189,8 @@
             ],
             "src": "src/styles/xmb.css"
           }
-        }
+        },
+        "Slate": { "TargetCss": { "affects": [".*", "https://.*\\.steampowered\\.com(/.*)?", "https://steamcommunity\\.com(/.*)?"], "src": "src/styles/slate.css" } }
       }
     },
     "Language": {
