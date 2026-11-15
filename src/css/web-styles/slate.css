@@ -32,7 +32,11 @@ html[data-rfs-style="slate"] {
   --rf-vendor: space;
   --rf-vendor-skip: options/fonts/, options/general/alwaysShowSidebar;
   --rf-style-id: slate;
-  --rf-layout: gallery;          /* Phase 1: Glass Gallery's home in Slate colours. Phase 2 switches this to slate. */
+  --rf-layout: slate;            /* home design: src/layouts/slate.js */
+  --rf-nav-place: titlebar;      /* THEMES + Sound go to the title bar; Steam's nav row is replaced by the icon rail */
+  --sl-rail-w: 76px;             /* the left icon rail */
+  --sl-top-h: 46px;              /* Steam's title bar height */
+  --sl-arrows-x: 280px;          /* where Steam's back / forward arrows sit in the title bar (after its menu) */
 
   /* icons: flat, quiet; teal only on the line */
   --rf-ic-1: rgb(var(--sl-accent));
