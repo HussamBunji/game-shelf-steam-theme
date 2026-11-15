@@ -936,6 +936,11 @@
   function start() {
     iconDefs();
     fixBadgesNesting();
+    // Slate saves memory: a store / community page you leave is let go at once instead of sitting in Chromium's
+    // back/forward cache (a whole 200–350 MB renderer each, kept for up to 10 minutes). An unload listener is what
+    // makes a page ineligible for that cache in Steam's Chromium; going Back just loads the page again. Measured in
+    // Steam: the store's renderer exits within a second of leaving.
+    if (html.getAttribute('data-rfs-style') === 'slate') addEventListener('unload', () => {});
     storeBarTag();
     setTimeout(storeBarTag, 1500);
     if (IS_WL) { setA(html, 'data-rfs-page', 'wishlist'); wlView(); wlTag(); setInterval(wlTag, 1200); }
