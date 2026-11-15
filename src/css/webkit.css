@@ -478,10 +478,10 @@ html[data-rfs-page="wishlist"][data-rfs-wlview="cards"]:not([data-rfs-style="ori
     --k: 2; --gap: 16px; --m: var(--m2, 0);
     --cw: calc((100cqw - (var(--k) - 1) * var(--gap)) / var(--k));
     --art: calc(var(--cw) * 215 / 460);
-    --R: calc(var(--art) + var(--rfp-wl-body, 176px) + var(--gap)); /* 176: title + 2 meta lines + the price / Add to Cart capsule */
-    height: calc(var(--R) / var(--k)) !important; min-height: 0 !important; padding: 0 !important; box-sizing: border-box;
+    --R: calc(var(--art) + var(--rfp-wl-body, 188px) + var(--gap)); /* 188: title + 2 meta lines + the price / Add to Cart capsule (a sale's capsule is 57 px tall) */
+    height: calc(var(--R) / var(--k)) !important; min-height: 0 !important; padding: 0 !important; box-sizing: border-box; position: relative;
   }
-  & [data-rfs-wl="list"] [data-index] > div {
+  & [data-rfs-wl="list"] [data-index] > div:first-child {
     position: relative; box-sizing: border-box; width: var(--cw) !important; height: calc(var(--R) - var(--gap)) !important; padding: 0 !important; margin: 0 !important;
     top: calc(var(--m) * var(--R) / var(--k) * -1); margin-inline-start: calc(var(--m) * (var(--cw) + var(--gap))) !important;
   }
@@ -500,6 +500,10 @@ html[data-rfs-page="wishlist"][data-rfs-wlview="cards"]:not([data-rfs-style="ori
   & [data-rfs-wl="meta"] > div { display: flex !important; flex-wrap: nowrap !important; justify-content: flex-start !important; align-items: center; gap: 6px 12px !important; height: 22px; overflow: hidden; margin: 0 !important; white-space: nowrap; min-width: 0; }
   & [data-rfs-wl="meta"] > div > div:has(> .app_tag) { flex: 1 1 0; min-width: 0; height: 22px; overflow: hidden; flex-wrap: wrap !important; justify-content: flex-start !important; }
   & [data-rfs-wl="meta"] .app_tag:nth-of-type(n+4) { display: none !important; }
+  /* Steam's "My Categories" line and Augmented Steam's "Add a note" share one row (stacked, they pushed the price capsule
+     up over the tags) */
+  & [data-rfs-wl="meta"]:has(> .as-note) { flex-direction: row !important; align-items: center; justify-content: space-between; gap: 12px !important; }
+  & [data-rfs-wl="meta"] > .as-note { flex: 0 1 auto; min-width: 0; height: 22px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
   & [data-rfs-wl="meta"] > div > div { flex: none; margin: 0 !important; display: flex !important; align-items: center; gap: 5px !important; }
   /* the tag row: the "User Tags:" label goes, 2–3 tags fit, the rest are clipped */
   & [data-rfs-wl="meta"] > div > div:has(> .app_tag) > span { display: none !important; }
@@ -519,6 +523,17 @@ html[data-rfs-page="wishlist"][data-rfs-wlview="cards"]:not([data-rfs-style="ori
     display: flex !important; align-items: center; gap: 6px; color: #fff !important; background: rgba(0, 0, 0, .66) !important; border-radius: var(--rf-radius, 6px);
   }
   & [data-rfs-wl="empty"] { display: none !important; }
+  /* Augmented Steam's IsThereAnyDeal prices (shown on hover) sit after the card in its row wrapper: laid over the foot of
+     the card's art instead of falling into the next row of cards */
+  & [data-rfs-wl="list"] [data-index] > .itad-pricing {
+    position: absolute !important; z-index: 3; margin: 0 !important; box-sizing: border-box;
+    top: calc(var(--art) - var(--m) * var(--R) / var(--k) - 8px); transform: translateY(-100%);
+    inset-inline-start: calc(var(--m) * (var(--cw) + var(--gap)) + 8px); width: calc(var(--cw) - 16px) !important; height: auto !important;
+    padding: 6px 10px !important; font-size: 11.5px !important; line-height: 1.45; color: var(--rf-text) !important;
+    background: color-mix(in srgb, var(--rf-bg, #000) 88%, transparent) !important; border-radius: var(--rf-radius, 6px); pointer-events: auto;
+    transition: opacity .15s ease;
+  }
+  & [data-rfs-wl="list"] [data-index]:not(:hover) > .itad-pricing { opacity: 0; pointer-events: none; }
 }
 /* (outranks SpaceTheme's own price-capsule rule, which paints it with the sidebar colour — light paper in Corkboard) */
 html[data-rfs-page="wishlist"]:not([data-rfs-style="original"], [data-rfs-style="material"], [data-rfs-style="shelter"]) [data-rfs-wl="buy"] > div:has([data-rfs-price]) {

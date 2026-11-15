@@ -2,7 +2,7 @@
    Home:   a "continue where you left off" hero (always your most recently played game), the filter strip right
            above the games, a "Your library · most recent first" header and one grid of portrait cards
            (cover, name, hours · last played, a thin achievement bar). Every owned game is reachable by scrolling.
-   Chrome: a left icon rail (Store · Library · Collections · Community · Market · Activity … Downloads) and a search
+   Chrome: a left icon rail (Store · Library · Collections · Community · Market · Points Shop · Activity … Downloads) and a search
            box in the middle of the title bar that opens the theme's Ctrl+K search. THEMES and the sound switch move
            to the title bar (shelf.js, --rf-nav-place: titlebar). Steam's nav row and the collapsed game list at the
            left edge are styled in skin.js (they need Steam's runtime class names).
@@ -404,6 +404,7 @@
     { id: 'collections', icon: 'grid', label: () => T('المجموعات', 'Collections'), go: () => api.navigate('/library/collections') },
     { id: 'community', icon: 'users', label: () => T('المجتمع', 'Community'), go: () => api.steamUrl('steam://openurl/https://steamcommunity.com/') },
     { id: 'market', icon: 'tag', label: () => T('السوق', 'Market'), go: () => api.steamUrl('steam://openurl/https://steamcommunity.com/market/') },
+    { id: 'points', icon: 'coins', label: () => T('متجر النقاط', 'Points Shop'), go: () => api.steamUrl('steam://openurl/https://store.steampowered.com/points/shop/') },
     { id: 'activity', icon: 'pulse', label: () => T('النشاط', 'Activity'), go: () => api.steamUrl('steam://openurl/https://steamcommunity.com/my/home/') },
     { id: 'downloads', icon: 'download', label: () => T('التنزيلات', 'Downloads'), go: () => api.navigate('/library/downloads'), bottom: true },
   ];
@@ -414,6 +415,7 @@
     if (/^\/browser/.test(r)) {
       const u = w.url || '';
       if (/steamcommunity\.com\/market/.test(u)) return 'market';
+      if (/store\.steampowered\.com\/points/.test(u)) return 'points';
       if (/steamcommunity\.com\/(id|profiles)\/[^/]+\/home|steamcommunity\.com\/my\/home/.test(u)) return 'activity';
       if (/steamcommunity\.com/.test(u)) return 'community';
       if (/steampowered\.com/.test(u)) return 'store';
@@ -484,8 +486,53 @@
     document.body.appendChild(pop);
   }
 
+  /* ---------- next Steam sale: a countdown pill in the title bar ----------
+     The dates are Valve's own published schedule (Steamworks "Upcoming events", announced July 2026), written here by
+     hand: nothing is fetched, and SteamDB is never read (its FAQ forbids scraping); the pill only LINKS to its sale
+     calendar. Times are Valve's 10 am Pacific start / end, in UTC. Add the next dates when Valve announces them; after
+     the last one ends the pill hides itself. */
+  const SALES = [
+    { name: ['التخفيضات الشتوية', 'Winter Sale'], start: '2026-12-17T18:00:00Z', end: '2027-01-04T18:00:00Z' },
+    { name: ['تخفيضات الربيع', 'Spring Sale'], start: '2027-03-18T17:00:00Z', end: '2027-03-25T17:00:00Z' },
+    { name: ['التخفيضات الصيفية', 'Summer Sale'], start: '2027-06-24T17:00:00Z', end: '2027-07-08T17:00:00Z' },
+  ];
+  const STEAMDB_SALES = 'https://steamdb.info/sales/history/';
+  function nextSale(now = Date.now()) {
+    for (const s of SALES) {
+      const a = Date.parse(s.start), b = Date.parse(s.end);
+      if (now < b) return { name: T(s.name[0], s.name[1]), live: now >= a, ms: (now >= a ? b : a) - now, a, b };
+    }
+    return null;
+  }
+  const span = ms => {
+    const m = Math.max(0, Math.floor(ms / 60000)), d = Math.floor(m / 1440), h = Math.floor(m % 1440 / 60), mm = m % 60;
+    return d ? T(`${d}ي ${h}س`, `${d}d ${h}h`) : h ? T(`${h}س ${mm}د`, `${h}h ${mm}m`) : T(`${mm}د`, `${mm}m`);
+  };
+  let saleKey = '';
+  function paintSale() {
+    const wrap = document.getElementById('rfs-navwrap'); if (!wrap) return;
+    let pill = document.getElementById('slate-sale');
+    const s = nextSale();
+    const key = s ? `${s.name}|${s.live}|${span(s.ms)}` : 'none';
+    if (pill && key === saleKey) return;     // write only when the shown text changes (once a minute at most)
+    saleKey = key;
+    if (!s) { if (pill) pill.remove(); return; }
+    if (!pill) {
+      pill = document.createElement('button');
+      pill.id = 'slate-sale'; pill.type = 'button'; pill.className = 'rfs-tb';
+      pill.innerHTML = `${ic('timer')}<span></span>`;
+      pill.addEventListener('click', () => { api.sfx('tick'); try { api.steamUrl('steam://openurl/' + STEAMDB_SALES); } catch (e) { api.toast(T('ما قدرت أفتحها', 'Couldn\'t open that')); } });
+      wrap.prepend(pill);
+    }
+    pill.classList.toggle('live', s.live);
+    pill.querySelector('span').textContent = s.live ? T(`${s.name} · ينتهي بعد ${span(s.ms)}`, `${s.name} · ends in ${span(s.ms)}`) : T(`${s.name} بعد ${span(s.ms)}`, `${s.name} in ${span(s.ms)}`);
+    const day = t => new Date(t).toLocaleDateString(T('ar', 'en'), { month: 'short', day: 'numeric' });
+    pill.title = T(`${s.name}: ${day(s.a)} – ${day(s.b)} (جدول Valve). اضغط لتقويم التخفيضات في SteamDB.`, `${s.name}: ${day(s.a)} – ${day(s.b)} (Valve's schedule). Click for SteamDB's sale calendar.`);
+  }
+
   buildChrome();
   // the active item follows navigation done anywhere (links, Steam's own buttons): checked twice a second, and the
-  // DOM is touched only when the answer changes. The volume button joins the title-bar pills once they exist.
-  setInterval(() => { if (isSlate() && !document.hidden) { paintActive(activeId()); if (!document.getElementById('slate-vol')) buildVolume(); } }, 500);
+  // DOM is touched only when the answer changes. The volume button and sale countdown join the title-bar pills once
+  // they exist.
+  setInterval(() => { if (isSlate() && !document.hidden) { paintActive(activeId()); if (!document.getElementById('slate-vol')) buildVolume(); paintSale(); } }, 500);
 })();
