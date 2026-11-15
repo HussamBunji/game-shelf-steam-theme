@@ -27,6 +27,7 @@
     set(k, v) { try { localStorage.setItem('sf.' + k, v); } catch (e) { /* ignore */ } },
   };
   const money = cents => (cents == null ? '' : (Number(cents) / 100).toFixed(2) + ' ' + T('ر.س', 'SAR'));
+  const plain = cents => (cents == null ? '' : (Number(cents) / 100).toFixed(2)); // the crossed-out old price: the new one beside it carries the currency
   const DAY = 86400;
   const weekday = t => new Date(t * 1000).toLocaleDateString(AR ? 'ar' : 'en', { weekday: 'short' });
   const shortDate = t => new Date(t * 1000).toLocaleDateString(AR ? 'ar' : 'en', { month: 'short', day: 'numeric' });
@@ -167,7 +168,7 @@
   const priceHTML = g => {
     if (g.free) return `<b class="sf-price">${esc(T('مجانية', 'Free to play'))}</b>`;
     if (g.price == null) return '';
-    return (g.pct && g.was ? `<s>${esc(money(g.was))}</s>` : '') + `<b class="sf-price">${esc(money(g.price))}</b>`;
+    return (g.pct && g.was ? `<s>${esc(plain(g.was))}</s>` : '') + `<b class="sf-price">${esc(money(g.price))}</b>`;
   };
   const chips = (key, opts) => opts.map(([v, label]) => `<button type="button" class="sf-chip${state[key] === v ? ' on' : ''}" data-chip="${key}" data-v="${v}">${esc(label)}</button>`).join('');
 
@@ -190,17 +191,17 @@
       : g.price == null ? '' : (g.pct ? `<span class="sf-pct">-${g.pct}%</span><s>${esc(money(g.was))}</s>` : '') + `<b class="sf-hprice">${esc(money(g.price))}</b>`;
     const wished = user.wish.has(g.id), owned = isOwned(g);
     return `<section class="sf-hero">
-        <a class="sf-hmain" href="${appUrl(g.id)}" style="--art:url('${esc(g.hero)}')">
+        <div class="sf-hmain" data-href="${appUrl(g.id)}" style="--art:url('${esc(g.hero)}')">
           <div class="sf-hbody">
             <div class="sf-kicker">${esc(T('مميزة ومقترحة', 'Featured & recommended'))}</div>
             <h2 dir="auto">${esc(g.name)}</h2>
             <p>${esc(g.reason || '')}</p>
             <div class="sf-tags">${tags}</div>
-            <div class="sf-buy">${buy}<span class="sf-btn play">${esc(owned ? T('في مكتبتك · افتح', 'In library · Open') : T('اعرض اللعبة', 'View game'))}</span></div>
+            <div class="sf-buy">${buy}<a class="sf-btn play" href="${appUrl(g.id)}">${esc(owned ? T('في مكتبتك · اعرضها', 'In library · View') : T('اعرض اللعبة', 'View game'))}</a></div>
             ${owned ? '' : `<button type="button" class="sf-btn ghost" data-wish="${g.id}">${wished ? icon.heart + esc(T('في قائمة أمنياتك', 'On your wishlist')) : esc(T('أضف لقائمة الأمنيات', 'Add to wishlist'))}</button>`}
           </div>
-        </a>
-        <div class="sf-hlist">${list.map((x, i) => `<button type="button" class="sf-hitem${i === state.heroAt ? ' on' : ''}" data-hero="${i}">
+        </div>
+        <div class="sf-hlist">${list.map((x, i) => `<button type="button" class="sf-hitem${i === state.heroAt ? ' on' : ''}" data-hero="${i}" title="${esc(x.name)}">
             <img src="${esc(x.cap)}" alt="" loading="lazy"><span><b dir="auto">${esc(x.name)}</b><small>${esc(x.short || '')}</small></span></button>`).join('')}</div>
       </section>`;
   }
@@ -213,7 +214,7 @@
     const meta = soon ? T(`أقرب عرض ينتهي بعد ${leftText(soon)}`, `Next deal ends in ${leftText(soon)}`) : '';
     const cards = list.map(g => `<a class="sf-deal${cls(g)}" href="${appUrl(g.id)}">
         <div class="sf-art"><img src="${esc(g.cap)}" alt="" loading="lazy">${g.pct ? `<span class="sf-pct">-${g.pct}%</span>` : ''}${ownTag(g)}</div>
-        <div class="sf-body"><b class="sf-name" dir="auto">${heart(g)}${esc(g.name)}</b><small>${esc(g.review)}</small>
+        <div class="sf-body"><b class="sf-name" dir="auto" title="${esc(g.name)}">${heart(g)}${esc(g.name)}</b><small>${esc(g.review)}</small>
           <div class="sf-prow">${priceHTML(g)}<small class="sf-ends">${esc(endsText(g.ends))}</small></div></div></a>`).join('');
     return `<section class="sf-sec">${headHTML(T('عروض خاصة', 'Special offers'), 'deals', [['all', T('كل العروض', 'All deals')], ['wish', T('من قائمة أمنياتك', 'On your wishlist')]], meta, ['https://store.steampowered.com/specials', T('كل العروض', 'See all deals')])}
         <div class="sf-grid sf-deals">${cards || `<p class="sf-empty">${esc(state.deals === 'wish' ? T('ما فيه خصومات على قائمة أمنياتك الحين', 'Nothing on your wishlist is on sale right now') : T('ما فيه عروض الحين', 'No deals right now'))}</p>`}</div></section>`;
@@ -239,7 +240,7 @@
       const why = [user.wish.has(g.id) ? T('في قائمة أمنياتك', 'On your wishlist') : '', g.preorder ? T('الطلب المسبق متاح', 'Pre-order available') : ''].filter(Boolean).join(' · ');
       const on = user.wish.has(g.id);
       return `<div class="sf-soon${cls(g)}"><img class="sf-sbg" src="${esc(g.head || g.cap)}" alt="" loading="lazy">${dateBlock(g)}
-          <a class="sf-sbody" href="${appUrl(g.id)}"><b dir="auto">${esc(g.name)}</b><small>${esc(tagList(g, 2).join(' · '))}</small>${why ? `<small class="sf-why">${esc(why)}</small>` : ''}</a>
+          <a class="sf-sbody" href="${appUrl(g.id)}" title="${esc(g.name)}"><b dir="auto">${esc(g.name)}</b><small>${esc(tagList(g, 2).join(' · '))}</small>${why ? `<small class="sf-why">${esc(why)}</small>` : ''}</a>
           ${isOwned(g) ? '' : `<button type="button" class="sf-wish${on ? ' on' : ''}" data-wish="${g.id}" title="${esc(on ? T('شيل من قائمة الأمنيات', 'Remove from wishlist') : T('أضف لقائمة الأمنيات', 'Add to wishlist'))}">${icon.heart}</button>`}</div>`;
     }).join('');
     return `<section class="sf-sec">${headHTML(T('قريبًا', 'Coming soon'), 'soon', [['you', T('لك · من قائمة أمنياتك', 'For you · your wishlist')], ['popular', T('القادمة الأشهر', 'Popular upcoming')]], state.soon === 'you' ? T('أقرب مواعيد الإصدار', 'Soonest release dates first') : '', [cal, T('افتح تقويم الإصدارات', 'Open release calendar')])}
@@ -249,7 +250,7 @@
     const list = keep(state.lists['more.' + state.more] || []).slice(0, 14);
     const cards = list.map(g => `<a class="sf-cap${cls(g)}" href="${appUrl(g.id)}">
         <div class="sf-art"><img src="${esc(g.port || g.cap)}" alt="" loading="lazy">${ownTag(g)}</div>
-        <div class="sf-body"><b class="sf-name" dir="auto">${heart(g)}${esc(g.name)}</b><small class="sf-rev">${esc(g.review)}</small>
+        <div class="sf-body"><b class="sf-name" dir="auto" title="${esc(g.name)}">${heart(g)}${esc(g.name)}</b><small class="sf-rev">${esc(g.review)}</small>
           <div class="sf-prow">${g.pct && !g.free ? `<span class="sf-pct sm">-${g.pct}%</span>` : ''}${g.free ? `<b class="sf-price">${esc(T('مجانية', 'Free to play'))}</b>` : g.price != null ? `<b class="sf-price">${esc(money(g.price))}</b>` : ''}</div></div></a>`).join('');
     return `<section class="sf-sec">${headHTML(T('مزيد من المميز', 'More featured'), 'more', [['you', T('لك', 'For you')], ['top', T('الأكثر مبيعًا', 'Top sellers')], ['new', T('جديد ورائج', 'New & trending')], ['free', T('مجانية', 'Free to play')]], '', null)}
         <div class="sf-grid sf-caps">${cards || '<p class="sf-empty">…</p>'}</div></section>`;
@@ -282,7 +283,8 @@
 
   /* ---------- events ---------- */
   root.addEventListener('click', async e => {
-    const t = e.target.closest('button'); if (!t) return;
+    const t = e.target.closest('button');
+    if (!t) { const h = !e.target.closest('a') && e.target.closest('.sf-hmain[data-href]'); if (h) location.href = h.dataset.href; return; }
     e.preventDefault(); e.stopPropagation();
     if (t.dataset.owned) { store.set('owned', t.dataset.owned); render(); return; }
     if (t.dataset.hero != null) { state.heroAt = +t.dataset.hero; paintSection('.sf-hero', heroHTML); return; }

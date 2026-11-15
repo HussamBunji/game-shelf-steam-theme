@@ -407,9 +407,19 @@
     on: false, armed: 0, woke: false, appid: 0,
     get enabled() { try { return localStorage.getItem('rfs.rest') !== '0'; } catch (e) { return true; } },
     set enabled(v) { try { localStorage.setItem('rfs.rest', v ? '1' : '0'); } catch (e) { /* ignore */ } if (!v && this.on) this.wake(); },
+    /** the running GAMES: Steam also lists apps and tools it runs (Wallpaper Engine is app type 2, SteamVR and the
+        runtimes type 4), which run for hours and must not put the client to rest. Games are type 1, demos 8. */
+    games() {
+      const out = new Set();
+      for (const id of api.running()) {
+        let t = 0; try { const o = api.steam().appStore.GetAppOverviewByAppID(id); t = o ? o.app_type : 0; } catch (e) { /* unknown */ }
+        if (t === 1 || t === 8) out.add(id);
+      }
+      return out;
+    },
     watch() {
       if (!isSlate()) return;
-      const run = api.running();
+      const run = this.games();
       if (!run.size) { this.armed = 0; this.woke = false; if (this.on) this.wake(); return; }
       if (this.on || this.woke || !this.enabled) return;
       if (!this.armed) { this.armed = Date.now(); return; }
@@ -449,6 +459,8 @@
       api.stage.replaceChildren(el);
     },
   };
+
+  window.__slateRest = Rest; // for tools and tests (read its state, Rest.games())
 
   api.register('slate', Layout);
 

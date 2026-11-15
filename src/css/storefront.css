@@ -9,7 +9,7 @@ html[data-rfs-style="slate"][data-rfs-front="on"] #rfs-rail { display: none !imp
 
 html[data-rfs-style="slate"] #sl-front {
   --r: 14px;
-  box-sizing: border-box; max-width: 1340px; margin: 0 auto; padding: 18px 24px 48px;
+  box-sizing: border-box; max-width: 1248px; margin: 0 auto; padding: 18px 24px 48px; /* 1200 px of content: the same edges as the store menu bar above */
   font-family: var(--rf-font-ui); color: rgb(var(--sl-text)); font-size: 14px; line-height: 1.35;
 }
 html[data-rfs-style="slate"] #sl-front * { box-sizing: border-box; }
@@ -31,7 +31,7 @@ html[data-rfs-style="slate"] #sl-front .sf-link:hover { text-decoration: underli
 /* hero: one big featured card and the list of five beside it */
 html[data-rfs-style="slate"] #sl-front .sf-hero { display: grid; grid-template-columns: minmax(0, 1fr) 250px; gap: 16px; margin-bottom: 40px; }
 html[data-rfs-style="slate"] #sl-front .sf-hmain {
-  position: relative; display: flex; align-items: center; min-height: 385px; border-radius: 16px; overflow: hidden;
+  position: relative; display: flex; align-items: center; min-height: 385px; border-radius: 16px; overflow: hidden; cursor: pointer;
   border: 1px solid rgb(var(--sl-edge));
   background: linear-gradient(90deg, rgba(var(--sl-base), .96) 0%, rgba(var(--sl-base), .82) 38%, rgba(var(--sl-base), .25) 75%, rgba(var(--sl-base), .1)), var(--art) center / cover no-repeat, rgb(var(--sl-surface));
 }
@@ -96,7 +96,7 @@ html[data-rfs-style="slate"] #sl-front .sf-body small { font-size: 12.5px; color
 html[data-rfs-style="slate"] #sl-front .sf-heart { display: inline-flex; flex: none; }
 html[data-rfs-style="slate"] #sl-front .sf-heart svg { width: 13px; height: 13px; fill: rgb(var(--sl-accent)); }
 html[data-rfs-style="slate"] #sl-front .sf-prow { display: flex; align-items: baseline; gap: 8px; margin-top: auto; padding-top: 6px; }
-html[data-rfs-style="slate"] #sl-front .sf-prow s { font-size: 12px; color: rgb(var(--sl-dim)); }
+html[data-rfs-style="slate"] #sl-front .sf-prow s { font-size: 12px; color: rgb(var(--sl-dim)); white-space: nowrap; }
 html[data-rfs-style="slate"] #sl-front .sf-price { font-size: 15px; font-weight: 800; white-space: nowrap; }
 html[data-rfs-style="slate"] #sl-front .sf-ends { margin-inline-start: auto; font-size: 11.5px !important; white-space: nowrap; }
 
@@ -105,7 +105,7 @@ html[data-rfs-style="slate"] #sl-front .sf-deals { grid-template-columns: repeat
 html[data-rfs-style="slate"] #sl-front .sf-deal .sf-art { aspect-ratio: 616 / 353; }
 
 /* Coming soon: date · art · name and why · wishlist heart */
-html[data-rfs-style="slate"] #sl-front .sf-soons { grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); }
+html[data-rfs-style="slate"] #sl-front .sf-soons { grid-template-columns: repeat(auto-fill, minmax(268px, 1fr)); }
 html[data-rfs-style="slate"] #sl-front .sf-soon { flex-direction: row; align-items: center; gap: 12px; padding: 14px; min-height: 104px; isolation: isolate; }
 /* the game's art fills the card behind a fade, so the name and the date get the full width */
 html[data-rfs-style="slate"] #sl-front .sf-sbg { position: absolute; inset: 0; z-index: -2; opacity: .55; }
