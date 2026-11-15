@@ -695,8 +695,28 @@
     }
     setStyles(dataEl, { top: top + 'px' });
     if (column) setStyles(dataEl, { left: Math.round(column.getBoundingClientRect().right + 18) + 'px', right: 'auto' });
-    dataEl.classList.toggle('on', freeR >= 380);
+    // shown when the panel's own width (a style may make it narrower) plus its gap fits beside the page column
+    const need = (parseFloat(getComputedStyle(dataEl).width) || 340) + 40;
+    dataEl.classList.toggle('on', freeR >= need);
     if (dataFor !== m[1]) { dataFor = m[1]; renderData(m[1]); }
+  }
+
+  /** Augmented Steam (the browser extension, e.g. through Extendium) already shows some of this panel: its player
+      counts, HowLongToBeat times and links to SteamDB, IsThereAnyDeal, PCGamingWiki… When it is on the page, those
+      parts of the panel step aside (matched by website, not by name), so nothing is shown twice. Without it the
+      panel stays complete. Only class toggles, and only when something changes. */
+  function asDedupe(panel) {
+    if (!document.querySelector('#as-menu, .as_players, a.es_app_btn, .itad-pricing, .es_hltb')) return;
+    const live = panel.querySelector('.rd-live');
+    if (live) live.classList.toggle('rfs-dup', !!document.querySelector('.as_players'));
+    const host = u => { try { return new URL(u, location.href).hostname.replace(/^www\./, ''); } catch (e) { return ''; } };
+    const asHosts = new Set([...document.querySelectorAll('a.es_app_btn, .es_hltb a')].map(a => host(a.href)).filter(Boolean));
+    if (document.querySelector('.es_hltb')) asHosts.add('howlongtobeat.com');
+    for (const a of panel.querySelectorAll('.rd-link')) a.classList.toggle('rfs-dup', asHosts.has(host(a.dataset.ext)));
+    for (const sec of panel.querySelectorAll('section')) {
+      const links = sec.querySelectorAll('.rd-link');
+      if (links.length) sec.classList.toggle('rfs-dup', [...links].every(a => a.classList.contains('rfs-dup')));
+    }
   }
 
   async function renderData(id) {
@@ -718,6 +738,7 @@
       <section><h4>${ic('trend')}${T('تتبّع وتاريخ الأسعار', 'Price trackers')}</h4><div class="rd-grid">${links.map(([n, t, s, u]) =>
         `<a class="rd-link" href="${esc(u)}" data-ext="${esc(u)}" title="${esc(u)}">${icT(n)}<span><b dir="ltr">${esc(t)}</b><small>${esc(s)}</small></span></a>`).join('')}</div></section>`;
     const mine = () => dataFor === id && dataEl.isConnected;
+    [0, 1500, 4000, 8000].forEach(ms => setTimeout(() => { if (mine()) asDedupe(dataEl); }, ms));
 
     livePlayers(id).then(n => {
       if (!mine()) return;

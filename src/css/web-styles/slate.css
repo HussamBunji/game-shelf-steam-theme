@@ -163,6 +163,44 @@ html[data-rfs-style="slate"] #rfs-hub .hb-tab { border-radius: 999px; }
 html[data-rfs-style="slate"] #rfs-hub .hb-tab.on { color: rgb(var(--sl-text)); background: rgba(var(--sl-accent), .14); border-color: rgba(var(--sl-accent), .4); }
 html[data-rfs-style="slate"] :is(#rfs-hub, #rfs-sheet) .rf-act.play { background: rgb(var(--sl-accent)); color: rgb(var(--sl-ink)); border-color: transparent; font-weight: 800; }
 
+/* ───────── store side panel: a little narrower, so it fits beside the page at common window widths ───────── */
+html[data-rfs-style="slate"] #rfs-data { width: 280px; right: 16px; }
+html[data-rfs-style="slate"] #rfs-data .rd-row.best .rd-kwd { color: rgb(var(--sl-accent)); }
+
+/* ───────── Augmented Steam's own blocks, restyled to match (not rebuilt) ───────── */
+/* player counts (playing now · today's peak · all-time peak) */
+html[data-rfs-style="slate"] .as_players {
+  display: flex !important; gap: 10px; padding: 14px !important; border-radius: 14px;
+  background: rgb(var(--sl-surface)) !important; border: 1px solid rgb(var(--sl-edge));
+}
+html[data-rfs-style="slate"] .as_players > * { flex: 1; text-align: center; color: rgb(var(--sl-dim)) !important; font-size: 11px !important; letter-spacing: .06em; text-transform: uppercase; }
+html[data-rfs-style="slate"] .as_players span { display: block; margin-top: 4px; font-size: 20px !important; font-weight: 800; letter-spacing: 0; color: rgb(var(--sl-text)) !important; }
+html[data-rfs-style="slate"] .as_players > :first-child span { color: rgb(var(--sl-accent)) !important; }
+/* current best / historical low lines above each edition */
+html[data-rfs-style="slate"] .itad-pricing {
+  padding: 10px 14px !important; margin-bottom: 8px !important; border-radius: 12px;
+  background: rgb(var(--sl-surface)) !important; border: 1px solid rgb(var(--sl-edge)); color: rgb(var(--sl-dim)) !important;
+}
+html[data-rfs-style="slate"] .itad-pricing :is(a, span, div) { color: inherit !important; }
+html[data-rfs-style="slate"] .itad-pricing :is(span:nth-child(2), .itad-pricing__price, b, strong) { color: rgb(var(--sl-text)) !important; }
+/* the regional price table that opens on hover */
+html[data-rfs-style="slate"] .es_regional {
+  background: rgb(var(--sl-raised)) !important; color: rgb(var(--sl-text)) !important; border: 1px solid rgb(var(--sl-edge)) !important;
+  border-radius: 12px !important; box-shadow: 0 14px 30px rgba(var(--sl-shade), .55) !important;
+}
+html[data-rfs-style="slate"] .es_regional * { color: inherit; border-color: rgb(var(--sl-edge)) !important; }
+html[data-rfs-style="slate"] .es_regional_arrow { border-bottom-color: rgb(var(--sl-raised)) !important; }
+/* HowLongToBeat block */
+html[data-rfs-style="slate"] .es_hltb {
+  padding: 12px 14px !important; border-radius: 12px; background: rgb(var(--sl-surface)) !important; border: 1px solid rgb(var(--sl-edge));
+  color: rgb(var(--sl-dim)) !important;
+}
+html[data-rfs-style="slate"] .es_hltb :is(span, a) { color: rgb(var(--sl-text)) !important; }
+/* its "View on …" link buttons (already Steam's blue button class): quiet slate pills */
+html[data-rfs-style="slate"] a.es_app_btn { border-radius: 10px !important; margin: 0 0 6px !important; }
+html[data-rfs-style="slate"] a.es_app_btn > span { padding: 7px 12px !important; }
+
+
 
 /* ===================================================================
    رف الألعاب — theme icons (library window + store/community pages)

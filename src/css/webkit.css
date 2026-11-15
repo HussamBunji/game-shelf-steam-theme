@@ -143,6 +143,8 @@ html[data-rfs-style="original"] #rfs-rail { display: none !important; }
 #rfs-rail { left: 22px; }
 #rfs-data { right: 22px; width: 340px; }
 #rfs-rail.on, #rfs-data.on { display: block; }
+/* parts Augmented Steam already shows on the page (webkit.js asDedupe) */
+#rfs-data .rfs-dup { display: none !important; }
 :is(#rfs-rail, #rfs-data, #rfs-qmenu) * { box-sizing: border-box; }
 :is(#rfs-rail, #rfs-data, #rfs-qmenu) section {
   margin-bottom: 12px; padding: 10px; border-radius: var(--rf-radius-lg, 12px);
