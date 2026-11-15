@@ -941,6 +941,13 @@
     // makes a page ineligible for that cache in Steam's Chromium; going Back just loads the page again. Measured in
     // Steam: the store's renderer exits within a second of leaving.
     if (html.getAttribute('data-rfs-style') === 'slate') addEventListener('unload', () => {});
+    // Slate's own store front (src/js/storefront.js + src/css/storefront.css): the store's home page only
+    if (html.getAttribute('data-rfs-style') === 'slate' && location.host === 'store.steampowered.com' && location.pathname === '/' && !document.querySelector('script[data-rfs-front]')) {
+      const me = document.querySelector('script[src*="/src/js/webkit.js"]');
+      const base = me ? me.src.replace(/src\/js\/webkit\.js.*$/, '') : 'https://millennium.host/v1/themes/rf-shelf/';
+      const css = document.createElement('link'); css.rel = 'stylesheet'; css.href = base + 'src/css/storefront.css'; document.head.append(css);
+      const js = document.createElement('script'); js.src = base + 'src/js/storefront.js'; js.setAttribute('data-rfs-front', ''); document.head.append(js);
+    }
     storeBarTag();
     setTimeout(storeBarTag, 1500);
     if (IS_WL) { setA(html, 'data-rfs-page', 'wishlist'); wlView(); wlTag(); setInterval(wlTag, 1200); }
