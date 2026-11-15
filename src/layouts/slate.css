@@ -247,3 +247,17 @@ html[data-rfs-style="slate"] #rfs-navsnd.rfs-tb::before { content: ''; order: 1;
 html[data-rfs-style="slate"] #rfs-navsnd.rfs-tb[data-on="true"]::before { background: rgb(var(--sl-accent)); }
 html[data-rfs-style="slate"] .rfs-nav-tb > #rfs-navsnd.rfs-tb::after { display: inline !important; order: 2; content: 'Sound'; }
 html[data-rfs-style="slate"][data-rfs-lang="ar"] .rfs-nav-tb > #rfs-navsnd.rfs-tb::after { content: 'الأصوات'; }
+
+/* volume: the ▾ beside the Sound pill and its slider popover */
+#slate-volpop { display: none; }
+html[data-rfs-style="slate"] .rfs-nav-tb > #slate-vol { min-width: 0; width: 30px; padding: 0 !important; justify-content: center; margin-inline-start: -4px; }
+html[data-rfs-style="slate"] .rfs-nav-tb > #slate-vol > svg.rf-ic { width: 12px; height: 12px; }
+html[data-rfs-style="slate"] .rfs-nav-tb > #slate-vol > svg.rf-ic * { stroke: currentColor; }
+html[data-rfs-style="slate"] #slate-volpop:not([hidden]) {
+  display: block; position: fixed; z-index: 2000; width: 240px; padding: 14px 16px; border-radius: 14px; box-sizing: border-box; -webkit-app-region: no-drag;
+  font-family: var(--rf-font-ui); color: rgb(var(--sl-text)); background: rgb(var(--sl-raised)); border: 1px solid rgb(var(--sl-edge)); box-shadow: 0 16px 34px rgba(var(--sl-shade), .55);
+}
+html[data-rfs-style="slate"] #slate-volpop label { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 13px; font-weight: 700; }
+html[data-rfs-style="slate"] #slate-volpop label b { color: rgb(var(--sl-accent)); }
+html[data-rfs-style="slate"] #slate-volpop input[type="range"] { width: 100%; accent-color: rgb(var(--sl-accent)); }
+

@@ -33,6 +33,7 @@ html[data-rfs-style="slate"] {
   --rf-vendor-skip: options/fonts/, options/general/alwaysShowSidebar;
   --rf-style-id: slate;
   --rf-layout: slate;            /* home design: src/layouts/slate.js */
+  --rf-sfx: slate;               /* sound pack: src/js/sfx-packs.js (clicks, Play, popup open / close only) */
   --rf-nav-place: titlebar;      /* THEMES + Sound go to the title bar; Steam's nav row is replaced by the icon rail */
   --sl-rail-w: 76px;             /* the left icon rail */
   --sl-top-h: 46px;              /* Steam's title bar height */
