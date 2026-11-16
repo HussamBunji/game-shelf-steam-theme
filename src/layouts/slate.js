@@ -16,6 +16,42 @@
 
   const isSlate = () => document.documentElement.dataset.rfsStyle === 'slate';
 
+  /* ---------- crash recorder (diagnostics, 2026-11-16) ----------
+     After hours of play Steam's page once showed "An error occurred while rendering this content … Failed to execute
+     'insertBefore' on 'Node': the node before which the new node is to be inserted is not a child of this node". That
+     happens when something moves or removes a node that React still owns. This records, only when such a call FAILS,
+     which nodes were involved (tag · id · class, a few parents up) plus where Steam was and whether Slate was resting,
+     in localStorage 'rfs.domErrors' (last 20, survives a restart). Successful calls only pay one try/catch.
+     Read it with:  JSON.parse(localStorage.getItem('rfs.domErrors'))  in the Steam window. Remove once explained. */
+  const restLog = (ev, extra) => {
+    try {
+      const log = JSON.parse(localStorage.getItem('rfs.restLog') || '[]');
+      log.push(Object.assign({ t: new Date().toISOString(), ev, route: api.route() }, extra || {}));
+      localStorage.setItem('rfs.restLog', JSON.stringify(log.slice(-30)));
+    } catch (e) { /* storage full or blocked */ }
+  };
+  (function domWatch() {
+    if (window.__rfsDomWatch) return;
+    window.__rfsDomWatch = true;
+    const desc = n => (!n ? String(n) : n.nodeType === 1 ? `${n.tagName.toLowerCase()}${n.id ? '#' + n.id : ''}${n.className && typeof n.className === 'string' ? '.' + n.className.trim().split(/\s+/).slice(0, 3).join('.') : ''}` : '#' + n.nodeName);
+    const path = n => { const p = []; for (let e = n, i = 0; e && i < 7; e = e.parentNode, i++) p.push(desc(e)); return p.join(' < '); };
+    const record = (op, err, parent, node, ref) => {
+      try {
+        const log = JSON.parse(localStorage.getItem('rfs.domErrors') || '[]');
+        log.push({
+          t: new Date().toISOString(), op, msg: String(err && err.message || err), route: api.route(),
+          resting: !!(window.__slateRest && window.__slateRest.on), minimized: document.hidden,
+          parent: path(parent), node: path(node), ref: ref ? path(ref) : null,
+          ours: [node, ref].map(n => !!(n && n.nodeType === 1 && n.closest && n.closest('#rfs, #rfs-navwrap, #rfs-bar, #slate-rail, #slate-search, #rfs-dl, #rfs-family, .extensions-bar-container'))),
+        });
+        localStorage.setItem('rfs.domErrors', JSON.stringify(log.slice(-20)));
+      } catch (e) { /* never let the recorder fail the page */ }
+    };
+    const P = Node.prototype, ins = P.insertBefore, rem = P.removeChild;
+    P.insertBefore = function (node, ref) { try { return ins.call(this, node, ref); } catch (e) { record('insertBefore', e, this, node, ref); throw e; } };
+    P.removeChild = function (node) { try { return rem.call(this, node); } catch (e) { record('removeChild', e, this, node, null); throw e; } };
+  })();
+
   /* ---------- small formatters (the card line is short: "142.6 h · Today") ---------- */
   const hoursShort = min => {
     if (!min) return T('ما انلعبت', 'Not played');
@@ -427,6 +463,7 @@
     },
     sleep(appid) {
       this.on = true; this.appid = appid;
+      restLog('sleep', { appid });
       const w = api.where();
       if (/^\/browser/.test(w.route || '')) api.navigate('/library/home');   // closes the store / community page
       else if (/^\/library\/home/.test(w.route || '')) this.paint();
@@ -435,6 +472,7 @@
     wake(byUser) {
       if (!this.on) return;
       this.on = false;
+      restLog(byUser ? 'wake-button' : 'wake-game-closed');
       if (byUser) this.woke = true;            // stay awake for the rest of this game
       api.rerender();
     },
