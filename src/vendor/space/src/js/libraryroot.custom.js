@@ -493,30 +493,37 @@ syncUserPanelWidth();
 
 
 
-// Create userpanel button container and move buttons
+// Userpanel button container (rf-shelf patch, 2026-11-18)
+// SpaceTheme moved Steam's own buttons (news, notifications, Big Picture, and the Friends button from the bottom bar)
+// into this div. React still owns them in their old parents: when Steam redraws the title bar (the network cable
+// unplugged, offline mode, a button appearing) React inserts before / removes a node that is no longer there →
+// "Failed to execute 'insertBefore' on 'Node'" and Steam's error page instead of the window.
+// Now nothing of Steam's is moved. The box only holds our own buttons and is display: contents, so they line up
+// with Steam's buttons in the title bar; CSS orders them as before (src/js/skin.js, steam/sidebar.css).
+// Friends is a stand-in that clicks Steam's real (hidden) button, or opens the friends list if that isn't mounted.
 (async () => {
     await waitForElement(CssClassNames.Library.Container); // wait for game panel to load first
     // Userpanel
-    const friendButton = await waitForElement(CssClassNames.UserPanel.FriendButton);
-    const familyButton = document.querySelector(CssClassNames.UserPanel.FamilyButton);
+    const nativeFriend = await waitForElement(CssClassNames.UserPanel.FriendButton);
     const parent = await waitForElement(CssClassNames.UserPanel.Container);
 
     const buttonContainer = document.createElement('div');
     buttonContainer.className = 'userpanel-buttoncontainer';
 
-    const buttons = parent.querySelectorAll(`div${CssClassNames.UserPanel.Container} > div`);
-    const buttonsToMove = Array.from(buttons).filter((button) => {
-        return button.querySelector(CssClassNames.UserPanel.Button);
+    const friendButton = document.createElement('div');
+    friendButton.className = `${CssClassNames.UserPanel.FriendButton.slice(1)} st-friends`;
+    const friendIcon = nativeFriend.querySelector('svg');
+    const friendIconWrapper = document.createElement('div');
+    friendIconWrapper.className = '_1KrJ3sFAqPBN9mfpaNTU5F';
+    if (friendIcon) friendIconWrapper.appendChild(friendIcon.cloneNode(true));
+    friendButton.appendChild(friendIconWrapper);
+    friendButton.title = nativeFriend.textContent.trim() || 'Friends & Chat';
+    friendButton.addEventListener('click', () => {
+        const real = document.querySelector(`${CssClassNames.UserPanel.FriendButton}:not(.st-friends)`);
+        if (real) { real.click(); return; }
+        try { (window.SteamClient || window.opener?.SteamClient)?.URL?.ExecuteSteamURL('steam://open/friends'); } catch (e) { /* no client */ }
     });
-
-    buttonsToMove.forEach((button) => {
-        buttonContainer.appendChild(button);
-    });
-
     buttonContainer.appendChild(friendButton);
-    if (familyButton) {
-        buttonContainer.appendChild(familyButton);
-    }
 
     // Create custom settings button
     const settingsButton = document.createElement('div');

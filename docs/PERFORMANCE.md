@@ -2,6 +2,25 @@
 
 How fast the themes are on a live Steam, measured. Steam runs with `-dev`, CDP at `http://127.0.0.1:8080`.
 
+## 2026-11-18 — "insertBefore" error page when the network drops (vendor patch, crash fix)
+
+- **Symptom:** Steam's error page ("Failed to execute 'insertBefore' on 'Node' … not a child of this node") after a
+  network cable was unplugged during a download, and once before after hours of play. steam.exe kept running.
+- **Caught by** the DOM-error recorder in `src/layouts/slate.js` (localStorage `rfs.domErrors`): parent =
+  `TitleBarControls`, reference node = a title-bar button sitting inside `.userpanel-buttoncontainer`.
+- **Cause:** SpaceTheme's `libraryroot.custom.js` moved React-owned buttons (news, notifications, Big Picture, and
+  Friends from the bottom bar) into its own div. When Steam re-rendered the title bar, React inserted before / removed
+  a node that was no longer in the parent it owns.
+- **Fix (vendor patch):** nothing of Steam's is moved any more.
+  - The box holds only the theme's own buttons and is `display: contents`.
+  - Steam's buttons are ordered with CSS (`src/js/skin.js`, `steam/sidebar.css`).
+  - Friends is a stand-in that clicks Steam's real, hidden button (fallback `steam://open/friends`).
+  - Same pixel positions as before; 139 React nodes in the title and bottom bars all sit under their own parent.
+- Files: `src/vendor/space/src/js/libraryroot.custom.js`, `src/vendor/space/src/css/steam/sidebar.css`,
+  `src/js/skin.js`. Re-running `tools/vendor.mjs` would undo the vendor part — re-apply it.
+- Not covered: Steam's own Family View button (`_13vrqU…`), which SpaceTheme also moved, now stays where Steam puts
+  it. It only exists with Steam Family View on.
+
 ## 2026-11-10 (evening) — store scroll froze on every change of direction (measured IN Steam)
 
 The hidden-Chromium harness did not show this one: it only exists in the real client. Measured on the store page

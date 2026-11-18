@@ -42,7 +42,7 @@
           t: new Date().toISOString(), op, msg: String(err && err.message || err), route: api.route(),
           resting: !!(window.__slateRest && window.__slateRest.on), minimized: document.hidden,
           parent: path(parent), node: path(node), ref: ref ? path(ref) : null,
-          ours: [node, ref].map(n => !!(n && n.nodeType === 1 && n.closest && n.closest('#rfs, #rfs-navwrap, #rfs-bar, #slate-rail, #slate-search, #rfs-dl, #rfs-family, .extensions-bar-container'))),
+          ours: [node, ref].map(n => !!(n && n.nodeType === 1 && n.closest && n.closest('#rfs, #rfs-navwrap, #rfs-bar, #slate-rail, #slate-search, #rfs-dl, #rfs-family, .userpanel-buttoncontainer, .extensions-bar-container'))),
         });
         localStorage.setItem('rfs.domErrors', JSON.stringify(log.slice(-20)));
       } catch (e) { /* never let the recorder fail the page */ }
