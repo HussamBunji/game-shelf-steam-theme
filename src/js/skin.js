@@ -185,7 +185,19 @@
   /* SpaceTheme hides the box on pages without its game list (body:not(:has(list)) → visibility: hidden): we took the
      list off the store and the home design, which made the user name vanish there — it shows on every page */
   urule`${U} ${C('TitleBarControls')} { visibility: visible !important; }`;
-  urule`${U} ${C('TitleBarControls')} .userpanel-buttoncontainer { display: flex !important; flex-direction: row !important; gap: 4px !important; width: auto !important; }`;
+  /* Steam's own buttons stay where React put them (moving them crashed the page — see SpaceTheme's
+     libraryroot.custom.js); the theme's box is display: contents, so everything is one row ordered here:
+     our nav row, the account, Steam's buttons, Friends (6), settings and our Downloads / Family (999+) */
+  const TBC = C('TitleBarControls');
+  const ACCT = `${TBC} > .tool-tip-source:has(${C('AccountMenu')})`;
+  const SBTN = `${TBC} > .tool-tip-source:not(:has(${C('AccountMenu')}))`;
+  urule`${U} ${TBC} .userpanel-buttoncontainer { display: contents !important; }`;
+  urule`${U} ${TBC} { gap: 4px !important; }`;
+  urule`${U} ${TBC} > #rfs-navwrap { order: -2 !important; }`;
+  urule`${U} ${ACCT} { order: -1 !important; }`;
+  // the account keeps the row's old outer gap (6 px in the title bar, 8 px in a footer); buttons are 4 px apart
+  urule`${HEAD} ${ACCT} { margin-inline: 2px !important; }`;
+  urule`${FOOT} ${ACCT} { margin-inline: 4px !important; }`;
   urule`${U} ${C('TitleBarControls')} ${C('AccountMenu')} {
     height: 32px !important; max-height: 32px !important; padding: 0 12px 0 4px !important; gap: 8px !important;
     font: var(--rf-user-font, 600 13px var(--rf-font-ui, inherit)) !important; color: var(--rf-user-ink, var(--rf-text)) !important;
@@ -193,12 +205,13 @@
     border-radius: var(--rf-user-radius, var(--rf-radius)) !important; box-shadow: var(--rf-user-shadow, none) !important; }`;
   urule`${U} ${C('TitleBarControls')} ${C('AccountMenu')}:hover { background: var(--rf-user-bg-hover, ${A}.2)) !important; }`;
   urule`${U} ${C('TitleBarControls')} ${C('AccountMenu')} .avatarHolder { margin: 0 !important; }`;
-  urule`${U} ${C('TitleBarControls')} .userpanel-buttoncontainer > :not(#rfs-family):not(#rfs-dl), ${U} ${C('TitleBarControls')} .userpanel-buttoncontainer :is(button, [class*="Button"]) {
+  urule`${U} ${C('TitleBarControls')} .userpanel-buttoncontainer > :not(#rfs-family):not(#rfs-dl), ${U} ${C('TitleBarControls')} .userpanel-buttoncontainer :is(button, [class*="Button"]),
+    ${U} ${SBTN}, ${U} ${SBTN} :is(button, [class*="Button"]) {
     width: 32px !important; min-width: 32px !important; height: 32px !important; padding: 0 !important; }`;
   /* SpaceTheme builds the settings button itself: its inner box was 28 px and top-aligned — the same 32 px as the rest */
   urule`${U} ${C('TitleBarControls')} .userpanel-buttoncontainer .st-steam-settings > * {
     width: 32px !important; height: 32px !important; display: flex !important; align-items: center !important; justify-content: center !important; }`;
-  urule`${U} ${C('TitleBarControls')} .userpanel-buttoncontainer :is(button, [class*="Button"], .st-steam-settings > *) {
+  urule`${U} ${C('TitleBarControls')} .userpanel-buttoncontainer :is(button, [class*="Button"], .st-steam-settings > *), ${U} ${SBTN} :is(button, [class*="Button"]) {
     border-radius: var(--rf-user-radius, var(--rf-radius)) !important; }`;
   /* the sidebar no longer needs the empty space it kept at the bottom for the box */
   urule`${U} ._3x1HklzyDs4TEjACrRO2tB ._1ijTaXJJA5YWl_fW2IxcaT { margin-bottom: 12px !important; }`;

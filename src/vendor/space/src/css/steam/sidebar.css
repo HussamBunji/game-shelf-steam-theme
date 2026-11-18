@@ -666,10 +666,10 @@ body:not(:has(._1ijTaXJJA5YWl_fW2IxcaT)) ._3cykd-VfN_xBxf3Qxriccm {
 
 
 /* Button order */
+/* rf-shelf patch: the box only holds the theme's own buttons now and joins Steam's buttons in one row (see
+   libraryroot.custom.js — moving Steam's buttons into it crashed the page when the title bar re-rendered) */
 ._3cykd-VfN_xBxf3Qxriccm .userpanel-buttoncontainer {
-    display: flex;
-    gap: 6px;
-    width: 100%;
+    display: contents;
 }
 
 /* User buttons */
@@ -736,8 +736,9 @@ body:not(:has(._1ijTaXJJA5YWl_fW2IxcaT)) ._3cykd-VfN_xBxf3Qxriccm {
 
 
 ._3cykd-VfN_xBxf3Qxriccm .userpanel-buttoncontainer>div,
-._3cykd-VfN_xBxf3Qxriccm .userpanel-buttoncontainer ._2Szzh5sKyGgnLUR870zbDE,
-._3cykd-VfN_xBxf3Qxriccm .userpanel-buttoncontainer ._2Lu3d-5qLmW4i19ysTt2jT>div {
+._3cykd-VfN_xBxf3Qxriccm>.tool-tip-source:has(._2Szzh5sKyGgnLUR870zbDE, ._3mGEzzp18imtSzGPkduedi),
+._3cykd-VfN_xBxf3Qxriccm ._2Szzh5sKyGgnLUR870zbDE,
+._3cykd-VfN_xBxf3Qxriccm ._3mGEzzp18imtSzGPkduedi>div {
     width: 100%;
     height: 28px;
 }
